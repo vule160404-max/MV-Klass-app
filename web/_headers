@@ -1,0 +1,20 @@
+# PWA: HTML rewrite /app mà bị cache thì thiếu MVK_VAPID_PUBLIC mới (403 BadJwtToken).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://vfabemdqfydjaookbzvm.supabase.co https://*.supabase.co; connect-src 'self' https://vfabemdqfydjaookbzvm.supabase.co https://*.supabase.co https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://www.googleapis.com https://*.googleapis.com https://*.gstatic.com; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+/attendance-app.html
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+
+/app
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+
+# Khi đổi VAPID / firebase-config, tránh .js bị cache dài hạn (Netlify mặc định tối ưu mạnh).
+/firebase-config.js
+  Cache-Control: no-cache, must-revalidate
+
+/firebase-messaging-sw.js
+  Cache-Control: no-cache, must-revalidate
