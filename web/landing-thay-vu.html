@@ -151,6 +151,9 @@
       overflow-x: clip;
     }
     .topbar.scrolled { box-shadow: var(--shadow-sm); }
+    .desktop-contact-strip {
+      display: none;
+    }
     .topbar-row {
       height: 72px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -176,13 +179,17 @@
 
     .topbar-phones {
       display: none;
-      flex-direction: column;
+      flex-direction: row;
       align-items: flex-end;
-      gap: 2px;
+      gap: 6px;
       font-size: 11px;
       font-weight: 600;
       line-height: 1.3;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
+    .topbar-phones .hotline-label { color: var(--phone-text); }
+    .topbar-phones .phone-separator { color: var(--muted-light); }
     .topbar-phones a {
       color: var(--phone-text);
       text-decoration: none;
@@ -190,7 +197,90 @@
     }
     .topbar-phones a:hover { color: var(--gold); }
     @media (min-width: 1100px) {
-      .topbar-phones { display: flex; }
+      .topbar-row {
+        display: grid;
+        grid-template-columns: max-content minmax(300px, 1fr) max-content;
+        grid-template-areas:
+          "brand menu actions";
+        column-gap: 18px;
+        height: 64px;
+      }
+      .desktop-contact-strip {
+        display: block;
+        height: 30px;
+        border-bottom: 1px solid rgba(15,31,61,.07);
+        background: rgba(255,255,255,.42);
+      }
+      .desktop-contact-inner {
+        height: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+      }
+      .brand {
+        grid-area: brand;
+        font-size: 17px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .menu {
+        grid-area: menu;
+        justify-content: center;
+        gap: 4px;
+      }
+      .menu a[href="#dang-ky"] {
+        display: none;
+      }
+      .menu a {
+        padding-inline: 9px;
+        white-space: nowrap;
+      }
+      .topbar-row > .topbar-phones {
+        display: none;
+      }
+      .desktop-contact-strip .topbar-phones {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 7px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        font-size: 10px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .desktop-contact-strip .topbar-phones::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 0 3px rgba(244,167,29,.14);
+        flex: 0 0 auto;
+      }
+      .desktop-contact-strip .topbar-phones .hotline-label {
+        font-weight: 800;
+        letter-spacing: .01em;
+        color: var(--navy);
+      }
+      .desktop-contact-strip .topbar-phones .phone-separator {
+        color: rgba(26,52,96,.34);
+      }
+      .desktop-contact-strip .topbar-phones a {
+        font-weight: 800;
+        color: var(--navy-mid);
+        letter-spacing: .01em;
+      }
+      .desktop-contact-strip .topbar-phones a:hover {
+        color: var(--gold);
+      }
+      .topbar-actions {
+        grid-area: actions;
+        justify-self: end;
+      }
     }
 
     .topbar-actions {
@@ -263,8 +353,8 @@
       filter: brightness(1.02);
     }
     .floating-contact .fab .fab-logo {
-      width: 38px;
-      height: 38px;
+      width: 50px;
+      height: 50px;
       object-fit: contain;
       display: block;
     }
@@ -289,15 +379,15 @@
     }
     @media (max-width: 768px) {
       .floating-contact {
-        left: 50%;
-        right: auto;
-        bottom: max(10px, env(safe-area-inset-bottom));
-        transform: translateX(-50%);
-        flex-direction: row;
+        left: auto;
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        transform: none;
+        flex-direction: column;
         gap: 10px;
       }
       .floating-contact .fab { width: 48px; height: 48px; }
-      .floating-contact .fab .fab-logo { width: 29px; height: 29px; }
+      .floating-contact .fab .fab-logo { width: 39px; height: 39px; }
     }
 
     /* ─── PILL / BADGE ─── */
@@ -1130,8 +1220,17 @@
     }
     .cta-hotline-links {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: baseline;
+    }
+    .hotline-label {
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .phone-separator {
+      color: var(--muted);
     }
     .cta-hotline-links a {
       font-size: 15px;
@@ -1165,8 +1264,10 @@
     }
     .footer-hotlines {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: baseline;
       font-size: 14px;
       font-weight: 600;
     }
@@ -1179,8 +1280,8 @@
     .footer-hotline-name {
       color: rgba(255, 255, 255, 0.55);
       font-weight: 500;
-      min-width: 7.5em;
     }
+    .footer-hotlines .phone-separator { color: rgba(255, 255, 255, 0.4); }
     .footer-hotlines a {
       color: var(--gold-light);
       text-decoration: none;
@@ -2838,11 +2939,11 @@
         line-height: 1.5;
       }
       .floating-contact {
-        left: 50%;
-        right: auto;
-        bottom: max(10px, env(safe-area-inset-bottom));
-        transform: translateX(-50%);
-        flex-direction: row;
+        left: auto;
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        transform: none;
+        flex-direction: column;
         gap: 8px;
       }
       .floating-contact .fab {
@@ -2851,8 +2952,8 @@
         box-shadow: 0 10px 22px rgba(15,31,61,.2);
       }
       .floating-contact .fab .fab-logo {
-        width: 28px;
-        height: 28px;
+        width: 38px;
+        height: 38px;
       }
       footer {
         padding-bottom: 76px;
@@ -3109,11 +3210,11 @@
       }
 
       .floating-contact {
-        left: 50% !important;
-        right: auto !important;
-        bottom: max(8px, env(safe-area-inset-bottom)) !important;
-        transform: translateX(-50%) !important;
-        flex-direction: row !important;
+        left: auto !important;
+        right: 12px !important;
+        bottom: max(12px, env(safe-area-inset-bottom)) !important;
+        transform: none !important;
+        flex-direction: column !important;
         opacity: .9;
       }
       .floating-contact .fab {
@@ -3121,13 +3222,13 @@
         height: 44px !important;
       }
       .floating-contact .fab .fab-logo {
-        width: 27px !important;
-        height: 27px !important;
+        width: 37px !important;
+        height: 37px !important;
       }
       .floating-contact.is-hidden-on-leaderboard {
         opacity: 0 !important;
         pointer-events: none !important;
-        transform: translateX(-50%) translateY(12px) !important;
+        transform: translateX(12px) !important;
       }
     }
 
@@ -3585,23 +3686,21 @@
       }
       .topbar-phones {
         grid-area: phones;
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: flex !important;
         gap: 6px;
         width: 100%;
-        align-items: stretch;
+        align-items: center;
+        justify-content: center;
         font-size: 10.5px;
         line-height: 1.2;
       }
       .topbar-phones a {
         min-width: 0;
-        overflow: hidden;
         padding: 6px 8px;
         border-radius: 10px;
         background: rgba(16,35,68,.055);
         color: #1a3460;
         text-align: center;
-        text-overflow: ellipsis;
         white-space: nowrap;
       }
       .hero-section,
@@ -3743,7 +3842,7 @@
         justify-content: center;
       }
       .topbar-phones {
-        grid-template-columns: minmax(0, 1fr);
+        flex-wrap: wrap;
       }
     }
 
@@ -3911,8 +4010,18 @@
   </div>
   <!-- ─── TOPBAR ─── -->
   <header class="topbar" id="topbar">
+    <div class="desktop-contact-strip" aria-label="Hotline">
+      <div class="container desktop-contact-inner">
+        <div class="topbar-phones">
+          <span class="hotline-label">Hotline/Zalo:</span>
+          <a href="tel:+84334438325" title="Gọi Hotline/Zalo">+84 334 438 325</a>
+          <span class="phone-separator" aria-hidden="true">·</span>
+          <a href="tel:+84916045202" title="Gọi Hotline/Zalo">+84 916 045 202</a>
+        </div>
+      </div>
+    </div>
     <div class="container topbar-row">
-      <a class="brand" href="#">Lớp luyện thi <span>Thầy Vũ</span></a>
+      <a class="brand" href="#">Lớp tiếng Anh <span>thầy Vũ</span></a>
       <nav class="menu">
         <a href="#gioi-thieu">Giới thiệu</a>
         <a href="#lo-trinh">Lộ trình</a>
@@ -3921,8 +4030,10 @@
         <a href="#dang-ky">Đăng ký</a>
       </nav>
       <div class="topbar-phones" aria-label="Hotline">
-        <a href="tel:+84334438325" title="Gọi Thầy Vũ">Thầy Vũ — +84 334 438 325</a>
-        <a href="tel:+84948576333" title="Gọi Cô Minh">Cô Minh · +84 948 576 333</a>
+        <span class="hotline-label">Hotline/Zalo:</span>
+        <a href="tel:+84334438325" title="Gọi Hotline/Zalo">+84 334 438 325</a>
+        <span class="phone-separator" aria-hidden="true">·</span>
+        <a href="tel:+84916045202" title="Gọi Hotline/Zalo">+84 916 045 202</a>
       </div>
       <div class="topbar-actions">
         <a class="btn btn-outline btn-login-admin" href="./attendance-app.html" title="Đăng nhập quản trị ClassHub">Đăng nhập</a>
@@ -4301,8 +4412,10 @@
           <div class="cta-hotlines" aria-label="Hotline liên hệ">
             <div class="cta-hotlines-title">Hotline</div>
             <div class="cta-hotline-links">
-              <a href="tel:+84334438325">Thầy Vũ — +84 334 438 325</a>
-              <a href="tel:+84948576333">Cô Minh — +84 948 576 333</a>
+              <span class="hotline-label">Hotline/Zalo:</span>
+              <a href="tel:+84334438325">+84 334 438 325</a>
+              <span class="phone-separator" aria-hidden="true">·</span>
+              <a href="tel:+84916045202">+84 916 045 202</a>
             </div>
           </div>
         </div>
@@ -4359,9 +4472,10 @@
             </p>
             <p class="cta-success-muted">
               Nếu cần gấp, phụ huynh có thể nhắn Zalo hoặc gọi:
-              <a href="tel:+84334438325">Thầy Vũ · +84 334 438 325</a>
+              <span class="hotline-label">Hotline/Zalo:</span>
+              <a href="tel:+84334438325">+84 334 438 325</a>
               ·
-              <a href="tel:+84948576333">Cô Minh · +84 948 576 333</a>
+              <a href="tel:+84916045202">+84 916 045 202</a>
             </p>
             <p class="cta-success-note">Gia đình chưa cần cam kết học sau buổi kiểm tra.</p>
             <button type="button" class="btn btn-outline btn-lg btn-full" id="cta-success-dismiss">
@@ -4400,19 +4514,15 @@
   <footer>
     <div class="container footer-wrap">
       <div class="footer-top">
-        <div class="footer-brand">Lớp luyện thi <span>Thầy Vũ</span></div>
+        <div class="footer-brand">Lớp tiếng Anh <span>thầy Vũ</span></div>
         <div class="footer-hotlines" aria-label="Hotline liên hệ">
-          <div class="footer-hotline-row">
-            <span class="footer-hotline-name">Thầy Vũ</span>
-            <a href="tel:+84334438325">+84 334 438 325</a>
-          </div>
-          <div class="footer-hotline-row">
-            <span class="footer-hotline-name">Cô Minh</span>
-            <a href="tel:+84948576333">+84 948 576 333</a>
-          </div>
+          <span class="footer-hotline-name">Hotline/Zalo:</span>
+          <a href="tel:+84334438325">+84 334 438 325</a>
+          <span class="phone-separator" aria-hidden="true">·</span>
+          <a href="tel:+84916045202">+84 916 045 202</a>
         </div>
       </div>
-      <div class="footer-text">© 2026 Lớp luyện thi Thầy Lê Vũ · Chuyên luyện thi vào 10 &amp; THPT Quốc Gia</div>
+      <div class="footer-text">© 2026 Lớp tiếng Anh thầy Lê Vũ · Chuyên luyện thi vào 10 &amp; THPT Quốc Gia</div>
     </div>
   </footer>
 
@@ -4435,7 +4545,7 @@
       aria-label="Nhắn tin Zalo"
       title="Nhắn Zalo"
     >
-      <img class="fab-logo" src="./assets/social/zalo-logo.png" alt="" aria-hidden="true" />
+      <img class="fab-logo" src="./assets/social/zalo-logo.jpg" alt="" aria-hidden="true" />
     </a>
   </div>
 
@@ -4766,6 +4876,201 @@
           root.classList.add('feedback-carousel--reduced');
         }
 
+        function initNativeFeedbackCarousel() {
+          root.classList.add('feedback-carousel--native');
+          stack.replaceChildren();
+          dotsHost.replaceChildren();
+
+          let nativeIndex = 0;
+          let autoTimerNative = null;
+          let autoInViewNative = false;
+          let autoPausedNative = false;
+          let scrollEndTimer = null;
+          let pointerDown = false;
+          let pointerStartX = 0;
+          let pointerStartLeft = 0;
+
+          const cards = items.map(function (item, i) {
+            const fig = document.createElement('figure');
+            fig.className = 'feedback-carousel__card';
+            fig.setAttribute('aria-label', 'Feedback ' + String(i + 1));
+            const img = document.createElement('img');
+            img.src = item.src;
+            img.alt = item.alt;
+            img.width = 800;
+            img.height = 1000;
+            img.loading = i === 0 ? 'eager' : 'lazy';
+            img.decoding = 'async';
+            img.addEventListener('error', function () {
+              if (img.dataset.fbFallback === '1') return;
+              img.dataset.fbFallback = '1';
+              img.src = FB_FALLBACK_IMG;
+            });
+            fig.appendChild(img);
+            stack.appendChild(fig);
+            return fig;
+          });
+
+          items.forEach(function (_, i) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'feedback-carousel__dot';
+            b.setAttribute('aria-label', 'Xem ảnh ' + String(i + 1));
+            b.addEventListener('click', function () {
+              setNativePaused(true);
+              scrollToNativeIndex(i, true);
+              window.setTimeout(function () { setNativePaused(false); }, 2400);
+            });
+            dotsHost.appendChild(b);
+          });
+
+          function getNativeTargetLeft(i) {
+            const card = cards[i];
+            if (!card) return 0;
+            return card.offsetLeft - (viewport.clientWidth - card.offsetWidth) / 2;
+          }
+
+          function setNativeIndex(i, shouldScroll) {
+            nativeIndex = mod(i, items.length);
+            dotsHost.querySelectorAll('.feedback-carousel__dot').forEach(function (btn, idx) {
+              btn.classList.toggle('is-active', idx === nativeIndex);
+              btn.setAttribute('aria-current', idx === nativeIndex ? 'true' : 'false');
+            });
+            viewport.setAttribute('aria-label', 'Ảnh ' + String(nativeIndex + 1) + ' trên ' + String(items.length) + '. Vuốt ngang để xem feedback.');
+            if (shouldScroll) scrollToNativeIndex(nativeIndex, true);
+          }
+
+          function nearestNativeIndex() {
+            const center = viewport.scrollLeft + viewport.clientWidth / 2;
+            let best = 0;
+            let bestDist = Infinity;
+            cards.forEach(function (card, i) {
+              const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+              const dist = Math.abs(cardCenter - center);
+              if (dist < bestDist) {
+                best = i;
+                bestDist = dist;
+              }
+            });
+            return best;
+          }
+
+          function scrollToNativeIndex(i, smooth) {
+            const target = getNativeTargetLeft(mod(i, items.length));
+            viewport.scrollTo({ left: target, behavior: smooth && !root.classList.contains('feedback-carousel--reduced') ? 'smooth' : 'auto' });
+            setNativeIndex(i, false);
+          }
+
+          function stopNativeAuto() {
+            if (autoTimerNative) {
+              window.clearInterval(autoTimerNative);
+              autoTimerNative = null;
+            }
+          }
+
+          function startNativeAuto() {
+            stopNativeAuto();
+            if (items.length < 2 || root.classList.contains('feedback-carousel--reduced')) return;
+            if (!autoInViewNative || autoPausedNative) return;
+            autoTimerNative = window.setInterval(function () {
+              if (autoPausedNative || !autoInViewNative) return;
+              scrollToNativeIndex(nativeIndex + 1, true);
+            }, 4300);
+          }
+
+          function setNativePaused(paused) {
+            autoPausedNative = paused;
+            if (paused) stopNativeAuto();
+            else startNativeAuto();
+          }
+
+          viewport.addEventListener('pointerdown', function (e) {
+            pointerDown = true;
+            pointerStartX = e.clientX;
+            pointerStartLeft = viewport.scrollLeft;
+            setNativePaused(true);
+            viewport.classList.add('is-dragging');
+            try { viewport.setPointerCapture(e.pointerId); } catch (err) {}
+          });
+          viewport.addEventListener('pointermove', function (e) {
+            if (!pointerDown) return;
+            viewport.scrollLeft = pointerStartLeft - (e.clientX - pointerStartX);
+          });
+          function endNativePointer(e) {
+            if (!pointerDown) return;
+            pointerDown = false;
+            viewport.classList.remove('is-dragging');
+            try { viewport.releasePointerCapture(e.pointerId); } catch (err) {}
+            scrollToNativeIndex(nearestNativeIndex(), true);
+            window.setTimeout(function () { setNativePaused(false); }, 1800);
+          }
+          viewport.addEventListener('pointerup', endNativePointer);
+          viewport.addEventListener('pointercancel', endNativePointer);
+
+          viewport.addEventListener('scroll', function () {
+            window.clearTimeout(scrollEndTimer);
+            scrollEndTimer = window.setTimeout(function () {
+              setNativeIndex(nearestNativeIndex(), false);
+            }, 80);
+          }, { passive: true });
+
+          viewport.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft') {
+              e.preventDefault();
+              setNativePaused(true);
+              scrollToNativeIndex(nativeIndex - 1, true);
+              window.setTimeout(function () { setNativePaused(false); }, 1800);
+            } else if (e.key === 'ArrowRight') {
+              e.preventDefault();
+              setNativePaused(true);
+              scrollToNativeIndex(nativeIndex + 1, true);
+              window.setTimeout(function () { setNativePaused(false); }, 1800);
+            }
+          });
+
+          root.addEventListener('mouseenter', function () { setNativePaused(true); });
+          root.addEventListener('mouseleave', function () { setNativePaused(false); });
+          root.addEventListener('focusin', function () { setNativePaused(true); });
+          root.addEventListener('focusout', function () { setNativePaused(false); });
+          window.addEventListener('resize', function () {
+            window.clearTimeout(scrollEndTimer);
+            scrollEndTimer = window.setTimeout(function () {
+              scrollToNativeIndex(nativeIndex, false);
+            }, 120);
+          });
+          document.addEventListener('visibilitychange', function () {
+            if (document.hidden) stopNativeAuto();
+            else startNativeAuto();
+          });
+
+          if ('IntersectionObserver' in window) {
+            const nativeObserver = new IntersectionObserver(function (entries) {
+              autoInViewNative = entries.some(function (entry) {
+                return entry.isIntersecting && entry.intersectionRatio > 0.34;
+              });
+              if (autoInViewNative) startNativeAuto();
+              else stopNativeAuto();
+            }, { threshold: [0, 0.34, 0.7] });
+            nativeObserver.observe(root);
+          } else {
+            autoInViewNative = true;
+          }
+
+          Promise.all(cards.slice(0, 3).map(function (card) {
+            const img = card.querySelector('img');
+            if (img && img.decode) return img.decode().catch(function () {});
+            return Promise.resolve();
+          })).finally(function () {
+            requestAnimationFrame(function () {
+              scrollToNativeIndex(0, false);
+              setNativeIndex(0, false);
+              root.classList.remove('feedback-carousel--boot');
+              root.removeAttribute('aria-busy');
+              startNativeAuto();
+            });
+          });
+        }
+
         const figLeft = stack.querySelector('[data-slot="left"]');
         const figCenter = stack.querySelector('[data-slot="center"]');
         const figRight = stack.querySelector('[data-slot="right"]');
@@ -4804,6 +5109,9 @@
       let suppressClick = false;
       let settling = false;
       let rafAnim = null;
+      let autoTimer = null;
+      let autoInView = false;
+      let autoPaused = false;
 
       const BLUR_MAX = 6;
       const SCALE_SIDE = 0.76;
@@ -4827,6 +5135,10 @@
         return 1 - Math.pow(1 - t, 3);
       }
 
+      function easeOutQuint(t) {
+        return 1 - Math.pow(1 - t, 5);
+      }
+
       /** Smoothstep 0→1: mượt đầu/cuối cho opacity khi kéo, tránh cảm giác giật. */
       function smooth01(t) {
         t = Math.max(0, Math.min(1, t));
@@ -4836,6 +5148,22 @@
       function decodeImg(img) {
         if (img && img.decode) return img.decode().catch(() => {});
         return Promise.resolve();
+      }
+
+      function warmFeedbackImages(list) {
+        return Promise.all(
+          list.map(function (item) {
+            return new Promise(function (resolve) {
+              const im = new Image();
+              im.onload = function () {
+                if (im.decode) im.decode().catch(function () {}).finally(resolve);
+                else resolve();
+              };
+              im.onerror = resolve;
+              im.src = item.src;
+            });
+          })
+        );
       }
 
       function measure() {
@@ -5092,6 +5420,30 @@
         }
       }
 
+      function stopAutoGlide() {
+        if (autoTimer) {
+          window.clearInterval(autoTimer);
+          autoTimer = null;
+        }
+      }
+
+      function startAutoGlide() {
+        stopAutoGlide();
+        return;
+        if (items.length < 2 || root.classList.contains('feedback-carousel--reduced')) return;
+        if (!autoInView || autoPaused) return;
+        autoTimer = window.setInterval(function () {
+          if (settling || pointerActive || autoPaused || !autoInView) return;
+          goAnimated(1);
+        }, 4200);
+      }
+
+      function setAutoPaused(paused) {
+        autoPaused = paused;
+        if (paused) stopAutoGlide();
+        else startAutoGlide();
+      }
+
       dotsHost.innerHTML = '';
       items.forEach((_, i) => {
         const b = document.createElement('button');
@@ -5099,12 +5451,14 @@
         b.className = 'feedback-carousel__dot';
         b.setAttribute('aria-label', `Xem ảnh ${i + 1}`);
         b.addEventListener('click', () => {
+          setAutoPaused(true);
           cancelAnim();
           settling = false;
           index = i;
           render();
           measure();
           snapPoseReset();
+          window.setTimeout(() => setAutoPaused(false), 2600);
         });
         dotsHost.appendChild(b);
       });
@@ -5134,6 +5488,7 @@
 
       viewport.addEventListener('pointerdown', e => {
         if (e.button !== 0 || pointerActive || settling) return;
+        setAutoPaused(true);
         cancelAnim();
         measure();
         pointerActive = true;
@@ -5216,10 +5571,15 @@
           }
         }
         dragX = 0;
+        window.setTimeout(() => setAutoPaused(false), 1800);
       }
 
       viewport.addEventListener('pointerup', endPointer);
       viewport.addEventListener('pointercancel', endPointer);
+      root.addEventListener('mouseenter', () => setAutoPaused(true));
+      root.addEventListener('mouseleave', () => setAutoPaused(false));
+      root.addEventListener('focusin', () => setAutoPaused(true));
+      root.addEventListener('focusout', () => setAutoPaused(false));
       window.addEventListener('blur', () => {
         if (pointerActive || Math.abs(liveShift) > 0.001) {
           pointerActive = false;
@@ -5229,6 +5589,7 @@
           settling = false;
           applyShift(0);
         }
+        stopAutoGlide();
       });
       document.addEventListener('visibilitychange', () => {
         if (document.hidden && (pointerActive || Math.abs(liveShift) > 0.001)) {
@@ -5239,7 +5600,21 @@
           settling = false;
           applyShift(0);
         }
+        if (document.hidden) stopAutoGlide();
+        else startAutoGlide();
       });
+
+      if ('IntersectionObserver' in window) {
+        const autoObserver = new IntersectionObserver(function (entries) {
+          autoInView = entries.some(entry => entry.isIntersecting && entry.intersectionRatio > 0.36);
+          if (autoInView) startAutoGlide();
+          else stopAutoGlide();
+        }, { threshold: [0, 0.36, 0.72] });
+        autoObserver.observe(root);
+      } else {
+        autoInView = true;
+        startAutoGlide();
+      }
 
       viewport.addEventListener('keydown', e => {
         if (e.key === 'ArrowLeft') {
