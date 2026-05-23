@@ -430,8 +430,8 @@
     .stat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); }
     .stat-label { color: rgba(255,255,255,.55); font-size: 12px; }
     /*
-     * Ảnh thầy: vòng vàng phía sau; clip-host dùng SVG clipPath = union(rect trên đỉnh tròn ∪ ellipse).
-     * Ellipse rx=R/W, ry=R/H mới là hình tròn thật trong pixel; path thẳng hai bên sẽ làm áo lòi ra ngoài vàng.
+     * Ảnh thầy: khung tròn cố định để thay ảnh mới không vỡ layout.
+     * Chỉ cần thay file teacher-photo.png; object-fit: contain giúp hiển thị trọn ảnh upload.
      */
     .teacher-portrait-ring {
       position: relative;
@@ -442,13 +442,17 @@
       overflow: visible;
       aspect-ratio: 3 / 3.55;
       line-height: 0;
+      --portrait-size: min(88%, 268px);
+      --portrait-y: 56%;
+      --portrait-position: 50% 50%;
+      --portrait-zoom: 1;
     }
     .teacher-portrait-ring__disc {
       position: absolute;
       left: 50%;
-      top: 56%;
+      top: var(--portrait-y);
       transform: translate(-50%, -50%);
-      width: min(88%, 268px);
+      width: calc(var(--portrait-size) + 10px);
       aspect-ratio: 1;
       border-radius: 50%;
       background: var(--photo-ring-gold);
@@ -458,48 +462,47 @@
     }
     .teacher-portrait-ring__clip-host {
       position: absolute;
-      inset: 0;
+      left: 50%;
+      top: var(--portrait-y);
+      width: var(--portrait-size);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
       z-index: 2;
       pointer-events: none;
-      clip-path: url(#teacherPortraitClipMain);
-      -webkit-clip-path: url(#teacherPortraitClipMain);
+      overflow: hidden;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 34%, rgba(255,255,255,.98), rgba(255,248,229,.96) 58%, rgba(244,167,29,.16) 100%);
+      box-shadow: inset 0 0 0 1px rgba(244,167,29,.22);
     }
     .teacher-portrait-ring__clip-host .teacher-portrait-ring__img {
       pointer-events: auto;
     }
     .teacher-portrait-ring__img {
-      position: relative;
+      position: absolute;
+      inset: 0;
       display: block;
-      width: 110%;
+      width: 100%;
       max-width: none;
-      height: auto;
-      margin-left: -5%;
-      margin-top: -3%;
+      height: 100%;
+      margin: 0;
       object-fit: contain;
-      object-position: 50% 100%;
-      transform: scale(1.03);
-      transform-origin: 50% 76%;
+      object-position: var(--portrait-position);
+      transform: scale(var(--portrait-zoom));
+      transform-origin: center;
     }
     .hero-photo-placeholder.teacher-portrait-ring {
       width: min(100%, 236px);
       margin-bottom: 16px;
       padding-top: 22px;
       aspect-ratio: 3 / 3.45;
+      --portrait-size: min(90%, 214px);
+      --portrait-y: 58%;
+      --portrait-position: 50% 50%;
+      --portrait-zoom: 1;
     }
     .hero-photo-placeholder.teacher-portrait-ring .teacher-portrait-ring__disc {
-      width: min(90%, 214px);
-      top: 58%;
-    }
-    .hero-photo-placeholder.teacher-portrait-ring .teacher-portrait-ring__clip-host {
-      clip-path: url(#teacherPortraitClipHero);
-      -webkit-clip-path: url(#teacherPortraitClipHero);
-    }
-    .hero-photo-placeholder.teacher-portrait-ring .teacher-portrait-ring__img {
-      width: 112%;
-      margin-left: -6%;
-      margin-top: -4%;
-      transform: scale(1.025);
-      transform-origin: 50% 78%;
+      width: calc(var(--portrait-size) + 8px);
     }
     .teacher-portrait-ring .hero-photo-fallback,
     .teacher-portrait-ring .teacher-photo-fallback {
@@ -3743,6 +3746,160 @@
         grid-template-columns: minmax(0, 1fr);
       }
     }
+
+    /* Hero teacher card: unified portrait + outcomes block */
+    .hero-card.hero-teacher-card{
+      display: block !important;
+      grid-template-columns: none !important;
+      padding: 0;
+      overflow: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 22% 18%, rgba(242,184,75,.20), transparent 32%),
+        linear-gradient(180deg, rgba(255,250,240,.98), rgba(255,255,255,.94));
+      border: 1px solid rgba(255,255,255,.62);
+      box-shadow:
+        0 30px 90px rgba(0,0,0,.28),
+        0 0 0 8px rgba(255,250,240,.08);
+    }
+    .hero-card.hero-teacher-card::before{
+      display: none;
+    }
+    .hero-teacher-card__top{
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+      padding: 24px 24px 18px;
+    }
+    .hero-teacher-card__top .hero-photo-placeholder.teacher-portrait-ring{
+      width: 150px;
+      margin: 0;
+      padding: 0;
+      aspect-ratio: 1;
+      --portrait-size: 132px;
+      --portrait-y: 50%;
+      --portrait-position: 50% 50%;
+      --portrait-zoom: 1;
+    }
+    .hero-teacher-card__intro{
+      min-width: 0;
+      align-self: center;
+    }
+    .hero-card-kicker{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #8a6a20;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .075em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    .hero-card-kicker::before{
+      content: "";
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+    .hero-card.hero-teacher-card .hero-teacher-name{
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: clamp(22px, 2.4vw, 28px);
+      line-height: 1.08;
+      letter-spacing: -.02em;
+    }
+    .hero-card.hero-teacher-card .hero-teacher-note{
+      max-width: 30ch;
+      margin: 0;
+      color: #667089;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .hero-teacher-card__divider{
+      height: 1px;
+      margin: 0 24px;
+      background: linear-gradient(90deg, transparent, rgba(16,35,68,.14), transparent);
+    }
+    .hero-card.hero-teacher-card .hero-card-title{
+      margin: 18px 24px 10px;
+      color: #667089;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    .hero-outcome-list{
+      display: grid;
+      gap: 8px;
+      padding: 0 16px 16px;
+    }
+    .hero-card.hero-teacher-card .stat-row{
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(16,35,68,.07);
+      border-radius: 16px;
+      background: rgba(255,255,255,.62);
+      box-shadow: 0 8px 20px rgba(16,35,68,.045);
+    }
+    .hero-card.hero-teacher-card .stat-icon{
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: #102344;
+      color: #ffe4a3;
+      box-shadow: 0 10px 22px rgba(16,35,68,.14);
+    }
+    .hero-card.hero-teacher-card .stat-val{
+      margin-bottom: 3px;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.2;
+    }
+    .hero-card.hero-teacher-card .stat-label{
+      color: #667089;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    @media (max-width: 560px){
+      .hero-card.hero-teacher-card{
+        width: 100%;
+      }
+      .hero-teacher-card__top{
+        grid-template-columns: 1fr;
+        justify-items: center;
+        align-items: stretch;
+        text-align: center;
+      }
+      .hero-teacher-card__intro{
+        width: 100%;
+        max-width: 300px;
+        justify-self: center;
+      }
+      .hero-card-kicker{
+        justify-content: center;
+      }
+      .hero-card.hero-teacher-card .hero-teacher-note{
+        max-width: 34ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-outcome-list{
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .hero-card.hero-teacher-card .stat-row{
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
   </style>
 </head>
 <body>
@@ -3752,21 +3909,6 @@
       <span>Đang tải...</span>
     </div>
   </div>
-  <svg width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden;clip:rect(0 0 0 0)">
-    <defs>
-      <!-- Union: dải phía trên đỉnh tròn (đầu/mũ thoải mái) ∪ ellipse trùng .teacher-portrait-ring__disc. ry = rx * (W/H) = rx * 3/3.55. -->
-      <clipPath id="teacherPortraitClipMain" clipPathUnits="objectBoundingBox">
-        <rect x="-0.25" y="-0.72" width="1.5" height="0.9076056338028169" />
-        <ellipse cx="0.5" cy="0.56" rx="0.44" ry="0.3723943661971831" />
-      </clipPath>
-      <!-- Hero: disc top 58%, width ~90%; ry = rx * 3/3.45. -->
-      <clipPath id="teacherPortraitClipHero" clipPathUnits="objectBoundingBox">
-        <rect x="-0.25" y="-0.74" width="1.5" height="0.928695652173913" />
-        <ellipse cx="0.5" cy="0.58" rx="0.45" ry="0.391304347826087" />
-      </clipPath>
-    </defs>
-  </svg>
-
   <!-- ─── TOPBAR ─── -->
   <header class="topbar" id="topbar">
     <div class="container topbar-row">
@@ -3824,44 +3966,52 @@
         </div>
 
         <!-- Right card -->
-        <div class="hero-card reveal reveal-delay-4">
-          <div class="hero-photo-placeholder teacher-portrait-ring">
-            <span class="teacher-portrait-ring__disc" aria-hidden="true"></span>
-            <div class="teacher-portrait-ring__clip-host">
-            <img
-              class="teacher-portrait-ring__img"
-              src="./assets/brand/teacher-photo.png"
-              alt="Thầy Lê Vũ"
-              onerror="this.style.display='none';var r=this.closest('.teacher-portrait-ring');if(r){var fb=r.querySelector('.hero-photo-fallback');if(fb)fb.style.display='flex';}"
-            />
+        <div class="hero-card hero-teacher-card reveal reveal-delay-4">
+          <div class="hero-teacher-card__top">
+            <div class="hero-photo-placeholder teacher-portrait-ring">
+              <span class="teacher-portrait-ring__disc" aria-hidden="true"></span>
+              <div class="teacher-portrait-ring__clip-host">
+              <img
+                class="teacher-portrait-ring__img"
+                src="./assets/brand/teacher-photo.png"
+                alt="Thầy Lê Vũ"
+                onerror="this.style.display='none';var r=this.closest('.teacher-portrait-ring');if(r){var fb=r.querySelector('.hero-photo-fallback');if(fb)fb.style.display='flex';}"
+              />
+              </div>
+              <div class="hero-photo-fallback" aria-hidden="true">
+                <div style="font-size:48px">Ảnh</div>
+                <span>Thầy Lê Vũ</span>
+              </div>
             </div>
-            <div class="hero-photo-fallback" aria-hidden="true">
-              <div style="font-size:48px">👨‍🏫</div>
-              <span>Ảnh thầy Lê Vũ</span>
-            </div>
-          </div>
-          <div class="hero-teacher-name">Thầy Lê Vũ</div>
-          <p class="hero-teacher-note">Nghiêm túc khi học, gần gũi khi sửa bài.</p>
-          <div class="hero-card-title">Phụ huynh nhận được</div>
-          <div class="stat-row">
-            <div class="stat-icon" aria-hidden="true">01</div>
-            <div>
-              <div class="stat-val">Rõ lỗ hổng</div>
-              <div class="stat-label">Không học mò</div>
+            <div class="hero-teacher-card__intro">
+              <div class="hero-card-kicker">Giáo viên trực tiếp</div>
+              <div class="hero-teacher-name">Thầy Lê Vũ</div>
+              <p class="hero-teacher-note">Nghiêm túc khi học, gần gũi khi sửa bài.</p>
             </div>
           </div>
-          <div class="stat-row">
-            <div class="stat-icon" aria-hidden="true">02</div>
-            <div>
-              <div class="stat-val">Sửa đúng lỗi</div>
-              <div class="stat-label">Giảm lỗi quen thuộc</div>
+          <div class="hero-teacher-card__divider"></div>
+          <div class="hero-card-title">Học ở lớp thầy Vũ học sinh sẽ được:</div>
+          <div class="hero-outcome-list">
+            <div class="stat-row">
+              <div class="stat-icon" aria-hidden="true">01</div>
+              <div>
+                <div class="stat-val">Rõ lỗ hổng</div>
+                <div class="stat-label">Biết con đang yếu phần nào, không học mò.</div>
+              </div>
             </div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-icon" aria-hidden="true">03</div>
-            <div>
-              <div class="stat-val">Có người theo sát</div>
-              <div class="stat-label">Gia đình yên tâm hơn</div>
+            <div class="stat-row">
+              <div class="stat-icon" aria-hidden="true">02</div>
+              <div>
+                <div class="stat-val">Sửa đúng lỗi</div>
+                <div class="stat-label">Giảm lỗi quen thuộc trong bài tập và đề thi.</div>
+              </div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-icon" aria-hidden="true">03</div>
+              <div>
+                <div class="stat-val">Có người theo sát</div>
+                <div class="stat-label">Gia đình nắm được tiến độ học rõ ràng hơn.</div>
+              </div>
             </div>
           </div>
         </div>
