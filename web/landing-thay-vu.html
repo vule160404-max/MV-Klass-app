@@ -4539,11 +4539,12 @@
     </a>
     <a
       class="fab zalo"
-      href="https://zalo.me/84334438325"
+      href="https://zalo.me/0916045202"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Nhắn tin Zalo"
       title="Nhắn Zalo"
+      data-zalo-profile-link="https://zalo.me/0916045202"
     >
       <img class="fab-logo" src="./assets/social/zalo-logo.jpg" alt="" aria-hidden="true" />
     </a>
@@ -6076,6 +6077,20 @@
       const hide = () => loadingEl.classList.add('is-hidden');
       window.addEventListener('load', hide, { once: true });
       window.setTimeout(hide, 1800);
+    })();
+
+    (function initZaloProfileLink() {
+      const zaloBtn = document.querySelector('[data-zalo-profile-link]');
+      if (!zaloBtn) return;
+      zaloBtn.addEventListener('click', (event) => {
+        const ua = navigator.userAgent || '';
+        const isMobile = /android|iphone|ipad|ipod|mobile/i.test(ua);
+        if (!isMobile) return;
+        const profileLink = zaloBtn.getAttribute('data-zalo-profile-link') || zaloBtn.href;
+        if (!profileLink) return;
+        event.preventDefault();
+        window.location.href = profileLink;
+      });
     })();
   </script>
 </body>
