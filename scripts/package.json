@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "mvklass:mcp": "node mvklass-openclaw-mcp.js",
+    "sync:r2-exams": "node sync-r2-exam-files.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

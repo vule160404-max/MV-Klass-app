@@ -7,8 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="application-name" content="MV Klass"/>
+  <meta name="theme-color" content="#0f1f3d"/>
   <!-- Tên ng?n du?i icon màn hình chính iOS (tránh c?t ch? dài). -->
   <meta name="apple-mobile-web-app-title" content="MV Klass"/>
+  <link rel="manifest" href="./manifest.webmanifest"/>
   <!-- Icon mặc định: ưu tiên file ảnh đặt trực tiếp cạnh attendance-app.html. -->
   <link rel="icon" type="image/png" href="./assets/brand/Center-logo.png" id="pwa-favicon"/>
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/brand/Center-logo.png" id="pwa-apple-touch"/>
@@ -3665,6 +3668,10 @@
     .portal-free-meta{ margin-top:2px; color:#718096; font-size:11px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-free-actions{ display:flex; gap:5px; align-items:center; justify-content:flex-end; }
     .portal-free-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
+    .portal-r2-sync{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 0 auto; }
+    .portal-r2-sync-btn{ min-height:34px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; }
+    .portal-r2-sync-btn:disabled{ opacity:.58; cursor:wait; }
+    .portal-r2-sync-status{ max-width:180px; color:#718096; font-size:10.5px; font-weight:850; line-height:1.3; text-align:right; }
     .portal-picker{ display:none; border-radius:16px; border:1px solid rgba(99,138,218,.14); background:#fff; overflow:hidden; }
     .portal-picker.show{ display:block; }
     .portal-picker-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px; border-bottom:1px solid rgba(99,138,218,.12); background:#f8fbff; }
@@ -3672,7 +3679,7 @@
     .portal-picker-list{ display:grid; gap:6px; max-height:300px; overflow:auto; padding:10px; }
     .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:center; padding:9px 10px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); }
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
-    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } }
+    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-r2-sync{ align-items:flex-start; width:100%; } .portal-r2-sync-status{ max-width:none; text-align:left; } }
     @media (max-width:900px){ .portal-user-tools{ grid-template-columns:1fr; } .portal-user-table-wrap{ max-height:none; overflow:visible; } .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ max-width:unset; } }
     .portal-audit-list{ display:grid; gap:8px; max-height:280px; overflow:auto; }
     .portal-audit-item{ padding:10px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); }
@@ -8746,7 +8753,13 @@ a:focus-visible,
         </div>
         <div class="portal-analytics-grid">
           <div class="portal-panel">
-            <div class="portal-panel-head"><div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn 5 đề Thi vào 10 và 5 đề THPT QG. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div></div>
+            <div class="portal-panel-head">
+              <div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn 5 đề Thi vào 10 và 5 đề THPT QG. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div>
+              <div class="portal-r2-sync">
+                <button type="button" class="btn-sm portal-r2-sync-btn" id="portal-r2-sync-btn" onclick="syncPortalR2ExamFiles()">Đồng bộ kho đề</button>
+                <div class="portal-r2-sync-status" id="portal-r2-sync-status">R2 → Supabase</div>
+              </div>
+            </div>
             <div class="portal-panel-body" id="portal-free-curation"></div>
           </div>
           <div class="portal-panel">
@@ -9978,6 +9991,9 @@ a:focus-visible,
           </select>
           <select id="student-exam-province" aria-label="Lọc tỉnh thành">
             <option value="all">Tất cả tỉnh/thành</option>
+          </select>
+          <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
+            <option value="all">Tất cả nguồn/bộ đề</option>
           </select>
           <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
             <option value="code">Theo năm, mã đề</option>
@@ -14609,8 +14625,15 @@ function studentExamStoragePathFor(row, kind) {
   return String(row[key] || '').replace(/^\/+/, '').trim();
 }
 
+function studentExamObjectKeyFor(row, kind) {
+  if (!row) return '';
+  const key = kind === 'answer' ? 'answer_object_key' : (kind === 'audio' ? 'audio_object_key' : 'object_key');
+  return String(row[key] || '').replace(/^\/+/, '').trim();
+}
+
 function studentExamHasFile(row, kind) {
   if (!row) return false;
+  if (studentExamObjectKeyFor(row, kind)) return true;
   if (studentExamStoragePathFor(row, kind)) return true;
   const key = kind === 'answer' ? 'answer_url' : (kind === 'audio' ? 'audio_url' : 'file_url');
   return !!studentExamSafeUrl(row[key]);
@@ -14632,21 +14655,20 @@ function studentExamLockedMessage(row) {
 }
 
 async function getStudentExamSignedUrl(row, kind) {
-  const path = studentExamStoragePathFor(row, kind);
-  if (!path) return studentExamUrlFor(row, kind);
-  const r = await fetch(SUPABASE_URL + '/storage/v1/object/sign/exam-files/' + path.split('/').map(encodeURIComponent).join('/'), {
+  const examId = String(row?.id || '').trim();
+  if (!examId || !currentSession?.access_token) return studentExamUrlFor(row, kind);
+  const r = await fetch(SUPABASE_URL + '/functions/v1/exam-download-url', {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ expiresIn: 300 }),
+    body: JSON.stringify({ exam_id: examId, kind: kind || 'file' }),
     cache: 'no-store'
   });
   let data = {};
   try { data = await r.json(); } catch (e) {}
-  if (!r.ok) throw new Error(data.message || data.error || ('storage_sign_' + r.status));
-  const signed = String(data.signedURL || data.signedUrl || '').trim();
+  if (!r.ok) throw new Error(data.message || data.error || ('exam_download_url_' + r.status));
+  const signed = String(data.url || data.signedURL || data.signedUrl || '').trim();
   if (!signed) throw new Error('storage_sign_empty');
-  if (/^https?:/i.test(signed)) return signed;
-  return SUPABASE_URL.replace(/\/+$/, '') + signed;
+  return signed;
 }
 
 function studentExamState(message) {
@@ -14713,9 +14735,46 @@ function studentExamDisplayProvince(value) {
     'hau giang': 'Hậu Giang',
     'soc trang': 'Sóc Trang',
     'bac lieu': 'Bạc Liêu',
-    'ca mau': 'Cà Mau'
+    'ca mau': 'Cà Mau',
+    'nguon tong hop': 'Nguồn tổng hợp',
+    'tong hop': 'Nguồn tổng hợp'
   };
   return map[key] || raw;
+}
+
+function studentExamIsGenericSource(value) {
+  const key = normalizeText(String(value || '')).replace(/\s+/g, ' ').trim().toLowerCase();
+  return !key || key === 'nguon tong hop' || key === 'tong hop';
+}
+
+function studentExamIsKnownProvince(value) {
+  const key = normalizeText(String(value || '')).replace(/\s+/g, ' ').trim().toLowerCase();
+  if (!key) return false;
+  const known = new Set([
+    'ha noi', 'tp hcm', 'ho chi minh', 'thanh hoa', 'nghe an', 'ha tinh',
+    'da nang', 'hai phong', 'quang ninh', 'bac ninh', 'bac giang',
+    'nam dinh', 'thai binh', 'ninh binh', 'hai duong', 'hung yen',
+    'vinh phuc', 'phu tho', 'thai nguyen', 'tuyen quang', 'lao cai',
+    'yen bai', 'son la', 'hoa binh', 'quang binh', 'quang tri',
+    'thua thien hue', 'quang nam', 'quang ngai', 'binh dinh', 'phu yen',
+    'khanh hoa', 'ninh thuan', 'binh thuan', 'kon tum', 'gia lai',
+    'dak lak', 'dak nong', 'lam dong', 'binh phuoc', 'binh duong',
+    'dong nai', 'ba ria vung tau', 'tay ninh', 'long an', 'tien giang',
+    'ben tre', 'tra vinh', 'vinh long', 'dong thap', 'an giang',
+    'kien giang', 'can tho', 'hau giang', 'soc trang', 'bac lieu', 'ca mau'
+  ]);
+  return known.has(key);
+}
+
+function studentExamSourceLabel(row) {
+  const raw = String(row?.province || '').trim();
+  if (studentExamIsGenericSource(raw)) return 'Nguồn tổng hợp';
+  if (studentExamIsKnownProvince(raw)) return '';
+  return studentExamDisplayProvince(raw);
+}
+
+function studentExamSourceKey(row) {
+  return normalizeText(studentExamSourceLabel(row)).replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
 function studentExamDisplayTitle(row) {
@@ -15024,9 +15083,19 @@ function studentExamCard(row, compact) {
 
 function renderStudentExamSelectOptions() {
   const years = Array.from(new Set(studentExamRows.map(r => r.year).filter(Boolean))).sort((a, b) => Number(b) - Number(a));
-  const provinces = Array.from(new Set(studentExamRows.map(r => String(r.province || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const provinces = Array.from(new Set(studentExamRows.map(r => String(r.province || '').trim()).filter(p => p && studentExamIsKnownProvince(p)))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const sources = Array.from(new Map(studentExamRows
+    .map(row => {
+      const label = studentExamSourceLabel(row);
+      const key = studentExamSourceKey(row);
+      return label && key ? [key, label] : null;
+    })
+    .filter(Boolean))
+    .entries())
+    .sort((a, b) => a[1].localeCompare(b[1], 'vi'));
   const yearEl = document.getElementById('student-exam-year');
   const provinceEl = document.getElementById('student-exam-province');
+  const sourceEl = document.getElementById('student-exam-source');
   if (yearEl) {
     const cur = yearEl.value || 'all';
     yearEl.innerHTML = '<option value="all">Tất cả năm</option>' + years.map(y => `<option value="${escapeHtml(String(y))}">${escapeHtml(String(y))}</option>`).join('');
@@ -15036,6 +15105,11 @@ function renderStudentExamSelectOptions() {
     const cur = provinceEl.value || 'all';
     provinceEl.innerHTML = '<option value="all">Tất cả tỉnh/thành</option>' + provinces.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(studentExamDisplayProvince(p))}</option>`).join('');
     provinceEl.value = provinces.includes(cur) ? cur : 'all';
+  }
+  if (sourceEl) {
+    const cur = sourceEl.value || 'all';
+    sourceEl.innerHTML = '<option value="all">Tất cả nguồn/bộ đề</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
+    sourceEl.value = sources.some(([key]) => key === cur) ? cur : 'all';
   }
 }
 
@@ -15047,6 +15121,7 @@ function getStudentExamFilters() {
     saved: String(document.getElementById('student-exam-saved-filter')?.value || 'all'),
     year: String(document.getElementById('student-exam-year')?.value || 'all'),
     province: String(document.getElementById('student-exam-province')?.value || 'all'),
+    source: String(document.getElementById('student-exam-source')?.value || 'all'),
     sort: String(document.getElementById('student-exam-sort')?.value || 'code')
   };
 }
@@ -15063,8 +15138,9 @@ function applyStudentExamFilters(options) {
     if (f.saved === 'saved' && !studentExamIsFavorite(row)) return false;
     if (f.year !== 'all' && String(row.year || '') !== f.year) return false;
     if (f.province !== 'all' && String(row.province || '') !== f.province) return false;
+    if (f.source !== 'all' && studentExamSourceKey(row) !== f.source) return false;
     if (f.q) {
-      const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category), studentExamTypeLabel(row)]
+      const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, studentExamSourceLabel(row), row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category), studentExamTypeLabel(row)]
         .map(x => normalizeText(String(x || '')).toLowerCase())
         .join(' ');
       if (!hay.includes(f.q)) return false;
@@ -15185,17 +15261,18 @@ async function loadStudentExamFiles() {
   } catch (e) {
     try {
       const fallbackPath =
-        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published' +
+        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,storage_provider,object_key,answer_object_key,audio_object_key,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published' +
         '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+      const legacyPath =
+        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,description,download_count,created_at,is_published' +
+        '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+      const rowsPromise = api('GET', fallbackPath).catch(() => api('GET', legacyPath));
       const [rows] = await Promise.all([
-        api('GET', fallbackPath),
+        rowsPromise,
         loadStudentExamActivity()
       ]);
       let list = Array.isArray(rows) ? rows : [];
       if (!list.length) {
-        const legacyPath =
-          'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,description,download_count,created_at,is_published' +
-          '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
         list = await api('GET', legacyPath);
       }
       studentExamRows = studentExamSortRows(applyStudentExamAccessState(list).filter(r => String(r.category || '') !== 'answer'));
@@ -15211,7 +15288,7 @@ async function loadStudentExamFiles() {
 }
 
 function bindStudentExamPortalEvents() {
-  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-saved-filter', 'student-exam-year', 'student-exam-province', 'student-exam-sort'];
+  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-saved-filter', 'student-exam-year', 'student-exam-province', 'student-exam-source', 'student-exam-sort'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.dataset.bound === '1') return;
@@ -15454,8 +15531,15 @@ async function downloadStudentExamFile(id, kind) {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
   } catch (e) {
-    showAppToast('Không tải trực tiếp được, đang mở file ở tab mới.', 'warn');
-    window.open(url, '_blank', 'noopener');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download =
+      String(row.title || 'tai-lieu').trim().replace(/[^\w\-]+/g, '_') +
+      (kind === 'audio' ? '.mp3' : '.pdf');
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   }
 }
 
@@ -16081,6 +16165,7 @@ let lastPortalAccessChange = null;
 let portalFreePickerRank = null;
 let portalFreePickerQuery = '';
 let portalFreeCurationGroup = 'entrance_10';
+let portalR2SyncRunning = false;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -16998,6 +17083,50 @@ async function fetchPortalAnalyticsData() {
   _portalAnalyticsProfiles = Array.isArray(profileRows) ? profileRows : [];
   _portalAnalyticsAuditRows = Array.isArray(auditRows) ? auditRows : [];
   _portalAnalyticsLoadedAt = Date.now();
+}
+
+function setPortalR2SyncStatus(message, busy) {
+  const status = document.getElementById('portal-r2-sync-status');
+  const btn = document.getElementById('portal-r2-sync-btn');
+  if (status) status.textContent = message || 'R2 → Supabase';
+  if (btn) {
+    btn.disabled = !!busy;
+    btn.textContent = busy ? 'Đang đồng bộ...' : 'Đồng bộ kho đề';
+  }
+}
+
+async function syncPortalR2ExamFiles() {
+  if (portalR2SyncRunning) return;
+  portalR2SyncRunning = true;
+  setPortalR2SyncStatus('Đang đọc R2 và cập nhật Supabase...', true);
+  try {
+    const r = await fetch(SUPABASE_URL + '/functions/v1/exam-sync-r2', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ dry_run: false, prune_missing: true }),
+      cache: 'no-store'
+    });
+    let data = {};
+    try { data = await r.json(); } catch (e) {}
+    if (!r.ok || data.ok === false) throw new Error(data.error || ('exam_sync_r2_' + r.status));
+    const synced = Number(data.synced || 0) || 0;
+    const objects = Number(data.object_count || 0) || 0;
+    const unpublished = Number(data.unpublished || 0) || 0;
+    setPortalR2SyncStatus(`Đã đồng bộ ${synced} đề từ ${objects} file; ẩn ${unpublished} đề đã xóa.`, false);
+    showAppToast(`Đã đồng bộ kho đề: ${synced} đề, ẩn ${unpublished} đề cũ.`, 'ok');
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true);
+    if (document.getElementById('student-exam-portal')?.style.display !== 'none') {
+      await loadStudentExamFiles();
+    }
+  } catch (e) {
+    console.warn('syncPortalR2ExamFiles', e);
+    const msg = String(e && e.message || e || 'sync_failed');
+    setPortalR2SyncStatus('Đồng bộ lỗi. Kiểm tra R2 token hoặc Supabase Function.', false);
+    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được đồng bộ kho đề.' : 'Chưa đồng bộ được kho đề R2.', 'error');
+  } finally {
+    portalR2SyncRunning = false;
+  }
 }
 
 async function loadPortalAnalyticsIfNeeded(force = false) {
