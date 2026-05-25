@@ -1,0 +1,1296 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tra cá»©u thÃ´ng tin há»c sinh</title>
+  <style>
+    :root {
+      --font-sans: "Inter", "Be Vietnam Pro", "Segoe UI", "Noto Sans", Roboto, Arial, sans-serif;
+      --bg:#eef3ff;
+      --card:#ffffff;
+      --line:#d9e2f4;
+      --text:#14233d;
+      --muted:#5f6f8b;
+      --pri:#2f6cf5;
+      --pri-dark:#1f5ae0;
+      --pri-soft:#edf3ff;
+      --ok:#0f9f6f;
+      --err:#c62828;
+      --shadow:0 16px 42px rgba(22, 48, 110, .08);
+      --shadow-soft:0 8px 22px rgba(15, 35, 80, .06);
+    }
+    * { box-sizing:border-box; }
+    html, body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      margin:0;
+      background:
+        radial-gradient(ellipse 75% 60% at 12% -20%, rgba(79,142,247,.11) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 54% at 90% 116%, rgba(47,108,245,.08) 0%, transparent 68%),
+        #f4f7fd;
+      color:var(--text);
+      font-family: var(--font-sans);
+      line-height:1.45;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 18px 16px 26px; }
+    .card {
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .hero {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px 16px;
+      margin-bottom:12px;
+      padding:14px 14px;
+      border-radius:15px;
+      background:linear-gradient(145deg,#f8fbff 0%,#f2f7ff 100%);
+      border:1px solid #d8e5ff;
+      color:var(--text);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .hero-main {
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      min-width:0;
+      flex:1 1 240px;
+    }
+    .hero-text { min-width:0; flex:1; }
+    .hero-text h1 {
+      margin:0;
+      font-size:21px;
+      font-weight:800;
+      line-height:1.28;
+      letter-spacing:-0.02em;
+      color:#14233d;
+    }
+    .hero-tagline {
+      margin:8px 0 0;
+      font-size:13px;
+      line-height:1.5;
+      color:var(--muted);
+      font-weight:500;
+    }
+    .hero-logo {
+      width:88px;
+      height:88px;
+      border-radius:0;
+      border:none;
+      background:transparent;
+      object-fit:contain;
+      padding:0;
+      flex-shrink:0;
+    }
+    .hero-aside {
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+      text-align:right;
+      flex:0 0 auto;
+      padding-top:2px;
+    }
+    .hero-badge {
+      font-size:17px;
+      font-weight:800;
+      color:#2a59c8;
+      background:#eaf1ff;
+      border:1px solid #d6e4ff;
+      border-radius:999px;
+      padding:8px 15px;
+      white-space:nowrap;
+      letter-spacing:0.02em;
+    }
+    .hero-hotline {
+      font-size:12.5px;
+      font-weight:700;
+      color:#1e3a8a;
+      line-height:1.35;
+      max-width:200px;
+    }
+    .hero-hotline a {
+      color:inherit;
+      text-decoration:none;
+      border-bottom:1px dashed rgba(30,58,138,.35);
+    }
+    .hero-hotline a:hover { border-bottom-color:#2f6cf5; color:#2f6cf5; }
+    @media (max-width: 560px) {
+      .hero {
+        flex-direction:column;
+        align-items:stretch;
+        padding:12px;
+        gap:12px;
+      }
+      .hero-main {
+        flex: none;
+        width:100%;
+      }
+      .hero-logo {
+        width:72px;
+        height:72px;
+      }
+      .hero-text h1 {
+        font-size:18px;
+        line-height:1.3;
+      }
+      .hero-tagline {
+        font-size:12.5px;
+        margin-top:6px;
+      }
+      .hero-aside {
+        flex-direction:row;
+        align-items:center;
+        justify-content:space-between;
+        width:100%;
+        text-align:left;
+        padding-top:10px;
+        margin-top:2px;
+        border-top:1px solid rgba(216,229,255,.95);
+        gap:10px;
+      }
+      .hero-badge {
+        flex-shrink:0;
+        font-size:15px;
+        padding:7px 12px;
+      }
+      .hero-hotline {
+        max-width:none;
+        text-align:right;
+        font-size:12px;
+        flex:1;
+        min-width:0;
+      }
+    }
+    h2 { margin:0; font-size:16px; }
+    .muted { color:var(--muted); }
+    .row { margin-top: 12px; }
+    .section {
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+      padding:14px;
+      margin-top:12px;
+      box-shadow:var(--shadow-soft);
+    }
+    .step-title {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:14px;
+      font-weight:700;
+      color:#1b3362;
+      margin-bottom:8px;
+    }
+    .step-dot {
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      color:#fff;
+      background:var(--pri);
+      flex-shrink:0;
+    }
+    input {
+      width:100%;
+      padding:12px 13px;
+      border:1px solid var(--line);
+      border-radius:11px;
+      font-size:15px;
+      outline:none;
+      background:#fff;
+      font-family:inherit;
+    }
+    input:focus {
+      border-color:#93b3fb;
+      box-shadow:0 0 0 3px rgba(47,108,245,.12);
+    }
+    button {
+      border:none;
+      border-radius:10px;
+      padding:11px 15px;
+      background:var(--pri);
+      color:#fff;
+      font-weight:700;
+      font-family:inherit;
+      cursor:pointer;
+      transition:background .15s ease, transform .05s ease, box-shadow .2s ease;
+      box-shadow:0 6px 16px rgba(47,108,245,.24);
+    }
+    button:hover { background:var(--pri-dark); box-shadow:0 10px 24px rgba(47,108,245,.3); }
+    button:active { transform: translateY(1px); }
+    button.secondary {
+      background:#eef3ff;
+      color:#1f4fb8;
+      border:1px solid #c8d8ff;
+      box-shadow:none;
+    }
+    button.secondary:hover { background:#e4edff; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .top-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start; margin-bottom:10px; }
+    .err, .ok, .notice {
+      border-radius:11px;
+      padding:10px 12px;
+      font-size:14px;
+      font-weight:600;
+      margin-top:10px;
+    }
+    .err { color:var(--err); background:#fff1f1; border:1px solid #ffd3d3; }
+    .ok { color:var(--ok); background:#edfdf7; border:1px solid #c8f4e4; }
+    .notice { color:#7a5a12; background:#fff8e8; border:1px solid #ffe2a7; }
+    .candidate {
+      display:block;
+      width:100%;
+      text-align:left;
+      margin-top:8px;
+      background:#fff;
+      color:#1b3362;
+      border:1px solid var(--line);
+    }
+    .student-cards {
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .student-card {
+      border:1px solid #cfddf7;
+      border-radius:14px;
+      padding:14px;
+      background:linear-gradient(180deg,#ffffff 0%,#f7fbff 100%);
+      box-shadow:var(--shadow-soft);
+    }
+    .student-card-actions {
+      margin-top:14px;
+      padding-top:12px;
+      border-top:1px solid #e2ebfb;
+    }
+    .student-card-actions button {
+      width:100%;
+      padding:12px 16px;
+      font-size:15px;
+    }
+    .student-name {
+      font-size:15px;
+      font-weight:800;
+      color:#1b3362;
+    }
+    .student-meta {
+      margin-top:6px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:12px;
+      color:#5f6f8b;
+    }
+    .student-pill {
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid #d4e1fb;
+      background:linear-gradient(180deg,#ffffff,#f8fbff);
+      font-weight:600;
+    }
+    .student-note {
+      margin-top:10px;
+      font-size:13px;
+      color:#1f3f79;
+      background:linear-gradient(180deg,#fff6dc,#ffefbf);
+      border:1px solid #ffd774;
+      border-radius:10px;
+      padding:9px 11px;
+      line-height:1.45;
+      font-weight:700;
+      box-shadow:0 4px 12px rgba(255,186,0,.16);
+    }
+    .grid { display:grid; gap:12px; grid-template-columns: 1fr; margin-top:12px; }
+    @media (min-width: 860px) { .grid { grid-template-columns: 1.2fr .8fr; } }
+    .box {
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+      padding:13px;
+      box-shadow:var(--shadow-soft);
+    }
+    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .stats .item { border:1px solid var(--line); border-radius:10px; padding:9px; background:#f9fbff; }
+    .stats .k { font-size:12px; color:var(--muted); }
+    .stats .v { font-size:16px; font-weight:800; margin-top:4px; color:#10284a; }
+    .big-amount {
+      border:1px dashed #9fb8ef;
+      border-radius:10px;
+      background:#f1f6ff;
+      padding:11px;
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      font-weight:800;
+      font-variant-numeric: tabular-nums;
+      color:#17439c;
+    }
+    .ck { margin-top:8px; border:1px dashed #9eb3d8; border-radius:10px; background:#f8fbff; padding:11px; font-family:inherit; font-size:14px; word-break:break-word; }
+    .qr {
+      width:100%;
+      max-width:280px;
+      display:block;
+      margin:0 auto;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      box-shadow:0 10px 24px rgba(16,40,84,.12);
+    }
+    .class-list { display:grid; gap:8px; margin-top:10px; }
+    .class-item {
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:11px;
+      background:linear-gradient(180deg,#f8fbff 0%,#f3f8ff 100%);
+      cursor:pointer;
+      transition:border-color .2s ease, box-shadow .2s ease, transform .08s ease;
+    }
+    .class-item:hover{
+      border-color:#b8ccf8;
+      box-shadow:0 8px 18px rgba(47,108,245,.12);
+    }
+    .class-item:active{ transform:translateY(1px); }
+    .class-item.active {
+      border-color:#2f6cf5;
+      background:linear-gradient(180deg,#eef4ff 0%,#e7f0ff 100%);
+      box-shadow:0 8px 20px rgba(47,108,245,.18);
+    }
+    .class-item .sum { margin-top:5px; font-weight:800; color:#1e4fb5; }
+    .footer-note { margin-top:12px; font-size:12px; color:#6a7891; text-align:center; }
+
+    /* Trang thanh toÃ¡n thÃ nh cÃ´ng â€” cáº£nh ká»· niá»‡m + confetti + tÃ­ch SVG */
+    .wrap .card.pp-card--success {
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(165deg, #ecfdf5 0%, #d1fae5 36%, #86efac 100%);
+      border-color: #6ee7b7;
+      box-shadow: 0 24px 56px rgba(16, 185, 129, 0.22);
+    }
+    .wrap .card.pp-card--success .hero,
+    .wrap .card.pp-card--success .footer-note {
+      display: none !important;
+    }
+    .wrap .card.pp-card--success #app {
+      min-height: min(82vh, 680px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px 32px;
+    }
+    .pp-success-scene {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .pp-success-fx {
+      position: absolute;
+      inset: -12% -8% auto;
+      height: min(52vh, 420px);
+      pointer-events: none;
+      overflow: visible;
+      z-index: 0;
+    }
+    .pp-fw-burst {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow:
+        0 -56px 0 -2px #fbbf24,
+        40px -40px 0 -1px #22c55e,
+        -40px -40px 0 -1px #38bdf8,
+        56px 0 0 -2px #a855f7,
+        -56px 0 0 -2px #f472b6,
+        40px 40px 0 -1px #eab308,
+        -40px 40px 0 -1px #14b8a6,
+        0 56px 0 -2px #fb923c;
+      animation: pp-fw-pop 0.85s cubic-bezier(0.2, 0.9, 0.25, 1) 0.12s both;
+    }
+    .pp-fw-burst::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 140px;
+      height: 140px;
+      margin: -70px 0 0 -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, transparent 68%);
+      animation: pp-fw-ring 1.1s ease-out 0.05s both;
+    }
+    @keyframes pp-fw-pop {
+      from { transform: scale(0); opacity: 0; filter: blur(4px); }
+      50% { opacity: 1; }
+      to { transform: scale(1); opacity: 1; filter: blur(0); }
+    }
+    @keyframes pp-fw-ring {
+      from { transform: scale(0.35); opacity: 0.95; }
+      to { transform: scale(2.15); opacity: 0; }
+    }
+    .pp-fw-burst.pp-fw-burst--2 {
+      top: 52%;
+      animation: pp-fw-pop-2 0.88s cubic-bezier(0.2, 0.9, 0.25, 1) 0.32s both;
+    }
+    .pp-fw-burst.pp-fw-burst--2::after {
+      animation-delay: 0.28s;
+    }
+    @keyframes pp-fw-pop-2 {
+      0% { transform: scale(0); opacity: 0; filter: blur(3px); }
+      40% { opacity: 1; filter: blur(0); }
+      100% { transform: scale(1.08); opacity: 0.95; filter: blur(0); }
+    }
+    .pp-confetti-root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 0;
+    }
+    .pp-cf {
+      position: absolute;
+      top: -16px;
+      width: 9px;
+      height: 14px;
+      border-radius: 2px;
+      opacity: 0.95;
+      animation: pp-cf-fall linear forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes pp-cf-fall {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(var(--drift, 0px), min(110vh, 620px), 0) rotate(640deg);
+        opacity: 0.88;
+      }
+    }
+    .pp-success-inner {
+      position: relative;
+      z-index: 1;
+      padding: 8px 6px 4px;
+      animation: pp-success-in 0.6s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+    }
+    @keyframes pp-success-in {
+      from { opacity: 0; transform: translateY(22px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .pp-success-eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #059669;
+      margin: 0 0 10px;
+      opacity: 0.92;
+      animation: pp-fade-up 0.5s ease 0.15s both;
+    }
+    @keyframes pp-fade-up {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pp-success-icon-stage {
+      position: relative;
+      width: 108px;
+      height: 108px;
+      margin: 0 auto 22px;
+    }
+    .pp-success-icon-glow {
+      position: absolute;
+      inset: -18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34, 197, 94, 0.45) 0%, transparent 70%);
+      animation: pp-glow-pulse 2.2s ease-in-out 0.4s infinite;
+    }
+    @keyframes pp-glow-pulse {
+      0%, 100% { transform: scale(0.92); opacity: 0.75; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+    .pp-success-icon-wrap {
+      position: relative;
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: linear-gradient(155deg, #4ade80 0%, #16a34a 48%, #15803d 100%);
+      box-shadow:
+        0 4px 0 rgba(21, 128, 61, 0.35),
+        0 22px 48px rgba(22, 163, 74, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pp-check-pop 0.72s cubic-bezier(0.34, 1.55, 0.52, 1) 0.06s both;
+    }
+    @keyframes pp-check-pop {
+      from { transform: scale(0) rotate(-18deg); }
+      to { transform: scale(1) rotate(0deg); }
+    }
+    .pp-check-svg {
+      display: block;
+      color: #fff;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12));
+    }
+    .pp-check-svg .pp-check-circle {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-dasharray: 155;
+      stroke-dashoffset: 155;
+      animation: pp-stroke-draw 0.55s cubic-bezier(0.45, 0, 0.2, 1) 0.2s forwards;
+    }
+    .pp-check-svg .pp-check-path {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 4.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: pp-stroke-draw 0.45s cubic-bezier(0.45, 0, 0.2, 1) 0.55s forwards;
+    }
+    @keyframes pp-stroke-draw {
+      to { stroke-dashoffset: 0; }
+    }
+    .pp-success-title {
+      font-size: clamp(24px, 5.5vw, 30px);
+      font-weight: 800;
+      color: #064e3b;
+      margin: 0 0 12px;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      animation: pp-fade-up 0.55s ease 0.22s both;
+    }
+    .pp-success-msg {
+      font-size: 15px;
+      color: #047857;
+      font-weight: 700;
+      margin: 0 0 12px;
+      line-height: 1.55;
+      animation: pp-fade-up 0.55s ease 0.3s both;
+    }
+    .pp-success-thanks {
+      font-size: 14px;
+      color: #0f766e;
+      margin: 0 0 24px;
+      line-height: 1.6;
+      font-weight: 600;
+      max-width: 34em;
+      margin-left: auto;
+      margin-right: auto;
+      animation: pp-fade-up 0.55s ease 0.38s both;
+    }
+    .pp-success-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: #1d4ed8;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(147, 197, 253, 0.85);
+      padding: 8px 18px;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
+      animation: pp-fade-up 0.55s ease 0.44s both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pp-fw-burst,
+      .pp-fw-burst.pp-fw-burst--2,
+      .pp-fw-burst::after,
+      .pp-success-icon-glow,
+      .pp-cf,
+      .pp-success-inner,
+      .pp-success-eyebrow,
+      .pp-success-title,
+      .pp-success-msg,
+      .pp-success-thanks,
+      .pp-success-badge,
+      .pp-check-svg .pp-check-circle,
+      .pp-check-svg .pp-check-path,
+      .pp-success-icon-wrap {
+        animation: none !important;
+      }
+      .pp-fw-burst { opacity: 0.85; transform: scale(1); }
+      .pp-check-svg .pp-check-circle,
+      .pp-check-svg .pp-check-path { stroke-dashoffset: 0; }
+      .pp-confetti-root { display: none; }
+    }
+
+    /* Toast (thay cho alert khi kiá»ƒm tra giao dá»‹ch / copy) */
+    .pp-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate3d(-50%, 120%, 0);
+      max-width: min(440px, calc(100vw - 28px));
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.45;
+      text-align: center;
+      box-shadow: 0 14px 44px rgba(22, 48, 110, 0.22);
+      z-index: 10000;
+      visibility: hidden;
+      opacity: 0;
+      transition: transform 0.38s cubic-bezier(0.2, 0.85, 0.25, 1), opacity 0.28s ease, visibility 0.28s;
+      pointer-events: none;
+    }
+    .pp-toast.pp-toast--show {
+      visibility: visible;
+      opacity: 1;
+      transform: translate3d(-50%, 0, 0);
+      pointer-events: auto;
+    }
+    .pp-toast--ok {
+      background: linear-gradient(180deg, #ecfdf5, #d1fae5);
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+    .pp-toast--info {
+      background: linear-gradient(180deg, #eff6ff, #dbeafe);
+      color: #1e3a8a;
+      border: 1px solid #93c5fd;
+    }
+    .pp-toast--err {
+      background: linear-gradient(180deg, #fef2f2, #fee2e2);
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="hero-main">
+          <img
+            id="parent-hero-logo"
+            class="hero-logo"
+            src="https://vfabemdqfydjaookbzvm.supabase.co/storage/v1/object/public/branding/Center-logo.png"
+            alt="Logo trung tÃ¢m"
+          />
+          <div class="hero-text">
+            <h1>Tra cá»©u thÃ´ng tin há»c sinh</h1>
+            <p class="hero-tagline">Tra cá»©u nhanh, xem nháº­n xÃ©t há»c sinh, thanh toÃ¡n há»c phÃ­.</p>
+          </div>
+        </div>
+        <div class="hero-aside">
+          <div class="hero-badge">MV Klass</div>
+          <div class="hero-hotline"><a href="tel:+84334438325">0334438325</a> - Tháº§y VÅ©</div>
+        </div>
+      </div>
+      <div id="app" class="muted">Äang táº£i...</div>
+      <div class="footer-note">Náº¿u cáº§n há»— trá»£, phá»¥ huynh vui lÃ²ng liÃªn há»‡ giÃ¡o viÃªn phá»¥ trÃ¡ch lá»›p.</div>
+    </div>
+  </div>
+  <div id="pp-toast" class="pp-toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    const appEl = document.getElementById("app");
+    const SUPABASE_URL = "https://vfabemdqfydjaookbzvm.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmYWJlbWRxZnlkamFvb2tienZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0ODYxMTUsImV4cCI6MjA5MTA2MjExNX0.3aB7LClNZvfV2UB8vckperCs8jDbKpRsLmdwUyIoX-s";
+    const API_BASE = SUPABASE_URL + "/functions/v1/parent-payment";
+    /** Fallback logo â€” Storage public (khÃ´ng dÃ¹ng ./assets trÃªn Netlify vÃ¬ thÆ°á»ng khÃ´ng upload folder assets). */
+    const LOGO_FALLBACK =
+      SUPABASE_URL + "/storage/v1/object/public/branding/Center-logo.png";
+
+    let pollTimer = null;
+    let lastPhone = "";
+    let lastKnownStudentName = "";
+    let selectedPayClass = "";
+    let ppToastTimer = null;
+    let lookupFromCheckBtn = false;
+
+    function hideParentToast() {
+      const el = document.getElementById("pp-toast");
+      if (!el) return;
+      el.classList.remove("pp-toast--show", "pp-toast--ok", "pp-toast--info", "pp-toast--err");
+      clearTimeout(ppToastTimer);
+      ppToastTimer = null;
+    }
+
+    /** @param {"ok"|"info"|"err"} variant */
+    function showParentToast(message, variant, durationMs) {
+      const el = document.getElementById("pp-toast");
+      if (!el) return;
+      clearTimeout(ppToastTimer);
+      ppToastTimer = null;
+      el.classList.remove("pp-toast--ok", "pp-toast--info", "pp-toast--err");
+      el.classList.add("pp-toast--" + variant);
+      el.textContent = message;
+      requestAnimationFrame(() => {
+        el.classList.add("pp-toast--show");
+      });
+      const d = durationMs != null ? durationMs : 3400;
+      if (d > 0) {
+        ppToastTimer = setTimeout(hideParentToast, d);
+      }
+    }
+
+    async function setupPersistentLogo() {
+      const logoEl = document.getElementById("parent-hero-logo");
+      if (!logoEl) return;
+      logoEl.src = LOGO_FALLBACK;
+      logoEl.onerror = function () {
+        if (this.getAttribute("data-logo-err") === "1") return;
+        this.setAttribute("data-logo-err", "1");
+        this.onerror = null;
+        this.src = LOGO_FALLBACK;
+      };
+    }
+    function esc(v) {
+      return String(v ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function formatVnd(v) {
+      const n = Math.max(0, parseInt(String(v || 0), 10) || 0);
+      return n.toLocaleString("vi-VN") + " Ä‘";
+    }
+
+    function shortClassName(v) {
+      return String(v || "").split(/[â€¢Â·]/)[0].trim();
+    }
+
+    function displayClassName(v) {
+      const s = shortClassName(v);
+      // Náº¿u tÃªn lá»›p dáº¡ng "MVK_C2_N1" â†’ tráº£ nguyÃªn; náº¿u dÃ i hÆ¡n thÃ¬ cáº¯t lá»‹ch
+      return s || String(v || "").trim();
+    }
+
+    function q(name) {
+      try { return new URL(window.location.href).searchParams.get(name) || ""; }
+      catch (e) { return ""; }
+    }
+
+    const token = q("token") || q("payToken");
+    const modeRaw = (q("mode") || q("code") || "class").toLowerCase();
+    const mode = modeRaw === "center" ? "center" : "class";
+
+    function supabaseFunctionHeaders() {
+      return {
+        accept: "application/json",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: "Bearer " + SUPABASE_ANON_KEY,
+      };
+    }
+
+    async function api(params) {
+      const qs = new URLSearchParams({ ...params, _ts: String(Date.now()) });
+      qs.set("apikey", SUPABASE_ANON_KEY);
+      const url = API_BASE + "?" + qs.toString();
+      const ctrl = new AbortController();
+      const tid = setTimeout(function () {
+        try {
+          ctrl.abort();
+        } catch (_e) {}
+      }, 30000);
+      let r;
+      try {
+        r = await fetch(url, {
+          method: "GET",
+          headers: supabaseFunctionHeaders(),
+          cache: "no-store",
+          signal: ctrl.signal,
+        });
+      } catch (_net) {
+        clearTimeout(tid);
+        return { ok: false, reason: "NETWORK_OR_TIMEOUT", raw: null };
+      }
+      clearTimeout(tid);
+      let j = null;
+      try {
+        j = await r.json();
+      } catch (_e) {
+        j = null;
+      }
+      if (!r.ok || !j || !j.ok) {
+        let reason = j && j.reason ? String(j.reason) : "";
+        if (!reason && !r.ok) {
+          reason = r.status === 401 || r.status === 403 ? "AUTH_REQUIRED" : "HTTP_" + r.status;
+        }
+        if (!reason && (r.status === 0 || r.type === "opaque")) {
+          reason = "NETWORK_OR_TIMEOUT";
+        }
+        if (!reason) reason = "UNKNOWN";
+        return { ok: false, reason, raw: j };
+      }
+      return j;
+    }
+
+    function stopPolling() {
+      if (pollTimer) {
+        clearTimeout(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    function resetPaymentSuccessLayout() {
+      const card = document.querySelector(".wrap .card");
+      const hero = document.querySelector(".hero");
+      const foot = document.querySelector(".footer-note");
+      if (card) card.classList.remove("pp-card--success");
+      if (hero) hero.style.display = "";
+      if (foot) foot.style.display = "";
+    }
+
+    function schedulePolling(studentId = "") {
+      stopPolling();
+      if (!lastPhone) return;
+      pollTimer = setTimeout(async () => {
+        const res = await api({ token, mode, phone: lastPhone, studentId, payClass: selectedPayClass });
+        if (res && res.ok) {
+          if (res.payment_success) {
+            const nm =
+              (res.student && res.student.name && String(res.student.name).trim()) ||
+              lastKnownStudentName ||
+              "";
+            renderSuccess(res.success_text || "ÄÃ³ng há»c phÃ­ thÃ nh cÃ´ng", nm);
+            return;
+          }
+          renderPayment(res, studentId);
+          return;
+        }
+        schedulePolling(studentId);
+      }, 7000);
+    }
+
+    function injectPpSuccessConfetti(scene) {
+      if (!scene) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const root = scene.querySelector(".pp-confetti-root");
+      if (!root) return;
+      const colors = ["#22c55e", "#84cc16", "#eab308", "#38bdf8", "#a78bfa", "#f472b6", "#fb923c", "#facc15", "#2dd4bf"];
+      const n = 54;
+      for (let i = 0; i < n; i++) {
+        const p = document.createElement("span");
+        p.className = "pp-cf";
+        p.style.left = Math.random() * 100 + "%";
+        p.style.animationDelay = Math.random() * 0.45 + "s";
+        p.style.animationDuration = 2.4 + Math.random() * 2.2 + "s";
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty("--drift", (Math.random() - 0.5) * 140 + "px");
+        const w = 6 + Math.floor(Math.random() * 6);
+        const h = 10 + Math.floor(Math.random() * 10);
+        p.style.width = w + "px";
+        p.style.height = h + "px";
+        root.appendChild(p);
+      }
+    }
+
+    function renderSuccess(text, studentName = "") {
+      stopPolling();
+      hideParentToast();
+      const card = document.querySelector(".wrap .card");
+      const hero = document.querySelector(".hero");
+      const foot = document.querySelector(".footer-note");
+      if (card) card.classList.add("pp-card--success");
+      if (hero) hero.style.display = "none";
+      if (foot) foot.style.display = "none";
+      const base = String(text || "ÄÃ³ng há»c phÃ­ thÃ nh cÃ´ng").trim();
+      const nameTrim = String(studentName || "").trim();
+      const msg = nameTrim ? esc(nameTrim) + " â€” " + esc(base) : esc(base);
+      appEl.innerHTML =
+        '<div class="pp-success-scene" role="status" aria-live="polite">' +
+          '<div class="pp-success-fx" aria-hidden="true">' +
+            '<div class="pp-fw-burst"></div>' +
+            '<div class="pp-fw-burst pp-fw-burst--2"></div>' +
+            '<div class="pp-confetti-root"></div>' +
+          "</div>" +
+          '<div class="pp-success-inner">' +
+            '<p class="pp-success-eyebrow">Giao dá»‹ch Ä‘Ã£ khá»›p</p>' +
+            '<div class="pp-success-icon-stage">' +
+              '<div class="pp-success-icon-glow" aria-hidden="true"></div>' +
+              '<div class="pp-success-icon-wrap">' +
+                '<svg class="pp-check-svg" width="56" height="56" viewBox="0 0 52 52" aria-hidden="true">' +
+                  '<circle class="pp-check-circle" cx="26" cy="26" r="22" />' +
+                  '<path class="pp-check-path" d="M14 27l8 8 16-16" />' +
+                "</svg>" +
+              "</div>" +
+            "</div>" +
+            '<h2 class="pp-success-title">Thanh toÃ¡n thÃ nh cÃ´ng</h2>' +
+            '<p class="pp-success-msg">' + msg + "</p>" +
+            '<p class="pp-success-thanks">Há»‡ thá»‘ng Ä‘Ã£ nháº­n há»c phÃ­ cá»§a phá»¥ huynh. Cáº£m Æ¡n phá»¥ huynh vÃ  há»c sinh Ä‘á»“ng hÃ nh cÃ¹ng tháº§y.</p>' +
+            '<div class="pp-success-badge">MV Klass</div>' +
+          "</div>" +
+        "</div>";
+      const scene = appEl.querySelector(".pp-success-scene");
+      requestAnimationFrame(() => {
+        injectPpSuccessConfetti(scene);
+      });
+    }
+
+    function renderLookup(meta, errMsg) {
+      resetPaymentSuccessLayout();
+      appEl.innerHTML =
+        '<div class="section">' +
+          '<div class="step-title"><span class="step-dot">1</span>Tra cá»©u há»c sinh</div>' +
+          '<div class="muted">Nháº­p <strong>sá»‘ Ä‘iá»‡n thoáº¡i phá»¥ huynh</strong> (tá»« 9 chá»¯ sá»‘) hoáº·c <strong>tÃªn há»c sinh</strong> (Ã­t nháº¥t 2 kÃ½ tá»±) Ä‘á»ƒ tÃ¬m.</div>' +
+          (errMsg ? '<div class="err">' + esc(errMsg) + "</div>" : "") +
+          '<div class="row"><input id="phone" type="search" autocomplete="off" placeholder="VÃ­ dá»¥: 0905123456 hoáº·c Nguyá»…n VÄƒn A" value="' + esc(lastPhone) + '" /></div>' +
+          '<div class="actions"><button id="btnLookup">Tra cá»©u thÃ´ng tin</button></div>' +
+          '<div class="row" id="candidates"></div>' +
+        '</div>';
+      document.getElementById("btnLookup").onclick = () => lookup("");
+      const phoneInput = document.getElementById("phone");
+      if (phoneInput) {
+        phoneInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") lookup("");
+        });
+      }
+    }
+
+    function renderStudentPicker(meta, candidates, errMsg = "", fallbackPhone = "") {
+      resetPaymentSuccessLayout();
+      const classText = meta && meta.class_name ? " Â· " + esc(displayClassName(meta.class_name)) : "";
+      const cards = (Array.isArray(candidates) ? candidates : [])
+        .map(c => {
+          const sid = String(c && c.id ? c.id : "");
+          const by = /^\d{4}$/.test(String(c && c.birth_year ? c.birth_year : "")) ? String(c.birth_year) : "";
+          const clsRaw = String(c && c.class_name ? c.class_name : "").trim();
+          const clsNames = c && Array.isArray(c.class_names) && c.class_names.length
+            ? c.class_names
+            : (typeof (c && c.class_names) === "string"
+              ? String(c.class_names).split("|")
+              : (clsRaw ? [clsRaw] : []));
+          const normalizedClassNames = Array.from(
+            new Set(
+              clsNames
+                .map(x => String(x || "").trim())
+                .filter(Boolean)
+            )
+          );
+          const classPills = normalizedClassNames.length
+            ? normalizedClassNames
+                .map(cls => `<span class="student-pill">Lá»›p: ${esc(displayClassName(cls))}</span>`)
+                .join("")
+            : `<span class="student-pill">Lá»›p: ChÆ°a ghi</span>`;
+          const note = String(c && c.learning_note ? c.learning_note : "").trim();
+          const rawPh = String(c && c.phone != null ? c.phone : "").trim();
+          const fbPh = String(fallbackPhone || "").trim();
+          const dataPhone = esc(rawPh || fbPh);
+          return `<div class="student-card">
+            <div class="student-name">${esc(c && c.name ? c.name : "Há»c sinh")}</div>
+            <div class="student-meta">
+              ${by ? `<span class="student-pill">NÄƒm sinh: ${esc(by)}</span>` : `<span class="student-pill">NÄƒm sinh: ChÆ°a cÃ³</span>`}
+              ${classPills}
+            </div>
+            ${note ? `<div class="student-note"><strong>Nháº­n xÃ©t há»c lá»±c:</strong> ${esc(note)}</div>` : ""}
+            <div class="student-card-actions">
+              <button type="button" class="btn-pay-tuition" data-student-id="${esc(sid)}" data-phone="${dataPhone}">ÄÃ³ng há»c phÃ­</button>
+            </div>
+          </div>`;
+        })
+        .join("");
+      appEl.innerHTML =
+        '<div class="section">' +
+          '<div class="step-title"><span class="step-dot">2</span>ThÃ´ng tin há»c sinh</div>' +
+          '<div class="muted">Sá»‘ Ä‘iá»‡n thoáº¡i: <strong>' + esc(lastPhone || "") + '</strong>' + classText + '. Xem ká»¹ thÃ´ng tin, rá»“i báº¥m <strong>ÄÃ³ng há»c phÃ­</strong> Ä‘á»ƒ sang bÆ°á»›c chá»n lá»›p.</div>' +
+          (errMsg ? '<div class="err">' + esc(errMsg) + '</div>' : '') +
+          '<div class="actions"><button class="secondary" id="btnLookupBack">â† Äá»•i sá»‘ Ä‘iá»‡n thoáº¡i tra cá»©u</button></div>' +
+          '<div class="student-cards" id="studentCards">' + cards + '</div>' +
+        '</div>';
+      const btnLookupBack = document.getElementById("btnLookupBack");
+      if (btnLookupBack) btnLookupBack.onclick = () => backToLookup();
+      Array.from(document.querySelectorAll("button.btn-pay-tuition[data-student-id]")).forEach(btn => {
+        btn.onclick = () => {
+          const sid = String(btn.getAttribute("data-student-id") || "");
+          if (!sid) return;
+          const ph = String(btn.getAttribute("data-phone") || "").trim();
+          if (ph) {
+            lastPhone = ph;
+            const inp = document.getElementById("phone");
+            if (inp) inp.value = ph;
+          }
+          lookup(sid);
+        };
+      });
+    }
+
+    function backToLookup() {
+      stopPolling();
+      selectedPayClass = "";
+      lastKnownStudentName = "";
+      renderLookup({}, "");
+      const phoneInput = document.getElementById("phone");
+      if (phoneInput) {
+        phoneInput.focus();
+        const len = phoneInput.value.length;
+        try { phoneInput.setSelectionRange(len, len); } catch (e) {}
+      }
+    }
+
+    function renderPayment(data, studentId = "") {
+      if (data && data.payment_success === true) {
+        const nm = data.student && data.student.name ? String(data.student.name).trim() : "";
+        renderSuccess(data.success_text || "ÄÃ³ng há»c phÃ­ thÃ nh cÃ´ng", nm);
+        return;
+      }
+      resetPaymentSuccessLayout();
+      const st = data.student || {};
+      if (st.name) lastKnownStudentName = String(st.name).trim();
+      const p = data.pending || {};
+      const classOptions = Array.isArray(data.class_options) ? data.class_options : [];
+      const unclassified = parseInt(String(data.unclassified_present_sessions || 0), 10) || 0;
+      if (classOptions.length && !classOptions.some(x => String(x.class_name || "") === selectedPayClass)) {
+        selectedPayClass = "";
+      }
+      const content = String(p.transfer_content || "");
+      const qrUrl = String(data.qr_url || "");
+      const classDisplay = displayClassName(p.class_name || selectedPayClass || st.class_name || "");
+      const pending = parseInt(String(p.pending_sessions || 0), 10) || 0;
+      const charged = parseInt(String(p.charged_sessions || 0), 10) || 0;
+      const present = parseInt(String(p.present_sessions || 0), 10) || 0;
+      const fee = parseInt(String(p.fee_per_session || 0), 10) || 0;
+      const amount = parseInt(String(p.amount_vnd || 0), 10) || 0;
+      const step3Locked = classOptions.length > 0 && !selectedPayClass;
+
+      const classPicker = classOptions.length && step3Locked
+        ? `<div class="section">
+            <div class="step-title"><span class="step-dot">3</span>Chá»n lá»›p cáº§n thanh toÃ¡n</div>
+            <div class="muted">Phá»¥ huynh chá»n lá»›p cáº§n Ä‘Ã³ng há»c phÃ­</div>
+            <div class="class-list">
+              ${classOptions.map(c => {
+                const cn = String(c.class_name || "");
+                const cnShort = c.class_short_name || displayClassName(cn);
+                const pendingCls = parseInt(String(c.pending_sessions || 0), 10) || 0;
+                const feeCls = parseInt(String(c.fee_per_session || 0), 10) || 0;
+                const amountCls = parseInt(String(c.amount_vnd || 0), 10) || 0;
+                const prepCls = parseInt(String(c.prepaid_balance_vnd || 0), 10) || 0;
+                const prepLine =
+                  prepCls > 0
+                    ? `<div class="muted" style="font-size:12px;margin-top:4px">Há»c phÃ­ dÆ° (tráº£ trÆ°á»›c): ${esc(formatVnd(prepCls))}</div>`
+                    : "";
+                const active = cn === selectedPayClass ? " active" : "";
+                return `<div class="class-item${active}" data-pay-class="${esc(cn)}">
+                  <div><strong>${esc(cnShort)}</strong></div>
+                  <div class="muted">Sá»‘ buá»•i: ${esc(pendingCls)} Â· Há»c phÃ­/buá»•i: ${esc(formatVnd(feeCls))}</div>
+                  <div class="sum">Tá»•ng: ${esc(formatVnd(amountCls))}</div>
+                  ${prepLine}
+                </div>`;
+              }).join("")}
+            </div>
+          </div>`
+        : "";
+
+      appEl.innerHTML =
+        '<div class="ok">ÄÃ£ cáº­p nháº­t thÃ´ng tin thanh toÃ¡n má»›i nháº¥t.</div>' +
+        (unclassified > 0 ? '<div class="notice">CÃ³ ' + esc(unclassified) + ' buá»•i cÅ© chÆ°a gáº¯n lá»›p nÃªn chÆ°a cá»™ng vÃ o tá»«ng lá»›p. Vui lÃ²ng liÃªn há»‡ trung tÃ¢m Ä‘á»ƒ rÃ  soÃ¡t.</div>' : '') +
+        '<div class="top-actions">' +
+          '<button class="secondary" id="backLookupBtn">â† Quay láº¡i tra cá»©u</button>' +
+          (!step3Locked ? '<button class="secondary" id="backStep2BtnTop">â† Quay láº¡i chá»n lá»›p</button>' : '') +
+        '</div>' +
+        classPicker +
+        '<div class="section">' +
+          '<div class="step-title"><span class="step-dot">4</span>QuÃ©t mÃ£ QR vÃ  chuyá»ƒn khoáº£n</div>' +
+          (step3Locked
+            ? '<div class="notice">Vui lÃ²ng chá»n lá»›p á»Ÿ bÆ°á»›c 3 Ä‘á»ƒ tiáº¿p tá»¥c thanh toÃ¡n.</div>'
+            : (
+              '<div class="grid">' +
+                '<div class="box">' +
+                  '<div><strong>Há»c sinh:</strong> ' + esc(st.name || "") + "</div>" +
+                  '<div class="muted">Lá»›p: ' + esc(classDisplay || "") + "</div>" +
+                  '<div class="stats row">' +
+                    '<div class="item"><div class="k">ÄÃ£ há»c</div><div class="v">' + esc(present) + " buá»•i</div></div>" +
+                    '<div class="item"><div class="k">ÄÃ£ thu</div><div class="v">' + esc(charged) + " buá»•i</div></div>" +
+                    '<div class="item"><div class="k">CÃ²n ná»£</div><div class="v">' + esc(pending) + " buá»•i</div></div>" +
+                    '<div class="item"><div class="k">Há»c phÃ­/buá»•i</div><div class="v">' + esc(formatVnd(fee)) + "</div></div>" +
+                  "</div>" +
+                  '<div class="big-amount"><span>Tá»•ng cáº§n thanh toÃ¡n</span><span>' + esc(formatVnd(amount)) + '</span></div>' +
+                  '<div class="row"><strong>Ná»™i dung chuyá»ƒn khoáº£n:</strong></div>' +
+                  '<div class="ck" id="transfer-content">' + esc(content) + "</div>" +
+                  '<div class="actions">' +
+                    '<button class="secondary" id="copyBtn">Copy ná»™i dung chuyá»ƒn khoáº£n</button> ' +
+                  "</div>" +
+                "</div>" +
+                '<div class="box">' +
+                  '<div><strong>QR SePay</strong></div>' +
+                  (qrUrl
+                    ? '<img class="qr row" src="' + esc(qrUrl) + '" alt="QR SePay" />'
+                    : '<div class="row muted">ChÆ°a cáº¥u hÃ¬nh QR SePay. Vui lÃ²ng Ä‘áº·t secret SEPAY_QR_ACC vÃ  SEPAY_QR_BANK cho function parent-payment.</div>') +
+                  '<div class="actions" style="justify-content:center;margin-top:12px"><button class="secondary" id="refreshBtn">Kiá»ƒm tra giao dá»‹ch</button></div>' +
+                "</div>" +
+              "</div>"
+            )) +
+        "</div>";
+
+      const copyBtn = document.getElementById("copyBtn");
+      if (copyBtn) {
+        copyBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(content);
+            showParentToast("ÄÃ£ copy ná»™i dung chuyá»ƒn khoáº£n.", "ok", 2800);
+          } catch (e) {
+            const el = document.getElementById("transfer-content");
+            if (el) {
+              const selection = window.getSelection();
+              const range = document.createRange();
+              range.selectNodeContents(el);
+              selection.removeAllRanges();
+              selection.addRange(range);
+            }
+            showParentToast("KhÃ´ng copy tá»± Ä‘á»™ng Ä‘Æ°á»£c. HÃ£y nháº¥n Ctrl+C Ä‘á»ƒ copy.", "err", 4200);
+          }
+        };
+      }
+      const refreshBtn = document.getElementById("refreshBtn");
+      if (refreshBtn) {
+        refreshBtn.onclick = () => {
+          lookupFromCheckBtn = true;
+          lookup(studentId || "", selectedPayClass);
+        };
+      }
+      const backStep2BtnTop = document.getElementById("backStep2BtnTop");
+      if (backStep2BtnTop) backStep2BtnTop.onclick = () => lookup(studentId || "", "");
+      const backStep2Btn = document.getElementById("backStep2Btn");
+      if (backStep2Btn) backStep2Btn.onclick = () => lookup(studentId || "", "");
+      const backLookupBtn = document.getElementById("backLookupBtn");
+      if (backLookupBtn) backLookupBtn.onclick = () => backToLookup();
+      Array.from(document.querySelectorAll("[data-pay-class]")).forEach(el => {
+        el.onclick = () => {
+          const cls = String(el.getAttribute("data-pay-class") || "");
+          if (!cls) return;
+          selectedPayClass = cls;
+          lookup(studentId || "", selectedPayClass);
+        };
+      });
+      schedulePolling(studentId);
+    }
+
+    async function lookup(studentId, payClass = "") {
+      const triggeredFromCheck = lookupFromCheckBtn;
+      lookupFromCheckBtn = false;
+      if (triggeredFromCheck) {
+        showParentToast("Äang kiá»ƒm tra giao dá»‹châ€¦", "info", 0);
+      }
+      const phoneInput = document.getElementById("phone");
+      const phone = String(phoneInput ? (phoneInput.value || "") : (lastPhone || "")).trim();
+      const digits = phone.replace(/\D/g, "");
+      if (!phone) {
+        if (triggeredFromCheck) hideParentToast();
+        renderLookup({}, "Vui lÃ²ng nháº­p sá»‘ Ä‘iá»‡n thoáº¡i hoáº·c tÃªn há»c sinh.");
+        return;
+      }
+      if (digits.length < 9 && phone.length < 2) {
+        if (triggeredFromCheck) hideParentToast();
+        renderLookup({}, "Nháº­p Ã­t nháº¥t 9 chá»¯ sá»‘ (SÄT) hoáº·c Ã­t nháº¥t 2 kÃ½ tá»± (tÃªn).");
+        return;
+      }
+      lastPhone = phone;
+      if (payClass) selectedPayClass = payClass;
+      else selectedPayClass = "";
+      appEl.innerHTML = '<div class="muted">Äang tra cá»©u...</div>';
+      const res = await api({ token, mode, phone, studentId, payClass: selectedPayClass });
+      if (!res.ok) {
+        const candidates =
+          res && res.raw && Array.isArray(res.raw.candidates)
+            ? res.raw.candidates
+            : (res && res.raw && res.raw.raw && Array.isArray(res.raw.raw.candidates) ? res.raw.raw.candidates : []);
+        if (res.reason === "MULTI_STUDENT" && Array.isArray(candidates) && candidates.length) {
+          if (triggeredFromCheck) hideParentToast();
+          renderStudentPicker({}, candidates, "", lastPhone);
+          return;
+        }
+        if (triggeredFromCheck) {
+          hideParentToast();
+          showParentToast("KhÃ´ng kiá»ƒm tra Ä‘Æ°á»£c lÃºc nÃ y. Vui lÃ²ng thá»­ láº¡i sau.", "err", 4200);
+        }
+        const detail =
+          res && res.raw && (res.raw.error || res.raw.message)
+            ? String(res.raw.error || res.raw.message)
+            : "";
+        if (res.reason === "QUERY_TOO_SHORT") {
+          renderLookup({}, "Nháº­p Ã­t nháº¥t 9 chá»¯ sá»‘ (SÄT) hoáº·c Ã­t nháº¥t 2 kÃ½ tá»± (tÃªn).");
+          return;
+        }
+        if (res.reason === "STUDENT_NO_PHONE") {
+          renderLookup({}, "Há»c sinh nÃ y chÆ°a cÃ³ sá»‘ Ä‘iá»‡n thoáº¡i trong há»‡ thá»‘ng. Vui lÃ²ng liÃªn há»‡ trung tÃ¢m.");
+          return;
+        }
+        if (res.reason === "PHONE_REQUIRED") {
+          let hasLetter = false;
+          try {
+            hasLetter = /\p{L}/u.test(phone);
+          } catch (_e) {
+            hasLetter = /[A-Za-z\u00C0-\u024F\u1E00-\u1EFF]/.test(phone);
+          }
+          if (hasLetter) {
+            renderLookup(
+              {},
+              "KhÃ´ng tra Ä‘Æ°á»£c theo tÃªn (há»‡ thá»‘ng chÆ°a nháº­n diá»‡n Ä‘Ãºng). HÃ£y thá»­ nháº­p sá»‘ Ä‘iá»‡n thoáº¡i phá»¥ huynh, hoáº·c liÃªn há»‡ trung tÃ¢m â€” cÃ³ thá»ƒ cáº§n deploy láº¡i trang thanh toÃ¡n vÃ  function parent-payment.",
+            );
+            return;
+          }
+        }
+        const reason = esc(res.reason || "UNKNOWN");
+        const suffix = detail ? " â€” " + esc(detail) : "";
+        renderLookup({}, "KhÃ´ng tra cá»©u Ä‘Æ°á»£c (" + reason + ")" + suffix + ".");
+        return;
+      }
+      if (!studentId) {
+        if (triggeredFromCheck) hideParentToast();
+        const st = res.student || {};
+        const singleCandidate = [{
+          id: String(st.id || ""),
+          name: String(st.name || "Há»c sinh"),
+          class_name: String(st.class_name || ""),
+          birth_year: String(st.birth_year || ""),
+          learning_note: String(st.learning_note || "")
+        }];
+        renderStudentPicker(res, singleCandidate, "", lastPhone);
+        return;
+      }
+      renderPayment(res, studentId || "");
+      if (res && res.payment_success) {
+        if (triggeredFromCheck) hideParentToast();
+        return;
+      }
+      if (triggeredFromCheck) hideParentToast();
+    }
+
+    (async function init() {
+      setupPersistentLogo().catch(function () {});
+      if (!token) {
+        appEl.innerHTML = '<div class="err">Link khÃ´ng há»£p lá»‡ (thiáº¿u token).</div>';
+        return;
+      }
+      const meta = await api({ token, mode });
+      if (!meta.ok) {
+        let msg =
+          "Link khÃ´ng há»£p lá»‡ hoáº·c Ä‘Ã£ háº¿t háº¡n (" + esc(meta.reason || "UNKNOWN") + ").";
+        if (meta.reason === "AUTH_REQUIRED") {
+          msg =
+            "KhÃ´ng káº¿t ná»‘i Ä‘Æ°á»£c mÃ¡y chá»§ thanh toÃ¡n (thiáº¿u xÃ¡c thá»±c). HÃ£y táº£i láº¡i trang thanh toÃ¡n báº£n má»›i nháº¥t hoáº·c liÃªn há»‡ trung tÃ¢m.";
+        } else if (meta.reason === "NETWORK_OR_TIMEOUT") {
+          msg =
+            "KhÃ´ng táº£i Ä‘Æ°á»£c dá»¯ liá»‡u (máº¡ng cháº­m hoáº·c mÃ¡y chá»§ khÃ´ng pháº£n há»“i). HÃ£y thá»­ táº£i láº¡i trang.";
+        }
+        appEl.innerHTML = '<div class="err">' + msg + "</div>";
+        return;
+      }
+      renderLookup(meta, "");
+    })();
+  </script>
+</body>
+</html>

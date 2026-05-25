@@ -1,0 +1,5 @@
+# Cho phép gọi Edge Function từ trang Netlify (preflight OPTIONS không bị chặn trước khi vào Deno).
+# https://supabase.com/docs/guides/functions/function-configuration
+
+[functions.parent-payment]
+verify_jwt = false

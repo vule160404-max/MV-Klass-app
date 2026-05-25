@@ -1,0 +1,25 @@
+{
+  "users": {
+    "telegram:7098157720": {
+      "name": "Thầy Vũ",
+      "role": "admin",
+      "class_names": ["*"]
+    }
+  },
+  "roles": {
+    "admin": {
+      "can_read_all": true,
+      "can_prepare_write": true,
+      "can_confirm_write": true,
+      "can_view_audit": true,
+      "can_receive_daily_digest": true
+    },
+    "teacher": {
+      "can_read_all": false,
+      "can_prepare_write": true,
+      "can_confirm_write": false,
+      "can_view_audit": false,
+      "can_receive_daily_digest": false
+    }
+  }
+}
