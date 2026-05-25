@@ -9982,6 +9982,9 @@ a:focus-visible,
           <select id="student-exam-province" aria-label="Lọc tỉnh thành">
             <option value="all">Tất cả tỉnh/thành</option>
           </select>
+          <select id="student-exam-source" aria-label="Lọc bộ đề hoặc thầy cô">
+            <option value="all">Tất cả bộ đề/thầy cô</option>
+          </select>
           <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
             <option value="code">Theo năm, mã đề</option>
             <option value="newest">Mới upload</option>
@@ -14721,6 +14724,35 @@ function studentExamDisplayProvince(value) {
   return map[key] || raw;
 }
 
+function studentExamIsKnownProvince(value) {
+  const key = normalizeText(String(value || '')).replace(/\s+/g, ' ').trim().toLowerCase();
+  if (!key) return false;
+  const known = new Set([
+    'ha noi', 'tp hcm', 'ho chi minh', 'thanh hoa', 'nghe an', 'ha tinh',
+    'da nang', 'hai phong', 'quang ninh', 'bac ninh', 'bac giang',
+    'nam dinh', 'thai binh', 'ninh binh', 'hai duong', 'hung yen',
+    'vinh phuc', 'phu tho', 'thai nguyen', 'tuyen quang', 'lao cai',
+    'yen bai', 'son la', 'hoa binh', 'quang binh', 'quang tri',
+    'thua thien hue', 'quang nam', 'quang ngai', 'binh dinh', 'phu yen',
+    'khanh hoa', 'ninh thuan', 'binh thuan', 'kon tum', 'gia lai',
+    'dak lak', 'dak nong', 'lam dong', 'binh phuoc', 'binh duong',
+    'dong nai', 'ba ria vung tau', 'tay ninh', 'long an', 'tien giang',
+    'ben tre', 'tra vinh', 'vinh long', 'dong thap', 'an giang',
+    'kien giang', 'can tho', 'hau giang', 'soc trang', 'bac lieu', 'ca mau'
+  ]);
+  return known.has(key);
+}
+
+function studentExamSourceLabel(row) {
+  const raw = String(row?.province || '').trim();
+  if (!raw || studentExamIsKnownProvince(raw)) return '';
+  return studentExamDisplayProvince(raw);
+}
+
+function studentExamSourceKey(row) {
+  return normalizeText(studentExamSourceLabel(row)).replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function studentExamDisplayTitle(row) {
   const code = String(row?.exam_code || '').trim();
   if (!code) return String(row?.title || 'Đề thi Tiếng Anh');
@@ -15027,9 +15059,19 @@ function studentExamCard(row, compact) {
 
 function renderStudentExamSelectOptions() {
   const years = Array.from(new Set(studentExamRows.map(r => r.year).filter(Boolean))).sort((a, b) => Number(b) - Number(a));
-  const provinces = Array.from(new Set(studentExamRows.map(r => String(r.province || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const provinces = Array.from(new Set(studentExamRows.map(r => String(r.province || '').trim()).filter(p => p && studentExamIsKnownProvince(p)))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const sources = Array.from(new Map(studentExamRows
+    .map(row => {
+      const label = studentExamSourceLabel(row);
+      const key = studentExamSourceKey(row);
+      return label && key ? [key, label] : null;
+    })
+    .filter(Boolean))
+    .entries())
+    .sort((a, b) => a[1].localeCompare(b[1], 'vi'));
   const yearEl = document.getElementById('student-exam-year');
   const provinceEl = document.getElementById('student-exam-province');
+  const sourceEl = document.getElementById('student-exam-source');
   if (yearEl) {
     const cur = yearEl.value || 'all';
     yearEl.innerHTML = '<option value="all">Tất cả năm</option>' + years.map(y => `<option value="${escapeHtml(String(y))}">${escapeHtml(String(y))}</option>`).join('');
@@ -15039,6 +15081,11 @@ function renderStudentExamSelectOptions() {
     const cur = provinceEl.value || 'all';
     provinceEl.innerHTML = '<option value="all">Tất cả tỉnh/thành</option>' + provinces.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(studentExamDisplayProvince(p))}</option>`).join('');
     provinceEl.value = provinces.includes(cur) ? cur : 'all';
+  }
+  if (sourceEl) {
+    const cur = sourceEl.value || 'all';
+    sourceEl.innerHTML = '<option value="all">Tất cả bộ đề/thầy cô</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
+    sourceEl.value = sources.some(([key]) => key === cur) ? cur : 'all';
   }
 }
 
@@ -15050,6 +15097,7 @@ function getStudentExamFilters() {
     saved: String(document.getElementById('student-exam-saved-filter')?.value || 'all'),
     year: String(document.getElementById('student-exam-year')?.value || 'all'),
     province: String(document.getElementById('student-exam-province')?.value || 'all'),
+    source: String(document.getElementById('student-exam-source')?.value || 'all'),
     sort: String(document.getElementById('student-exam-sort')?.value || 'code')
   };
 }
@@ -15066,8 +15114,9 @@ function applyStudentExamFilters(options) {
     if (f.saved === 'saved' && !studentExamIsFavorite(row)) return false;
     if (f.year !== 'all' && String(row.year || '') !== f.year) return false;
     if (f.province !== 'all' && String(row.province || '') !== f.province) return false;
+    if (f.source !== 'all' && studentExamSourceKey(row) !== f.source) return false;
     if (f.q) {
-      const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category), studentExamTypeLabel(row)]
+      const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, studentExamSourceLabel(row), row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category), studentExamTypeLabel(row)]
         .map(x => normalizeText(String(x || '')).toLowerCase())
         .join(' ');
       if (!hay.includes(f.q)) return false;
@@ -15214,7 +15263,7 @@ async function loadStudentExamFiles() {
 }
 
 function bindStudentExamPortalEvents() {
-  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-saved-filter', 'student-exam-year', 'student-exam-province', 'student-exam-sort'];
+  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-saved-filter', 'student-exam-year', 'student-exam-province', 'student-exam-source', 'student-exam-sort'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.dataset.bound === '1') return;
