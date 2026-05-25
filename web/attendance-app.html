@@ -9982,8 +9982,8 @@ a:focus-visible,
           <select id="student-exam-province" aria-label="Lọc tỉnh thành">
             <option value="all">Tất cả tỉnh/thành</option>
           </select>
-          <select id="student-exam-source" aria-label="Lọc bộ đề hoặc thầy cô">
-            <option value="all">Tất cả bộ đề/thầy cô</option>
+          <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
+            <option value="all">Tất cả nguồn/bộ đề</option>
           </select>
           <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
             <option value="code">Theo năm, mã đề</option>
@@ -14719,9 +14719,16 @@ function studentExamDisplayProvince(value) {
     'hau giang': 'Hậu Giang',
     'soc trang': 'Sóc Trang',
     'bac lieu': 'Bạc Liêu',
-    'ca mau': 'Cà Mau'
+    'ca mau': 'Cà Mau',
+    'nguon tong hop': 'Nguồn tổng hợp',
+    'tong hop': 'Nguồn tổng hợp'
   };
   return map[key] || raw;
+}
+
+function studentExamIsGenericSource(value) {
+  const key = normalizeText(String(value || '')).replace(/\s+/g, ' ').trim().toLowerCase();
+  return !key || key === 'nguon tong hop' || key === 'tong hop';
 }
 
 function studentExamIsKnownProvince(value) {
@@ -14745,7 +14752,8 @@ function studentExamIsKnownProvince(value) {
 
 function studentExamSourceLabel(row) {
   const raw = String(row?.province || '').trim();
-  if (!raw || studentExamIsKnownProvince(raw)) return '';
+  if (studentExamIsGenericSource(raw)) return 'Nguồn tổng hợp';
+  if (studentExamIsKnownProvince(raw)) return '';
   return studentExamDisplayProvince(raw);
 }
 
@@ -15084,7 +15092,7 @@ function renderStudentExamSelectOptions() {
   }
   if (sourceEl) {
     const cur = sourceEl.value || 'all';
-    sourceEl.innerHTML = '<option value="all">Tất cả bộ đề/thầy cô</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
+    sourceEl.innerHTML = '<option value="all">Tất cả nguồn/bộ đề</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
     sourceEl.value = sources.some(([key]) => key === cur) ? cur : 'all';
   }
 }
