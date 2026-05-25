@@ -5064,7 +5064,7 @@
     .student-exam-brand-title{font-weight:900;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.student-exam-brand-sub{margin-top:2px;color:#66748d;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .student-exam-user{display:flex;align-items:center;gap:8px;flex-shrink:0}.student-exam-hello{display:none;color:#51617a;font-size:12px;font-weight:800;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .student-exam-logout,.student-exam-btn{min-height:38px;border:0;border-radius:999px;padding:9px 13px;font-weight:900;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}.student-exam-logout{background:#fff;color:#12213d;border:1px solid rgba(18,33,61,.12);box-shadow:0 6px 16px rgba(18,33,61,.07)}
-    .student-exam-admin-link{background:#fff8e8;color:#7a4a06;border-color:rgba(244,167,29,.34);box-shadow:0 8px 18px rgba(122,74,6,.08);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.student-exam-admin-link:hover{transform:translateY(-1px);background:#fff3d6;border-color:rgba(244,167,29,.58);box-shadow:0 12px 24px rgba(122,74,6,.12)}.student-exam-admin-link svg{width:14px;height:14px;display:block;flex:0 0 auto}
+    .student-exam-admin-link{background:#fff8e8;color:#7a4a06;border-color:rgba(244,167,29,.34);box-shadow:0 8px 18px rgba(122,74,6,.08);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.student-exam-admin-link:hover{transform:translateY(-1px);background:#fff3d6;border-color:rgba(244,167,29,.58);box-shadow:0 12px 24px rgba(122,74,6,.12)}.student-exam-admin-link svg{width:14px;height:14px;display:block;flex:0 0 auto}.student-exam-sync-btn{background:#0f1f3d;color:#fff;border-color:#0f1f3d;box-shadow:0 8px 18px rgba(15,31,61,.14)}.student-exam-sync-btn:hover{background:#1a3460;border-color:#1a3460;box-shadow:0 12px 24px rgba(15,31,61,.18)}.student-exam-sync-btn:disabled{opacity:.62;cursor:wait}
     .student-exam-plan{display:inline-flex;align-items:center;min-height:30px;border-radius:999px;padding:6px 10px;background:#fff4d6;color:#8a5208;border:1px solid rgba(244,167,29,.38);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-plan.premium{background:#e8f8ef;color:#14532d;border-color:rgba(22,163,74,.28)}
     .student-exam-plan.pending{background:#eef3f9;color:#475569;border-color:rgba(71,85,105,.18)}.student-exam-plan.blocked{background:#fee2e2;color:#991b1b;border-color:rgba(239,68,68,.24)}
     .student-exam-approval-note{display:none;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:#fff8e8;border:1px solid rgba(244,167,29,.42);color:#7a4a06;font-size:13px;font-weight:850;line-height:1.45;box-shadow:0 10px 24px rgba(122,74,6,.08)}.student-exam-approval-note.show{display:flex;align-items:center;gap:10px}.student-exam-approval-note:before{content:"!";width:24px;height:24px;border-radius:999px;background:#f4a71d;color:#fff;display:grid;place-items:center;flex:0 0 auto;font-size:14px;font-weight:950}
@@ -9933,6 +9933,7 @@ a:focus-visible,
       <div class="student-exam-user">
         <div class="student-exam-hello" id="student-exam-hello">Xin chào</div>
         <div class="student-exam-plan" id="student-exam-plan-badge">Free</div>
+        <button type="button" class="student-exam-logout student-exam-sync-btn" id="student-exam-sync-r2" onclick="syncPortalR2ExamFiles()" style="display:none">Đồng bộ kho đề</button>
         <button type="button" class="student-exam-logout student-exam-admin-link" id="student-exam-admin-switch" onclick="openAdminDashboardModule()" style="display:none">
           Đi tới trang quản trị
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -14533,6 +14534,8 @@ function showStudentExamPortalUI() {
   if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
   const adminSwitch = document.getElementById('student-exam-admin-switch');
   if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
+  const syncBtn = document.getElementById('student-exam-sync-r2');
+  if (syncBtn) syncBtn.style.display = isAdmin() ? 'inline-flex' : 'none';
   renderStudentExamPlanState();
 }
 
@@ -17088,10 +17091,15 @@ async function fetchPortalAnalyticsData() {
 function setPortalR2SyncStatus(message, busy) {
   const status = document.getElementById('portal-r2-sync-status');
   const btn = document.getElementById('portal-r2-sync-btn');
+  const studentBtn = document.getElementById('student-exam-sync-r2');
   if (status) status.textContent = message || 'R2 → Supabase';
   if (btn) {
     btn.disabled = !!busy;
     btn.textContent = busy ? 'Đang đồng bộ...' : 'Đồng bộ kho đề';
+  }
+  if (studentBtn) {
+    studentBtn.disabled = !!busy;
+    studentBtn.textContent = busy ? 'Đang đồng bộ...' : 'Đồng bộ kho đề';
   }
 }
 
