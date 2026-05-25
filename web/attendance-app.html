@@ -267,6 +267,42 @@
       font-weight: 600;
       letter-spacing: 0.01em;
     }
+    .workspace-switcher{
+      width: fit-content;
+      min-height: 28px;
+      margin-top: 6px;
+      border: 1px solid rgba(244,167,29,0.28);
+      border-radius: 999px;
+      background: rgba(255,248,232,0.74);
+      color: #7a4a06;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 10px;
+      font: inherit;
+      font-size: 11.5px;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(122,74,6,0.06);
+      transition: transform var(--trans), background var(--trans-smooth), border-color var(--trans-smooth), box-shadow var(--trans-smooth);
+    }
+    .workspace-switcher:hover{
+      transform: translateY(-1px);
+      background: rgba(255,248,232,0.98);
+      border-color: rgba(244,167,29,0.48);
+      box-shadow: 0 12px 24px rgba(122,74,6,0.10);
+    }
+    .workspace-switcher:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(244,167,29,0.24), 0 12px 24px rgba(122,74,6,0.10);
+    }
+    .workspace-switcher svg{
+      width: 14px;
+      height: 14px;
+      display: block;
+      flex: 0 0 auto;
+    }
     .date{
       margin-top: 4px;
       font-size: 12px;
@@ -3385,10 +3421,16 @@
       .ai-msg-bubble{ max-width: min(85%, 560px); }
       .ai-msg-row.thinking .ai-thinking-bubble{ max-width: min(85%, 520px); }
     }
-    @media (prefers-reduced-motion: reduce){
+@media (prefers-reduced-motion: reduce){
       .login-screen::after{
         animation: none !important;
         transition: none !important;
+      }
+      .login-page,
+      .login-brand-logo,
+      .login-back-landing,
+      .login-screen .login-card.card{
+        animation: none !important;
       }
     }
     @media (max-width: 900px), (pointer: coarse){
@@ -3593,6 +3635,47 @@
     .portal-intensity{ display:inline-flex; align-items:center; justify-content:center; min-width:58px; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:900; background:#eef6ff; color:#1d4ed8; }
     .portal-intensity.hot{ background:#fff4d6; color:#9a5b00; }
     .portal-intensity.quiet{ background:#f1f5f9; color:#64748b; }
+    .portal-intensity.good{ background:#e8f8ef; color:#14532d; }
+    .portal-intensity.bad{ background:#fee2e2; color:#991b1b; }
+    .portal-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+    .portal-row-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
+    .portal-user-shell{ display:grid; gap:10px; }
+    .portal-user-tools{ display:grid; grid-template-columns:minmax(220px,1fr) repeat(2,minmax(140px,180px)); gap:8px; align-items:center; }
+    .portal-user-search,.portal-user-select{ min-height:38px; border-radius:12px; border:1px solid rgba(99,138,218,.16); background:#fff; color:#263852; padding:0 11px; font-size:12px; font-weight:850; outline:none; }
+    .portal-user-search:focus,.portal-user-select:focus{ border-color:rgba(79,142,247,.45); box-shadow:0 0 0 3px rgba(79,142,247,.10); }
+    .portal-user-summary{ display:flex; flex-wrap:wrap; gap:6px; }
+    .portal-user-chip{ display:inline-flex; align-items:center; gap:5px; min-height:26px; border-radius:999px; padding:4px 9px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); color:#52627c; font-size:11px; font-weight:900; }
+    .portal-user-chip strong{ color:#102858; font-variant-numeric:tabular-nums; }
+    .portal-user-table-wrap{ max-height:620px; overflow:auto; border:1px solid rgba(99,138,218,.12); border-radius:14px; }
+    .portal-user-table-wrap .portal-table th{ position:sticky; top:0; z-index:1; }
+    .portal-user-name{ display:flex; align-items:center; gap:9px; min-width:0; }
+    .portal-user-avatar{ width:32px; height:32px; border-radius:12px; display:grid; place-items:center; background:#eef6ff; color:#1d4ed8; font-size:11px; font-weight:950; flex:0 0 auto; }
+    .portal-user-text{ min-width:0; }
+    .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:260px; }
+    .portal-user-pager{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; color:#718096; font-size:12px; font-weight:850; }
+    .portal-user-pager-actions{ display:flex; gap:6px; align-items:center; }
+    .portal-user-pager-actions .btn-sm{ min-height:32px; height:32px; }
+    .portal-curation-shell{ display:grid; gap:12px; }
+    .portal-free-slots{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    .portal-free-slot{ min-width:0; display:grid; grid-template-columns:34px minmax(0,1fr) auto; gap:9px; align-items:center; padding:10px; border-radius:14px; border:1px solid rgba(99,138,218,.14); background:#f8fbff; }
+    .portal-free-slot.empty{ background:#fff; border-style:dashed; }
+    .portal-free-slot-num{ width:34px; height:34px; border-radius:12px; display:grid; place-items:center; background:#0f1f3d; color:#fff; font-size:12px; font-weight:950; font-variant-numeric:tabular-nums; }
+    .portal-free-slot.empty .portal-free-slot-num{ background:#eef3f9; color:#64748b; }
+    .portal-free-title{ color:#162743; font-size:12px; font-weight:950; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-free-meta{ margin-top:2px; color:#718096; font-size:11px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-free-actions{ display:flex; gap:5px; align-items:center; justify-content:flex-end; }
+    .portal-free-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
+    .portal-picker{ display:none; border-radius:16px; border:1px solid rgba(99,138,218,.14); background:#fff; overflow:hidden; }
+    .portal-picker.show{ display:block; }
+    .portal-picker-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px; border-bottom:1px solid rgba(99,138,218,.12); background:#f8fbff; }
+    .portal-picker-search{ min-height:36px; border-radius:12px; border:1px solid rgba(99,138,218,.16); padding:0 11px; color:#263852; font-size:12px; font-weight:800; outline:none; }
+    .portal-picker-list{ display:grid; gap:6px; max-height:300px; overflow:auto; padding:10px; }
+    .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:center; padding:9px 10px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); }
+    .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
+    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } }
+    @media (max-width:900px){ .portal-user-tools{ grid-template-columns:1fr; } .portal-user-table-wrap{ max-height:none; overflow:visible; } .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ max-width:unset; } }
+    .portal-audit-list{ display:grid; gap:8px; max-height:280px; overflow:auto; }
+    .portal-audit-item{ padding:10px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); }
     .portal-feed{ display:grid; gap:9px; max-height:360px; overflow:auto; padding-right:3px; }
     .portal-feed-item{ display:grid; grid-template-columns:10px minmax(0,1fr); gap:10px; padding:10px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); }
     .portal-feed-dot{ width:10px; height:10px; margin-top:4px; border-radius:999px; background:#4f8ef7; box-shadow:0 0 0 4px rgba(79,142,247,.12); }
@@ -3906,12 +3989,24 @@
       min-width: 96px;
       text-align: center;
     }
-    .bank-status{ font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 8px; display: inline-block; text-transform: uppercase; letter-spacing: 0.02em; }
+    .bank-status{
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      white-space: nowrap;
+    }
     .bank-status.applied, .bank-status.active, .bank-status.manual_received{ background: rgba(22,163,74,0.14); color: rgba(20,83,45,0.95); }
     .bank-status.needs_review{ background: rgba(245,158,11,0.16); color: rgba(120,53,15,0.95); }
     .bank-status.pending{ background: rgba(37,99,235,0.14); color: rgba(30,64,175,0.95); }
     .bank-status.error, .bank-status.ignored{ background: rgba(239,68,68,0.14); color: rgba(127,29,29,0.95); }
-    .bank-status.manual_not_received{ background: rgba(100,116,139,0.18); color: rgba(51,65,85,0.98); }
+    .bank-status.manual_not_received{ min-width: 116px; background: rgba(100,116,139,0.18); color: rgba(51,65,85,0.98); }
     .bank-actions{
       display: flex;
       justify-content: flex-end;
@@ -4491,12 +4586,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      padding: max(28px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(34px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
       position: relative;
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      background: #0f1f3d;
+      background: #0c1a34;
       box-sizing: border-box;
     }
     .login-screen::before{
@@ -4506,29 +4601,49 @@
       pointer-events: none;
       z-index: 0;
       background:
-        radial-gradient(ellipse 85% 55% at 72% 18%, rgba(244, 167, 29, 0.11) 0%, transparent 58%),
-        radial-gradient(ellipse 55% 75% at 8% 88%, rgba(26, 52, 96, 0.45) 0%, transparent 62%);
+        linear-gradient(120deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 100%),
+        radial-gradient(ellipse 72% 52% at 74% 16%, rgba(244, 167, 29, 0.18) 0%, transparent 58%),
+        radial-gradient(ellipse 50% 72% at 10% 90%, rgba(61,126,248,0.28) 0%, transparent 64%),
+        linear-gradient(145deg, #08142a 0%, #112b55 52%, #0b1730 100%);
+      background-size: 34px 34px, auto, auto, auto;
+    }
+    .login-screen::after{
+      content: '';
+      position: fixed;
+      inset: auto -12% -34% auto;
+      width: min(720px, 78vw);
+      aspect-ratio: 1;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(244,167,29,0.20), rgba(244,167,29,0.02) 58%, transparent 70%);
+      filter: blur(6px);
+      animation: loginGlowDrift 9s ease-in-out infinite alternate;
     }
     .login-page{
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 700px;
+      max-width: 760px;
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      animation: loginPageRise 560ms cubic-bezier(0.34,1.08,0.64,1) both;
     }
     /* --- Ðang nh?p: d?ng b? v?i landing (kem / navy / vàng) --- */
     .login-screen .login-card.card{
       position: relative;
-      max-width: 640px;
-      padding: 28px 28px 30px;
-      background: linear-gradient(180deg, #fffefb 0%, #fdf8ef 100%);
-      border: 1px solid #e4ddd0;
-      border-radius: 18px;
-      box-shadow: 0 24px 72px rgba(15, 31, 61, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
+      max-width: 760px;
+      padding: 30px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(253,248,239,0.96) 100%);
+      border: 1px solid rgba(255,255,255,0.68);
+      border-radius: 26px;
+      box-shadow:
+        0 34px 90px rgba(4, 13, 32, 0.42),
+        0 0 0 1px rgba(15,31,61,0.05) inset;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
       overflow: hidden;
     }
     .login-screen .login-card.card::before{
@@ -4537,26 +4652,37 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #f4a71d 0%, #fdd87a 50%, #f4a71d 100%);
+      height: 5px;
+      background: linear-gradient(90deg, #f4a71d 0%, #fdd87a 42%, #4f8ef7 100%);
+      pointer-events: none;
+    }
+    .login-screen .login-card.card::after{
+      content: '';
+      position: absolute;
+      right: -80px;
+      top: -92px;
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(79,142,247,0.13), transparent 68%);
       pointer-events: none;
     }
     .login-card-title{
       font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
-      font-size: clamp(26px, 4.2vw, 34px);
-      font-weight: 700;
+      font-size: clamp(32px, 5vw, 46px);
+      font-weight: 800;
       color: #0f1f3d;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-      margin: 0 0 8px;
+      letter-spacing: 0;
+      line-height: 1.02;
+      margin: 0 0 10px;
     }
     .login-card-lead{
       font-family: 'Be Vietnam Pro', var(--font);
-      font-size: 14px;
-      line-height: 1.55;
+      font-size: 14.5px;
+      line-height: 1.65;
       color: #5c6b8a;
-      margin: 0 0 22px;
-      max-width: 420px;
+      margin: 0 0 24px;
+      max-width: 460px;
     }
     .login-screen .login-card .modal-row label{
       display: block;
@@ -4571,12 +4697,13 @@
     .login-screen .login-card input[type=password]{
       font-family: 'Be Vietnam Pro', var(--font);
       border-radius: 12px;
-      border: 1px solid #e4ddd0;
-      background: #ffffff;
+      border: 1px solid rgba(26,52,96,0.13);
+      background: rgba(255,255,255,0.92);
       color: #1a1a2e;
-      padding: 12px 14px;
+      padding: 14px 15px;
       font-size: 15px;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.86) inset;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.18s ease;
     }
     .login-screen .login-card input[type=email]::placeholder,
     .login-screen .login-card input[type=password]::placeholder{
@@ -4585,7 +4712,9 @@
     .login-screen .login-card input[type=email]:focus,
     .login-screen .login-card input[type=password]:focus{
       border-color: rgba(244, 167, 29, 0.75);
-      box-shadow: 0 0 0 3px rgba(244, 167, 29, 0.22);
+      box-shadow: 0 0 0 4px rgba(244, 167, 29, 0.18), 0 12px 28px rgba(15,31,61,0.08);
+      background: #fff;
+      transform: translateY(-1px);
       outline: none;
     }
     .login-screen .login-card .field-error{
@@ -4595,33 +4724,100 @@
     }
     .login-screen .login-card .btn-save{
       width: 100%;
-      margin-top: 6px;
-      border-radius: 12px;
-      padding: 14px 20px;
+      margin-top: 8px;
+      border-radius: 16px;
+      padding: 15px 20px;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 900;
       font-family: 'Be Vietnam Pro', var(--font);
-      background: #f4a71d;
+      background: linear-gradient(180deg, #ffd66f 0%, #f4a71d 100%);
       color: #0f1f3d;
       border: none;
-      box-shadow: 0 4px 20px rgba(244, 167, 29, 0.4);
+      box-shadow: 0 12px 30px rgba(244, 167, 29, 0.34), 0 2px 0 rgba(255,255,255,0.45) inset;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-screen .login-card .btn-save::after{
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 0 32%, rgba(255,255,255,.42) 44%, transparent 58% 100%);
+      transform: translateX(-120%);
+      transition: transform .6s ease;
+      pointer-events: none;
     }
     .login-screen .login-card .btn-save:hover{
-      background: #f5b835;
-      box-shadow: 0 8px 28px rgba(244, 167, 29, 0.48);
+      background: linear-gradient(180deg, #ffe08a 0%, #f5b835 100%);
+      box-shadow: 0 18px 38px rgba(244, 167, 29, 0.42), 0 2px 0 rgba(255,255,255,0.48) inset;
+    }
+    .login-screen .login-card .btn-save:hover::after{
+      transform: translateX(120%);
     }
     .login-screen .login-card .btn-save:active{
       transform: translateY(1px) scale(0.99);
     }
     .login-card-layout{
       display: grid;
-      grid-template-columns: minmax(320px, 1fr) 180px;
+      grid-template-columns: minmax(360px, 1fr) 210px;
       align-items: center;
-      gap: 26px;
+      gap: 34px;
     }
     .login-card-main{
       min-width: 0;
       width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .login-mode-tabs{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 0 0 18px;
+      padding: 5px;
+      border-radius: 16px;
+      background: rgba(15,31,61,0.06);
+      border: 1px solid rgba(26,52,96,0.08);
+    }
+    .login-mode-tab{
+      min-height: 38px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #60708f;
+      font-family: 'Be Vietnam Pro', var(--font);
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+    .login-mode-tab.active{
+      background: #fff;
+      color: #0f1f3d;
+      box-shadow: 0 8px 18px rgba(15,31,61,.10);
+    }
+    .login-register-fields{
+      display: none;
+    }
+    .login-screen[data-auth-mode="register"] .login-register-fields{
+      display: block;
+    }
+    .login-screen[data-auth-mode="register"] .login-remember-row{
+      display: none !important;
+    }
+    .login-success-note{
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(22,163,74,0.10);
+      color: #15803d;
+      border: 1px solid rgba(22,163,74,0.18);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .login-success-note.show{
+      display: block;
     }
     .login-card-main form{ width: 100%; max-width: 420px; }
     .login-card-main input{ width: 100%; }
@@ -4637,16 +4833,17 @@
     .login-brand-logo{
       width: 172px;
       height: 172px;
-      border-radius: 16px;
-      border: 1px solid rgba(15, 23, 42, 0.06);
-      background: #fff;
-      box-shadow: 0 10px 32px rgba(15, 31, 61, 0.12);
-      padding: 10px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.72);
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      box-shadow: 0 22px 46px rgba(15, 31, 61, 0.16), 0 0 0 8px rgba(255,255,255,0.38);
+      padding: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       flex-shrink: 0;
+      animation: loginLogoFloat 4.8s ease-in-out infinite;
     }
     .login-brand-logo img{
       width: 100%;
@@ -4663,8 +4860,9 @@
       line-height: 1.35;
     }
     .login-back-landing{
-      margin: 20px 0 0;
+      margin: 18px 0 0;
       text-align: center;
+      animation: loginFadeIn 680ms ease 120ms both;
     }
     .login-back-landing a{
       font-family: 'Be Vietnam Pro', var(--font);
@@ -4678,6 +4876,22 @@
     .login-back-landing a:hover{
       color: #fdd87a;
       border-bottom-color: rgba(253, 216, 122, 0.75);
+    }
+    @keyframes loginPageRise{
+      from{ opacity: 0; transform: translateY(18px) scale(.985); }
+      to{ opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes loginFadeIn{
+      from{ opacity: 0; transform: translateY(8px); }
+      to{ opacity: 1; transform: translateY(0); }
+    }
+    @keyframes loginLogoFloat{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-6px); }
+    }
+    @keyframes loginGlowDrift{
+      from{ transform: translate3d(0,0,0) scale(1); opacity: .72; }
+      to{ transform: translate3d(-5%, -4%, 0) scale(1.08); opacity: .95; }
     }
     @media (max-width: 640px){
       .login-screen .login-card.card{ padding: 22px 18px 24px; max-width: 100%; }
@@ -4696,6 +4910,139 @@
       .login-card-main form{ max-width: none; }
       .login-screen .login-card .btn-save{ width: 100%; }
     }
+    .module-choice-screen{
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: max(24px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      background:
+        linear-gradient(135deg, rgba(15,31,61,.96), rgba(26,52,96,.92)),
+        radial-gradient(circle at 80% 12%, rgba(244,167,29,.22), transparent 34%);
+    }
+    .module-choice-panel{
+      width: min(560px, 100%);
+      display: grid;
+      gap: 20px;
+      color: #fff;
+      text-align: center;
+    }
+    .module-choice-brand{
+      display: grid;
+      place-items: center;
+      gap: 10px;
+    }
+    .module-choice-logo{
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      padding: 9px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(255,255,255,.72);
+      box-shadow: 0 16px 36px rgba(0,0,0,.18), inset 0 0 0 1px rgba(15,31,61,.05);
+      filter: drop-shadow(0 14px 28px rgba(0,0,0,.22));
+    }
+    .module-choice-title{
+      margin: 0;
+      color: #fff;
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: clamp(28px, 6vw, 42px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    .module-choice-sub{
+      margin: 0 auto;
+      max-width: 460px;
+      color: rgba(255,255,255,.74);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.55;
+    }
+    .module-choice-grid{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .module-choice-tile{
+      aspect-ratio: 1 / 1;
+      min-height: 168px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 18px;
+      background: rgba(255,255,255,.96);
+      color: #0f1f3d;
+      box-shadow: 0 24px 60px rgba(0,0,0,.22);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      font-family: 'Be Vietnam Pro', var(--font);
+    }
+    .module-choice-tile:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 30px 72px rgba(0,0,0,.28);
+      border-color: rgba(244,167,29,.65);
+    }
+    .module-choice-tile:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(244,167,29,.32), 0 30px 72px rgba(0,0,0,.28);
+    }
+    .module-choice-icon{
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 12px;
+      background: #f6f0e3;
+      color: #9a5d08;
+    }
+    .module-choice-icon svg{
+      width: 25px;
+      height: 25px;
+      display: block;
+    }
+    .module-choice-tile.admin .module-choice-icon{
+      background: #eaf1ff;
+      color: #1a54c9;
+    }
+    .module-choice-name{
+      display: block;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    .module-choice-note{
+      display: block;
+      margin-top: 8px;
+      color: #60708f;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .module-choice-footer{
+      display: flex;
+      justify-content: center;
+    }
+    .module-choice-logout{
+      min-height: 40px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.86);
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    @media (max-width: 560px){
+      .module-choice-grid{ grid-template-columns: 1fr; }
+      .module-choice-tile{ aspect-ratio: auto; min-height: 132px; }
+    }
 
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; scroll-behavior: auto !important; }
@@ -4710,11 +5057,15 @@
     .student-exam-brand-title{font-weight:900;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.student-exam-brand-sub{margin-top:2px;color:#66748d;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .student-exam-user{display:flex;align-items:center;gap:8px;flex-shrink:0}.student-exam-hello{display:none;color:#51617a;font-size:12px;font-weight:800;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .student-exam-logout,.student-exam-btn{min-height:38px;border:0;border-radius:999px;padding:9px 13px;font-weight:900;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}.student-exam-logout{background:#fff;color:#12213d;border:1px solid rgba(18,33,61,.12);box-shadow:0 6px 16px rgba(18,33,61,.07)}
+    .student-exam-admin-link{background:#fff8e8;color:#7a4a06;border-color:rgba(244,167,29,.34);box-shadow:0 8px 18px rgba(122,74,6,.08);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.student-exam-admin-link:hover{transform:translateY(-1px);background:#fff3d6;border-color:rgba(244,167,29,.58);box-shadow:0 12px 24px rgba(122,74,6,.12)}.student-exam-admin-link svg{width:14px;height:14px;display:block;flex:0 0 auto}
+    .student-exam-plan{display:inline-flex;align-items:center;min-height:30px;border-radius:999px;padding:6px 10px;background:#fff4d6;color:#8a5208;border:1px solid rgba(244,167,29,.38);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-plan.premium{background:#e8f8ef;color:#14532d;border-color:rgba(22,163,74,.28)}
+    .student-exam-plan.pending{background:#eef3f9;color:#475569;border-color:rgba(71,85,105,.18)}.student-exam-plan.blocked{background:#fee2e2;color:#991b1b;border-color:rgba(239,68,68,.24)}
+    .student-exam-approval-note{display:none;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:#fff8e8;border:1px solid rgba(244,167,29,.42);color:#7a4a06;font-size:13px;font-weight:850;line-height:1.45;box-shadow:0 10px 24px rgba(122,74,6,.08)}.student-exam-approval-note.show{display:flex;align-items:center;gap:10px}.student-exam-approval-note:before{content:"!";width:24px;height:24px;border-radius:999px;background:#f4a71d;color:#fff;display:grid;place-items:center;flex:0 0 auto;font-size:14px;font-weight:950}
     .student-exam-hero{position:relative;overflow:hidden;border-radius:26px;padding:24px 18px;background:radial-gradient(circle at 80% 10%,rgba(244,167,29,.28),transparent 32%),linear-gradient(135deg,#0f1f3d 0%,#1a3460 100%);color:#fff;box-shadow:0 18px 42px rgba(15,31,61,.22)}.student-exam-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;color:#f8d98f;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.student-exam-kicker:before{content:"";width:24px;height:2px;border-radius:999px;background:#f4a71d}.student-exam-hero h1{margin:0;color:#fff;font-size:clamp(28px,8vw,48px);line-height:1.08;letter-spacing:-.02em}.student-exam-hero p{max-width:650px;margin:12px 0 18px;color:rgba(255,255,255,.78);font-size:14px;line-height:1.65;font-weight:600}.student-exam-cta{background:linear-gradient(180deg,#ffd66f,#f4a71d);color:#14213d;box-shadow:0 10px 24px rgba(244,167,29,.28)}
     .student-exam-filters{margin-top:14px;padding:12px;border-radius:22px;background:rgba(255,255,255,.94);border:1px solid rgba(18,33,61,.08);box-shadow:0 12px 32px rgba(18,33,61,.08)}.student-exam-search{width:100%;min-height:46px;border:1px solid rgba(18,33,61,.12);border-radius:16px;background:#f8fafc;padding:0 14px;color:#12213d;font-size:14px;font-weight:700;outline:none}.student-exam-search:focus{border-color:rgba(244,167,29,.7);box-shadow:0 0 0 4px rgba(244,167,29,.14);background:#fff}.student-exam-filter-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:10px}.student-exam-filter-grid select{min-height:42px;border-radius:14px;border:1px solid rgba(18,33,61,.1);background:#fff;color:#263852;padding:0 10px;font-size:13px;font-weight:800;outline:none}
     .student-exam-section{margin-top:22px}.student-exam-section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}.student-exam-section h2{margin:0;color:#12213d;font-size:19px;line-height:1.2}.student-exam-count{color:#718096;font-size:12px;font-weight:800;white-space:nowrap}.student-exam-list,.student-exam-feature-grid{display:grid;grid-template-columns:1fr;gap:12px}
-    .student-exam-card{display:grid;gap:12px;padding:15px;border-radius:20px;background:rgba(255,255,255,.96);border:1px solid rgba(18,33,61,.08);box-shadow:0 12px 30px rgba(18,33,61,.08)}.student-exam-card-top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}.student-exam-card h3{margin:0;color:#12213d;font-size:15px;line-height:1.35}.student-exam-desc{margin:6px 0 0;color:#65758e;font-size:13px;line-height:1.5;font-weight:600}.student-exam-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.student-exam-badge{display:inline-flex;align-items:center;min-height:24px;padding:4px 9px;border-radius:999px;background:#eef3f9;color:#40516c;font-size:11px;font-weight:900}.student-exam-badge.gold{background:#fff4d6;color:#8a5208}.student-exam-downloads{color:#7a8499;font-size:11px;font-weight:900;white-space:nowrap}
-    .student-exam-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.student-exam-action{min-height:38px;border-radius:13px;border:1px solid rgba(18,33,61,.1);background:#fff;color:#162743;font-size:12px;font-weight:900;cursor:pointer}.student-exam-action.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-action.answer{background:#f8fbff;border-color:rgba(26,52,96,.18);color:#1a3460}.student-exam-action.audio{background:#fff8e8;border-color:rgba(244,167,29,.35);color:#8a5208}.student-exam-state{padding:22px 16px;border-radius:20px;background:rgba(255,255,255,.92);border:1px dashed rgba(18,33,61,.16);color:#62718a;font-size:14px;font-weight:800;text-align:center}
+    .student-exam-card{display:grid;gap:12px;padding:15px;border-radius:20px;background:rgba(255,255,255,.96);border:1px solid rgba(18,33,61,.08);box-shadow:0 12px 30px rgba(18,33,61,.08)}.student-exam-card.is-locked{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,250,252,.94));border-style:dashed}.student-exam-card-top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}.student-exam-card h3{margin:0;color:#12213d;font-size:15px;line-height:1.35}.student-exam-desc{margin:6px 0 0;color:#65758e;font-size:13px;line-height:1.5;font-weight:600}.student-exam-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.student-exam-badge{display:inline-flex;align-items:center;min-height:24px;padding:4px 9px;border-radius:999px;background:#eef3f9;color:#40516c;font-size:11px;font-weight:900}.student-exam-badge.gold{background:#fff4d6;color:#8a5208}.student-exam-badge.locked{background:#f1f5f9;color:#475569}.student-exam-badge.premium{background:#e8f8ef;color:#14532d}.student-exam-downloads{color:#7a8499;font-size:11px;font-weight:900;white-space:nowrap}
+    .student-exam-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.student-exam-action{min-height:38px;border-radius:13px;border:1px solid rgba(18,33,61,.1);background:#fff;color:#162743;font-size:12px;font-weight:900;cursor:pointer}.student-exam-action.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-action.answer{background:#f8fbff;border-color:rgba(26,52,96,.18);color:#1a3460}.student-exam-action.audio{background:#fff8e8;border-color:rgba(244,167,29,.35);color:#8a5208}.student-exam-action.upgrade{grid-column:1/-1;background:#fff8e8;border-color:rgba(244,167,29,.42);color:#8a5208}.student-exam-action:disabled{cursor:not-allowed;opacity:.58}.student-exam-locked-note{padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid rgba(18,33,61,.08);color:#56657a;font-size:12px;font-weight:800;line-height:1.45}.student-exam-state{padding:22px 16px;border-radius:20px;background:rgba(255,255,255,.92);border:1px dashed rgba(18,33,61,.16);color:#62718a;font-size:14px;font-weight:800;text-align:center}
     .student-exam-personal{margin-top:18px;display:grid;grid-template-columns:1fr;gap:14px}.student-exam-mini-section{min-width:0}.student-exam-mini-section .student-exam-section-head{margin-bottom:8px}.student-exam-mini-section h2{font-size:17px}.student-exam-card-tools{display:flex;align-items:flex-start;gap:8px;flex-shrink:0}.student-exam-save{width:38px;height:38px;border-radius:14px;border:1px solid rgba(18,33,61,.11);background:#fff;color:#66748d;display:inline-grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px rgba(18,33,61,.07);transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}.student-exam-save svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}.student-exam-save[aria-pressed="true"]{background:#fff4d6;border-color:rgba(244,167,29,.45);color:#8a5208}.student-exam-save[aria-pressed="true"] svg{fill:currentColor}.student-exam-save:disabled{opacity:.55;cursor:not-allowed}.student-exam-save:not(:disabled):hover{transform:translateY(-1px);border-color:rgba(244,167,29,.55);color:#8a5208}
     .student-exam-preview-modal{position:fixed;inset:0;z-index:4000;display:none;padding:14px;background:rgba(8,18,38,.62);backdrop-filter:blur(10px)}.student-exam-preview-modal.open{display:grid;place-items:center}.student-exam-preview-dialog{width:min(980px,100%);max-height:min(88vh,820px);display:grid;grid-template-rows:auto minmax(260px,1fr) auto;overflow:hidden;border-radius:22px;background:#fff;box-shadow:0 28px 80px rgba(0,0,0,.32)}.student-exam-preview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(18,33,61,.08)}.student-exam-preview-head strong{display:block;color:#12213d;font-size:15px;line-height:1.3}.student-exam-preview-head span{display:block;margin-top:3px;color:#748096;font-size:12px;font-weight:700}.student-exam-preview-close{width:36px;height:36px;border:0;border-radius:12px;background:#eef3f9;color:#12213d;font-size:20px;cursor:pointer}.student-exam-preview-body{min-height:280px;background:#edf2f8;overflow:auto}.student-exam-preview-frame{width:100%;height:100%;min-height:60vh;border:0;display:block;background:#fff}.student-exam-pdf-pages{display:grid;gap:14px;justify-items:center;padding:14px;background:#edf2f8}.student-exam-pdf-page{width:min(100%,860px);height:auto;background:#fff;border-radius:10px;box-shadow:0 10px 24px rgba(18,33,61,.14)}.student-exam-preview-fallback{min-height:300px;display:grid;place-items:center;padding:24px;color:#52627c;text-align:center;font-weight:800;line-height:1.5}.student-exam-preview-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(18,33,61,.08)}
     @media (min-width:700px){.student-exam-shell{padding:18px 22px 54px}.student-exam-header{margin-left:-22px;margin-right:-22px;padding-left:22px;padding-right:22px}.student-exam-hello{display:block}.student-exam-hero{padding:34px 30px}.student-exam-filter-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.student-exam-list{grid-template-columns:repeat(2,minmax(0,1fr))}.student-exam-feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -4997,7 +5348,7 @@ button, input, select, textarea { font-family: var(--f) !important; }
 
 /* Page animations */
 #tab-dashboard, #tab-attendance, #tab-work, #tab-classes,
-#tab-students, #tab-tuition, #tab-analytics, #tab-bank,
+#tab-students, #tab-tuition, #tab-analytics, #tab-portal-admin, #tab-bank,
 #tab-schedule, #tab-consult {
   animation: pageIn 220ms cubic-bezier(0.4,0,0.2,1) both !important;
 }
@@ -5483,8 +5834,34 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 /* -- LOGIN CARD ------------------------------------------- */
 .login-screen .login-card.card {
   border-radius: var(--r-xl) !important;
-  box-shadow: 0 32px 80px rgba(11,24,65,0.30), 0 0 0 1px rgba(255,255,255,0.42) inset !important;
-  animation: loginIn 500ms cubic-bezier(0.34,1.1,0.64,1) both !important;
+  box-shadow: 0 34px 90px rgba(4,13,32,0.42), 0 0 0 1px rgba(15,31,61,0.05) inset !important;
+  animation: loginPageRise 560ms cubic-bezier(0.34,1.08,0.64,1) both !important;
+}
+.login-screen .login-card input[type=email],
+.login-screen .login-card input[type=password]{
+  border-color: rgba(26,52,96,0.13) !important;
+  background: rgba(255,255,255,0.94) !important;
+  color: #0f1f3d !important;
+}
+.login-screen .login-card input[type=email]:focus,
+.login-screen .login-card input[type=password]:focus{
+  border-color: rgba(244,167,29,0.76) !important;
+  box-shadow: 0 0 0 4px rgba(244,167,29,0.18), 0 12px 28px rgba(15,31,61,0.08) !important;
+}
+.login-screen .login-card .btn-save{
+  background: linear-gradient(180deg, #ffd66f 0%, #f4a71d 100%) !important;
+  color: #0f1f3d !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 30px rgba(244,167,29,0.34), 0 2px 0 rgba(255,255,255,0.45) inset !important;
+}
+.login-screen .login-card .btn-save:hover{
+  background: linear-gradient(180deg, #ffe08a 0%, #f5b835 100%) !important;
+  box-shadow: 0 18px 38px rgba(244,167,29,0.42), 0 2px 0 rgba(255,255,255,0.48) inset !important;
+}
+.login-screen .login-brand-logo{
+  border-radius: 24px !important;
+  box-shadow: 0 22px 46px rgba(15,31,61,0.16), 0 0 0 8px rgba(255,255,255,0.38) !important;
 }
 @keyframes loginIn {
   from { opacity:0; transform: translateY(22px) scale(0.96); }
@@ -5504,14 +5881,35 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 @media (min-width: 861px) {
   .bank-tx-table .bank-head,
   .bank-tx-table .bank-row {
-    grid-template-columns: 52px minmax(188px,.95fr) 118px 146px minmax(285px,1.28fr) minmax(260px,1.22fr) minmax(184px,.78fr) !important;
-    column-gap: 16px !important;
+    grid-template-columns: 52px minmax(168px,.82fr) 108px 132px minmax(245px,1.12fr) minmax(228px,1fr) minmax(276px,1.04fr) !important;
+    column-gap: 12px !important;
   }
   .bank-tx-table .bank-row{ padding: 9px 10px !important; }
-  .bank-tx-table .bank-status:not(.bank-channel-badge){ min-width: 0; padding-left: 10px; padding-right: 10px; }
+  .bank-tx-table .bank-status:not(.bank-channel-badge){ min-width: max-content; padding-left: 10px; padding-right: 10px; }
+  .bank-tx-table .bank-status.manual_not_received{ min-width: 116px; }
   .bank-tx-table .bank-money{ text-align: right; }
-  .bank-tx-table .bank-actions{ gap: 6px; flex-wrap: nowrap; }
-  .bank-tx-table .bank-actions .btn-sm{ padding-left: 11px; padding-right: 11px; }
+  .bank-tx-table .bank-actions{
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+  .bank-tx-table .bank-actions .btn-sm{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    max-width: 96px;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bank-tx-table .bank-actions .bank-tx-quick-recommend{
+    max-width: 78px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
   .bank-tx-table .bank-head > div:nth-child(1),
   .bank-tx-table .bank-row > div:nth-child(1),
   .bank-tx-table .bank-head > div:nth-child(3),
@@ -5583,9 +5981,12 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
     font-size: 15px !important;
   }
   .bank-tx-table .bank-status{
-    min-width: 0 !important;
+    min-width: max-content !important;
     text-align: left !important;
     justify-self: start !important;
+  }
+  .bank-tx-table .bank-status.manual_not_received{
+    min-width: 116px !important;
   }
   .bank-tx-table .bank-actions{
     flex-direction: column !important;
@@ -5954,21 +6355,28 @@ a:focus-visible,
 }
 .dash-v2-sub { font-size: 13px !important; color: var(--muted) !important; margin-top: 4px !important; font-weight: 500 !important; letter-spacing: -.01em !important; }
 .dash-v2-actions { display: flex !important; align-items: center !important; gap: 10px !important; flex-wrap: wrap !important; }
-.dash-v2-sync {
+.dash-v2-portal-link {
   display: inline-flex !important; align-items: center !important; gap: 7px !important;
-  padding: 7px 14px !important; border-radius: var(--r-full) !important;
-  background: var(--good-bg) !important; color: var(--good) !important;
-  font-size: 12px !important; font-weight: 700 !important;
-  border: 1px solid rgba(22,163,74,0.25) !important;
+  padding: 8px 14px !important; border-radius: var(--r-full) !important;
+  background: #fff8e8 !important; color: #7a4a06 !important;
+  font-size: 12px !important; font-weight: 800 !important;
+  border: 1px solid rgba(244,167,29,0.34) !important;
+  cursor: pointer !important;
+  font-family: var(--f) !important;
+  box-shadow: 0 8px 18px rgba(122,74,6,0.08) !important;
+  transition: transform var(--spring), background var(--ease), border-color var(--ease), box-shadow var(--ease) !important;
 }
-.dash-v2-sync::before {
-  content:'' !important; width:6px !important; height:6px !important;
-  border-radius:50% !important; background: var(--good) !important;
-  box-shadow: 0 0 0 3px rgba(22,163,74,0.22) !important;
-  animation: saveBarPulse 1.6s ease-in-out infinite !important;
+.dash-v2-portal-link:hover {
+  transform: translateY(-1px) !important;
+  background: #fff3d6 !important;
+  border-color: rgba(244,167,29,0.58) !important;
+  box-shadow: 0 12px 24px rgba(122,74,6,0.12) !important;
 }
-.dash-v2-sync.off { background: var(--warn-bg) !important; color: var(--warn) !important; border-color: rgba(217,119,6,0.25) !important; }
-.dash-v2-sync.off::before { background: var(--warn) !important; box-shadow: 0 0 0 3px rgba(217,119,6,0.22) !important; animation: none !important; }
+.dash-v2-portal-link svg {
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+}
 .dash-v2-addbtn {
   display: inline-flex !important; align-items: center !important; gap: 6px !important;
   background: linear-gradient(135deg, var(--blue), var(--blue-dk)) !important; color: #fff !important;
@@ -7900,14 +8308,32 @@ a:focus-visible,
   </div>
 </div>
 <div id="parent-payment-root" style="display:none"></div>
-<div id="login-screen" class="login-screen">
+<div id="login-screen" class="login-screen" data-auth-mode="login">
   <div class="login-page">
     <div class="login-card card">
       <div class="login-card-layout">
         <div class="login-card-main">
           <h1 class="login-card-title" id="login-app-title">Đăng nhập</h1>
-          <p class="login-card-lead">MV Klass — đăng nhập để vào dashboard hoặc kho dữ liệu học sinh.</p>
+          <p class="login-card-lead">Phần mềm quản lí trung tâm thông minh.</p>
+          <div class="login-mode-tabs" role="tablist" aria-label="Chọn chế độ đăng nhập">
+            <button type="button" class="login-mode-tab active" id="login-mode-login" onclick="setLoginAuthMode('login')">Đăng nhập</button>
+            <button type="button" class="login-mode-tab" id="login-mode-register" onclick="setLoginAuthMode('register')">Đăng ký học sinh</button>
+          </div>
           <form id="login-form" action="#" method="post" autocomplete="on">
+            <div class="login-register-fields">
+              <div class="modal-row">
+                <label for="register-name">Họ tên học sinh</label>
+                <input type="text" id="register-name" name="name" autocomplete="name" placeholder="Nguyễn Văn A"/>
+              </div>
+              <div class="modal-row">
+                <label for="register-class-group">Chọn chương trình học</label>
+                <select id="register-class-group" name="student_class_group">
+                  <option value="">Chọn chương trình học</option>
+                  <option value="entrance_10">Thi vào 10</option>
+                  <option value="university">THPT QG</option>
+                </select>
+              </div>
+            </div>
             <div class="modal-row">
               <label for="login-email">Email</label>
               <input type="email" id="login-email" name="email" autocomplete="username" placeholder="email@truong.edu"/>
@@ -7916,11 +8342,19 @@ a:focus-visible,
               <label for="login-password">Mật khẩu</label>
               <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Mật khẩu"/>
             </div>
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;margin:4px 0 10px;user-select:none;cursor:pointer">
+            <div class="login-register-fields">
+              <div class="modal-row">
+                <label for="register-password-confirm">Nhập lại mật khẩu</label>
+                <input type="password" id="register-password-confirm" name="password_confirm" autocomplete="new-password" placeholder="Nhập lại mật khẩu"/>
+              </div>
+              <div class="analytics-muted" style="font-size:12px;line-height:1.45;margin:-4px 0 10px">Sau khi xác nhận email, tài khoản Free được mở 5 đề theo chương trình đã chọn.</div>
+            </div>
+            <label class="login-remember-row" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;margin:4px 0 10px;user-select:none;cursor:pointer">
               <input type="checkbox" id="login-remember" style="width:16px;height:16px;cursor:pointer"/>
               <span>Ghi nhớ đăng nhập trên thiết bị này</span>
             </label>
             <div class="field-error" id="login-error"></div>
+            <div class="login-success-note" id="login-success-note"></div>
             <button type="submit" class="btn-save">Đăng nhập</button>
           </form>
         </div>
@@ -7933,6 +8367,38 @@ a:focus-visible,
       </div>
     </div>
     <p class="login-back-landing"><a href="./landing-thay-vu.html">← Về trang giới thiệu</a></p>
+  </div>
+</div>
+
+<div id="module-choice-screen" class="module-choice-screen" aria-label="Chọn khu vực truy cập">
+  <div class="module-choice-panel">
+    <div class="module-choice-brand">
+      <img class="module-choice-logo" src="./assets/brand/Center-logo.png" alt="" onerror="this.style.visibility='hidden'"/>
+      <h1 class="module-choice-title">MV Klass</h1>
+    </div>
+    <div class="module-choice-grid">
+      <button type="button" class="module-choice-tile library" onclick="openStudentPortalModule()">
+        <span>
+          <span class="module-choice-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" stroke-width="2"/><path d="M9 7h7M9 11h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+          <span class="module-choice-name">Kho tài liệu</span>
+          <span class="module-choice-note">Student portal, đề thi và tài liệu ôn tập.</span>
+        </span>
+      </button>
+      <button type="button" class="module-choice-tile admin" onclick="openAdminDashboardModule()">
+        <span>
+          <span class="module-choice-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 13h8V3H3v10Z" stroke="currentColor" stroke-width="2"/><path d="M13 21h8V11h-8v10Z" stroke="currentColor" stroke-width="2"/><path d="M13 3h8v6h-8V3Z" stroke="currentColor" stroke-width="2"/><path d="M3 21h8v-6H3v6Z" stroke="currentColor" stroke-width="2"/></svg>
+          </span>
+          <span class="module-choice-name">Trang quản trị</span>
+          <span class="module-choice-note">Điểm danh, học phí, lớp học và báo cáo.</span>
+        </span>
+      </button>
+    </div>
+    <div class="module-choice-footer">
+      <button type="button" class="module-choice-logout" onclick="signOutUser()">Đăng xuất</button>
+    </div>
   </div>
 </div>
 
@@ -7952,6 +8418,13 @@ a:focus-visible,
       <div class="brand-meta title-block">
         <h1 id="app-main-title">MV Klass</h1>
         <div class="brand-sub" id="app-main-subtitle">Phần mềm quản lí lớp học thông minh</div>
+        <button type="button" class="workspace-switcher" onclick="openStudentPortalModule()" title="Chuyển sang kho tài liệu">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Kho tài liệu
+        </button>
         <div class="date" id="today"></div>
       </div>
     </div>
@@ -8021,6 +8494,10 @@ a:focus-visible,
     <button class="tab" id="tab-btn-analytics" onclick="showTab('analytics')">
       <span class="tab-icon" aria-hidden="true">TK</span>
       Thống kê
+    </button>
+    <button class="tab" id="tab-btn-portal-admin" onclick="showTab('portal-admin')">
+      <span class="tab-icon" aria-hidden="true">PT</span>
+      Portal học sinh
     </button>
     <button class="tab" id="tab-btn-leaderboard" onclick="showTab('leaderboard')">
       <span class="tab-icon" aria-hidden="true">LB</span>
@@ -8155,7 +8632,6 @@ a:focus-visible,
     <div class="sub-tabs" id="analytics-subtabs">
       <button type="button" class="sub-tab active" id="analytics-sub-att" onclick="showAnalyticsSubtab('att')">Thống kê điểm danh</button>
       <button type="button" class="sub-tab" id="analytics-sub-rev" onclick="showAnalyticsSubtab('rev')">Thống kê doanh thu</button>
-      <button type="button" class="sub-tab" id="analytics-sub-portal" onclick="showAnalyticsSubtab('portal')">Student portal</button>
     </div>
 
     <div class="analytics-toolbar">
@@ -8231,7 +8707,9 @@ a:focus-visible,
       </div>
     </div>
 
-    <div id="analytics-pane-portal" style="display:none">
+  </div>
+
+  <div id="tab-portal-admin" style="display:none">
       <div class="portal-analytics-shell" id="portal-analytics-root">
         <div class="portal-analytics-hero">
           <div>
@@ -8248,6 +8726,33 @@ a:focus-visible,
           <div class="portal-kpi-card"><div class="label">Lượt mở đề</div><div class="value" id="portal-kpi-opens">0</div><div class="hint">Theo từng tài khoản</div></div>
           <div class="portal-kpi-card"><div class="label">Lượt tải</div><div class="value" id="portal-kpi-downloads">0</div><div class="hint">Tải file trong portal</div></div>
           <div class="portal-kpi-card"><div class="label">Đề đã lưu</div><div class="value" id="portal-kpi-saves">0</div><div class="hint">Bookmark còn hiệu lực</div></div>
+        </div>
+        <div class="portal-panel">
+          <div class="portal-panel-head">
+            <div>
+              <div class="portal-panel-title">Học sinh portal</div>
+              <div class="portal-panel-sub">Quản lý trạng thái Free/Premium và hoạt động từng tài khoản.</div>
+            </div>
+            <select id="portal-plan-filter" class="analytics-att-month-inp" onchange="onPortalStudentFilterChange()">
+              <option value="all">Tất cả</option>
+              <option value="pending">Chờ duyệt</option>
+              <option value="free">Free</option>
+              <option value="premium">Premium</option>
+              <option value="blocked">Đã khóa</option>
+            </select>
+            <button type="button" class="btn-sm" onclick="undoLastPortalAccessChange()">Hoàn tác</button>
+          </div>
+          <div class="portal-panel-body" id="portal-student-users"></div>
+        </div>
+        <div class="portal-analytics-grid">
+          <div class="portal-panel">
+            <div class="portal-panel-head"><div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn 5 đề Thi vào 10 và 5 đề THPT QG. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div></div>
+            <div class="portal-panel-body" id="portal-free-curation"></div>
+          </div>
+          <div class="portal-panel">
+            <div class="portal-panel-head"><div><div class="portal-panel-title">Lịch sử quyền portal</div><div class="portal-panel-sub">Audit bật/tắt Premium, duyệt hoặc khóa tài khoản.</div></div></div>
+            <div class="portal-panel-body" id="portal-access-audit"></div>
+          </div>
         </div>
         <div class="portal-analytics-grid">
           <div class="portal-panel">
@@ -8271,7 +8776,6 @@ a:focus-visible,
         </div>
       </div>
     </div>
-  </div>
 
   <div id="tab-leaderboard" style="display:none">
     <div class="leaderboard-shell">
@@ -9415,14 +9919,24 @@ a:focus-visible,
       </div>
       <div class="student-exam-user">
         <div class="student-exam-hello" id="student-exam-hello">Xin chào</div>
+        <div class="student-exam-plan" id="student-exam-plan-badge">Free</div>
+        <button type="button" class="student-exam-logout student-exam-admin-link" id="student-exam-admin-switch" onclick="openAdminDashboardModule()" style="display:none">
+          Đi tới trang quản trị
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="m13 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <button type="button" class="student-exam-logout" onclick="signOutUser()">Đăng xuất</button>
       </div>
     </header>
 
+    <div class="student-exam-approval-note" id="student-exam-approval-note" role="status"></div>
+
     <section class="student-exam-hero">
       <div class="student-exam-kicker">Kho đề thi Tiếng Anh</div>
       <h1>Kho đề Tiếng Anh Vào 10 & THPT</h1>
-      <p>Đề luyện tập chọn lọc, có xem trước và tải nhanh.</p>
+      <p id="student-exam-plan-note">Bạn đang có quyền truy cập 5 đề miễn phí. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ.</p>
       <button type="button" class="student-exam-btn student-exam-cta" onclick="studentExamScrollToLatest()">Xem đề mới nhất</button>
     </section>
 
@@ -9445,7 +9959,7 @@ a:focus-visible,
           <select id="student-exam-level" aria-label="Lọc cấp học">
             <option value="all">Tất cả cấp học</option>
             <option value="entrance_10">Thi vào 10</option>
-            <option value="university">THPT / Đại học</option>
+            <option value="university">THPT QG</option>
           </select>
           <select id="student-exam-type" aria-label="Lọc đề chính thức hoặc đề minh họa">
             <option value="all">Tất cả dạng đề</option>
@@ -9586,7 +10100,7 @@ a:focus-visible,
 
 <div class="modal-backdrop" id="bank-tx-candidate-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bank-tx-candidate-title">
-    <div class="modal-title" id="bank-tx-candidate-title">Chon hoc sinh goi y</div>
+    <div class="modal-title" id="bank-tx-candidate-title">Chọn học sinh gợi ý</div>
     <div style="padding:0 2px 4px">
       <p class="analytics-muted" id="bank-tx-candidate-hint" style="font-size:12px;margin:0 0 8px;line-height:1.45"></p>
       <div id="bank-tx-candidate-list" class="bank-tx-candidate-list" aria-live="polite"></div>
@@ -11389,6 +11903,10 @@ const PARENT_PORTAL_BASE_URL = String((APP.payments && APP.payments.parentPortal
 let currentSession = null;
 let currentRole = null;
 let currentProfileDisplayName = '';
+let currentPortalPlan = 'free';
+let currentPortalStatus = 'active';
+let currentPortalFreeGroup = 'entrance_10';
+let adminShellBooted = false;
 let studentExamRows = [];
 let studentExamFilteredRows = [];
 let studentExamActivityById = {};
@@ -12946,8 +13464,11 @@ function getHeaders(prefer) {
 
 const AUTH_STORAGE_KEY = APP.storage.authKey || 'sb-auth';
 const AUTH_REMEMBER_KEY = (APP.storage && APP.storage.authRememberKey) || 'mvk-auth-remember';
+const SIGNUP_LOGIN_NOTICE_KEY = 'mvk-student-signup-login-notice';
 const TAB_STORAGE_KEY = (APP.storage && APP.storage.tabKey) || 'mvk-last-tab';
-const TAB_IDS = ['dashboard', 'attendance', 'work', 'classes', 'students', 'tuition', 'bank', 'schedule', 'analytics', 'leaderboard', 'consult'];
+const WORKSPACE_MODULE_STORAGE_KEY = 'mvk-last-workspace-module';
+const TAB_IDS = ['dashboard', 'attendance', 'work', 'classes', 'students', 'tuition', 'bank', 'schedule', 'analytics', 'portal-admin', 'leaderboard', 'consult'];
+const WORKSPACE_MODULE_IDS = ['admin', 'portal'];
 let authRememberMe = false;
 
 function setAuthRememberChoice(remember) {
@@ -12991,6 +13512,43 @@ function clearAuthSessionStorage() {
   try { localStorage.removeItem(AUTH_STORAGE_KEY); } catch (e) {}
 }
 
+function workspaceModuleStorageKeyForUser() {
+  const userKey = String(currentSession?.user?.id || currentSession?.user?.email || '').trim();
+  return userKey ? `${WORKSPACE_MODULE_STORAGE_KEY}:${userKey}` : WORKSPACE_MODULE_STORAGE_KEY;
+}
+
+function rememberWorkspaceModule(moduleName) {
+  const module = String(moduleName || '').trim();
+  if (!WORKSPACE_MODULE_IDS.includes(module)) return;
+  const key = workspaceModuleStorageKeyForUser();
+  try { localStorage.setItem(key, module); } catch (e) {}
+  try { sessionStorage.setItem(key, module); } catch (e) {}
+}
+
+function getRememberedWorkspaceModule() {
+  const key = workspaceModuleStorageKeyForUser();
+  const keys = key === WORKSPACE_MODULE_STORAGE_KEY ? [key] : [key, WORKSPACE_MODULE_STORAGE_KEY];
+  for (const storage of [sessionStorage, localStorage]) {
+    for (const storageKey of keys) {
+      try {
+        const module = String(storage.getItem(storageKey) || '').trim();
+        if (WORKSPACE_MODULE_IDS.includes(module)) return module;
+      } catch (e) {}
+    }
+  }
+  return '';
+}
+
+function clearRememberedWorkspaceModule(keyOverride) {
+  const key = String(keyOverride || workspaceModuleStorageKeyForUser()).trim() || WORKSPACE_MODULE_STORAGE_KEY;
+  const keys = key === WORKSPACE_MODULE_STORAGE_KEY ? [key] : [key, WORKSPACE_MODULE_STORAGE_KEY];
+  for (const storage of [sessionStorage, localStorage]) {
+    keys.forEach((storageKey) => {
+      try { storage.removeItem(storageKey); } catch (e) {}
+    });
+  }
+}
+
 function getRememberedTab() {
   try {
     const url = new URL(window.location.href);
@@ -13005,7 +13563,7 @@ function getRememberedTab() {
 
 function normalizeTabForRole(tab) {
   let t = TAB_IDS.includes(tab) ? tab : 'dashboard';
-  if (isTeacher() && (t === 'students' || t === 'classes' || t === 'tuition' || t === 'bank' || t === 'analytics' || t === 'leaderboard' || t === 'consult')) {
+  if (isTeacher() && (t === 'students' || t === 'classes' || t === 'tuition' || t === 'bank' || t === 'analytics' || t === 'portal-admin' || t === 'leaderboard' || t === 'consult')) {
     t = 'attendance';
   }
   return t;
@@ -13088,13 +13646,16 @@ async function verifyAdminRole() {
   await ensureSessionFresh();
   const uid = currentSession.user.id;
   currentProfileDisplayName = '';
-  let r = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=role,display_name&id=eq.' + encodeURIComponent(uid) + '&limit=1', {
+  currentPortalPlan = 'free';
+  currentPortalStatus = 'active';
+  currentPortalFreeGroup = 'entrance_10';
+  let r = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=role,display_name,portal_plan,portal_status,portal_free_group&id=eq.' + encodeURIComponent(uid) + '&limit=1', {
     headers: getHeaders(),
     cache: 'no-store'
   });
   let text = await r.text();
   if (!r.ok) {
-    r = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=role&id=eq.' + encodeURIComponent(uid) + '&limit=1', {
+    r = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=role,display_name&id=eq.' + encodeURIComponent(uid) + '&limit=1', {
       headers: getHeaders(),
       cache: 'no-store'
     });
@@ -13106,6 +13667,10 @@ async function verifyAdminRole() {
   if (!Array.isArray(rows) || !rows.length) return null;
   const role = String(rows[0].role || '').trim().toLowerCase();
   currentProfileDisplayName = String(rows[0].display_name || '').trim();
+  currentPortalPlan = String(rows[0].portal_plan || 'free').trim().toLowerCase() === 'premium' ? 'premium' : 'free';
+  currentPortalStatus = String(rows[0].portal_status || 'active').trim().toLowerCase();
+  if (!['pending', 'active', 'blocked'].includes(currentPortalStatus)) currentPortalStatus = 'active';
+  currentPortalFreeGroup = String(rows[0].portal_free_group || 'entrance_10').trim().toLowerCase() === 'university' ? 'university' : 'entrance_10';
   if (role !== 'admin' && role !== 'teacher' && role !== 'student') return null;
   return role;
 }
@@ -13794,6 +14359,7 @@ function applyRoleUI() {
     'tab-btn-tuition',
     'tab-btn-bank',
     'tab-btn-analytics',
+    'tab-btn-portal-admin',
     'tab-btn-leaderboard',
     'tab-btn-consult'
   ];
@@ -13822,6 +14388,7 @@ function applyRoleUI() {
   setVisible('tab-btn-bank', 'tab-bank', isAdmin());
   setVisible('tab-btn-schedule', 'tab-schedule', isAdmin() || isTeacher());
   setVisible('tab-btn-analytics', 'tab-analytics', isAdmin());
+  setVisible('tab-btn-portal-admin', 'tab-portal-admin', isAdmin());
   setVisible('tab-btn-leaderboard', 'tab-leaderboard', isAdmin());
   setVisible('tab-btn-consult', 'tab-consult', isAdmin());
   const aiPanelEl = document.getElementById('ai-chat-panel');
@@ -13869,6 +14436,7 @@ function applyRoleUI() {
   setSectionVisible('sidebar-section-finance', ['tab-btn-tuition', 'tab-btn-bank']);
   setSectionVisible('sidebar-section-report', [
     'tab-btn-analytics',
+    'tab-btn-portal-admin',
     'tab-btn-leaderboard',
     'tab-btn-consult'
   ]);
@@ -13899,11 +14467,14 @@ function showLoginUI() {
   if (loginEl) loginEl.style.display = 'flex';
   const shell = document.getElementById('app-shell');
   if (shell) shell.style.display = 'none';
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'none';
   hideStudentExamPortalUI();
   document.body.classList.remove('menu-edge-active');
   closeSidebarMenu();
   applyTenantConfig();
   syncRememberCheckbox();
+  applySignupLoginNotice();
 }
 
 function showAppUI() {
@@ -13915,6 +14486,8 @@ function showAppUI() {
   if (loadEl) loadEl.style.display = 'none';
   const loginEl = document.getElementById('login-screen');
   if (loginEl) loginEl.style.display = 'none';
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'none';
   prepareInitialAppTab();
   const shell = document.getElementById('app-shell');
   if (shell) shell.style.display = 'block';
@@ -13931,6 +14504,8 @@ function showStudentExamPortalUI() {
   if (loadEl) loadEl.style.display = 'none';
   const loginEl = document.getElementById('login-screen');
   if (loginEl) loginEl.style.display = 'none';
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'none';
   const shell = document.getElementById('app-shell');
   if (shell) shell.style.display = 'none';
   const portal = document.getElementById('student-exam-portal');
@@ -13940,6 +14515,39 @@ function showStudentExamPortalUI() {
   closeSidebarMenu();
   const hello = document.getElementById('student-exam-hello');
   if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
+  const adminSwitch = document.getElementById('student-exam-admin-switch');
+  if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
+  renderStudentExamPlanState();
+}
+
+function renderStudentExamPlanState() {
+  const status = currentPortalStatus || 'active';
+  const plan = currentPortalPlan === 'premium' || isAdmin() || isTeacher() ? 'premium' : 'free';
+  const groupLabel = portalFreeGroupLabel(currentPortalFreeGroup);
+  const badge = document.getElementById('student-exam-plan-badge');
+  if (badge) {
+    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (plan === 'premium' ? 'Premium' : 'Free'));
+    badge.classList.toggle('premium', plan === 'premium');
+    badge.classList.toggle('pending', status === 'pending');
+    badge.classList.toggle('blocked', status === 'blocked');
+  }
+  const note = document.getElementById('student-exam-plan-note');
+  if (note) {
+    note.textContent = status === 'pending'
+      ? 'Kho tài liệu sẽ mở sau khi tài khoản được duyệt.'
+      : status === 'blocked'
+      ? 'Tài khoản hiện đang bị khóa quyền truy cập kho tài liệu. Em liên hệ thầy/cô để được hỗ trợ.'
+      : plan === 'premium'
+      ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
+      : `Bạn đang có quyền truy cập 5 đề miễn phí nhóm ${groupLabel}. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.`;
+  }
+  const approvalNote = document.getElementById('student-exam-approval-note');
+  if (approvalNote) {
+    approvalNote.textContent = status === 'pending'
+      ? 'Tài khoản đang chờ duyệt. Liên hệ thầy Vũ - 0916 045 202 để được hỗ trợ.'
+      : '';
+    approvalNote.classList.toggle('show', status === 'pending');
+  }
 }
 
 function hideStudentExamPortalUI() {
@@ -13993,6 +14601,52 @@ function studentExamSafeUrl(v) {
   if (/^(https?:|blob:|data:audio\/)/i.test(s)) return s;
   if (/^\.?\//.test(s)) return s;
   return '';
+}
+
+function studentExamStoragePathFor(row, kind) {
+  if (!row) return '';
+  const key = kind === 'answer' ? 'answer_path' : (kind === 'audio' ? 'audio_path' : 'storage_path');
+  return String(row[key] || '').replace(/^\/+/, '').trim();
+}
+
+function studentExamHasFile(row, kind) {
+  if (!row) return false;
+  if (studentExamStoragePathFor(row, kind)) return true;
+  const key = kind === 'answer' ? 'answer_url' : (kind === 'audio' ? 'audio_url' : 'file_url');
+  return !!studentExamSafeUrl(row[key]);
+}
+
+function studentExamCanAccess(row) {
+  if (!row) return false;
+  if (isAdmin() || isTeacher()) return true;
+  return row.can_access === true || row._can_access === true;
+}
+
+function studentExamLockedMessage(row) {
+  const reason = String(row?.locked_reason || '').trim();
+  if (reason === 'pending_approval') return 'Tài khoản đang chờ duyệt.';
+  if (reason === 'account_blocked') return 'Tài khoản đang bị khóa quyền truy cập kho tài liệu.';
+  if (reason === 'premium_required') return 'Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.';
+  if (reason === 'free_limit') return 'Tài liệu này nằm ngoài 5 đề miễn phí của tài khoản Free. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.';
+  return 'Tài liệu này hiện chưa mở cho tài khoản của em.';
+}
+
+async function getStudentExamSignedUrl(row, kind) {
+  const path = studentExamStoragePathFor(row, kind);
+  if (!path) return studentExamUrlFor(row, kind);
+  const r = await fetch(SUPABASE_URL + '/storage/v1/object/sign/exam-files/' + path.split('/').map(encodeURIComponent).join('/'), {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ expiresIn: 300 }),
+    cache: 'no-store'
+  });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error(data.message || data.error || ('storage_sign_' + r.status));
+  const signed = String(data.signedURL || data.signedUrl || '').trim();
+  if (!signed) throw new Error('storage_sign_empty');
+  if (/^https?:/i.test(signed)) return signed;
+  return SUPABASE_URL.replace(/\/+$/, '') + signed;
 }
 
 function studentExamState(message) {
@@ -14137,6 +14791,39 @@ function studentExamSortForView(rows, sortMode) {
   });
 }
 
+function applyStudentExamAccessState(rows) {
+  const list = Array.isArray(rows) ? rows : [];
+  if (isAdmin() || isTeacher() || currentPortalPlan === 'premium') {
+    return list.map(r => Object.assign({}, r, { _can_access: true, can_access: r.can_access !== false }));
+  }
+  if (currentPortalStatus === 'pending' || currentPortalStatus === 'blocked') {
+    return list.map(r => Object.assign({}, r, {
+      _can_access: false,
+      can_access: false,
+      locked_reason: currentPortalStatus === 'pending' ? 'pending_approval' : 'account_blocked'
+    }));
+  }
+  const freeIds = new Set();
+  const group = currentPortalFreeGroup === 'university' ? 'university' : 'entrance_10';
+  const levelOk = r => group === 'university' ? String(r.level || '') === 'university' : String(r.level || '') !== 'university';
+  const curated = list.filter(r =>
+    String(r.free_group || '') === group &&
+    Number(r.group_free_rank || 0) >= 1 &&
+    Number(r.group_free_rank || 0) <= 5
+  );
+  (curated.length ? curated : list)
+    .filter(r => String(r.access_tier || 'free') !== 'premium' && String(r.category || '') !== 'answer' && String(r.subject || '') === 'english' && levelOk(r))
+    .slice(0, 5)
+    .forEach(r => freeIds.add(String(r.id || '')));
+  return list.map(r => Object.assign({}, r, {
+    _can_access: String(r.access_tier || 'free') !== 'premium' && freeIds.has(String(r.id || '')),
+    can_access: String(r.access_tier || 'free') !== 'premium' && freeIds.has(String(r.id || '')),
+    locked_reason: String(r.access_tier || 'free') === 'premium'
+      ? 'premium_required'
+      : (freeIds.has(String(r.id || '')) ? null : 'free_limit')
+  }));
+}
+
 function studentExamUserId() {
   return String(currentSession?.user?.id || '').trim();
 }
@@ -14211,6 +14898,10 @@ async function loadStudentExamActivity() {
 async function toggleStudentExamFavorite(id) {
   const row = studentExamFind(id);
   if (!row) return;
+  if (!studentExamCanAccess(row)) {
+    showAppToast('Tài liệu này cần tài khoản Premium.', 'warn');
+    return;
+  }
   const examId = String(row.id || '').trim();
   const previous = studentExamActivityFor(examId);
   const nextFavorite = !studentExamIsFavorite(examId);
@@ -14233,6 +14924,17 @@ async function toggleStudentExamFavorite(id) {
     applyStudentExamFilters({ keepVisible: true });
     showAppToast('Chưa lưu được tài liệu. Thầy/cô cần chạy migration mới hoặc em thử lại sau.', 'warn');
   }
+}
+
+function requestStudentExamUpgrade(id) {
+  const row = studentExamFind(id);
+  const reason = String(row?.locked_reason || '').trim();
+  const msg = reason === 'pending_approval'
+    ? 'Tài khoản của em đang chờ thầy/cô duyệt. Liên hệ thầy Vũ - +84 916 045 202 để được hỗ trợ, kèm email đăng ký.'
+    : reason === 'account_blocked'
+    ? 'Tài khoản đang bị khóa. Em liên hệ thầy/cô để kiểm tra lại quyền truy cập.'
+    : 'Em liên hệ thầy/cô để mở Premium cho tài liệu này.';
+  showAppToast(msg, 'warn');
 }
 
 async function trackStudentExamPortalEvent(examId, eventName) {
@@ -14278,12 +14980,16 @@ function studentExamCard(row, compact) {
   const showCode = code && !studentExamIsOfficial(row);
   const downloads = Math.max(0, parseInt(String(row.download_count || 0), 10) || 0);
   const desc = String(row.description || '').trim() || 'Xem trước đề và tải về để luyện tập.';
-  const hasFile = !!studentExamSafeUrl(row.file_url);
-  const hasAnswer = !!studentExamSafeUrl(row.answer_url);
-  const hasAudio = !!studentExamSafeUrl(row.audio_url);
+  const hasFile = studentExamHasFile(row, 'file');
+  const hasAnswer = studentExamHasFile(row, 'answer');
+  const hasAudio = studentExamHasFile(row, 'audio');
   const isSaved = studentExamIsFavorite(row);
+  const canAccess = studentExamCanAccess(row);
+  const locked = !canAccess;
+  const tier = String(row.access_tier || 'free') === 'premium' ? 'premium' : 'free';
+  const lockedText = studentExamLockedMessage(row);
   return `
-    <article class="student-exam-card" data-exam-id="${id}">
+    <article class="student-exam-card ${locked ? 'is-locked' : ''}" data-exam-id="${id}">
       <div class="student-exam-card-top">
         <div>
           <h3>${title}</h3>
@@ -14291,6 +14997,8 @@ function studentExamCard(row, compact) {
           <div class="student-exam-badges">
             <span class="student-exam-badge gold">${escapeHtml(level)}</span>
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
+            <span class="student-exam-badge ${tier === 'premium' ? 'premium' : ''}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
+            ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
             ${showCode ? `<span class="student-exam-badge">Mã ${escapeHtml(code)}</span>` : ''}
             <span class="student-exam-badge">${escapeHtml(year)}</span>
             <span class="student-exam-badge">${escapeHtml(province)}</span>
@@ -14300,14 +15008,16 @@ function studentExamCard(row, compact) {
           <div>
             <div class="student-exam-downloads">${downloads} lượt tải</div>
           </div>
-          <button type="button" class="student-exam-save" data-exam-save="${id}" aria-pressed="${isSaved ? 'true' : 'false'}" aria-label="${isSaved ? 'Bỏ lưu tài liệu' : 'Lưu tài liệu'}" title="${isSaved ? 'Bỏ lưu' : 'Lưu tài liệu'}">${studentExamSavedIcon()}</button>
+          <button type="button" class="student-exam-save" data-exam-save="${id}" aria-pressed="${isSaved ? 'true' : 'false'}" aria-label="${isSaved ? 'Bỏ lưu tài liệu' : 'Lưu tài liệu'}" title="${isSaved ? 'Bỏ lưu' : 'Lưu tài liệu'}" ${locked ? 'disabled' : ''}>${studentExamSavedIcon()}</button>
         </div>
       </div>
+      ${locked ? `<div class="student-exam-locked-note">${escapeHtml(lockedText)}</div>` : ''}
       <div class="student-exam-actions">
-        <button type="button" class="student-exam-action" data-exam-preview="${id}" data-exam-kind="file" ${hasFile ? '' : 'disabled'}>Xem đề</button>
-        <button type="button" class="student-exam-action primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile ? '' : 'disabled'}>Tải đề</button>
-        ${hasAnswer ? `<button type="button" class="student-exam-action answer" data-exam-preview="${id}" data-exam-kind="answer">Xem đáp án</button>` : ''}
-        ${hasAudio ? `<button type="button" class="student-exam-action audio" data-exam-preview="${id}" data-exam-kind="audio">Nghe audio</button>` : ''}
+        <button type="button" class="student-exam-action" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Xem đề</button>
+        <button type="button" class="student-exam-action primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Tải đề</button>
+        ${hasAnswer ? `<button type="button" class="student-exam-action answer" data-exam-preview="${id}" data-exam-kind="answer" ${canAccess ? '' : 'disabled'}>Xem đáp án</button>` : ''}
+        ${hasAudio ? `<button type="button" class="student-exam-action audio" data-exam-preview="${id}" data-exam-kind="audio" ${canAccess ? '' : 'disabled'}>Nghe audio</button>` : ''}
+        ${locked ? `<button type="button" class="student-exam-action upgrade" onclick="requestStudentExamUpgrade('${id}')">${String(row.locked_reason || '') === 'pending_approval' ? 'Đang chờ duyệt' : 'Liên hệ mở khóa'}</button>` : ''}
       </div>
     </article>`;
 }
@@ -14454,21 +15164,49 @@ async function loadStudentExamFiles() {
   studentExamError = '';
   renderStudentExamPortal();
   try {
-    const path =
-      'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,file_url,answer_url,audio_url,description,download_count,created_at,is_published' +
-      '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+    const rpcRows = await fetch(SUPABASE_URL + '/rest/v1/rpc/list_student_exam_files', {
+      method: 'POST',
+      headers: getHeaders('return=representation'),
+      body: '{}',
+      cache: 'no-store'
+    }).then(async r => {
+      if (!r.ok) throw new Error('list_student_exam_files_' + r.status);
+      const text = await r.text();
+      return text.trim() ? JSON.parse(text) : [];
+    });
     const [rows] = await Promise.all([
-      api('GET', path),
+      Promise.resolve(rpcRows),
       loadStudentExamActivity()
     ]);
-    studentExamRows = studentExamSortRows((Array.isArray(rows) ? rows : []).filter(r => String(r.category || '') !== 'answer'));
+    studentExamRows = studentExamSortRows(applyStudentExamAccessState(Array.isArray(rows) ? rows : []).filter(r => String(r.category || '') !== 'answer'));
     renderStudentExamSelectOptions();
     studentExamLoading = false;
     applyStudentExamFilters();
   } catch (e) {
-    studentExamLoading = false;
-    studentExamError = 'Chưa tải được đề. Em thử lại sau.';
-    renderStudentExamPortal();
+    try {
+      const fallbackPath =
+        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published' +
+        '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+      const [rows] = await Promise.all([
+        api('GET', fallbackPath),
+        loadStudentExamActivity()
+      ]);
+      let list = Array.isArray(rows) ? rows : [];
+      if (!list.length) {
+        const legacyPath =
+          'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,description,download_count,created_at,is_published' +
+          '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+        list = await api('GET', legacyPath);
+      }
+      studentExamRows = studentExamSortRows(applyStudentExamAccessState(list).filter(r => String(r.category || '') !== 'answer'));
+      renderStudentExamSelectOptions();
+      studentExamLoading = false;
+      applyStudentExamFilters();
+    } catch (fallbackError) {
+      studentExamLoading = false;
+      studentExamError = 'Chưa tải được đề. Em thử lại sau.';
+      renderStudentExamPortal();
+    }
   }
 }
 
@@ -14604,11 +15342,14 @@ async function renderStudentExamPdfPreview(url, body) {
   }
 }
 
-function openStudentExamPreview(id, kind) {
+async function openStudentExamPreview(id, kind) {
   const row = studentExamFind(id);
-  const url = studentExamUrlFor(row, kind);
-  if (!row || !url) {
+  if (!row || !studentExamHasFile(row, kind)) {
     showAppToast('Tài liệu này chưa có file để xem trước.', 'warn');
+    return;
+  }
+  if (!studentExamCanAccess(row)) {
+    showAppToast('Tài liệu này cần tài khoản Premium.', 'warn');
     return;
   }
   const modal = document.getElementById('student-exam-preview-modal');
@@ -14619,6 +15360,17 @@ function openStudentExamPreview(id, kind) {
   if (!modal || !body || !actions) return;
   if (title) title.textContent = kind === 'audio' ? 'Nghe audio' : (kind === 'answer' ? 'Xem đáp án' : 'Xem đề');
   if (sub) sub.textContent = studentExamDisplayTitle(row);
+  body.innerHTML = '<div class="student-exam-preview-fallback">Đang mở tài liệu...</div>';
+  actions.innerHTML = `<button type="button" class="student-exam-action" onclick="closeStudentExamPreview()">Đóng</button>`;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  let url = '';
+  try {
+    url = await getStudentExamSignedUrl(row, kind);
+  } catch (e) {
+    body.innerHTML = '<div class="student-exam-preview-fallback">Tài khoản này chưa có quyền mở tài liệu hoặc link đã hết hạn.</div>';
+    return;
+  }
   const safe = escapeHtml(url);
   if (kind === 'audio') {
     body.innerHTML = `<div class="student-exam-preview-fallback"><audio controls preload="metadata" src="${safe}" style="width:min(520px,100%)"></audio></div>`;
@@ -14632,8 +15384,6 @@ function openStudentExamPreview(id, kind) {
   actions.innerHTML =
     `<button type="button" class="student-exam-action" onclick="closeStudentExamPreview()">Đóng</button>` +
     `<button type="button" class="student-exam-action primary" onclick="downloadStudentExamFile('${escapeHtml(String(row.id || ''))}','${escapeHtml(kind || 'file')}')">${kind === 'answer' ? 'Tải đáp án' : kind === 'audio' ? 'Tải audio' : 'Tải đề'}</button>`;
-  modal.classList.add('open');
-  modal.setAttribute('aria-hidden', 'false');
   void trackStudentExamPortalEvent(row.id, 'open');
 }
 
@@ -14664,9 +15414,19 @@ async function incrementStudentExamDownload(id) {
 
 async function downloadStudentExamFile(id, kind) {
   const row = studentExamFind(id);
-  const url = studentExamUrlFor(row, kind);
-  if (!row || !url) {
+  if (!row || !studentExamHasFile(row, kind)) {
     showAppToast('Tài liệu này chưa có file để tải.', 'warn');
+    return;
+  }
+  if (!studentExamCanAccess(row)) {
+    showAppToast('Tài liệu này cần tài khoản Premium.', 'warn');
+    return;
+  }
+  let url = '';
+  try {
+    url = await getStudentExamSignedUrl(row, kind);
+  } catch (e) {
+    showAppToast('Chưa lấy được link tải cho tài khoản này.', 'warn');
     return;
   }
   void trackStudentExamPortalEvent(id, 'download');
@@ -14709,6 +15469,58 @@ async function bootStudentExamPortal() {
   await loadStudentExamFiles();
 }
 
+function showModuleChoiceUI() {
+  if (!currentSession?.access_token || !(isAdmin() || isTeacher())) {
+    showLoginUI();
+    return;
+  }
+  const loadEl = document.getElementById('auth-loading');
+  if (loadEl) loadEl.style.display = 'none';
+  const loginEl = document.getElementById('login-screen');
+  if (loginEl) loginEl.style.display = 'none';
+  const shell = document.getElementById('app-shell');
+  if (shell) shell.style.display = 'none';
+  hideStudentExamPortalUI();
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'flex';
+  document.body.classList.remove('role-student', 'menu-edge-active');
+  closeSidebarMenu();
+}
+
+async function openAdminDashboardModule() {
+  if (!currentSession?.access_token || !(isAdmin() || isTeacher())) {
+    showLoginUI();
+    return;
+  }
+  rememberWorkspaceModule('admin');
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'none';
+  bankSummaryMonthFilter = '';
+  analyticsAttMonthFilter = '';
+  await loadTeacherClasses();
+  applyRoleUI();
+  showAppUI();
+  initAppShellDefaults();
+  if (!adminShellBooted) {
+    await runBoot();
+    adminShellBooted = true;
+  } else {
+    showTab(getRememberedTab(), { replaceHash: true });
+    startDashboardClockTicker();
+  }
+}
+
+async function openStudentPortalModule() {
+  if (!currentSession?.access_token) {
+    showLoginUI();
+    return;
+  }
+  rememberWorkspaceModule('portal');
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'none';
+  await bootStudentExamPortal();
+}
+
 async function signInWithPassword() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
@@ -14718,14 +15530,23 @@ async function signInWithPassword() {
     errEl.textContent = 'Nhập email và mật khẩu.';
     return;
   }
-  const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
-    method: 'POST',
-    headers: { apikey: KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
+  setLoginSubmitBusy(true, 'Đang đăng nhập...');
+  let r;
+  try {
+    r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+  } catch (networkError) {
+    setLoginSubmitBusy(false);
+    errEl.textContent = 'Chưa kết nối được hệ thống. Em thử lại sau.';
+    return;
+  }
   let data = {};
   try { data = await r.json(); } catch (e) {}
   if (!r.ok) {
+    setLoginSubmitBusy(false);
     errEl.textContent = data.error_description || data.msg || data.message || data.error || 'Đăng nhập thất bại';
     return;
   }
@@ -14735,33 +15556,270 @@ async function signInWithPassword() {
     expires_at: Date.now() + (data.expires_in || 3600) * 1000,
     user: data.user
   };
+  const emailConfirmed = await ensureCurrentSessionEmailConfirmed();
+  if (!emailConfirmed) {
+    setLoginSubmitBusy(false);
+    await rejectUnconfirmedEmailLogin(errEl, data.access_token);
+    return;
+  }
   const rememberEl = document.getElementById('login-remember');
   const remember = !!(rememberEl && rememberEl.checked);
   saveAuthSession(currentSession, remember);
   const role = await verifyAdminRole();
   if (!role) {
-    errEl.textContent = 'Không có quy?n dang nh?p. Liên h? qu?n tr? viên.';
+    setLoginSubmitBusy(false);
+    errEl.textContent = 'Không có quyền đăng nhập. Liên hệ quản trị viên.';
     currentSession = null;
     currentRole = null;
     currentProfileDisplayName = '';
+    currentPortalPlan = 'free';
+    currentPortalStatus = 'active';
+    currentPortalFreeGroup = 'entrance_10';
     clearAuthSessionStorage();
     return;
   }
   currentRole = role;
   if (isStudent()) {
+    rememberWorkspaceModule('portal');
     await bootStudentExamPortal();
+    setLoginSubmitBusy(false);
     return;
   }
-  bankSummaryMonthFilter = '';
-  analyticsAttMonthFilter = '';
-  await loadTeacherClasses();
-  applyRoleUI();
-  showAppUI();
-  initAppShellDefaults();
-  await runBoot();
+  adminShellBooted = false;
+  showModuleChoiceUI();
+  setLoginSubmitBusy(false);
+}
+
+function setLoginAuthMode(mode) {
+  const next = mode === 'register' ? 'register' : 'login';
+  const screen = document.getElementById('login-screen');
+  if (screen) screen.dataset.authMode = next;
+  const loginTab = document.getElementById('login-mode-login');
+  const registerTab = document.getElementById('login-mode-register');
+  if (loginTab) loginTab.classList.toggle('active', next === 'login');
+  if (registerTab) registerTab.classList.toggle('active', next === 'register');
+  const title = document.getElementById('login-app-title');
+  if (title) title.textContent = next === 'register' ? 'Đăng ký học sinh' : 'Đăng nhập';
+  const submit = document.querySelector('#login-form button[type="submit"]');
+  if (submit) submit.textContent = next === 'register' ? 'Tạo tài khoản học sinh' : 'Đăng nhập';
+  const password = document.getElementById('login-password');
+  if (password) password.autocomplete = next === 'register' ? 'new-password' : 'current-password';
+  const errEl = document.getElementById('login-error');
+  const okEl = document.getElementById('login-success-note');
+  if (errEl) errEl.textContent = '';
+  if (okEl) {
+    okEl.textContent = '';
+    okEl.classList.remove('show');
+  }
+}
+
+function setLoginSubmitBusy(isBusy, text) {
+  const btn = document.querySelector('#login-form button[type="submit"]');
+  if (!btn) return;
+  btn.disabled = !!isBusy;
+  if (isBusy) {
+    btn.dataset.prevText = btn.textContent || '';
+    btn.textContent = text || 'Đang xử lý...';
+  } else if (btn.dataset.prevText) {
+    btn.textContent = btn.dataset.prevText;
+    delete btn.dataset.prevText;
+  }
+}
+
+function isAuthEmailConfirmed(user) {
+  if (!user || !user.email) return true;
+  return !!(user.email_confirmed_at || user.confirmed_at);
+}
+
+async function ensureCurrentSessionEmailConfirmed() {
+  if (!currentSession?.access_token) return false;
+  if (currentSession.user?.email && isAuthEmailConfirmed(currentSession.user)) return true;
+  try {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      headers: { apikey: KEY, Authorization: 'Bearer ' + currentSession.access_token },
+      cache: 'no-store'
+    });
+    if (r.ok) {
+      const user = await r.json().catch(() => null);
+      if (user && user.id) currentSession.user = user;
+    }
+  } catch (e) {}
+  return isAuthEmailConfirmed(currentSession.user);
+}
+
+async function rejectUnconfirmedEmailLogin(errEl, accessToken) {
+  try {
+    if (accessToken) {
+      await fetch(SUPABASE_URL + '/auth/v1/logout', {
+        method: 'POST',
+        headers: { apikey: KEY, Authorization: 'Bearer ' + accessToken }
+      });
+    }
+  } catch (e) {}
+  currentSession = null;
+  currentRole = null;
+  currentProfileDisplayName = '';
+  currentPortalPlan = 'free';
+  currentPortalStatus = 'active';
+  currentPortalFreeGroup = 'entrance_10';
+  clearAuthSessionStorage();
+  if (errEl) errEl.textContent = 'Email chưa được xác nhận. Em mở email Supabase gửi và bấm xác nhận trước khi đăng nhập.';
+}
+
+function applySignupLoginNotice() {
+  let msg = '';
+  try {
+    msg = String(sessionStorage.getItem(SIGNUP_LOGIN_NOTICE_KEY) || '').trim();
+    if (msg) sessionStorage.removeItem(SIGNUP_LOGIN_NOTICE_KEY);
+  } catch (e) {}
+  if (!msg) return;
+  setLoginAuthMode('login');
+  const emailEl = document.getElementById('login-email');
+  const passEl = document.getElementById('login-password');
+  const confirmEl = document.getElementById('register-password-confirm');
+  const nameEl = document.getElementById('register-name');
+  if (passEl) passEl.value = '';
+  if (confirmEl) confirmEl.value = '';
+  if (nameEl) nameEl.value = '';
+  const classEl = document.getElementById('register-class-group');
+  if (classEl) classEl.value = '';
+  const okEl = document.getElementById('login-success-note');
+  if (okEl) {
+    okEl.textContent = msg;
+    okEl.classList.add('show');
+  }
+  if (emailEl) {
+    emailEl.focus();
+    try { emailEl.select(); } catch (e) {}
+  }
+}
+
+async function finishStudentSignupToLogin(message, accessToken) {
+  try {
+    sessionStorage.setItem(
+      SIGNUP_LOGIN_NOTICE_KEY,
+      message || 'Đã tạo tài khoản. Em đăng nhập sau khi email đã được xác nhận.'
+    );
+  } catch (e) {}
+  if (accessToken) {
+    try {
+      await fetch(SUPABASE_URL + '/auth/v1/logout', {
+        method: 'POST',
+        headers: { apikey: KEY, Authorization: 'Bearer ' + accessToken }
+      });
+    } catch (e) {}
+  }
+  currentSession = null;
+  currentRole = null;
+  currentProfileDisplayName = '';
+  currentPortalPlan = 'free';
+  currentPortalStatus = 'active';
+  currentPortalFreeGroup = 'entrance_10';
+  clearAuthSessionStorage();
+  setLoginAuthMode('login');
+  setLoginSubmitBusy(false);
+  try {
+    const url = new URL(window.location.href);
+    url.hash = '';
+    window.location.replace(url.toString());
+  } catch (e) {
+    window.location.reload();
+  }
+}
+
+async function signUpStudentAccount() {
+  const name = String(document.getElementById('register-name')?.value || '').trim();
+  const classChoice = String(document.getElementById('register-class-group')?.value || '').trim();
+  const email = String(document.getElementById('login-email')?.value || '').trim();
+  const password = String(document.getElementById('login-password')?.value || '');
+  const confirm = String(document.getElementById('register-password-confirm')?.value || '');
+  const errEl = document.getElementById('login-error');
+  const okEl = document.getElementById('login-success-note');
+  if (errEl) errEl.textContent = '';
+  if (okEl) {
+    okEl.textContent = '';
+    okEl.classList.remove('show');
+  }
+  if (!name || !classChoice || !email || !password || !confirm) {
+    if (errEl) errEl.textContent = 'Nhập đầy đủ họ tên, chương trình học, email và mật khẩu.';
+    return;
+  }
+  if (password.length < 6) {
+    if (errEl) errEl.textContent = 'Mật khẩu cần ít nhất 6 ký tự.';
+    return;
+  }
+  if (password !== confirm) {
+    if (errEl) errEl.textContent = 'Mật khẩu nhập lại chưa khớp.';
+    return;
+  }
+  setLoginSubmitBusy(true, 'Đang tạo tài khoản...');
+  const classMetaMap = {
+    entrance_10: { portal_free_group: 'entrance_10', student_class_group: 'entrance_10', student_class_label: 'Thi vào 10' },
+    university: { portal_free_group: 'university', student_class_group: 'university', student_class_label: 'THPT QG' }
+  };
+  const classMeta = classMetaMap[classChoice] || classMetaMap.entrance_10;
+  try {
+    const check = await fetch(SUPABASE_URL + '/rest/v1/rpc/student_signup_email_status', {
+      method: 'POST',
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_email: email }),
+      cache: 'no-store'
+    });
+    if (check.ok) {
+      const rows = await check.json().catch(() => []);
+      const status = Array.isArray(rows) ? rows[0] : rows;
+      if (status && status.can_register === false) {
+        setLoginSubmitBusy(false);
+        const reason = String(status.reason || '');
+        if (reason === 'staff_email') {
+          if (errEl) errEl.textContent = 'Email này đang là tài khoản giáo viên/quản trị. Thầy/cô hãy chuyển sang tab Đăng nhập.';
+        } else {
+          if (errEl) errEl.textContent = 'Email này đã có tài khoản. Em chuyển sang tab Đăng nhập hoặc dùng email khác.';
+        }
+        return;
+      }
+    }
+  } catch (guardError) {
+    console.warn('student signup email guard unavailable', guardError);
+  }
+  let r;
+  try {
+    r = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
+        data: { role: 'student', display_name: name, full_name: name, ...classMeta }
+      })
+    });
+  } catch (networkError) {
+    setLoginSubmitBusy(false);
+    if (errEl) errEl.textContent = 'Chưa kết nối được hệ thống. Em thử lại sau.';
+    return;
+  }
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok) {
+    setLoginSubmitBusy(false);
+    const rawMsg = data.error_description || data.msg || data.message || data.error || '';
+    if (errEl) errEl.textContent = /already|registered|exists/i.test(rawMsg)
+      ? 'Email này đã có tài khoản. Em chuyển sang tab Đăng nhập.'
+      : (rawMsg || 'Đăng ký thất bại.');
+    return;
+  }
+  if (!data.access_token) {
+    await finishStudentSignupToLogin('Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để tải đề miễn phí.');
+    return;
+  }
+  await finishStudentSignupToLogin(
+    'Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để tải đề miễn phí.',
+    data.access_token
+  );
 }
 
 async function signOutUser() {
+  const rememberedWorkspaceKey = workspaceModuleStorageKeyForUser();
   try {
     if (currentSession?.access_token) {
       await fetch(SUPABASE_URL + '/auth/v1/logout', {
@@ -14773,6 +15831,10 @@ async function signOutUser() {
   currentSession = null;
   currentRole = null;
   currentProfileDisplayName = '';
+  currentPortalPlan = 'free';
+  currentPortalStatus = 'active';
+  currentPortalFreeGroup = 'entrance_10';
+  adminShellBooted = false;
   studentExamRows = [];
   studentExamFilteredRows = [];
   studentExamActivityById = {};
@@ -14781,6 +15843,7 @@ async function signOutUser() {
   studentExamError = '';
   teacherClasses = [];
   try { sessionStorage.removeItem(TAB_STORAGE_KEY); } catch (e) {}
+  clearRememberedWorkspaceModule(rememberedWorkspaceKey);
   clearAuthSessionStorage();
   students = [];
   attendance = {};
@@ -14865,6 +15928,8 @@ async function initAuth() {
   document.getElementById('auth-loading').style.display = 'block';
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-shell').style.display = 'none';
+  const chooser = document.getElementById('module-choice-screen');
+  if (chooser) chooser.style.display = 'none';
   authRememberMe = getAuthRememberChoice();
   let raw = null;
   try { raw = localStorage.getItem(AUTH_STORAGE_KEY); } catch (e) {}
@@ -14883,7 +15948,18 @@ async function initAuth() {
           currentSession = null;
           currentRole = null;
           currentProfileDisplayName = '';
+          currentPortalPlan = 'free';
+          currentPortalStatus = 'active';
+          currentPortalFreeGroup = 'entrance_10';
           clearAuthSessionStorage();
+          showLoginUI();
+          return;
+        }
+      }
+      if (currentSession?.access_token) {
+        const emailConfirmed = await ensureCurrentSessionEmailConfirmed();
+        if (!emailConfirmed) {
+          await rejectUnconfirmedEmailLogin(document.getElementById('login-error'), currentSession.access_token);
           showLoginUI();
           return;
         }
@@ -14892,16 +15968,21 @@ async function initAuth() {
       if (currentSession?.access_token && role) {
         currentRole = role;
         if (isStudent()) {
+          rememberWorkspaceModule('portal');
           await bootStudentExamPortal();
           return;
         }
-        bankSummaryMonthFilter = '';
-        analyticsAttMonthFilter = '';
-        await loadTeacherClasses();
-        applyRoleUI();
-        showAppUI();
-        initAppShellDefaults();
-        await runBoot();
+        adminShellBooted = false;
+        const rememberedModule = getRememberedWorkspaceModule();
+        if (rememberedModule === 'portal') {
+          await openStudentPortalModule();
+          return;
+        }
+        if (rememberedModule === 'admin') {
+          await openAdminDashboardModule();
+          return;
+        }
+        showModuleChoiceUI();
         return;
       }
     } catch (e) {}
@@ -14909,6 +15990,10 @@ async function initAuth() {
   currentSession = null;
   currentRole = null;
   currentProfileDisplayName = '';
+  currentPortalPlan = 'free';
+  currentPortalStatus = 'active';
+  currentPortalFreeGroup = 'entrance_10';
+  adminShellBooted = false;
   teacherClasses = [];
   clearAuthSessionStorage();
   showLoginUI();
@@ -14990,7 +16075,16 @@ let _analyticsAttendanceRows = null;
 let _portalAnalyticsRows = null;
 let _portalAnalyticsExamRows = null;
 let _portalAnalyticsProfiles = null;
+let _portalAnalyticsAuditRows = null;
 let _portalAnalyticsLoadedAt = 0;
+let lastPortalAccessChange = null;
+let portalFreePickerRank = null;
+let portalFreePickerQuery = '';
+let portalFreeCurationGroup = 'entrance_10';
+let portalStudentQuery = '';
+let portalStudentSort = 'priority';
+let portalStudentPage = 1;
+let portalStudentPageSize = 25;
 /** YYYY-MM; rỗng = tháng hiện tại (local), cho tab Thống kê điểm danh */
 let analyticsAttMonthFilter = '';
 let analyticsSubtab = 'att';
@@ -15882,6 +16976,7 @@ function invalidatePortalAnalyticsCache() {
   _portalAnalyticsRows = null;
   _portalAnalyticsExamRows = null;
   _portalAnalyticsProfiles = null;
+  _portalAnalyticsAuditRows = null;
   _portalAnalyticsLoadedAt = 0;
 }
 
@@ -15889,16 +16984,19 @@ async function fetchPortalAnalyticsData() {
   const activityPath =
     'student_exam_activity?select=user_id,exam_file_id,is_favorite,favorite_at,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
   const examPath =
-    'exam_files?select=id,title,level,year,province,exam_code,category,download_count,created_at,is_published&order=download_count.desc.nullslast,created_at.desc&limit=1000';
-  const profilePath = 'profiles?select=id,email,display_name,role&limit=5000';
-  const [activityRows, examRows, profileRows] = await Promise.all([
+    'exam_files?select=id,title,level,year,province,exam_code,category,access_tier,free_rank,free_group,group_free_rank,download_count,created_at,is_published&order=download_count.desc.nullslast,created_at.desc&limit=1000';
+  const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label&limit=5000';
+  const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
+  const [activityRows, examRows, profileRows, auditRows] = await Promise.all([
     api('GET', activityPath),
     api('GET', examPath),
-    api('GET', profilePath).catch(() => [])
+    api('GET', profilePath).catch(() => []),
+    api('GET', auditPath).catch(() => [])
   ]);
   _portalAnalyticsRows = Array.isArray(activityRows) ? activityRows : [];
   _portalAnalyticsExamRows = Array.isArray(examRows) ? examRows : [];
   _portalAnalyticsProfiles = Array.isArray(profileRows) ? profileRows : [];
+  _portalAnalyticsAuditRows = Array.isArray(auditRows) ? auditRows : [];
   _portalAnalyticsLoadedAt = Date.now();
 }
 
@@ -15964,11 +17062,34 @@ function portalUserSubLabel(userId) {
   const p = portalProfileByUserId(uid);
   const email = p && String(p.email || '').trim();
   const role = p && String(p.role || '').trim();
-  return [email && email !== portalUserLabel(uid) ? email : '', role].filter(Boolean).join(' · ') || uid;
+  const status = p ? portalStatusLabel(p.portal_status) : '';
+  return [email && email !== portalUserLabel(uid) ? email : '', role, status].filter(Boolean).join(' · ') || uid;
+}
+
+function portalPlanLabel(plan) {
+  return String(plan || 'free') === 'premium' ? 'Premium' : 'Free';
+}
+
+function portalStatusLabel(status) {
+  const s = String(status || 'active');
+  if (s === 'pending') return 'Chờ duyệt';
+  if (s === 'blocked') return 'Đã khóa';
+  return 'Đang mở';
+}
+
+function portalFreeGroupLabel(group) {
+  return String(group || '') === 'university' ? 'THPT QG' : 'Thi vào 10';
+}
+
+function portalStatusClass(status) {
+  const s = String(status || 'active');
+  if (s === 'active') return 'good';
+  if (s === 'blocked') return 'bad';
+  return 'quiet';
 }
 
 function renderPortalAnalyticsError(e) {
-  ['portal-activity-bars', 'portal-activity-feed', 'portal-top-exams', 'portal-top-users'].forEach(id => {
+  ['portal-student-users', 'portal-free-curation', 'portal-access-audit', 'portal-activity-bars', 'portal-activity-feed', 'portal-top-exams', 'portal-top-users'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '<div class="empty" style="padding:16px">Chưa tải được dữ liệu student portal. Kiểm tra migration 065 và quyền đọc student_exam_activity.</div>';
   });
@@ -15998,8 +17119,435 @@ function renderPortalAnalytics() {
 
   renderPortalActivityBars(rows);
   renderPortalRecentFeed(rows, examById);
+  renderPortalStudentUsers(rows);
+  renderPortalFreeCuration(exams);
+  renderPortalAccessAudit();
   renderPortalTopExams(rows, exams, examById);
   renderPortalTopUsers(rows, examById);
+}
+
+function portalUserActivitySummary(rows) {
+  const byUser = {};
+  (rows || []).forEach(r => {
+    const uid = String(r.user_id || '').trim();
+    if (!uid) return;
+    if (!byUser[uid]) byUser[uid] = { opens: 0, downloads: 0, saves: 0, docs: new Set(), lastAt: '' };
+    const rec = byUser[uid];
+    rec.opens += Math.max(0, Number(r.open_count || 0));
+    rec.downloads += Math.max(0, Number(r.download_count || 0));
+    if (r.is_favorite) rec.saves += 1;
+    if (r.exam_file_id) rec.docs.add(String(r.exam_file_id));
+    [r.last_opened_at, r.last_downloaded_at, r.favorite_at, r.updated_at].forEach(at => {
+      if (at && (!rec.lastAt || Date.parse(at) > Date.parse(rec.lastAt))) rec.lastAt = at;
+    });
+  });
+  return byUser;
+}
+
+function renderPortalStudentUsers(rows) {
+  const el = document.getElementById('portal-student-users');
+  if (!el) return;
+  const filter = String(document.getElementById('portal-plan-filter')?.value || 'all');
+  const summary = portalUserActivitySummary(rows);
+  const allProfiles = (Array.isArray(_portalAnalyticsProfiles) ? _portalAnalyticsProfiles : [])
+    .filter(p => String(p.role || '').trim() === 'student')
+    .map(p => {
+      const uid = String(p.id || '').trim();
+      const a = summary[uid] || { opens: 0, downloads: 0, saves: 0, docs: new Set(), lastAt: '' };
+      const plan = String(p.portal_plan || 'free') === 'premium' ? 'premium' : 'free';
+      const status = String(p.portal_status || 'active');
+      return { ...p, uid, plan, status, opens: a.opens, downloads: a.downloads, saves: a.saves, docs: a.docs.size, lastAt: a.lastAt, score: a.opens + a.downloads * 2 + a.saves };
+    });
+  const counts = {
+    total: allProfiles.length,
+    pending: allProfiles.filter(p => p.status === 'pending').length,
+    premium: allProfiles.filter(p => p.plan === 'premium').length,
+    blocked: allProfiles.filter(p => p.status === 'blocked').length,
+    active: allProfiles.filter(p => p.status === 'active').length
+  };
+  const q = normalizeText(portalStudentQuery).toLowerCase().trim();
+  let profiles = allProfiles
+    .filter(p => filter === 'all' || p.plan === filter || p.status === filter)
+    .filter(p => {
+      if (!q) return true;
+      const hay = [portalUserLabel(p.uid), p.email, p.display_name, p.uid, p.plan, p.status]
+        .map(x => normalizeText(String(x || '')).toLowerCase())
+        .join(' ');
+      return hay.includes(q);
+    });
+  profiles = sortPortalStudentProfiles(profiles);
+  const total = profiles.length;
+  const totalPages = Math.max(1, Math.ceil(total / portalStudentPageSize));
+  portalStudentPage = Math.max(1, Math.min(portalStudentPage, totalPages));
+  const start = (portalStudentPage - 1) * portalStudentPageSize;
+  const pageRows = profiles.slice(start, start + portalStudentPageSize);
+  const from = total ? start + 1 : 0;
+  const to = Math.min(total, start + portalStudentPageSize);
+  const table = pageRows.length ? `<div class="portal-user-table-wrap"><table class="portal-table"><thead><tr><th>Học sinh</th><th>Nhóm</th><th>Gói</th><th>Trạng thái</th><th class="num">TL</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th>Gần nhất</th><th></th></tr></thead><tbody>${
+    pageRows.map(p => {
+      const next = p.plan === 'premium' ? 'free' : 'premium';
+      const label = p.plan === 'premium' ? 'Tắt premium' : 'Bật premium';
+      const initials = portalUserLabel(p.uid).split(/\s+/).filter(Boolean).slice(-2).map(x => x[0]).join('').toUpperCase().slice(0, 2) || 'HS';
+      return `<tr>
+        <td><div class="portal-user-name"><div class="portal-user-avatar">${escapeHtml(initials)}</div><div class="portal-user-text"><div class="portal-table-title">${escapeHtml(portalUserLabel(p.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(p.uid))}</div></div></div></td>
+        <td><span class="portal-intensity quiet">${escapeHtml(p.portal_class_label || portalFreeGroupLabel(p.portal_free_group))}</span></td>
+        <td><span class="portal-intensity ${p.plan === 'premium' ? 'hot' : 'quiet'}">${escapeHtml(portalPlanLabel(p.plan))}</span></td>
+        <td><span class="portal-intensity ${portalStatusClass(p.status)}">${escapeHtml(portalStatusLabel(p.status))}</span></td>
+        <td class="num">${p.docs}</td><td class="num">${p.opens}</td><td class="num">${p.downloads}</td><td class="num">${p.saves}</td>
+        <td>${escapeHtml(portalActivityTimeLabel(p.lastAt))}</td>
+        <td><div class="portal-row-actions">
+          ${p.status !== 'active' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','free','active')">Duyệt</button>` : ''}
+          <button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${next}','active')">${label}</button>
+          ${p.status !== 'blocked' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${p.plan}','blocked')">Khóa</button>` : ''}
+        </div></td>
+      </tr>`;
+    }).join('')
+  }</tbody></table></div>` : '<div class="empty" style="padding:16px">Không có học sinh khớp bộ lọc.</div>';
+  el.innerHTML = `<div class="portal-user-shell">
+    <div class="portal-user-tools">
+      <input class="portal-user-search" id="portal-student-search" type="search" placeholder="Tìm tên, email, mã tài khoản..." value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
+      <select class="portal-user-select" id="portal-student-sort" onchange="onPortalStudentSortChange(this.value)">
+        <option value="priority">Ưu tiên xử lý</option>
+        <option value="last">Hoạt động mới nhất</option>
+        <option value="activity">Tương tác nhiều nhất</option>
+        <option value="name">Tên A-Z</option>
+      </select>
+      <select class="portal-user-select" id="portal-student-page-size" onchange="onPortalStudentPageSizeChange(this.value)">
+        <option value="25">25 / trang</option>
+        <option value="50">50 / trang</option>
+        <option value="100">100 / trang</option>
+      </select>
+    </div>
+    <div class="portal-user-summary">
+      <span class="portal-user-chip">Tổng <strong>${counts.total}</strong></span>
+      <span class="portal-user-chip">Chờ duyệt <strong>${counts.pending}</strong></span>
+      <span class="portal-user-chip">Đang mở <strong>${counts.active}</strong></span>
+      <span class="portal-user-chip">Premium <strong>${counts.premium}</strong></span>
+      <span class="portal-user-chip">Đã khóa <strong>${counts.blocked}</strong></span>
+    </div>
+    ${table}
+    <div class="portal-user-pager">
+      <div>Hiển thị ${from}-${to} / ${total} tài khoản</div>
+      <div class="portal-user-pager-actions">
+        <button type="button" class="btn-sm" onclick="setPortalStudentPage(${portalStudentPage - 1})" ${portalStudentPage <= 1 ? 'disabled' : ''}>Trước</button>
+        <span>Trang ${portalStudentPage}/${totalPages}</span>
+        <button type="button" class="btn-sm" onclick="setPortalStudentPage(${portalStudentPage + 1})" ${portalStudentPage >= totalPages ? 'disabled' : ''}>Sau</button>
+      </div>
+    </div>
+  </div>`;
+  const sortEl = document.getElementById('portal-student-sort');
+  if (sortEl) sortEl.value = portalStudentSort;
+  const sizeEl = document.getElementById('portal-student-page-size');
+  if (sizeEl) sizeEl.value = String(portalStudentPageSize);
+}
+
+function sortPortalStudentProfiles(list) {
+  const rows = Array.isArray(list) ? list.slice() : [];
+  if (portalStudentSort === 'name') {
+    return rows.sort((a, b) => portalUserLabel(a.uid).localeCompare(portalUserLabel(b.uid), 'vi'));
+  }
+  if (portalStudentSort === 'activity') {
+    return rows.sort((a, b) => (b.score || 0) - (a.score || 0) || Date.parse(b.lastAt || 0) - Date.parse(a.lastAt || 0));
+  }
+  if (portalStudentSort === 'last') {
+    return rows.sort((a, b) => Date.parse(b.lastAt || 0) - Date.parse(a.lastAt || 0) || portalUserLabel(a.uid).localeCompare(portalUserLabel(b.uid), 'vi'));
+  }
+  const statusWeight = s => s === 'pending' ? 0 : (s === 'blocked' ? 2 : 1);
+  return rows.sort((a, b) =>
+    statusWeight(a.status) - statusWeight(b.status) ||
+    (b.plan === 'premium') - (a.plan === 'premium') ||
+    Date.parse(b.lastAt || 0) - Date.parse(a.lastAt || 0) ||
+    portalUserLabel(a.uid).localeCompare(portalUserLabel(b.uid), 'vi')
+  );
+}
+
+function onPortalStudentFilterChange() {
+  portalStudentPage = 1;
+  renderPortalAnalytics();
+}
+
+function onPortalStudentSearch(value) {
+  portalStudentQuery = String(value || '');
+  portalStudentPage = 1;
+  renderPortalStudentUsers(_portalAnalyticsRows || []);
+}
+
+function onPortalStudentSortChange(value) {
+  portalStudentSort = ['priority', 'last', 'activity', 'name'].includes(String(value || '')) ? String(value) : 'priority';
+  portalStudentPage = 1;
+  renderPortalStudentUsers(_portalAnalyticsRows || []);
+}
+
+function onPortalStudentPageSizeChange(value) {
+  const n = Number(value);
+  portalStudentPageSize = [25, 50, 100].includes(n) ? n : 25;
+  portalStudentPage = 1;
+  renderPortalStudentUsers(_portalAnalyticsRows || []);
+}
+
+function setPortalStudentPage(page) {
+  portalStudentPage = Math.max(1, Number(page) || 1);
+  renderPortalStudentUsers(_portalAnalyticsRows || []);
+}
+
+async function updatePortalStudentAccess(userId, plan, status, options) {
+  const opts = options || {};
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được đổi trạng thái Premium.', 'warn');
+    return;
+  }
+  const uid = String(userId || '').trim();
+  const next = plan === 'premium' ? 'premium' : 'free';
+  const nextStatus = ['pending', 'active', 'blocked'].includes(String(status || 'active')) ? String(status || 'active') : 'active';
+  if (!uid) return;
+  const p = Array.isArray(_portalAnalyticsProfiles) ? _portalAnalyticsProfiles.find(x => String(x.id || '') === uid) : null;
+  const oldPlan = p ? String(p.portal_plan || 'free') : 'free';
+  const oldStatus = p ? String(p.portal_status || 'active') : 'active';
+  const label = portalUserLabel(uid);
+  if (!opts.skipConfirm) {
+    const ok = window.confirm(`Cập nhật quyền portal cho ${label}: ${portalPlanLabel(oldPlan)} / ${portalStatusLabel(oldStatus)} -> ${portalPlanLabel(next)} / ${portalStatusLabel(nextStatus)}?`);
+    if (!ok) return;
+  }
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/set_student_portal_access', {
+      method: 'POST',
+      headers: getHeaders('return=representation'),
+      body: JSON.stringify({ p_user_id: uid, p_portal_plan: next, p_portal_status: nextStatus, p_note: opts.note || 'admin_portal_ui' }),
+      cache: 'no-store'
+    });
+    if (!r.ok) throw new Error('portal_access_update_' + r.status);
+    if (p) {
+      if (!opts.suppressUndo) lastPortalAccessChange = { uid, oldPlan, oldStatus, label };
+      p.portal_plan = next;
+      p.portal_status = nextStatus;
+    }
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true);
+    showAppToast('Đã cập nhật quyền portal.', 'success');
+  } catch (e) {
+    showAppToast('Chưa cập nhật được quyền portal. Kiểm tra migration 068.', 'warn');
+    throw e;
+  }
+}
+
+async function undoLastPortalAccessChange() {
+  if (!lastPortalAccessChange) {
+    showAppToast('Chưa có thao tác quyền portal nào để hoàn tác.', 'warn');
+    return;
+  }
+  const ch = lastPortalAccessChange;
+  const ok = window.confirm(`Hoàn tác quyền portal cho ${ch.label}: về ${portalPlanLabel(ch.oldPlan)} / ${portalStatusLabel(ch.oldStatus)}?`);
+  if (!ok) return;
+  const prev = lastPortalAccessChange;
+  lastPortalAccessChange = null;
+  try {
+    await updatePortalStudentAccess(ch.uid, ch.oldPlan, ch.oldStatus, { skipConfirm: true, note: 'admin_portal_undo', suppressUndo: true });
+  } catch (e) {
+    lastPortalAccessChange = prev;
+  }
+}
+
+async function updatePortalStudentPlan(userId, plan) {
+  return updatePortalStudentAccess(userId, plan, 'active');
+}
+
+function renderPortalFreeCuration(exams) {
+  const el = document.getElementById('portal-free-curation');
+  if (!el) return;
+  const group = portalFreeCurationGroup === 'university' ? 'university' : 'entrance_10';
+  const rows = (Array.isArray(exams) ? exams : [])
+    .filter(e => String(e.category || '') !== 'answer')
+    .filter(e => group === 'university' ? String(e.level || '') === 'university' : String(e.level || '') !== 'university')
+    .sort((a, b) => {
+      const ra = Number(a.group_free_rank || 999);
+      const rb = Number(b.group_free_rank || 999);
+      if (ra !== rb) return ra - rb;
+      return studentExamCompareByYearCode(a, b);
+    });
+  if (!rows.length) {
+    el.innerHTML = '<div class="empty" style="padding:16px">Chưa có tài liệu để cấu hình miễn phí.</div>';
+    return;
+  }
+  const byRank = new Map(rows
+    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank || 0) <= 5)
+    .map(e => [Number(e.group_free_rank), e]));
+  const slots = Array.from({ length: 5 }, (_, i) => {
+    const rank = i + 1;
+    const e = byRank.get(rank);
+    if (!e) {
+      return `<div class="portal-free-slot empty">
+        <div class="portal-free-slot-num">${rank}</div>
+        <div><div class="portal-free-title">Chưa chọn đề</div><div class="portal-free-meta">Slot miễn phí nhóm ${escapeHtml(portalFreeGroupLabel(group))}</div></div>
+        <div class="portal-free-actions"><button type="button" class="btn-sm" onclick="openPortalFreePicker(${rank})">Chọn</button></div>
+      </div>`;
+    }
+    return `<div class="portal-free-slot">
+      <div class="portal-free-slot-num">${rank}</div>
+      <div>
+        <div class="portal-free-title">${escapeHtml(portalExamTitle(e))}</div>
+        <div class="portal-free-meta">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, String(e.access_tier || 'free') === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
+      </div>
+      <div class="portal-free-actions">
+        <button type="button" class="btn-sm" onclick="openPortalFreePicker(${rank})">Đổi</button>
+        <button type="button" class="btn-sm" onclick="clearExamFreeRank('${escapeHtml(String(e.id || ''))}')">Bỏ</button>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="portal-curation-shell">
+    <div class="portal-user-tools" style="margin-bottom:10px">
+      <button type="button" class="btn-sm ${group === 'entrance_10' ? 'active' : ''}" onclick="setPortalFreeCurationGroup('entrance_10')">Thi vào 10 · 5 đề</button>
+      <button type="button" class="btn-sm ${group === 'university' ? 'active' : ''}" onclick="setPortalFreeCurationGroup('university')">THPT QG · 5 đề</button>
+    </div>
+    <div class="portal-free-slots">${slots}</div>
+    <div class="portal-picker ${portalFreePickerRank ? 'show' : ''}" id="portal-free-picker">
+      <div class="portal-picker-head">
+        <input class="portal-picker-search" id="portal-free-picker-search" type="search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
+        <button type="button" class="btn-sm" onclick="closePortalFreePicker()">Đóng</button>
+      </div>
+      <div class="portal-picker-list" id="portal-free-picker-list">${renderPortalFreePickerList(rows)}</div>
+    </div>
+  </div>`;
+  const input = document.getElementById('portal-free-picker-search');
+  if (input && portalFreePickerRank) {
+    setTimeout(() => {
+      input.focus();
+      try { input.setSelectionRange(input.value.length, input.value.length); } catch (e) {}
+    }, 0);
+  }
+}
+
+function renderPortalFreePickerList(rows) {
+  if (!portalFreePickerRank) return '';
+  const q = normalizeText(String(portalFreePickerQuery || '')).toLowerCase().trim();
+  const group = portalFreeCurationGroup === 'university' ? 'university' : 'entrance_10';
+  const pickedIds = new Set((rows || [])
+    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank || 0) <= 5 && Number(e.group_free_rank) !== Number(portalFreePickerRank))
+    .map(e => String(e.id || '')));
+  const candidates = (rows || [])
+    .filter(e => !pickedIds.has(String(e.id || '')))
+    .filter(e => group === 'university' ? String(e.level || '') === 'university' : String(e.level || '') !== 'university')
+    .filter(e => {
+      if (!q) return true;
+      const hay = [portalExamTitle(e), e.title, e.exam_code, studentExamDisplayProvince(e.province), e.province, e.year, studentExamLevelLabel(e.level)]
+        .map(x => normalizeText(String(x || '')).toLowerCase())
+        .join(' ');
+      return hay.includes(q);
+    })
+    .slice(0, 12);
+  if (!candidates.length) {
+    return '<div class="empty" style="padding:14px">Không tìm thấy tài liệu phù hợp.</div>';
+  }
+  return candidates.map(e => `<div class="portal-picker-item">
+    <div>
+      <div class="portal-table-title">${escapeHtml(portalExamTitle(e))}</div>
+      <div class="portal-table-muted">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, String(e.access_tier || 'free') === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
+    </div>
+    <button type="button" class="btn-sm" onclick="setExamFreeRank('${escapeHtml(String(e.id || ''))}', ${Number(portalFreePickerRank)})">Chọn</button>
+  </div>`).join('');
+}
+
+function openPortalFreePicker(rank) {
+  portalFreePickerRank = Math.max(1, Math.min(5, Number(rank) || 1));
+  portalFreePickerQuery = '';
+  renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+}
+
+function setPortalFreeCurationGroup(group) {
+  portalFreeCurationGroup = String(group || '') === 'university' ? 'university' : 'entrance_10';
+  portalFreePickerRank = null;
+  portalFreePickerQuery = '';
+  renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+}
+
+function closePortalFreePicker() {
+  portalFreePickerRank = null;
+  portalFreePickerQuery = '';
+  renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+}
+
+function onPortalFreePickerSearch(value) {
+  portalFreePickerQuery = String(value || '');
+  const list = document.getElementById('portal-free-picker-list');
+  if (list) list.innerHTML = renderPortalFreePickerList(_portalAnalyticsExamRows || []);
+}
+
+async function clearExamFreeRank(examId) {
+  return setExamFreeRank(examId, null);
+}
+
+async function setExamFreeRank(examId, rank) {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được chọn đề miễn phí.', 'warn');
+    return;
+  }
+  const id = String(examId || '').trim();
+  const nextRank = rank ? Number(rank) : null;
+  const group = portalFreeCurationGroup === 'university' ? 'university' : 'entrance_10';
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/set_exam_free_rank', {
+      method: 'POST',
+      headers: getHeaders('return=representation'),
+      body: JSON.stringify({ p_exam_id: id, p_free_rank: nextRank, p_free_group: group }),
+      cache: 'no-store'
+    });
+    if (!r.ok) {
+      let msg = '';
+      try {
+        const data = await r.json();
+        msg = data.message || data.details || data.hint || data.code || '';
+      } catch (e) {}
+      throw new Error(msg || ('set_exam_free_rank_' + r.status));
+    }
+    const row = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows.find(e => String(e.id || '') === id) : null;
+    if (row) {
+      if (nextRank) row.access_tier = 'free';
+      row.free_group = nextRank ? group : null;
+      row.group_free_rank = nextRank;
+    }
+    portalFreePickerRank = null;
+    portalFreePickerQuery = '';
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true);
+    showAppToast(nextRank ? 'Đã cập nhật đề miễn phí.' : 'Đã bỏ khỏi danh sách đề miễn phí.', 'success');
+  } catch (e) {
+    const msg = String(e && e.message || '');
+    const friendly = /admin_required/i.test(msg)
+      ? 'Tài khoản hiện tại chưa có quyền admin để chọn đề miễn phí.'
+      : /invalid_free_rank/i.test(msg)
+      ? 'Vị trí miễn phí không hợp lệ.'
+      : /exam_not_found/i.test(msg)
+      ? 'Không tìm thấy tài liệu này hoặc tài liệu không hợp lệ.'
+      : 'Chưa lưu được vị trí đề miễn phí. Em đã ghi log lỗi để kiểm tra tiếp.';
+    console.warn('setExamFreeRank failed', e);
+    showAppToast(friendly, 'warn');
+  }
+}
+
+async function submitExamFreeRank(examId) {
+  return setExamFreeRank(examId, portalFreePickerRank);
+}
+
+function renderPortalAccessAudit() {
+  const el = document.getElementById('portal-access-audit');
+  if (!el) return;
+  const rows = Array.isArray(_portalAnalyticsAuditRows) ? _portalAnalyticsAuditRows : [];
+  if (!rows.length) {
+    el.innerHTML = '<div class="empty" style="padding:16px">Chưa có lịch sử đổi quyền portal.</div>';
+    return;
+  }
+  el.innerHTML = `<div class="portal-audit-list">${
+    rows.slice(0, 24).map(r => {
+      const target = portalUserLabel(r.target_user_id);
+      const actor = portalUserLabel(r.actor_id);
+      const from = `${portalPlanLabel(r.old_portal_plan)} / ${portalStatusLabel(r.old_portal_status)}`;
+      const to = `${portalPlanLabel(r.new_portal_plan)} / ${portalStatusLabel(r.new_portal_status)}`;
+      return `<div class="portal-audit-item">
+        <div class="portal-table-title">${escapeHtml(target)} · ${escapeHtml(portalActivityTimeLabel(r.created_at))}</div>
+        <div class="portal-table-muted">${escapeHtml(from)} -> ${escapeHtml(to)}</div>
+        <div class="portal-table-muted">Người thao tác: ${escapeHtml(actor)}${r.note ? ' · ' + escapeHtml(String(r.note)) : ''}</div>
+      </div>`;
+    }).join('')
+  }</div>`;
 }
 
 function renderPortalActivityBars(rows) {
@@ -16141,19 +17689,15 @@ function renderPortalTopUsers(rows, examById) {
 }
 
 function showAnalyticsSubtab(which) {
-  analyticsSubtab = which === 'rev' ? 'rev' : (which === 'portal' ? 'portal' : 'att');
+  analyticsSubtab = which === 'rev' ? 'rev' : 'att';
   const a = document.getElementById('analytics-sub-att');
   const b = document.getElementById('analytics-sub-rev');
-  const c = document.getElementById('analytics-sub-portal');
   if (a) a.classList.toggle('active', analyticsSubtab === 'att');
   if (b) b.classList.toggle('active', analyticsSubtab === 'rev');
-  if (c) c.classList.toggle('active', analyticsSubtab === 'portal');
   const pa = document.getElementById('analytics-pane-att');
   const pr = document.getElementById('analytics-pane-rev');
-  const pp = document.getElementById('analytics-pane-portal');
   if (pa) pa.style.display = analyticsSubtab === 'att' ? 'block' : 'none';
   if (pr) pr.style.display = analyticsSubtab === 'rev' ? 'block' : 'none';
-  if (pp) pp.style.display = analyticsSubtab === 'portal' ? 'block' : 'none';
   try {
     renderAnalyticsPanels();
   } catch (e) {
@@ -16164,10 +17708,6 @@ function showAnalyticsSubtab(which) {
 function renderAnalyticsPanels() {
   syncAnalyticsAttMonthToolbarVisibility();
   syncAnalyticsAttMonthInput();
-  if (analyticsSubtab === 'portal') {
-    void loadPortalAnalyticsIfNeeded(false);
-    return;
-  }
   if (!_analyticsAttendanceRows || !Array.isArray(_analyticsAttendanceRows)) return;
   const rows = filterAnalyticsRowsByClass(_analyticsAttendanceRows).filter(rowInAnalyticsRange);
   if (analyticsSubtab === 'att') {
@@ -18246,6 +19786,115 @@ function stripClassScheduleText(rawText) {
   s = s.replace(/\s*\+\s*/g, ', ');
   s = s.replace(/\s*,\s*/g, ', ');
   return s.replace(/\s{2,}/g, ' ').trim();
+}
+
+function bankNoteLooksMojibake(text) {
+  return /[?ÃÄÅÆÐÂ]/.test(String(text || ''));
+}
+
+function formatBankReconcileNote(rawText) {
+  let s = stripClassScheduleText(rawText);
+  if (!s) return '';
+  if (bankNoteLooksMojibake(s) && typeof mvkFixVietnameseText === 'function') s = mvkFixVietnameseText(s);
+  s = s
+    .replace(/chi\?{1,3}i\s*so\?t\/auto apply/gi, 'chờ đối soát / auto apply')
+    .replace(/ch\?{1,3}a\s*ch\?c\s*ch\?n/gi, 'chưa chắc chắn')
+    .replace(/c\?n\s*ch\?n\s*h\?c sinh\s*t\?\s*g\?i\?/gi, 'cần chọn học sinh từ gợi ý')
+    .replace(/\bl\?p\b/gi, 'lớp')
+    .replace(/theolớp/gi, 'theo lớp')
+    .replace(/theo(lớp)/gi, 'theo $1')
+    .replace(/\s*:\s*lớp\s*/gi, ': lớp ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  const methodLabel = {
+    ref: 'mã tham chiếu',
+    phone: 'số điện thoại',
+    student_name: 'tên học sinh',
+    parent_name: 'tên phụ huynh',
+    mixed: 'nhiều thông tin kết hợp'
+  };
+  const confidenceLabel = {
+    high: 'cao',
+    medium: 'trung bình',
+    low: 'thấp'
+  };
+  const autoMatch = s.match(/^Auto:\s*match\s+([a-z_]+)\s*\(\s*([a-z]+)\s*,\s*score\s*([0-9]+)\s*\)\s*(.*)$/i);
+  if (autoMatch) {
+    const method = methodLabel[String(autoMatch[1] || '').toLowerCase()] || 'nội dung chuyển khoản';
+    const confidence = confidenceLabel[String(autoMatch[2] || '').toLowerCase()] || String(autoMatch[2] || '').toLowerCase();
+    const score = String(autoMatch[3] || '').trim();
+    const tailParts = String(autoMatch[4] || '')
+      .split(/[·•]+/)
+      .map(part =>
+        part
+          .replace(/trừ nợ trước/gi, 'Đã trừ nợ trước')
+          .replace(/còn dư vào trả trước/gi, 'Phần dư chuyển vào học phí trả trước')
+          .replace(/\s{2,}/g, ' ')
+          .trim()
+      )
+      .filter(Boolean);
+    return (
+      `Tự động đối soát theo ${method}; độ tin cậy ${confidence}` +
+      (score ? ` (${score} điểm)` : '') +
+      (tailParts.length ? `. ${tailParts.join('. ')}.` : '.')
+    );
+  }
+
+  return s
+    .replace(/^Auto:\s*/i, 'Tự động: ')
+    .replace(/\bmatch\s+parent_name\b/gi, 'khớp tên phụ huynh')
+    .replace(/\bmatch\s+student_name\b/gi, 'khớp tên học sinh')
+    .replace(/\bmatch\s+phone\b/gi, 'khớp số điện thoại')
+    .replace(/\bmatch\s+ref\b/gi, 'khớp mã tham chiếu')
+    .replace(/\bmatch\s+mixed\b/gi, 'khớp nhiều thông tin')
+    .replace(/\bhigh\b/gi, 'độ tin cậy cao')
+    .replace(/\bmedium\b/gi, 'độ tin cậy trung bình')
+    .replace(/\blow\b/gi, 'độ tin cậy thấp')
+    .replace(/\bscore\s*([0-9]+)/gi, '$1 điểm')
+    .replace(/trừ nợ trước/gi, 'đã trừ nợ trước')
+    .replace(/còn dư vào trả trước/gi, 'phần dư chuyển vào học phí trả trước')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function formatBankInfoNote(rawText) {
+  let s = stripClassScheduleText(rawText);
+  if (!s) return '';
+  if (bankNoteLooksMojibake(s) && typeof mvkFixVietnameseText === 'function') s = mvkFixVietnameseText(s);
+  s = s
+    .replace(/Kh\?ng match \?\?\?c h\?c sinh theo n\?i dung chuy\?n kho\?n/gi, 'Không match được học sinh theo nội dung chuyển khoản')
+    .replace(/Match ch\?a \?\? ch\?c ch\?n,\s*c\?n ch\?n h\?c sinh t\? g\?i\s*\?/gi, 'Match chưa đủ chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/Match high confidence,\s*ch\?\s*\?\?i\s*so\?t\/auto apply/gi, 'Match độ tin cậy cao, chờ đối soát / auto apply')
+    .replace(/Match high confidence,\s*chi\?{1,4}i\s*so\?t\/auto apply/gi, 'Match độ tin cậy cao, chờ đối soát / auto apply')
+    .replace(/Match high confidence,\s*chờ đối soát\/auto apply/gi, 'Match độ tin cậy cao, chờ đối soát / auto apply')
+    .replace(/Match ch\?{1,3}a ch\?c ch\?n,\s*c\?n ch\?n h\?c sinh t\? g\?i\?/gi, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/Match chưa chắc chắn,\s*cần chọn học sinh t\?\s*gửi\?/gi, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/Match chưa chắc chắn,\s*cần chọn học sinh t\?\s*g\?i\?/gi, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/Đối soát tay:\s*l\?p\s*/gi, 'Đối soát tay: lớp ')
+    .replace(/Đối soát tay theo(lớp)/gi, 'Đối soát tay theo lớp')
+    .replace(/Đối soát tay theolớp/gi, 'Đối soát tay theo lớp')
+    .replace(/\bl\?p\b/gi, 'lớp')
+    .replace(/dã nhận/gi, 'đã nhận')
+    .replace(/dã nhận tiền/gi, 'đã nhận tiền')
+    .replace(/dã dùng/gi, 'đã dùng')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  let out = formatBankReconcileNote(s);
+  out = out
+    .replace(/Kh\?ng match \?\?\?c h\?c sinh theo n\?i dung chuy\?n kho\?n/gi, 'Không match được học sinh theo nội dung chuyển khoản')
+    .replace(/^Match .{0,40}chờ đối soát\s*\/\s*auto apply$/i, 'Match độ tin cậy cao, chờ đối soát / auto apply')
+    .replace(/^Match .{0,40}(chi|chỉ|\?\?)\s*\?\?i\s*so\?t\/auto apply$/i, 'Match độ tin cậy cao, chờ đối soát / auto apply')
+    .replace(/^Match .{0,40}cần chọn học sinh từ gợi ý\s*\??$/i, 'Match chưa đủ chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/^Match .{0,45}cần chọn học sinh t\?\s*gửi\s*\?$/i, 'Match chưa đủ chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/^Match .{0,28}cần chọn học sinh từ gợi ý$/i, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/^Match .{0,28}chọn học sinh từ gợi ý$/i, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/\?\?i so\?t tay/gi, 'Đối soát tay')
+    .replace(/\?\? nhận tiền/gi, 'đã nhận tiền')
+    .replace(/lớp\s+(MVK_[A-Z0-9_]+)\s*:\s*đã nhận tiền/gi, 'lớp $1: đã nhận tiền')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return out;
 }
 
 function compactClassListLabel(rawText) {
@@ -21269,29 +22918,29 @@ function renderClassCollectDraftUI(options = {}) {
   const currentScroller = preserveScroll ? list.querySelector('.class-collect-list') : null;
   const scrollTop = currentScroller ? currentScroller.scrollTop : 0;
   if (!classCollectDraft || !classCollectDraft.className) {
-    summary.textContent = 'Chua ch?n l?p.';
-    list.innerHTML = '<div class="empty">Chua có d? li?u.</div>';
+    summary.textContent = 'Chưa chọn lớp.';
+    list.innerHTML = '<div class="empty">Chưa có dữ liệu.</div>';
     return;
   }
   const items = Array.isArray(classCollectDraft.items) ? classCollectDraft.items : [];
   const selected = items.filter(x => x.selected && x.pending > 0);
   const selectedPending = selected.reduce((sum, x) => sum + x.pending, 0);
   const selectedAmount = selected.reduce((sum, x) => sum + Math.max(0, parseInt(String(x.amount || 0), 10) || 0), 0);
-  summary.textContent = `${displayClassVi(classCollectDraft.className)} · ${selected.length}/${items.length} h?c viên du?c ch?n · ${selectedPending} bu?i · ${formatVnd(selectedAmount)}`;
+  summary.textContent = `${displayClassVi(classCollectDraft.className)} · ${selected.length}/${items.length} học viên được chọn · ${selectedPending} buổi · ${formatVnd(selectedAmount)}`;
   if (!items.length) {
-    list.innerHTML = '<div class="empty">L?p này hi?n không có h?c viên còn n? (theo l?p dang gán / l?p cu).</div>';
+    list.innerHTML = '<div class="empty">Lớp này hiện không có học viên còn nợ (theo lớp đang gán / lớp cũ).</div>';
     return;
   }
   list.innerHTML = `<div class="class-collect-list">${
     items.map((x, idx) => {
       const legacyHint = Array.isArray(x.segments) && x.segments.some(s => s.role === 'legacy')
-        ? ' <span class="muted">(g?m l?p cu)</span>'
+        ? ' <span class="muted">(gồm lớp cũ)</span>'
         : '';
       const amt = Math.max(0, parseInt(String(x.amount || 0), 10) || 0);
       return `
       <label class="class-collect-item">
         <input type="checkbox" ${x.selected ? 'checked' : ''} onchange="toggleClassCollectStudent(${idx}, this.checked)"/>
-        <div><strong>${escapeHtml(x.name || 'H?c viên')}</strong><br/><span class="muted">${x.pending} bu?i n?</span>${legacyHint}</div>
+        <div><strong>${escapeHtml(x.name || 'Học viên')}</strong><br/><span class="muted">${x.pending} buổi nợ</span>${legacyHint}</div>
         <div><strong>${escapeHtml(formatVnd(amt))}</strong></div>
       </label>`;
     }).join('')
@@ -21306,7 +22955,7 @@ function openClassEstimateModal() {
   const classEl = document.getElementById('bank-link-class');
   const className = classEl ? String(classEl.value || '').trim() : '';
   if (!className) {
-    showAppToast('Vui lòng ch?n l?p.');
+    showAppToast('Vui lòng chọn lớp.');
     return;
   }
   const items = [];
@@ -21319,7 +22968,7 @@ function openClassEstimateModal() {
     items.push({
       studentId: sid,
       id: sid,
-      name: st.name || 'H?c viên',
+      name: st.name || 'Học viên',
       exportClassName: className,
       segments: segments.slice(),
       pending,
@@ -21334,8 +22983,8 @@ function openClassEstimateModal() {
   };
   const titleEl = document.querySelector('#class-collect-modal .modal-title');
   const btnEl = document.querySelector('#class-collect-modal .modal-actions .btn-sm:last-child');
-  if (titleEl) titleEl.textContent = 'Phi?u thu t?m tính theo l?p';
-  if (btnEl) btnEl.textContent = 'Xu?t PDF';
+  if (titleEl) titleEl.textContent = 'Phiếu thu tạm tính theo lớp';
+  if (btnEl) btnEl.textContent = 'Xuất PDF';
   renderClassCollectDraftUI();
   document.getElementById('class-collect-modal').classList.add('show');
 }
@@ -21397,7 +23046,7 @@ function classCodeForExportName(raw) {
 async function printClassEstimateReceipt(options = {}) {
   const className = String(options.className || (document.getElementById('bank-link-class') ? document.getElementById('bank-link-class').value : '') || '').trim();
   if (!className) {
-    showAppToast('Vui lòng ch?n l?p d? xu?t PDF phi?u t?m tính.');
+    showAppToast('Vui lòng chọn lớp để xuất PDF phiếu tạm tính.');
     return;
   }
   const classKey = normalizeClassKeyForFeeLookup(className);
@@ -21429,11 +23078,11 @@ async function printClassEstimateReceipt(options = {}) {
   }
   studentIds = [...new Set(studentIds)];
   if (!studentIds.length) {
-    showAppToast('L?p này hi?n không có h?c viên còn n? d? xu?t PDF.');
+    showAppToast('Lớp này hiện không có học viên còn nợ để xuất PDF.');
     return;
   }
   if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
-    showAppToast('Chua t?i du?c thu vi?n xu?t PDF. Vui lòng th? l?i.');
+    showAppToast('Chưa tải được thư viện xuất PDF. Vui lòng thử lại.');
     return;
   }
   const formatYmd = (ymd) => {
@@ -21451,26 +23100,26 @@ async function printClassEstimateReceipt(options = {}) {
       if (hit && hit.name) return String(hit.name);
     }
     const st = (students || []).find(s => String(s.id || '').trim() === sid);
-    return (st && st.name) ? String(st.name) : 'H?c viên';
+    return (st && st.name) ? String(st.name) : 'Học viên';
   };
   const buildMergedEstimateStack = (sid) => {
     const segs = collectOutstandingSegmentsForClassPdf(className, sid);
     const legacySegs = segs.filter(s => s.role === 'legacy').sort((a, b) => String(a.className).localeCompare(String(b.className), 'vi'));
     const exportSegs = segs.filter(s => s.role === 'export');
-    // HS không chuy?n l?p (không n? l?p cu không còn gán): gi? layout phi?u PDF nhu tru?c
+    // HS không chuyển lớp: giữ layout phiếu PDF như trước.
     if (!legacySegs.length && exportSegs.length) {
       const pending = exportSegs.reduce((a, s) => a + s.pending, 0);
       let amount = 0;
       exportSegs.forEach(s => { amount += s.pending * s.fee; });
       const primaryClass = exportSegs[0].className || className;
       const dateList = collectUnpaidPresentDatesForStudentClass(sid, primaryClass);
-      const dateText = dateList.length ? dateList.map(formatYmd).join(', ') : 'Chua có d? li?u ngày h?c';
+      const dateText = dateList.length ? dateList.map(formatYmd).join(', ') : 'Chưa có dữ liệu ngày học';
       const stack = [
         { text: dateText, color: '#6b7280', fontSize: 9.5, margin: [0, 3, 0, 0] },
         {
           columns: [
-            { width: '*', text: `T?ng h?c phí: ${formatVnd(amount)}`, alignment: 'left', color: '#0f172a', bold: true, fontSize: 10.8, margin: [0, 4, 0, 0] },
-            { width: 'auto', text: `S? bu?i: ${pending}`, alignment: 'right', color: '#334155', fontSize: 10, margin: [0, 4, 0, 0] }
+            { width: '*', text: `Tổng học phí: ${formatVnd(amount)}`, alignment: 'left', color: '#0f172a', bold: true, fontSize: 10.8, margin: [0, 4, 0, 0] },
+            { width: 'auto', text: `Số buổi: ${pending}`, alignment: 'right', color: '#334155', fontSize: 10, margin: [0, 4, 0, 0] }
           ]
         }
       ];
@@ -21479,9 +23128,9 @@ async function printClassEstimateReceipt(options = {}) {
     const stack = [];
     legacySegs.forEach(s => {
       const dates = collectUnpaidPresentDatesForStudentClass(sid, s.className);
-      const dateText = dates.length ? dates.map(formatYmd).join(', ') : 'Chua có d? li?u ngày h?c';
+      const dateText = dates.length ? dates.map(formatYmd).join(', ') : 'Chưa có dữ liệu ngày học';
       stack.push({
-        text: `L?p cu · ${dateText}`,
+        text: `Lớp cũ · ${dateText}`,
         color: '#6b7280',
         fontSize: 9.5,
         margin: [0, 3, 0, 0]
@@ -21489,9 +23138,9 @@ async function printClassEstimateReceipt(options = {}) {
     });
     exportSegs.forEach(s => {
       const dates = collectUnpaidPresentDatesForStudentClass(sid, s.className);
-      const dateText = dates.length ? dates.map(formatYmd).join(', ') : 'Chua có d? li?u ngày h?c';
+      const dateText = dates.length ? dates.map(formatYmd).join(', ') : 'Chưa có dữ liệu ngày học';
       stack.push({
-        text: `L?p m?i · ${dateText}`,
+        text: `Lớp mới · ${dateText}`,
         color: '#6b7280',
         fontSize: 9.5,
         margin: [0, 3, 0, 0]
@@ -21502,8 +23151,8 @@ async function printClassEstimateReceipt(options = {}) {
     segs.forEach(s => { amount += s.pending * s.fee; });
     stack.push({
       columns: [
-        { width: '*', text: `T?ng h?c phí: ${formatVnd(amount)}`, alignment: 'left', color: '#0f172a', bold: true, fontSize: 10.8, margin: [0, 4, 0, 0] },
-        { width: 'auto', text: `S? bu?i: ${totalPending}`, alignment: 'right', color: '#334155', fontSize: 10, margin: [0, 4, 0, 0] }
+        { width: '*', text: `Tổng học phí: ${formatVnd(amount)}`, alignment: 'left', color: '#0f172a', bold: true, fontSize: 10.8, margin: [0, 4, 0, 0] },
+        { width: 'auto', text: `Số buổi: ${totalPending}`, alignment: 'right', color: '#334155', fontSize: 10, margin: [0, 4, 0, 0] }
       ]
     });
     return { stack, amount };
@@ -21525,20 +23174,20 @@ async function printClassEstimateReceipt(options = {}) {
       .filter(s => s && Number(s.pending) > 0);
     const uniqueFees = [...new Set(allSegs.map(s => Number(s.fee) || 0))].filter(v => v > 0);
     if (!uniqueFees.length) return '';
-    if (uniqueFees.length === 1) return `H?c phí/bu?i: ${formatVnd(uniqueFees[0])}`;
+    if (uniqueFees.length === 1) return `Học phí/buổi: ${formatVnd(uniqueFees[0])}`;
     const feeListForRole = (role) => [...new Set(allSegs.filter(s => s.role === role).map(s => Number(s.fee) || 0))]
       .filter(v => v > 0)
       .map(formatVnd);
     const parts = [];
     const legacyFees = feeListForRole('legacy');
     const exportFees = feeListForRole('export');
-    if (legacyFees.length) parts.push(`L?p cu: ${legacyFees.join(', ')}`);
-    if (exportFees.length) parts.push(`L?p m?i: ${exportFees.join(', ')}`);
-    return parts.length ? `H?c phí/bu?i: ${parts.join(' · ')}` : `H?c phí/bu?i: ${uniqueFees.map(formatVnd).join(', ')}`;
+    if (legacyFees.length) parts.push(`Lớp cũ: ${legacyFees.join(', ')}`);
+    if (exportFees.length) parts.push(`Lớp mới: ${exportFees.join(', ')}`);
+    return parts.length ? `Học phí/buổi: ${parts.join(' · ')}` : `Học phí/buổi: ${uniqueFees.map(formatVnd).join(', ')}`;
   })();
   const classInfoStack = [
-    { text: `L?p: ${classLabel}`, fontSize: 11.5, bold: true, color: '#0f172a' },
-    { text: `S? h?c viên: ${sortedStudentIds.length}`, fontSize: 10.5, color: '#334155', margin: [0, 2, 0, 0] }
+    { text: `Lớp: ${classLabel}`, fontSize: 11.5, bold: true, color: '#0f172a' },
+    { text: `Số học viên: ${sortedStudentIds.length}`, fontSize: 10.5, color: '#334155', margin: [0, 2, 0, 0] }
   ];
   if (feeSummaryText) {
     classInfoStack.push({ text: feeSummaryText, fontSize: 10.5, color: '#334155', margin: [0, 2, 0, 0] });
@@ -21546,7 +23195,7 @@ async function printClassEstimateReceipt(options = {}) {
   const now = new Date();
   const createdAt = now.toLocaleString(APP.i18n.locale || 'vi-VN');
   const dateOnly = now.toLocaleDateString(APP.i18n.locale || 'vi-VN');
-  const collectorName = (APP.payments && APP.payments.collectorName) || 'Ph? trách h?c phí';
+  const collectorName = (APP.payments && APP.payments.collectorName) || 'Phụ trách học phí';
   await loadPaymentConfigFromSupabase();
   const payCfg = normalizePaymentConfigRow(paymentConfig || {});
   const logoDataUrl = await resolvePdfLogoDataUrl();
@@ -21569,23 +23218,23 @@ async function printClassEstimateReceipt(options = {}) {
     ]);
   });
   const safeClassCode = classCodeForExportName(className).replace(/[\\/:*?"<>|]+/g, '-').trim() || 'lop';
-  const filename = `Phi?u thu t?m tính - ${safeClassCode}.pdf`;
+  const filename = `Phiếu thu tạm tính - ${safeClassCode}.pdf`;
   try {
     const tableBody = [tableHead[0], ...tableRows];
     const paymentInfoRows = [
       payCfg.bankName ? ['Ngân hàng', payCfg.bankName] : null,
-      payCfg.accountNumber ? ['S? tài kho?n', payCfg.accountNumber] : null,
-      payCfg.accountName ? ['Tên tài kho?n', payCfg.accountName] : null
+      payCfg.accountNumber ? ['Số tài khoản', payCfg.accountNumber] : null,
+      payCfg.accountName ? ['Tên tài khoản', payCfg.accountName] : null
     ].filter(Boolean);
     const paymentInfoStack = [
-      { text: 'Thanh toán chuy?n kho?n', bold: true, color: '#0f172a', fontSize: 12.5, margin: [0, 0, 0, 3] },
-      { text: 'Quét mã QR ho?c chuy?n kho?n theo thông tin du?i dây.', color: '#64748b', fontSize: 9.5, margin: [0, 0, 0, 8] },
+      { text: 'Thông tin chuyển khoản', bold: true, color: '#0f172a', fontSize: 12.5, margin: [0, 0, 0, 3] },
+      { text: 'Quét mã QR hoặc chuyển khoản theo thông tin dưới đây.', color: '#64748b', fontSize: 9.5, margin: [0, 0, 0, 8] },
       ...(paymentInfoRows.length ? [{
         table: {
           widths: [72, '*'],
           body: paymentInfoRows.map(([label, value]) => [
             { text: label, color: '#64748b', fontSize: 9.7, margin: [0, 2, 0, 2] },
-            { text: value, color: '#0f172a', bold: label === 'S? tài kho?n', fontSize: label === 'S? tài kho?n' ? 12.2 : 10.5, margin: [0, 2, 0, 2] }
+            { text: value, color: '#0f172a', bold: label === 'Số tài khoản', fontSize: label === 'Số tài khoản' ? 12.2 : 10.5, margin: [0, 2, 0, 2] }
           ])
         },
         layout: 'noBorders'
@@ -21661,9 +23310,9 @@ async function printClassEstimateReceipt(options = {}) {
     headerColumns.push({
       width: 'auto',
       stack: [
-        { text: 'PHI?U THU T?M TÍNH', style: 'title', alignment: 'right' },
-        { text: `Ngày l?p phi?u: ${dateOnly}`, fontSize: 10.5, color: '#334155', alignment: 'right', margin: [0, 3, 0, 0] },
-        { text: `Ngu?i l?p: ${collectorName}`, fontSize: 10.5, color: '#334155', alignment: 'right', margin: [0, 2, 0, 0] }
+        { text: 'PHIẾU THU TẠM TÍNH', style: 'title', alignment: 'right' },
+        { text: `Ngày lập phiếu: ${dateOnly}`, fontSize: 10.5, color: '#334155', alignment: 'right', margin: [0, 3, 0, 0] },
+        { text: `Người lập: ${collectorName}`, fontSize: 10.5, color: '#334155', alignment: 'right', margin: [0, 2, 0, 0] }
       ]
     });
     const docDefinition = {
@@ -21696,7 +23345,7 @@ async function printClassEstimateReceipt(options = {}) {
             },
             {
               width: 'auto',
-              text: `Th?i di?m xu?t: ${createdAt}`,
+              text: `Thời điểm xuất: ${createdAt}`,
               fontSize: 10.5,
               color: '#334155',
               alignment: 'right'
@@ -21725,13 +23374,13 @@ async function printClassEstimateReceipt(options = {}) {
           }
         },
         {
-          text: `T?ng h?c phí: ${formatVnd(totalAmount)}`,
+          text: `Tổng học phí: ${formatVnd(totalAmount)}`,
           alignment: 'right',
           margin: [0, 10, 0, 2],
           style: 'total'
         },
         {
-          text: `Phi?u xu?t t? h? th?ng ${String((tenantDisplay && tenantDisplay.appName) || 'MV Klass')} - ${createdAt}`,
+          text: `Phiếu xuất từ hệ thống ${String((tenantDisplay && tenantDisplay.appName) || 'MV Klass')} - ${createdAt}`,
           alignment: 'center',
           fontSize: 9,
           color: '#64748b',
@@ -21748,7 +23397,7 @@ async function printClassEstimateReceipt(options = {}) {
       defaultStyle: { font: 'Roboto' }
     };
     window.pdfMake.createPdf(docDefinition).download(filename);
-    showAppToast('Ðã xu?t PDF phi?u thu t?m tính.');
+    showAppToast('Đã xuất PDF phiếu thu tạm tính.');
   } catch (e) {
     console.warn('export pdf failed', e);
     showAppToast(`Không xuất được PDF: ${String((e && e.message) || e || 'Lỗi không xác định')}`);
@@ -22265,12 +23914,13 @@ function bankSummaryMonthInputHtml(monthKey) {
 function cleanTransferContentForStudentMatch(raw) {
   let txt = normalizeText(raw || '');
   if (!txt) return '';
+  txt = txt.replace(/\bnoi\s+dung\b/g, ' ');
   // Remove common banking filler words to keep only meaningful name/phone clues.
   const stopwords = [
     'chuyen', 'khoan', 'ck', 'chuyenkhoan', 'nh', 'ib', 'bank', 'banking', 'mbbank', 'vietcombank',
     'hoc', 'phi', 'dong', 'nop', 'thu', 'tien', 'tra', 'thanh', 'toan', 'thang', 'ky', 'lop',
     'cho', 'be', 'ban', 'con', 'em', 'hs', 'hocvien', 'hoc_sinh', 'phu', 'huynh', 'ph',
-    'noi', 'dung', 'gd', 'ma', 'ref', 'id', 'den', 'tu', 'tai', 'vi', 'vnd'
+    'noi', 'gd', 'ma', 'ref', 'id', 'den', 'tu', 'tai', 'vi', 'vnd'
   ];
   const stop = new Set(stopwords);
   const tokens = txt.split(' ').filter(Boolean).filter(t => !stop.has(t));
@@ -22330,18 +23980,18 @@ function inferStudentFromTransferContent(transferContent) {
 function bankMatchConfidenceLabel(confidence) {
   const c = String(confidence || '').toLowerCase();
   if (c === 'high') return 'Cao';
-  if (c === 'medium') return 'Trung binh';
-  if (c === 'low') return 'Thap';
+  if (c === 'medium') return 'Trung bình';
+  if (c === 'low') return 'Thấp';
   return '';
 }
 
 function bankMatchMethodLabel(method) {
   const m = String(method || '').toLowerCase();
-  if (m === 'ref') return 'Ma REF';
-  if (m === 'phone') return 'SDT';
-  if (m === 'student_name') return 'Ten hoc sinh';
-  if (m === 'parent_name') return 'Phu huynh';
-  if (m === 'mixed') return 'Nhieu dau hieu';
+  if (m === 'ref') return 'Mã REF';
+  if (m === 'phone') return 'SĐT';
+  if (m === 'student_name') return 'Tên học sinh';
+  if (m === 'parent_name') return 'Phụ huynh';
+  if (m === 'mixed') return 'Nhiều dấu hiệu';
   return '';
 }
 
@@ -22409,7 +24059,7 @@ function openBankCandidateModal(row) {
   closeBankManualReceiveStudentPicker();
   bankCandidateModalTxnId = Number(row.id) || null;
   if (hint) {
-    hint.textContent = 'Giao dich #' + row.id + ': he thong dang phan van ' + candidates.length + ' hoc sinh. Chon dung hoc sinh de mo doi soat nhanh.';
+    hint.textContent = 'Giao dịch #' + row.id + ': hệ thống đang phân vân ' + candidates.length + ' học sinh. Chọn đúng học sinh để mở đối soát nhanh.';
   }
   list.innerHTML = candidates.map(c => {
     const cls = getCandidateClassName(c);
@@ -22417,14 +24067,14 @@ function openBankCandidateModal(row) {
     const method = bankMatchMethodLabel(c.matchMethod) || '—';
     const meta = [
       c.parentName ? 'PH: ' + c.parentName : '',
-      cls ? 'Lop: ' + displayClassVi(cls) : '',
-      c.phone ? 'SDT: ' + c.phone : '',
-      method ? 'Khop: ' + method : '',
-      c.matchedText ? 'Dau hieu: ' + c.matchedText : ''
+      cls ? 'Lớp: ' + displayClassVi(cls) : '',
+      c.phone ? 'SĐT: ' + c.phone : '',
+      method ? 'Khớp: ' + method : '',
+      c.matchedText ? 'Dấu hiệu: ' + c.matchedText : ''
     ].filter(Boolean).join(' · ');
     return (
       '<button type="button" class="bank-tx-candidate-row" data-bank-candidate-student="' + escapeHtml(c.studentId) + '">' +
-      '<div class="top"><span>' + escapeHtml(c.studentName || 'Hoc sinh') + '</span>' +
+      '<div class="top"><span>' + escapeHtml(c.studentName || 'Học sinh') + '</span>' +
       '<span class="bank-tx-candidate-badge">' + escapeHtml(conf + ' · ' + String(c.score || 0)) + '</span></div>' +
       '<div class="sub">' + escapeHtml(meta || '—') + '</div>' +
       '</button>'
@@ -22441,7 +24091,7 @@ function chooseBankCandidate(studentId) {
   const c = (row.matchCandidates || []).find(x => String(x.studentId) === String(studentId));
   const st = c ? findStudentByCandidate(c) : null;
   if (!c || !st) {
-    showAppToast('Khong tim thay hoc sinh goi y trong danh sach hien tai. Hay F5 va thu lai.');
+    showAppToast('Không tìm thấy học sinh gợi ý trong danh sách hiện tại. Hãy F5 và thử lại.');
     return;
   }
   const cls = getCandidateClassName(c);
@@ -22498,8 +24148,18 @@ function openBankTransactionInspectModal(row) {
     return;
   }
   if (titleEl) titleEl.textContent = 'Chi tiết giao dịch #' + row.id;
+  const inspectStatusLower = String(row.status || '').toLowerCase();
   let manual = '';
-  if (String(row.status || '').toLowerCase() !== 'applied') {
+  if (inspectStatusLower === 'applied') {
+    manual =
+      '<div class="bank-tx-inspect-manual" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(15,23,42,.1)">' +
+      '<div class="analytics-muted" style="font-size:12px;margin-bottom:8px;line-height:1.45">Giao dịch đã được auto đối soát. Nếu match sai, chọn <strong>Chưa nhận tiền / hoàn tác</strong> để gỡ phần học phí đã ghi, sau đó đối soát lại đúng học viên.</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">' +
+      '<button type="button" class="btn-sm" data-bank-inspect-confirm-not="' +
+      escapeHtml(String(row.id)) +
+      '">Chưa nhận tiền / hoàn tác</button>' +
+      '</div></div>';
+  } else {
     manual =
       '<div class="bank-tx-inspect-manual" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(15,23,42,.1)">' +
       '<div class="analytics-muted" style="font-size:12px;margin-bottom:8px;line-height:1.45">Đối chiếu sổ ngân hàng: <strong>Đã nhận tiền</strong> sẽ mở bước tìm/chọn học viên và cập nhật học phí liên quan. <strong>Chưa nhận tiền</strong> chỉ ghi nhận trạng thái.</div>' +
@@ -22528,7 +24188,7 @@ function openBankTransactionInspectModal(row) {
     rowKV('Lớp đã đối soát', row.matchedClassName ? compactClassListLabel(row.matchedClassName) : '—') +
     rowKV('SĐT', row.studentPhone || '—') +
     rowKV('Nội dung chuyển khoản', String(row.transferContent || '—'), true) +
-    rowKV('Ghi chú đối soát', row.reconcileNote ? stripClassScheduleText(row.reconcileNote) : '—') +
+    rowKV('Ghi chú đối soát', row.reconcileNote ? formatBankInfoNote(row.reconcileNote) : '—') +
     manual;
   backdrop.classList.add('show');
 }
@@ -22609,6 +24269,33 @@ function resolveStudentUuidForBankRpc(st) {
   if (found && found.id != null) return String(found.id).trim();
   if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)) return s;
   return null;
+}
+
+async function applyStudentPrepaidToPendingDebts(studentId, bankTxnId) {
+  const sid = String(studentId || '').trim();
+  if (!sid) return null;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/fn_apply_student_prepaid_to_pending_debts', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        p_student_id: sid,
+        p_bank_transaction_id: bankTxnId ? Number(bankTxnId) : null
+      })
+    });
+    let text = '';
+    try { text = await r.text(); } catch (e) {}
+    let j = null;
+    try { j = text && String(text).trim() ? JSON.parse(text) : null; } catch (e2) {}
+    if (!(r.ok || r.status === 200) || !j || j.ok !== true) {
+      console.warn('applyStudentPrepaidToPendingDebts failed', r.status, j || text);
+      return null;
+    }
+    return j;
+  } catch (e) {
+    console.warn('applyStudentPrepaidToPendingDebts error', e);
+    return null;
+  }
 }
 
 function getStudentClassesForBankManualLine(st) {
@@ -22707,7 +24394,7 @@ function renderBankManualReceiveLines() {
   if (!root) return;
   if (!bankManualReceiveLines.length) {
     root.innerHTML =
-      '<div class="analytics-muted" style="font-size:12px;padding:2px 0;line-height:1.45">Ch?n h?c viên ? danh sách trên d? thêm dòng. Có th? nhi?u dòng cùng m?t h?c viên (khác l?p).</div>';
+      '<div class="analytics-muted" style="font-size:12px;padding:2px 0;line-height:1.45">Chọn học viên ở danh sách trên để thêm dòng. Có thể thêm nhiều dòng cho cùng một học viên nếu cần đối soát nhiều lớp.</div>';
     return;
   }
   root.innerHTML = bankManualReceiveLines
@@ -22782,7 +24469,7 @@ function updateBankManualReceiveSumUi() {
       formatVnd(vnd) +
       '</strong> (' +
       sessions +
-      ' bu?i) · CK: <strong>' +
+      ' buổi) · CK: <strong>' +
       formatVnd(target) +
       '</strong>';
     if (diff !== 0) {
@@ -22790,9 +24477,9 @@ function updateBankManualReceiveSumUi() {
         ' · <span style="color:' +
         (diff > 0 ? '#15803d' : '#b45309') +
         '">' +
-        (diff > 0 ? 'Du ' : 'Phân vu?t ') +
+        (diff > 0 ? 'Dư ' : 'Phân vượt ') +
         formatVnd(Math.abs(diff)) +
-        (diff > 0 && !surplusCanBeAssigned ? ' (ch?n 1 h?c viên d? luu du)' : '') +
+        (diff > 0 && !surplusCanBeAssigned ? ' (chọn 1 học viên để lưu dư)' : '') +
         '</span>';
     }
     el.innerHTML = hint;
@@ -22929,8 +24616,8 @@ function openBankManualReceiveStudentPicker(txnId, preset) {
   }
   if (hint) {
     hint.textContent = preset && preset.student
-      ? 'Da them hoc sinh goi y. Kiem tra lop/so buoi roi bam Luu xac nhan.'
-      : (students && students.length ? 'Nh?p ít nh?t 2 ký t? d? tìm.' : 'Chua có danh sách h?c viên — t?i l?i trang (F5).');
+      ? 'Đã thêm học sinh gợi ý. Kiểm tra lớp/số buổi rồi bấm Lưu xác nhận.'
+      : (students && students.length ? 'Nhập ít nhất 2 ký tự để tìm.' : 'Chưa có danh sách học viên - tải lại trang (F5).');
   }
   const list = document.getElementById('bank-tx-receive-picker-list');
   if (list) list.innerHTML = '';
@@ -23078,6 +24765,10 @@ async function submitBankManualReceiveWithStudent() {
   else if (j && typeof j === 'object' && j.applied_sessions != null) appliedSessions = Number(j.applied_sessions);
   else if (j && typeof j === 'object' && j.appliedSessions != null) appliedSessions = Number(j.appliedSessions);
   appliedSessions = Math.max(0, parseInt(String(appliedSessions || 0), 10) || 0);
+  const selectedStudentIdsForPrepaid = Array.from(
+    new Set(p_lines.map(x => String(x.student_id || '').trim()).filter(Boolean))
+  );
+  await Promise.all(selectedStudentIdsForPrepaid.map(sid => applyStudentPrepaidToPendingDebts(sid, id)));
   const first = bankManualReceiveLines[0];
   showBalanceChangePopupInApp({
     amountVnd: appliedAmount,
@@ -23164,6 +24855,7 @@ async function confirmBankTxWithRecommendedStudent(txId) {
     className: cls,
     channel: 'transfer'
   });
+  await applyStudentPrepaidToPendingDebts(sid, id);
   showAppToast('Ðã ghi nh?n theo g?i ý h?c viên.');
   await Promise.all([loadBankTransactions(true), loadRevenue()]);
   if (isDashboardVisible()) renderDashboard();
@@ -23193,16 +24885,27 @@ async function manualConfirmBankTransaction(txId, received) {
     cancelLabel: 'H?y'
   });
   if (!ok) return;
-  const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/fn_manual_confirm_bank_transaction_v2', {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({
-      p_txn_id: id,
-      p_received: false,
-      p_matched_student_id: null,
-      p_class_name: null
-    })
-  });
+  const rowStatus = String((row && row.status) || '').toLowerCase();
+  const isAppliedUndo = rowStatus === 'applied';
+  const r = await fetch(
+    SUPABASE_URL +
+      '/rest/v1/rpc/' +
+      (isAppliedUndo ? 'fn_undo_applied_bank_transaction_not_received' : 'fn_manual_confirm_bank_transaction_v2'),
+    {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(
+        isAppliedUndo
+          ? { p_txn_id: id }
+          : {
+              p_txn_id: id,
+              p_received: false,
+              p_matched_student_id: null,
+              p_class_name: null
+            }
+      )
+    }
+  );
   let text = '';
   try {
     text = await r.text();
@@ -23399,19 +25102,21 @@ function renderBankTransactions() {
         r.studentClass,
         [r.matchedByContent ? 'Khớp CK' : '', confText, methodText]
       );
-      const extra = r.errorNote ? `<div class="sub" title="${escapeHtml(r.errorNote)}">${escapeHtml(r.errorNote)}</div>` : '';
-      const classApplied = r.matchedClassName ? ` · lớp ${escapeHtml(compactClassListLabel(r.matchedClassName))}` : '';
-      const reconNoteText = stripClassScheduleText(r.reconcileNote);
+      const stLower = String(r.status || '').toLowerCase();
+      const isCollectedTx = stLower === 'applied' || stLower === 'manual_received';
+      const errorNoteText = isCollectedTx ? '' : formatBankInfoNote(r.errorNote);
+      const extra = errorNoteText ? `<div class="sub" title="${escapeHtml(errorNoteText)}">${escapeHtml(errorNoteText)}</div>` : '';
+      const classAppliedText = r.matchedClassName ? compactClassListLabel(r.matchedClassName) : '';
+      const reconNoteText = formatBankInfoNote(r.reconcileNote);
       const reconNote = reconNoteText ? `<div class="sub">${escapeHtml(reconNoteText)}</div>` : '';
       const appliedExtra =
         r.status === 'applied'
-          ? `<div class="sub">Đã ghi nhận học phí${classApplied}: ${escapeHtml(String(r.appliedSessions || 0))} buổi · ${escapeHtml(formatVnd(r.appliedAmountVnd || r.amountVnd || 0))}</div>`
+          ? `<div class="sub">Đã ghi nhận học phí${classAppliedText ? `: lớp ${escapeHtml(classAppliedText)}, ` : ': '}${escapeHtml(String(r.appliedSessions || 0))} buổi · ${escapeHtml(formatVnd(r.appliedAmountVnd || r.amountVnd || 0))}</div>`
           : r.status === 'manual_received'
-            ? `<div class="sub">Đối soát tay${classApplied}: đã nhận tiền.</div>`
+            ? `<div class="sub">Đối soát tay${classAppliedText ? `: lớp ${escapeHtml(classAppliedText)} ` : ': '}đã nhận tiền.</div>`
             : r.status === 'manual_not_received'
               ? `<div class="sub">Đối soát tay: chưa nhận tiền.</div>`
               : '';
-      const stLower = String(r.status || '').toLowerCase();
       const candidateCount = Array.isArray(r.matchCandidates) ? r.matchCandidates.length : 0;
       const showQuickRecommend =
         ((candidateCount > 1 && candidateCount <= 3) ||
@@ -23424,10 +25129,11 @@ function renderBankTransactions() {
       const quickRecommendBtn = showQuickRecommend
         ? `<button type="button" class="btn-save btn-sm bank-tx-quick-recommend" data-bank-confirm-recommend="${r.id}" title="${candidateCount > 1 ? 'Chọn nhanh học sinh từ các gợi ý' : 'Ghi nhận đã nhận tiền theo học viên và lớp gợi ý'}">XN gợi ý</button>`
         : '';
-      const actionManual =
-        stLower !== 'applied'
-          ? `<button type="button" class="btn-save btn-sm" data-bank-reconcile="${r.id}">${(stLower === 'manual_received' || stLower === 'manual_not_received') ? 'Đối soát lại' : 'Đối soát'}</button>`
-          : '';
+      const actionManualLabel =
+        stLower === 'applied' || stLower === 'manual_received' || stLower === 'manual_not_received'
+          ? 'Đối soát lại'
+          : 'Đối soát';
+      const actionManual = `<button type="button" class="btn-save btn-sm" data-bank-reconcile="${r.id}">${actionManualLabel}</button>`;
       const actionInspect = `<button type="button" class="btn-sm" data-bank-inspect="transfer:${r.id}">Chi tiết</button>`;
       const hiddenContent = r.transferContent ? `•••••••• (${String(r.transferContent).length} ký tự)` : '—';
       const fullCk = `<div class="bank-tx-ck-full">${r.transferContent ? escapeHtml(String(r.transferContent)) : '—'}</div>`;
@@ -23448,7 +25154,7 @@ function renderBankTransactions() {
           ${appliedExtra}
           ${reconNote}
         </div>
-        <div class="bank-actions">${actionInspect}${quickRecommendBtn}${actionManual}</div>
+        <div class="bank-actions">${quickRecommendBtn}${actionInspect}${actionManual}</div>
       </div>`;
     })
     .join('');
@@ -24477,7 +26183,13 @@ function renderDashboard() {
         <div class="dash-v2-sub">${escapeHtml(dateText)}</div>
       </div>
       <div class="dash-v2-actions">
-        <span class="dash-v2-sync ${syncOnline ? '' : 'off'}">${escapeHtml(syncOnline ? syncText : 'Mất kết nối')}</span>
+        <button type="button" class="dash-v2-portal-link" onclick="openStudentPortalModule()">
+          Đi tới kho tài liệu
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="m13 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -24685,6 +26397,9 @@ function showTab(t, options = {}) {
   if (t === 'analytics') {
     populateAnalyticsClassSelects();
     loadAnalyticsIfNeeded().catch(e => console.warn('showTab analytics', e));
+  }
+  if (t === 'portal-admin') {
+    loadPortalAnalyticsIfNeeded(false).catch(e => console.warn('showTab portal-admin', e));
   }
   if (t === 'leaderboard') {
     void Promise.all([refreshLeaderboardManualScores(), refreshLeaderboardPerformanceHistory()])
@@ -25140,7 +26855,9 @@ document.getElementById('class-collect-modal').addEventListener('keydown', (e) =
 
 document.getElementById('login-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  signInWithPassword();
+  const mode = document.getElementById('login-screen')?.dataset.authMode || 'login';
+  if (mode === 'register') signUpStudentAccount();
+  else signInWithPassword();
 });
 
 (function bindTeacherCheckInButtons() {
@@ -25197,6 +26914,21 @@ const MVK_TEXT_REPAIRS = [
   ['vinh vi?n', 'vĩnh viễn'], ['Vinh vi?n', 'Vĩnh viễn'], ['dang ký', 'đăng ký'], ['Dang ký', 'Đăng ký'],
   ['Nh?n ti?n', 'Nhận tiền'], ['nh?n ti?n', 'nhận tiền'], ['dã nh?n ti?n', 'đã nhận tiền'], ['chua nh?n ti?n', 'chưa nhận tiền'],
   ['Không d?c du?c', 'Không đọc được'], ['không d?c du?c', 'không đọc được'],
+  ['Kh?ng match ???c h?c sinh theo n?i dung chuy?n kho?n', 'Không match được học sinh theo nội dung chuyển khoản'],
+  ['kh?ng match ???c h?c sinh theo n?i dung chuy?n kho?n', 'không match được học sinh theo nội dung chuyển khoản'],
+  ['Kh?ng', 'Không'], ['kh?ng', 'không'], ['???c', 'được'],
+  ['c?n ch?n h?c sinh t? g?i?', 'cần chọn học sinh từ gợi ý'],
+  ['C?n ch?n h?c sinh t? g?i?', 'Cần chọn học sinh từ gợi ý'],
+  ['t? g?i?', 'từ gợi ý'], ['T? g?i?', 'Từ gợi ý'],
+  ['chi??i so?t/auto apply', 'chờ đối soát/auto apply'],
+  ['ch?i??i so?t/auto apply', 'chờ đối soát/auto apply'],
+  ['ch??i so?t/auto apply', 'chờ đối soát/auto apply'],
+  ['ch? d?i soát/auto apply', 'chờ đối soát/auto apply'],
+  ['Match high confidence, chi??i so?t/auto apply', 'Match độ tin cậy cao, chờ đối soát / auto apply'],
+  ['Match ch??a ch?c ch?n, cần chọn học sinh t? g?i?', 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý'],
+  ['Đối soát tay: l?p', 'Đối soát tay: lớp'],
+  ['Đối soát tay theolớp', 'Đối soát tay theo lớp'],
+  ['Đối soát tay theoMVK_', 'Đối soát tay theo MVK_'],
   ['Không t?i du?c', 'Không tải được'], ['không t?i du?c', 'không tải được'],
   ['Không luu du?c', 'Không lưu được'], ['không luu du?c', 'không lưu được'],
   ['Không xác d?nh du?c', 'Không xác định được'], ['không xác d?nh du?c', 'không xác định được'],
@@ -25338,6 +27070,17 @@ function mvkFixVietnameseText(value) {
     .replace(/\bchẩn\b/g, 'chọn')
     .replace(/\bcẩn\b/g, 'cần')
     .replace(/\bCẩn\b/g, 'Cần')
+    .replace(/ch[?i]{1,4}\s*so\?t\/auto apply/gi, 'chờ đối soát/auto apply')
+    .replace(/Match high confidence,\s*chờ đối soát\/auto apply/gi, 'Match độ tin cậy cao, chờ đối soát / auto apply')
+    .replace(/Match ch\?{1,3}a ch\?c ch\?n,\s*cần chọn học sinh t\?\s*gửi\?/gi, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/Match ch\?{1,3}a ch\?c ch\?n,\s*cần chọn học sinh t\?\s*g\?i\?/gi, 'Match chưa chắc chắn, cần chọn học sinh từ gợi ý')
+    .replace(/cần chọn học sinh t\?\s*gửi\?/gi, 'cần chọn học sinh từ gợi ý')
+    .replace(/cần chọn học sinh t\?\s*g\?i\?/gi, 'cần chọn học sinh từ gợi ý')
+    .replace(/\bt\?\s*gửi\?/gi, 'từ gợi ý')
+    .replace(/\bt\?\s*g\?i\?/gi, 'từ gợi ý')
+    .replace(/Đối soát tay:\s*l\?p/gi, 'Đối soát tay: lớp')
+    .replace(/Đối soát tay theo(lớp|MVK_)/gi, 'Đối soát tay theo $1')
+    .replace(/Đối soát tay theolớp/gi, 'Đối soát tay theo lớp')
     .replace(/quẩn tr\?/g, 'quản trị')
     .replace(/Quẩn tr\?/g, 'Quản trị')
     .replace(/quẩn trị/g, 'quản trị')
@@ -25428,6 +27171,7 @@ function mvkIconSvg(name) {
     tuition: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h5M7 16h8"/><path d="M17 12v4"/>',
     bank: '<path d="m3 10 9-6 9 6"/><path d="M5 10h14v10H5V10Z"/><path d="M8 14v3M12 14v3M16 14v3"/><path d="M3 20h18"/>',
     analytics: '<path d="M3 3v18h18"/><path d="M7 15v2M12 11v6M17 7v10"/>',
+    portal: '<path d="M4 5h16v10H4z"/><path d="M8 21h8"/><path d="M12 15v6"/><path d="M8 9h8M8 12h5"/>',
     leaderboard: '<path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M5 6H3a3 3 0 0 0 3 3"/><path d="M19 6h2a3 3 0 0 1-3 3"/>',
     consult: '<path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"/><path d="M8 9h8M8 13h5"/>',
     logout: '<path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 3v18"/>',
@@ -25477,6 +27221,7 @@ function enhanceAppIcons(root = document.body) {
     'tab-btn-tuition': 'tuition',
     'tab-btn-bank': 'bank',
     'tab-btn-analytics': 'analytics',
+    'tab-btn-portal-admin': 'portal',
     'tab-btn-leaderboard': 'leaderboard',
     'tab-btn-consult': 'consult',
     'tab-btn-logout': 'logout'
@@ -25594,4 +27339,3 @@ if (document.readyState === 'loading') {
 </section>
 </body>
 </html>
-
