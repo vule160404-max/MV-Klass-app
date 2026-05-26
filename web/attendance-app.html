@@ -3674,6 +3674,10 @@
     .portal-r2-dropzone{ min-width:0; min-height:74px; display:grid; grid-template-columns:46px minmax(0,1fr); gap:12px; align-items:center; padding:12px 14px; border-radius:16px; border:1px dashed rgba(79,142,247,.42); background:linear-gradient(180deg,#fbfdff,#f3f7ff); cursor:pointer; transition:border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease; }
     .portal-r2-dropzone:hover{ transform:translateY(-1px); border-color:rgba(26,84,201,.56); box-shadow:0 12px 28px rgba(26,84,201,.10); background:#f8fbff; }
     .portal-r2-dropzone:focus-within{ border-color:rgba(79,142,247,.70); box-shadow:0 0 0 4px rgba(79,142,247,.12); }
+    .portal-r2-dropzone.dragging{ transform:translateY(-2px); border-style:solid; border-color:#1d4ed8; background:#eef6ff; box-shadow:0 0 0 4px rgba(29,78,216,.12),0 16px 34px rgba(29,78,216,.16); }
+    .portal-r2-dropzone.reject{ border-style:solid; border-color:#dc2626; background:#fff1f2; box-shadow:0 0 0 4px rgba(220,38,38,.10),0 14px 30px rgba(220,38,38,.12); }
+    .portal-r2-dropzone.dragging .portal-r2-dropzone-mark{ background:#1d4ed8; }
+    .portal-r2-dropzone.reject .portal-r2-dropzone-mark{ background:#dc2626; }
     .portal-r2-dropzone-mark{ width:46px; height:46px; border-radius:14px; display:grid; place-items:center; background:#0f1f3d; color:#fff; font-size:11px; font-weight:950; letter-spacing:.04em; }
     .portal-r2-dropzone-main{ min-width:0; }
     .portal-r2-dropzone-title{ color:#162743; font-size:13px; font-weight:950; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -8778,7 +8782,7 @@ a:focus-visible,
           <div class="portal-panel-body">
             <div class="portal-r2-upload">
               <div class="portal-r2-upload-top">
-                <label class="portal-r2-dropzone" for="portal-r2-upload-files">
+                <label class="portal-r2-dropzone" id="portal-r2-dropzone" for="portal-r2-upload-files" ondragenter="onPortalR2DragEnter(event)" ondragover="onPortalR2DragOver(event)" ondragleave="onPortalR2DragLeave(event)" ondrop="onPortalR2Drop(event)">
                   <span class="portal-r2-dropzone-mark">PDF</span>
                   <span class="portal-r2-dropzone-main">
                     <span class="portal-r2-dropzone-title" id="portal-r2-upload-file-title">Chọn file đề để upload</span>
@@ -16209,6 +16213,7 @@ let portalFreeCurationGroup = 'entrance_10';
 let portalR2SyncRunning = false;
 let portalR2UploadRunning = false;
 let portalR2UploadRows = [];
+let portalR2DragDepth = 0;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -17176,6 +17181,110 @@ function renderPortalR2UploadList() {
       '<div class="portal-r2-upload-state ' + stateClass + '">' + escapeHtml(portalR2StateLabel(state)) + '</div>' +
       '</div>';
   }).join('');
+}
+
+function portalR2SetDropState(state) {
+  const dz = document.getElementById('portal-r2-dropzone');
+  if (!dz) return;
+  dz.classList.toggle('dragging', state === 'dragging');
+  dz.classList.toggle('reject', state === 'reject');
+}
+
+function portalR2FilesFromEvent(e) {
+  const dt = e && e.dataTransfer;
+  return dt && dt.files ? Array.from(dt.files) : [];
+}
+
+function portalR2HasOnlyPdfFiles(files) {
+  return Array.isArray(files) && files.length > 0 && files.every(file => portalR2IsPdfFile(file));
+}
+
+function portalR2AssignFilesToInput(files) {
+  const input = document.getElementById('portal-r2-upload-files');
+  if (!input || !Array.isArray(files)) return false;
+  try {
+    const transfer = new DataTransfer();
+    files.forEach(file => transfer.items.add(file));
+    input.files = transfer.files;
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function portalR2PreviewDragFiles(e) {
+  const files = portalR2FilesFromEvent(e);
+  const title = document.getElementById('portal-r2-upload-file-title');
+  const hint = document.getElementById('portal-r2-upload-file-hint');
+  if (!files.length) {
+    portalR2SetDropState('dragging');
+    if (title) title.textContent = 'Thả file PDF vào đây';
+    if (hint) hint.textContent = 'Khu vực này nhận nhiều file PDF cùng lúc.';
+    return;
+  }
+  const ok = portalR2HasOnlyPdfFiles(files);
+  portalR2SetDropState(ok ? 'dragging' : 'reject');
+  if (title) title.textContent = ok ? 'Thả để thêm file PDF' : 'Không nhận file này';
+  if (hint) hint.textContent = ok ? `${files.length} file PDF sẵn sàng.` : 'Chỉ thả file PDF vào khu vực này.';
+}
+
+function onPortalR2DragEnter(e) {
+  if (!e) return;
+  e.preventDefault();
+  e.stopPropagation();
+  portalR2DragDepth += 1;
+  portalR2PreviewDragFiles(e);
+}
+
+function onPortalR2DragOver(e) {
+  if (!e) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+  portalR2PreviewDragFiles(e);
+}
+
+function onPortalR2DragLeave(e) {
+  if (!e) return;
+  e.preventDefault();
+  e.stopPropagation();
+  portalR2DragDepth = Math.max(0, portalR2DragDepth - 1);
+  if (portalR2DragDepth > 0) return;
+  portalR2SetDropState('');
+  const input = document.getElementById('portal-r2-upload-files');
+  const files = input && input.files ? Array.from(input.files) : [];
+  const title = document.getElementById('portal-r2-upload-file-title');
+  const hint = document.getElementById('portal-r2-upload-file-hint');
+  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn file đề để upload';
+  if (hint) hint.textContent = files.length ? files.map(f => f.name).slice(0, 2).join(', ') + (files.length > 2 ? ` và ${files.length - 2} file khác` : '') : 'Có thể chọn nhiều file PDF cùng lúc.';
+}
+
+function onPortalR2Drop(e) {
+  if (!e) return;
+  e.preventDefault();
+  e.stopPropagation();
+  portalR2DragDepth = 0;
+  const files = portalR2FilesFromEvent(e);
+  if (!portalR2HasOnlyPdfFiles(files)) {
+    portalR2SetDropState('reject');
+    const title = document.getElementById('portal-r2-upload-file-title');
+    const hint = document.getElementById('portal-r2-upload-file-hint');
+    if (title) title.textContent = 'Chọn lại file PDF';
+    if (hint) hint.textContent = 'Chỉ được thả file PDF vào đây.';
+    portalR2UploadRows = files.map(file => ({ file, state: portalR2IsPdfFile(file) ? 'queued' : 'error', objectKey: '', error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF' }));
+    renderPortalR2UploadList();
+    setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
+    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    setTimeout(() => portalR2SetDropState(''), 900);
+    return;
+  }
+  portalR2SetDropState('');
+  if (!portalR2AssignFilesToInput(files)) {
+    setPortalR2UploadStatus('Trình duyệt không cho gán file kéo thả.', false);
+    showAppToast('Chưa nhận được file kéo thả.', 'error');
+    return;
+  }
+  onPortalR2UploadFilesChange();
 }
 
 function onPortalR2UploadFilesChange() {
