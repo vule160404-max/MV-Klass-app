@@ -15233,12 +15233,7 @@ async function trackStudentExamPortalEvent(examId, eventName) {
 function studentExamCard(row, compact) {
   const id = escapeHtml(String(row.id || ''));
   const title = escapeHtml(studentExamDisplayTitle(row));
-  const level = studentExamLevelLabel(row.level);
   const examType = studentExamTypeLabel(row);
-  const year = row.year ? String(row.year) : 'Chưa rõ năm';
-  const province = studentExamDisplayProvince(row.province) || 'Nguồn tổng hợp';
-  const code = String(row.exam_code || '').trim();
-  const showCode = code && !studentExamIsOfficial(row);
   const downloads = Math.max(0, parseInt(String(row.download_count || 0), 10) || 0);
   const rawDesc = String(row.description || '').trim();
   const descKey = normalizeText(rawDesc).replace(/\s+/g, ' ').trim().toLowerCase();
@@ -15259,13 +15254,9 @@ function studentExamCard(row, compact) {
           <h3>${title}</h3>
           ${compact || !desc ? '' : `<p class="student-exam-desc">${escapeHtml(desc)}</p>`}
           <div class="student-exam-badges">
-            <span class="student-exam-badge gold">${escapeHtml(level)}</span>
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
             <span class="student-exam-badge ${tier === 'premium' ? 'exam-tier-premium' : 'exam-tier-free'}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
             ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
-            ${showCode ? `<span class="student-exam-badge">Mã ${escapeHtml(code)}</span>` : ''}
-            <span class="student-exam-badge">${escapeHtml(year)}</span>
-            <span class="student-exam-badge">${escapeHtml(province)}</span>
           </div>
         </div>
         <div class="student-exam-card-tools">
