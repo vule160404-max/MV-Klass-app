@@ -3635,6 +3635,18 @@
     .portal-table td.num,.portal-table th.num{ text-align:right; font-variant-numeric:tabular-nums; }
     .portal-table-title{ color:#162743; font-weight:900; line-height:1.35; }
     .portal-table-muted{ margin-top:2px; color:#718096; font-size:11px; line-height:1.35; }
+    .portal-compact-table-wrap{
+      max-height:322px;
+      overflow:auto;
+      border:1px solid rgba(99,138,218,.12);
+      border-radius:14px;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(99,138,218,.42) rgba(238,243,249,.8);
+    }
+    .portal-compact-table-wrap::-webkit-scrollbar{ width:8px; height:8px; }
+    .portal-compact-table-wrap::-webkit-scrollbar-track{ background:rgba(238,243,249,.8); border-radius:999px; }
+    .portal-compact-table-wrap::-webkit-scrollbar-thumb{ background:rgba(99,138,218,.42); border-radius:999px; }
+    .portal-compact-table-wrap .portal-table th{ position:sticky; top:0; z-index:1; }
     .portal-intensity{ display:inline-flex; align-items:center; justify-content:center; min-width:58px; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:900; background:#eef6ff; color:#1d4ed8; }
     .portal-intensity.hot{ background:#fff4d6; color:#9a5b00; }
     .portal-intensity.quiet{ background:#f1f5f9; color:#64748b; }
@@ -18143,12 +18155,12 @@ function renderPortalTopExams(rows, exams, examById) {
     })
     .filter(x => x.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+    .slice(0, 5);
   if (!list.length) {
     el.innerHTML = '<div class="empty" style="padding:16px">Chưa có tài liệu nào phát sinh tương tác.</div>';
     return;
   }
-  el.innerHTML = `<table class="portal-table"><thead><tr><th>Tài liệu</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th class="num">Độ hot</th></tr></thead><tbody>${
+  el.innerHTML = `<div class="portal-compact-table-wrap"><table class="portal-table"><thead><tr><th>Tài liệu</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th class="num">Độ hot</th></tr></thead><tbody>${
     list.map(x => {
       const hotCls = x.score >= 20 ? 'hot' : (x.score <= 2 ? 'quiet' : '');
       return `<tr>
@@ -18157,7 +18169,7 @@ function renderPortalTopExams(rows, exams, examById) {
         <td class="num"><span class="portal-intensity ${hotCls}">${Math.round(x.score)}</span></td>
       </tr>`;
     }).join('')
-  }</tbody></table>`;
+  }</tbody></table></div>`;
 }
 
 function renderPortalTopUsers(rows, examById) {
@@ -18186,13 +18198,13 @@ function renderPortalTopUsers(rows, examById) {
     el.innerHTML = '<div class="empty" style="padding:16px">Chưa có tài khoản nào phát sinh hoạt động.</div>';
     return;
   }
-  el.innerHTML = `<table class="portal-table"><thead><tr><th>Người dùng</th><th class="num">Tài liệu</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th>Gần nhất</th></tr></thead><tbody>${
+  el.innerHTML = `<div class="portal-compact-table-wrap"><table class="portal-table"><thead><tr><th>Người dùng</th><th class="num">Tài liệu</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th>Gần nhất</th></tr></thead><tbody>${
     list.map(u => `<tr>
       <td><div class="portal-table-title">${escapeHtml(portalUserLabel(u.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(u.uid))}</div></td>
       <td class="num">${u.docs}</td><td class="num">${u.opens}</td><td class="num">${u.downloads}</td><td class="num">${u.saves}</td>
       <td>${escapeHtml(portalActivityTimeLabel(u.lastAt))}</td>
     </tr>`).join('')
-  }</tbody></table>`;
+  }</tbody></table></div>`;
 }
 
 function showAnalyticsSubtab(which) {
