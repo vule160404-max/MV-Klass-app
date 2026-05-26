@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const CORS_HEADERS = {
@@ -153,7 +153,7 @@ function normalizeText(value: string) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
+    .replace(/Ä‘/g, "d")
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -173,6 +173,7 @@ function guessCategory(key: string) {
 
 function guessLevel(key: string) {
   const n = normalizeText(key);
+  if (/\bielts\b/.test(n)) return "ielts";
   return /\b(thpt|qg|dai hoc|university|12)\b/.test(n) ? "university" : "entrance_10";
 }
 
@@ -202,26 +203,26 @@ function guessSortOrder(key: string) {
 function displayProvince(value: string) {
   const key = normalizeText(value);
   const map: Record<string, string> = {
-    "ha noi": "Hà Nội",
+    "ha noi": "HÃ  Ná»™i",
     "tp hcm": "TP HCM",
     "ho chi minh": "TP HCM",
-    "thanh hoa": "Thanh Hóa",
-    "nghe an": "Nghệ An",
-    "ha tinh": "Hà Tĩnh",
-    "da nang": "Đà Nẵng",
-    "hai phong": "Hải Phòng",
-    "quang ninh": "Quảng Ninh",
-    "bac ninh": "Bắc Ninh",
-    "bac giang": "Bắc Giang",
-    "nam dinh": "Nam Định",
-    "thai binh": "Thái Bình",
-    "ninh binh": "Ninh Bình",
-    "hai duong": "Hải Dương",
-    "hung yen": "Hưng Yên",
-    "vinh phuc": "Vĩnh Phúc",
-    "phu tho": "Phú Thọ",
-    "nguon tong hop": "Nguồn tổng hợp",
-    "tong hop": "Nguồn tổng hợp",
+    "thanh hoa": "Thanh HÃ³a",
+    "nghe an": "Nghá»‡ An",
+    "ha tinh": "HÃ  TÄ©nh",
+    "da nang": "ÄÃ  Náºµng",
+    "hai phong": "Háº£i PhÃ²ng",
+    "quang ninh": "Quáº£ng Ninh",
+    "bac ninh": "Báº¯c Ninh",
+    "bac giang": "Báº¯c Giang",
+    "nam dinh": "Nam Äá»‹nh",
+    "thai binh": "ThÃ¡i BÃ¬nh",
+    "ninh binh": "Ninh BÃ¬nh",
+    "hai duong": "Háº£i DÆ°Æ¡ng",
+    "hung yen": "HÆ°ng YÃªn",
+    "vinh phuc": "VÄ©nh PhÃºc",
+    "phu tho": "PhÃº Thá»",
+    "nguon tong hop": "Nguá»“n tá»•ng há»£p",
+    "tong hop": "Nguá»“n tá»•ng há»£p",
   };
   return map[key] || "";
 }
@@ -238,18 +239,18 @@ function guessProvince(key: string) {
 
 function prettyTitle(key: string) {
   const category = guessCategory(key);
-  const prefix = category === "answer" ? "Đáp án đề" : category === "audio" ? "Audio đề" : "Đề";
+  const prefix = category === "answer" ? "ÄÃ¡p Ã¡n Ä‘á»" : category === "audio" ? "Audio Ä‘á»" : "Äá»";
   const code = guessCode(key);
-  const level = guessLevel(key) === "university" ? "THPT" : "Vào 10";
+  const level = guessLevel(key) === "university" ? "THPT" : "VÃ o 10";
   const province = guessProvince(key);
   const year = guessYear(key);
   const parts = [prefix, code, level, province, year].filter(Boolean);
-  return parts.length > 2 ? parts.join(" ") : stem(key) || "Tài liệu Tiếng Anh";
+  return parts.length > 2 ? parts.join(" ") : stem(key) || "TÃ i liá»‡u Tiáº¿ng Anh";
 }
 
 function guessSource(key: string) {
   const n = normalizeText(stem(key));
-  if (/\b(vu mai phuong|vmp)\b/.test(n)) return "Vũ Mai Phương";
+  if (/\b(vu mai phuong|vmp)\b/.test(n)) return "VÅ© Mai PhÆ°Æ¡ng";
   return null;
 }
 
@@ -261,13 +262,14 @@ function titleCode(code: string | null) {
 
 function prettyTitleClean(key: string) {
   const category = guessCategory(key);
-  const prefix = category === "answer" ? "Đáp án đề" : category === "audio" ? "Audio đề" : "Đề";
+  const prefix = category === "answer" ? "ÄÃ¡p Ã¡n Ä‘á»" : category === "audio" ? "Audio Ä‘á»" : "Äá»";
   const code = guessCode(key);
-  const level = guessLevel(key) === "university" ? "THPT" : "Vào 10";
+  const levelKey = guessLevel(key);
+  const level = levelKey === "university" ? "THPT" : (levelKey === "ielts" ? "IELTS" : "VÃ o 10");
   const source = guessProvince(key) || guessSource(key);
   const year = guessYear(key);
   const parts = [prefix, titleCode(code), level, source, year].filter(Boolean);
-  return parts.length > 2 ? parts.join(" ") : stem(key) || "Tài liệu Tiếng Anh";
+  return parts.length > 2 ? parts.join(" ") : stem(key) || "TÃ i liá»‡u Tiáº¿ng Anh";
 }
 
 function matchKey(key: string) {
@@ -283,6 +285,7 @@ function accessTier(key: string, category: string) {
 }
 
 function description(level: string) {
+  if (level === "ielts") return "De luyen thi IELTS mon Tieng Anh.";
   return level === "university"
     ? "De luyen thi THPT mon Tieng Anh."
     : "De luyen thi Vao 10 mon Tieng Anh.";
