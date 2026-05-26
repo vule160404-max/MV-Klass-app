@@ -1,0 +1,210 @@
+// @ts-nocheck
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "authorization, apikey, content-type, accept, x-client-info, prefer, x-supabase-api-version",
+  "Access-Control-Max-Age": "86400",
+};
+
+const SIGNED_URL_TTL_SECONDS = 900;
+const MAX_FILES = 50;
+const MAX_FILE_BYTES = 1024 * 1024 * 1024;
+
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      ...CORS_HEADERS,
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      Pragma: "no-cache",
+    },
+  });
+}
+
+function encodeRfc3986(value: string) {
+  return encodeURIComponent(value).replace(/[!'()*]/g, (c) =>
+    "%" + c.charCodeAt(0).toString(16).toUpperCase()
+  );
+}
+
+function encodePath(value: string) {
+  return String(value || "")
+    .replace(/^\/+/, "")
+    .split("/")
+    .map(encodeRfc3986)
+    .join("/");
+}
+
+function byteCompare(a: string, b: string) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+function bytesToHex(buf: ArrayBuffer) {
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function sha256Hex(value: string) {
+  return bytesToHex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
+}
+
+async function hmacSha256(key: ArrayBuffer | Uint8Array, value: string) {
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    key,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  return await crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(value));
+}
+
+async function r2SigningKey(secret: string, date: string) {
+  const kDate = await hmacSha256(new TextEncoder().encode("AWS4" + secret), date);
+  const kRegion = await hmacSha256(kDate, "auto");
+  const kService = await hmacSha256(kRegion, "s3");
+  return await hmacSha256(kService, "aws4_request");
+}
+
+function cleanPrefix(value: unknown) {
+  return String(value || "")
+    .replace(/\\/g, "/")
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join("/");
+}
+
+function cleanFileName(value: unknown) {
+  return String(value || "")
+    .replace(/\\/g, "/")
+    .split("/")
+    .pop()!
+    .replace(/[\x00-\x1F\x7F]/g, "")
+    .trim();
+}
+
+function objectKeyFor(prefix: string, name: string) {
+  const fileName = cleanFileName(name);
+  if (!fileName || fileName === "." || fileName === "..") return "";
+  return [prefix, fileName].filter(Boolean).join("/");
+}
+
+async function createR2SignedPutUrl(objectKey: string, expiresIn = SIGNED_URL_TTL_SECONDS) {
+  const accountId = (Deno.env.get("R2_ACCOUNT_ID") || "").trim();
+  const accessKeyId = (Deno.env.get("R2_ACCESS_KEY_ID") || "").trim();
+  const secretAccessKey = (Deno.env.get("R2_SECRET_ACCESS_KEY") || "").trim();
+  const bucket = (Deno.env.get("R2_BUCKET") || "mvklass-exam-files").trim();
+  if (!accountId || !accessKeyId || !secretAccessKey || !bucket) {
+    throw new Error("R2_NOT_CONFIGURED");
+  }
+
+  const now = new Date();
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
+  const dateStamp = amzDate.slice(0, 8);
+  const host = `${accountId}.r2.cloudflarestorage.com`;
+  const scope = `${dateStamp}/auto/s3/aws4_request`;
+  const path = `/${encodePath(bucket)}/${encodePath(objectKey)}`;
+  const params = [
+    ["X-Amz-Algorithm", "AWS4-HMAC-SHA256"],
+    ["X-Amz-Credential", `${accessKeyId}/${scope}`],
+    ["X-Amz-Date", amzDate],
+    ["X-Amz-Expires", String(Math.max(1, Math.min(604800, expiresIn)))],
+    ["X-Amz-SignedHeaders", "host"],
+  ].sort(([ak, av], [bk, bv]) => {
+    const a = encodeRfc3986(ak);
+    const b = encodeRfc3986(bk);
+    return byteCompare(a, b) || byteCompare(encodeRfc3986(av), encodeRfc3986(bv));
+  });
+  const canonicalQuery = params.map(([k, v]) => `${encodeRfc3986(k)}=${encodeRfc3986(v)}`).join("&");
+  const canonicalRequest = [
+    "PUT",
+    path,
+    canonicalQuery,
+    `host:${host}`,
+    "",
+    "host",
+    "UNSIGNED-PAYLOAD",
+  ].join("\n");
+  const stringToSign = [
+    "AWS4-HMAC-SHA256",
+    amzDate,
+    scope,
+    await sha256Hex(canonicalRequest),
+  ].join("\n");
+  const signingKey = await r2SigningKey(secretAccessKey, dateStamp);
+  const signature = bytesToHex(await hmacSha256(signingKey, stringToSign));
+  return `https://${host}${path}?${canonicalQuery}&X-Amz-Signature=${signature}`;
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
+  if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  if (!supabaseUrl || !serviceRole) return json({ ok: false, error: "Missing Supabase env" }, 500);
+
+  const auth = req.headers.get("authorization") || "";
+  const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
+  if (!token) return json({ ok: false, error: "Unauthorized" }, 401);
+
+  const service = createClient(supabaseUrl, serviceRole, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data: userData, error: userErr } = await service.auth.getUser(token);
+  if (userErr || !userData?.user?.id) return json({ ok: false, error: "Unauthorized" }, 401);
+  const { data: profile, error: profileErr } = await service
+    .from("profiles")
+    .select("role")
+    .eq("id", userData.user.id)
+    .maybeSingle();
+  if (profileErr || String(profile?.role || "") !== "admin") {
+    return json({ ok: false, error: "Admin required" }, 403);
+  }
+
+  let body: any = {};
+  try {
+    body = await req.json();
+  } catch {
+    return json({ ok: false, error: "Invalid JSON payload" }, 400);
+  }
+
+  const prefix = cleanPrefix(body?.prefix);
+  const files = Array.isArray(body?.files) ? body.files.slice(0, MAX_FILES) : [];
+  if (!files.length) return json({ ok: false, error: "No files" }, 400);
+
+  try {
+    const uploads = [];
+    const seen = new Set<string>();
+    for (const item of files) {
+      const name = cleanFileName(item?.name);
+      const size = Number(item?.size || 0);
+      if (!name) return json({ ok: false, error: "Invalid file name" }, 400);
+      if (!Number.isFinite(size) || size < 0 || size > MAX_FILE_BYTES) {
+        return json({ ok: false, error: `File too large: ${name}` }, 400);
+      }
+      const objectKey = objectKeyFor(prefix, name);
+      if (!objectKey) return json({ ok: false, error: "Invalid object key" }, 400);
+      if (seen.has(objectKey)) return json({ ok: false, error: `Duplicate file name: ${name}` }, 400);
+      seen.add(objectKey);
+      uploads.push({
+        name,
+        object_key: objectKey,
+        upload_url: await createR2SignedPutUrl(objectKey),
+        expires_in: SIGNED_URL_TTL_SECONDS,
+      });
+    }
+    return json({ ok: true, uploads });
+  } catch (e) {
+    const code = String(e?.message || "");
+    if (code === "R2_NOT_CONFIGURED") return json({ ok: false, error: "R2 not configured" }, 500);
+    return json({ ok: false, error: "Sign failed" }, 500);
+  }
+});
