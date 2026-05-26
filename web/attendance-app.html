@@ -3668,6 +3668,10 @@
     .portal-free-meta{ margin-top:2px; color:#718096; font-size:11px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-free-actions{ display:flex; gap:5px; align-items:center; justify-content:flex-end; }
     .portal-free-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
+    .portal-r2-sync{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 0 auto; }
+    .portal-r2-sync-btn{ min-height:34px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; }
+    .portal-r2-sync-btn:disabled{ opacity:.58; cursor:wait; }
+    .portal-r2-sync-status{ max-width:180px; color:#718096; font-size:10.5px; font-weight:850; line-height:1.3; text-align:right; }
     .portal-picker{ display:none; border-radius:16px; border:1px solid rgba(99,138,218,.14); background:#fff; overflow:hidden; }
     .portal-picker.show{ display:block; }
     .portal-picker-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px; border-bottom:1px solid rgba(99,138,218,.12); background:#f8fbff; }
@@ -3675,7 +3679,7 @@
     .portal-picker-list{ display:grid; gap:6px; max-height:300px; overflow:auto; padding:10px; }
     .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:center; padding:9px 10px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); }
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
-    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } }
+    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-r2-sync{ align-items:flex-start; width:100%; } .portal-r2-sync-status{ max-width:none; text-align:left; } }
     @media (max-width:900px){ .portal-user-tools{ grid-template-columns:1fr; } .portal-user-table-wrap{ max-height:none; overflow:visible; } .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ max-width:unset; } }
     .portal-audit-list{ display:grid; gap:8px; max-height:280px; overflow:auto; }
     .portal-audit-item{ padding:10px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); }
@@ -5060,7 +5064,7 @@
     .student-exam-brand-title{font-weight:900;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.student-exam-brand-sub{margin-top:2px;color:#66748d;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .student-exam-user{display:flex;align-items:center;gap:8px;flex-shrink:0}.student-exam-hello{display:none;color:#51617a;font-size:12px;font-weight:800;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .student-exam-logout,.student-exam-btn{min-height:38px;border:0;border-radius:999px;padding:9px 13px;font-weight:900;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}.student-exam-logout{background:#fff;color:#12213d;border:1px solid rgba(18,33,61,.12);box-shadow:0 6px 16px rgba(18,33,61,.07)}
-    .student-exam-admin-link{background:#fff8e8;color:#7a4a06;border-color:rgba(244,167,29,.34);box-shadow:0 8px 18px rgba(122,74,6,.08);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.student-exam-admin-link:hover{transform:translateY(-1px);background:#fff3d6;border-color:rgba(244,167,29,.58);box-shadow:0 12px 24px rgba(122,74,6,.12)}.student-exam-admin-link svg{width:14px;height:14px;display:block;flex:0 0 auto}
+    .student-exam-admin-link{background:#fff8e8;color:#7a4a06;border-color:rgba(244,167,29,.34);box-shadow:0 8px 18px rgba(122,74,6,.08);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.student-exam-admin-link:hover{transform:translateY(-1px);background:#fff3d6;border-color:rgba(244,167,29,.58);box-shadow:0 12px 24px rgba(122,74,6,.12)}.student-exam-admin-link svg{width:14px;height:14px;display:block;flex:0 0 auto}.student-exam-sync-btn{background:#0f1f3d;color:#fff;border-color:#0f1f3d;box-shadow:0 8px 18px rgba(15,31,61,.14)}.student-exam-sync-btn:hover{background:#1a3460;border-color:#1a3460;box-shadow:0 12px 24px rgba(15,31,61,.18)}.student-exam-sync-btn:disabled{opacity:.62;cursor:wait}
     .student-exam-plan{display:inline-flex;align-items:center;min-height:30px;border-radius:999px;padding:6px 10px;background:#fff4d6;color:#8a5208;border:1px solid rgba(244,167,29,.38);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-plan.premium{background:#e8f8ef;color:#14532d;border-color:rgba(22,163,74,.28)}
     .student-exam-plan.pending{background:#eef3f9;color:#475569;border-color:rgba(71,85,105,.18)}.student-exam-plan.blocked{background:#fee2e2;color:#991b1b;border-color:rgba(239,68,68,.24)}
     .student-exam-approval-note{display:none;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:#fff8e8;border:1px solid rgba(244,167,29,.42);color:#7a4a06;font-size:13px;font-weight:850;line-height:1.45;box-shadow:0 10px 24px rgba(122,74,6,.08)}.student-exam-approval-note.show{display:flex;align-items:center;gap:10px}.student-exam-approval-note:before{content:"!";width:24px;height:24px;border-radius:999px;background:#f4a71d;color:#fff;display:grid;place-items:center;flex:0 0 auto;font-size:14px;font-weight:950}
@@ -8749,7 +8753,13 @@ a:focus-visible,
         </div>
         <div class="portal-analytics-grid">
           <div class="portal-panel">
-            <div class="portal-panel-head"><div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn 5 đề Thi vào 10 và 5 đề THPT QG. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div></div>
+            <div class="portal-panel-head">
+              <div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn 5 đề Thi vào 10 và 5 đề THPT QG. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div>
+              <div class="portal-r2-sync">
+                <button type="button" class="btn-sm portal-r2-sync-btn" id="portal-r2-sync-btn" onclick="syncPortalR2ExamFiles()">Đồng bộ kho đề</button>
+                <div class="portal-r2-sync-status" id="portal-r2-sync-status">R2 → Supabase</div>
+              </div>
+            </div>
             <div class="portal-panel-body" id="portal-free-curation"></div>
           </div>
           <div class="portal-panel">
@@ -9923,6 +9933,7 @@ a:focus-visible,
       <div class="student-exam-user">
         <div class="student-exam-hello" id="student-exam-hello">Xin chào</div>
         <div class="student-exam-plan" id="student-exam-plan-badge">Free</div>
+        <button type="button" class="student-exam-logout student-exam-sync-btn" id="student-exam-sync-r2" onclick="syncPortalR2ExamFiles()" style="display:none">Đồng bộ kho đề</button>
         <button type="button" class="student-exam-logout student-exam-admin-link" id="student-exam-admin-switch" onclick="openAdminDashboardModule()" style="display:none">
           Đi tới trang quản trị
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -14523,6 +14534,8 @@ function showStudentExamPortalUI() {
   if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
   const adminSwitch = document.getElementById('student-exam-admin-switch');
   if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
+  const syncBtn = document.getElementById('student-exam-sync-r2');
+  if (syncBtn) syncBtn.style.display = isAdmin() ? 'inline-flex' : 'none';
   renderStudentExamPlanState();
 }
 
@@ -14615,8 +14628,15 @@ function studentExamStoragePathFor(row, kind) {
   return String(row[key] || '').replace(/^\/+/, '').trim();
 }
 
+function studentExamObjectKeyFor(row, kind) {
+  if (!row) return '';
+  const key = kind === 'answer' ? 'answer_object_key' : (kind === 'audio' ? 'audio_object_key' : 'object_key');
+  return String(row[key] || '').replace(/^\/+/, '').trim();
+}
+
 function studentExamHasFile(row, kind) {
   if (!row) return false;
+  if (studentExamObjectKeyFor(row, kind)) return true;
   if (studentExamStoragePathFor(row, kind)) return true;
   const key = kind === 'answer' ? 'answer_url' : (kind === 'audio' ? 'audio_url' : 'file_url');
   return !!studentExamSafeUrl(row[key]);
@@ -14625,6 +14645,8 @@ function studentExamHasFile(row, kind) {
 function studentExamCanAccess(row) {
   if (!row) return false;
   if (isAdmin() || isTeacher()) return true;
+  if (currentPortalStatus === 'pending' || currentPortalStatus === 'blocked') return false;
+  if (currentPortalPlan === 'premium') return true;
   return row.can_access === true || row._can_access === true;
 }
 
@@ -14637,22 +14659,22 @@ function studentExamLockedMessage(row) {
   return 'Tài liệu này hiện chưa mở cho tài khoản của em.';
 }
 
-async function getStudentExamSignedUrl(row, kind) {
-  const path = studentExamStoragePathFor(row, kind);
-  if (!path) return studentExamUrlFor(row, kind);
-  const r = await fetch(SUPABASE_URL + '/storage/v1/object/sign/exam-files/' + path.split('/').map(encodeURIComponent).join('/'), {
+async function getStudentExamSignedUrl(row, kind, options) {
+  const examId = String(row?.id || '').trim();
+  if (!examId || !currentSession?.access_token) return studentExamUrlFor(row, kind);
+  const mode = options && options.disposition === 'inline' ? 'inline' : 'attachment';
+  const r = await fetch(SUPABASE_URL + '/functions/v1/exam-download-url', {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ expiresIn: 300 }),
+    body: JSON.stringify({ exam_id: examId, kind: kind || 'file', disposition: mode }),
     cache: 'no-store'
   });
   let data = {};
   try { data = await r.json(); } catch (e) {}
-  if (!r.ok) throw new Error(data.message || data.error || ('storage_sign_' + r.status));
-  const signed = String(data.signedURL || data.signedUrl || '').trim();
+  if (!r.ok) throw new Error(data.message || data.error || ('exam_download_url_' + r.status));
+  const signed = String(data.url || data.signedURL || data.signedUrl || '').trim();
   if (!signed) throw new Error('storage_sign_empty');
-  if (/^https?:/i.test(signed)) return signed;
-  return SUPABASE_URL.replace(/\/+$/, '') + signed;
+  return signed;
 }
 
 function studentExamState(message) {
@@ -14837,7 +14859,7 @@ function studentExamSortForView(rows, sortMode) {
 function applyStudentExamAccessState(rows) {
   const list = Array.isArray(rows) ? rows : [];
   if (isAdmin() || isTeacher() || currentPortalPlan === 'premium') {
-    return list.map(r => Object.assign({}, r, { _can_access: true, can_access: r.can_access !== false }));
+    return list.map(r => Object.assign({}, r, { _can_access: true, can_access: true, locked_reason: null }));
   }
   if (currentPortalStatus === 'pending' || currentPortalStatus === 'blocked') {
     return list.map(r => Object.assign({}, r, {
@@ -15245,17 +15267,18 @@ async function loadStudentExamFiles() {
   } catch (e) {
     try {
       const fallbackPath =
-        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published' +
+        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,storage_provider,object_key,answer_object_key,audio_object_key,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published' +
         '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+      const legacyPath =
+        'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,description,download_count,created_at,is_published' +
+        '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
+      const rowsPromise = api('GET', fallbackPath).catch(() => api('GET', legacyPath));
       const [rows] = await Promise.all([
-        api('GET', fallbackPath),
+        rowsPromise,
         loadStudentExamActivity()
       ]);
       let list = Array.isArray(rows) ? rows : [];
       if (!list.length) {
-        const legacyPath =
-          'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,answer_path,audio_path,access_tier,description,download_count,created_at,is_published' +
-          '&subject=eq.english&is_published=eq.true&order=level.asc,year.desc.nullslast,province.asc.nullslast,exam_sort_order.asc.nullslast,created_at.desc';
         list = await api('GET', legacyPath);
       }
       studentExamRows = studentExamSortRows(applyStudentExamAccessState(list).filter(r => String(r.category || '') !== 'answer'));
@@ -15426,7 +15449,7 @@ async function openStudentExamPreview(id, kind) {
   modal.setAttribute('aria-hidden', 'false');
   let url = '';
   try {
-    url = await getStudentExamSignedUrl(row, kind);
+    url = await getStudentExamSignedUrl(row, kind, { disposition: 'inline' });
   } catch (e) {
     body.innerHTML = '<div class="student-exam-preview-fallback">Tài khoản này chưa có quyền mở tài liệu hoặc link đã hết hạn.</div>';
     return;
@@ -15484,7 +15507,7 @@ async function downloadStudentExamFile(id, kind) {
   }
   let url = '';
   try {
-    url = await getStudentExamSignedUrl(row, kind);
+    url = await getStudentExamSignedUrl(row, kind, { disposition: 'attachment' });
   } catch (e) {
     showAppToast('Chưa lấy được link tải cho tài khoản này.', 'warn');
     return;
@@ -15514,8 +15537,15 @@ async function downloadStudentExamFile(id, kind) {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
   } catch (e) {
-    showAppToast('Không tải trực tiếp được, đang mở file ở tab mới.', 'warn');
-    window.open(url, '_blank', 'noopener');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download =
+      String(row.title || 'tai-lieu').trim().replace(/[^\w\-]+/g, '_') +
+      (kind === 'audio' ? '.mp3' : '.pdf');
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   }
 }
 
@@ -16141,6 +16171,7 @@ let lastPortalAccessChange = null;
 let portalFreePickerRank = null;
 let portalFreePickerQuery = '';
 let portalFreeCurationGroup = 'entrance_10';
+let portalR2SyncRunning = false;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -17044,7 +17075,7 @@ async function fetchPortalAnalyticsData() {
   const activityPath =
     'student_exam_activity?select=user_id,exam_file_id,is_favorite,favorite_at,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
   const examPath =
-    'exam_files?select=id,title,level,year,province,exam_code,category,access_tier,free_rank,free_group,group_free_rank,download_count,created_at,is_published&order=download_count.desc.nullslast,created_at.desc&limit=1000';
+    'exam_files?select=id,title,level,year,province,exam_code,category,access_tier,free_rank,free_group,group_free_rank,download_count,created_at,is_published&is_published=eq.true&order=download_count.desc.nullslast,created_at.desc&limit=1000';
   const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label&limit=5000';
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const [activityRows, examRows, profileRows, auditRows] = await Promise.all([
@@ -17058,6 +17089,55 @@ async function fetchPortalAnalyticsData() {
   _portalAnalyticsProfiles = Array.isArray(profileRows) ? profileRows : [];
   _portalAnalyticsAuditRows = Array.isArray(auditRows) ? auditRows : [];
   _portalAnalyticsLoadedAt = Date.now();
+}
+
+function setPortalR2SyncStatus(message, busy) {
+  const status = document.getElementById('portal-r2-sync-status');
+  const btn = document.getElementById('portal-r2-sync-btn');
+  const studentBtn = document.getElementById('student-exam-sync-r2');
+  if (status) status.textContent = message || 'R2 → Supabase';
+  if (btn) {
+    btn.disabled = !!busy;
+    btn.textContent = busy ? 'Đang đồng bộ...' : 'Đồng bộ kho đề';
+  }
+  if (studentBtn) {
+    studentBtn.disabled = !!busy;
+    studentBtn.textContent = busy ? 'Đang đồng bộ...' : 'Đồng bộ kho đề';
+  }
+}
+
+async function syncPortalR2ExamFiles() {
+  if (portalR2SyncRunning) return;
+  portalR2SyncRunning = true;
+  setPortalR2SyncStatus('Đang đọc R2 và cập nhật Supabase...', true);
+  try {
+    const r = await fetch(SUPABASE_URL + '/functions/v1/exam-sync-r2', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ dry_run: false, prune_missing: true }),
+      cache: 'no-store'
+    });
+    let data = {};
+    try { data = await r.json(); } catch (e) {}
+    if (!r.ok || data.ok === false) throw new Error(data.error || ('exam_sync_r2_' + r.status));
+    const synced = Number(data.synced || 0) || 0;
+    const objects = Number(data.object_count || 0) || 0;
+    const unpublished = Number(data.unpublished || 0) || 0;
+    setPortalR2SyncStatus(`Đã đồng bộ ${synced} đề từ ${objects} file; ẩn ${unpublished} đề đã xóa.`, false);
+    showAppToast(`Đã đồng bộ kho đề: ${synced} đề, ẩn ${unpublished} đề cũ.`, 'ok');
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true);
+    if (document.getElementById('student-exam-portal')?.style.display !== 'none') {
+      await loadStudentExamFiles();
+    }
+  } catch (e) {
+    console.warn('syncPortalR2ExamFiles', e);
+    const msg = String(e && e.message || e || 'sync_failed');
+    setPortalR2SyncStatus('Đồng bộ lỗi. Kiểm tra R2 token hoặc Supabase Function.', false);
+    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được đồng bộ kho đề.' : 'Chưa đồng bộ được kho đề R2.', 'error');
+  } finally {
+    portalR2SyncRunning = false;
+  }
 }
 
 async function loadPortalAnalyticsIfNeeded(force = false) {
@@ -17416,6 +17496,7 @@ function renderPortalFreeCuration(exams) {
   if (!el) return;
   const group = portalFreeCurationGroup === 'university' ? 'university' : 'entrance_10';
   const rows = (Array.isArray(exams) ? exams : [])
+    .filter(e => e.is_published !== false)
     .filter(e => String(e.category || '') !== 'answer')
     .filter(e => group === 'university' ? String(e.level || '') === 'university' : String(e.level || '') !== 'university')
     .sort((a, b) => {
@@ -17484,6 +17565,7 @@ function renderPortalFreePickerList(rows) {
     .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank || 0) <= 5 && Number(e.group_free_rank) !== Number(portalFreePickerRank))
     .map(e => String(e.id || '')));
   const candidates = (rows || [])
+    .filter(e => e.is_published !== false)
     .filter(e => !pickedIds.has(String(e.id || '')))
     .filter(e => group === 'university' ? String(e.level || '') === 'university' : String(e.level || '') !== 'university')
     .filter(e => {
