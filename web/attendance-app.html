@@ -17351,6 +17351,26 @@ async function syncPortalR2ExamFiles() {
   }
 }
 
+async function proxyUploadPortalR2File(file) {
+  const token = currentSession && currentSession.access_token ? currentSession.access_token : KEY;
+  const form = new FormData();
+  form.append('prefix', '');
+  form.append('file', file, file.name);
+  const r = await fetch(SUPABASE_URL + '/functions/v1/exam-r2-upload-url?mode=proxy-upload', {
+    method: 'POST',
+    headers: {
+      apikey: KEY,
+      Authorization: 'Bearer ' + token
+    },
+    body: form,
+    cache: 'no-store'
+  });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok || data.ok === false) throw new Error(data.error || ('proxy_upload_' + r.status));
+  return data;
+}
+
 async function uploadPortalR2ExamFiles() {
   if (portalR2UploadRunning) return;
   const input = document.getElementById('portal-r2-upload-files');
@@ -17408,15 +17428,25 @@ async function uploadPortalR2ExamFiles() {
       setPortalR2UploadStatus(`Đang upload ${okCount}/${files.length} file...`, true);
       try {
         if (!signed || !signed.upload_url) throw new Error('missing_upload_url');
-        const putResp = await fetch(String(signed.upload_url), {
-          method: 'PUT',
-          body: file,
-          cache: 'no-store'
-        });
-        if (!putResp.ok) {
-          let detail = '';
-          try { detail = (await putResp.text()).slice(0, 120); } catch (e) {}
-          throw new Error('HTTP ' + putResp.status + (detail ? ': ' + detail : ''));
+        try {
+          const putResp = await fetch(String(signed.upload_url), {
+            method: 'PUT',
+            body: file,
+            cache: 'no-store'
+          });
+          if (!putResp.ok) {
+            let detail = '';
+            try { detail = (await putResp.text()).slice(0, 120); } catch (e) {}
+            throw new Error('HTTP ' + putResp.status + (detail ? ': ' + detail : ''));
+          }
+        } catch (directErr) {
+          const directMsg = String(directErr && directErr.message || directErr || '');
+          portalR2UploadRows[i].error = /Failed to fetch|NetworkError|Load failed/i.test(directMsg)
+            ? 'Đang chuyển qua máy chủ...'
+            : directMsg;
+          renderPortalR2UploadList();
+          const proxyData = await proxyUploadPortalR2File(file);
+          portalR2UploadRows[i].objectKey = String(proxyData.object_key || portalR2UploadRows[i].objectKey || '');
         }
         portalR2UploadRows[i].state = 'uploaded';
         okCount += 1;

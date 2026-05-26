@@ -170,6 +170,18 @@ async function createR2SignedPutUrl(objectKey: string, expiresIn = SIGNED_URL_TT
   return `https://${host}${path}?${canonicalQuery}&X-Amz-Signature=${signature}`;
 }
 
+async function putR2Object(objectKey: string, file: File) {
+  const uploadUrl = await createR2SignedPutUrl(objectKey);
+  const res = await fetch(uploadUrl, {
+    method: "PUT",
+    body: file,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`R2_PUT_FAILED_${res.status}${text ? `: ${text.slice(0, 180)}` : ""}`);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
@@ -194,6 +206,32 @@ Deno.serve(async (req) => {
     .maybeSingle();
   if (profileErr || String(profile?.role || "") !== "admin") {
     return json({ ok: false, error: "Admin required" }, 403);
+  }
+
+  const url = new URL(req.url);
+  const mode = String(url.searchParams.get("mode") || "").trim().toLowerCase();
+  if (mode === "proxy-upload") {
+    let form: FormData;
+    try {
+      form = await req.formData();
+    } catch {
+      return json({ ok: false, error: "Invalid upload form" }, 400);
+    }
+    const file = form.get("file");
+    const prefix = cleanPrefix(form.get("prefix"));
+    if (!(file instanceof File)) return json({ ok: false, error: "No file" }, 400);
+    const name = cleanFileName(file.name);
+    if (!name) return json({ ok: false, error: "Invalid file name" }, 400);
+    if (!isPdfFile(name, file.type)) return json({ ok: false, error: `Only PDF files are allowed: ${name}` }, 400);
+    if (file.size > MAX_FILE_BYTES) return json({ ok: false, error: `File too large: ${name}` }, 400);
+    const objectKey = objectKeyFor(prefix, name);
+    if (!objectKey) return json({ ok: false, error: "Invalid object key" }, 400);
+    try {
+      await putR2Object(objectKey, file);
+      return json({ ok: true, name, object_key: objectKey, uploaded_via: "edge_proxy" });
+    } catch (e) {
+      return json({ ok: false, error: String(e?.message || e || "R2 upload failed") }, 502);
+    }
   }
 
   let body: any = {};
