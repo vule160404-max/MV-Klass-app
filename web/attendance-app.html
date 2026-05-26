@@ -3737,9 +3737,10 @@
     .portal-picker-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start; padding:14px 16px; border-bottom:1px solid rgba(99,138,218,.12); background:#f8fbff; }
     .portal-picker-title{ color:#102858; font-size:14px; font-weight:950; line-height:1.25; }
     .portal-picker-sub{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; }
-    .portal-picker-filters{ display:grid; grid-template-columns:minmax(220px,1fr) 150px 120px auto; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-picker-filters{ display:grid; grid-template-columns:minmax(220px,1fr) 150px 120px auto auto; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
     .portal-picker-search,.portal-picker-select{ min-height:36px; border-radius:12px; border:1px solid rgba(99,138,218,.16); padding:0 11px; color:#263852; font-size:12px; font-weight:800; outline:none; background:#fff; min-width:0; }
     .portal-picker-bulk{ min-height:36px; height:36px; padding:7px 11px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; }
+    .portal-picker-bulk.danger{ background:#fff; color:#991b1b; border-color:rgba(220,38,38,.24); }
     .portal-picker-list{ display:grid; gap:7px; overflow:auto; padding:12px 16px 16px; background:#fbfdff; }
     .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 11px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); }
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
@@ -18197,6 +18198,7 @@ function renderPortalFreeCuration(exams) {
             ${renderPortalFreeYearOptions(allRows)}
           </select>
           <button type="button" class="btn-sm portal-picker-bulk" onclick="selectAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>${portalFreeBulkRunning ? 'Đang chọn...' : 'Chọn toàn bộ'}</button>
+          <button type="button" class="btn-sm portal-picker-bulk danger" onclick="clearAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>Bỏ chọn tất cả</button>
         </div>
         <div class="portal-picker-list" id="portal-free-picker-list">${renderPortalFreePickerList(allRows)}</div>
       </div>
@@ -18340,6 +18342,49 @@ async function selectAllPortalFreePicker() {
   } catch (e) {
     console.warn('selectAllPortalFreePicker failed', e);
     showAppToast('Chưa chọn toàn bộ được. Em đã ghi log lỗi để kiểm tra tiếp.', 'warn');
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true).catch(() => {});
+  } finally {
+    portalFreeBulkRunning = false;
+    renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+  }
+}
+
+async function clearAllPortalFreePicker() {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được bỏ chọn đề miễn phí.', 'warn');
+    return;
+  }
+  if (portalFreeBulkRunning) return;
+  const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
+  const selected = (Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows : [])
+    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1);
+  if (!selected.length) {
+    showAppToast('Nhóm này chưa có đề miễn phí để bỏ chọn.', 'warn');
+    return;
+  }
+  const ok = window.confirm(`Bỏ chọn toàn bộ ${selected.length} đề miễn phí nhóm ${portalFreeGroupLabel(group)}?`);
+  if (!ok) return;
+  portalFreeBulkRunning = true;
+  renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+  let removed = 0;
+  try {
+    for (const exam of selected) {
+      const id = String(exam && exam.id || '').trim();
+      if (!id) continue;
+      await requestSetExamFreeRank(id, null, group);
+      exam.free_group = null;
+      exam.group_free_rank = null;
+      removed += 1;
+    }
+    portalFreePickerRank = null;
+    portalFreePickerQuery = '';
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true);
+    showAppToast(`Đã bỏ chọn ${removed} đề miễn phí.`, 'success');
+  } catch (e) {
+    console.warn('clearAllPortalFreePicker failed', e);
+    showAppToast('Chưa bỏ chọn toàn bộ được. Em đã ghi log lỗi để kiểm tra tiếp.', 'warn');
     invalidatePortalAnalyticsCache();
     await loadPortalAnalyticsIfNeeded(true).catch(() => {});
   } finally {
