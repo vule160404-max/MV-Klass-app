@@ -8393,6 +8393,139 @@ a:focus-visible,
 .student-exam-card .student-exam-locked-note{
   align-self:start !important;
 }
+
+/* Student exam cards: richer but quiet visual treatment for dense exam grids. */
+.student-exam-list .student-exam-card,
+.student-exam-feature-grid .student-exam-card{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:17px !important;
+  border-radius:22px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(250,253,255,.96)) !important;
+  border:1px solid rgba(26,52,96,.10) !important;
+  box-shadow:0 16px 34px rgba(18,33,61,.08), inset 0 1px 0 rgba(255,255,255,.82) !important;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease !important;
+}
+.student-exam-list .student-exam-card::before,
+.student-exam-feature-grid .student-exam-card::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:4px;
+  background:linear-gradient(90deg,#1d4ed8,#38bdf8 54%,#22c55e);
+  opacity:.72;
+}
+.student-exam-list .student-exam-card:hover,
+.student-exam-feature-grid .student-exam-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(29,78,216,.20) !important;
+  box-shadow:0 20px 42px rgba(18,33,61,.12), inset 0 1px 0 rgba(255,255,255,.86) !important;
+}
+.student-exam-card .student-exam-card-top{
+  gap:12px !important;
+}
+.student-exam-card h3{
+  color:#081f49 !important;
+  font-size:15.5px !important;
+  line-height:1.38 !important;
+  letter-spacing:0 !important;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.student-exam-card .student-exam-card-tools{
+  align-items:flex-start !important;
+  gap:9px !important;
+}
+.student-exam-card .student-exam-downloads{
+  margin-top:2px;
+  color:#66748d !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  line-height:1.25;
+}
+.student-exam-card .student-exam-save{
+  width:36px !important;
+  height:36px !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.92) !important;
+  border-color:rgba(26,52,96,.13) !important;
+  box-shadow:0 8px 18px rgba(18,33,61,.08) !important;
+}
+.student-exam-card .student-exam-save:not(:disabled):hover{
+  background:#fff8e8 !important;
+  border-color:rgba(244,167,29,.45) !important;
+}
+.student-exam-card .student-exam-badges{
+  gap:7px !important;
+  margin-top:11px !important;
+}
+.student-exam-card .student-exam-badges .student-exam-badge{
+  min-height:26px !important;
+  padding:5px 10px !important;
+  border:1px solid rgba(26,52,96,.08) !important;
+  background:#f3f7fb !important;
+  color:#334763 !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+}
+.student-exam-card .student-exam-badges .student-exam-badge.exam-tier-free{
+  background:#eafaf1 !important;
+  color:#08713f !important;
+  border-color:#c7efd8 !important;
+}
+.student-exam-card .student-exam-badges .student-exam-badge.exam-tier-premium{
+  background:#fff5dc !important;
+  color:#93610f !important;
+  border-color:#f3ddb0 !important;
+}
+.student-exam-card .student-exam-actions{
+  gap:9px !important;
+}
+.student-exam-card .student-exam-action{
+  min-height:44px !important;
+  border-radius:14px !important;
+  border-color:rgba(26,52,96,.12) !important;
+  background:rgba(255,255,255,.94) !important;
+  color:#0d2857 !important;
+  box-shadow:0 6px 14px rgba(18,33,61,.05) !important;
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease !important;
+}
+.student-exam-card .student-exam-action:not(:disabled):hover{
+  transform:translateY(-1px);
+  border-color:rgba(29,78,216,.22) !important;
+  box-shadow:0 10px 20px rgba(18,33,61,.09) !important;
+}
+.student-exam-card .student-exam-action.primary{
+  background:linear-gradient(180deg,#102a5a,#0b1f45) !important;
+  border-color:#0b1f45 !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(15,31,61,.18) !important;
+}
+.student-exam-card .student-exam-action.answer{
+  background:#f7fbff !important;
+  color:#123c78 !important;
+  border-color:rgba(29,78,216,.16) !important;
+}
+.student-exam-card .student-exam-action.audio,
+.student-exam-card .student-exam-action.upgrade{
+  background:#fff8e8 !important;
+  color:#8a5208 !important;
+  border-color:rgba(244,167,29,.34) !important;
+}
+@media (max-width:699px){
+  .student-exam-list .student-exam-card,
+  .student-exam-feature-grid .student-exam-card{
+    padding:15px !important;
+    border-radius:20px !important;
+  }
+  .student-exam-card .student-exam-card-top{
+    grid-template-columns:1fr !important;
+  }
+}
 </style>
 
 <!-- Sidebar sync: copy branding from app-header into sidebar (pure DOM, no data) -->
