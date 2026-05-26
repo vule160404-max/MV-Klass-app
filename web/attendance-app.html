@@ -17498,7 +17498,7 @@ async function uploadPortalR2ExamFiles() {
       ? ' Kiểm tra CORS của R2 bucket.'
       : '';
     setPortalR2UploadStatus('Upload lỗi: ' + msg + corsHint, false);
-    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được upload kho đề.' : 'Chưa upload được file lên R2: ' + msg.slice(0, 90), 'error');
+    showAppToast(/Admin required|ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được upload kho đề.' : 'Chưa upload được file lên R2: ' + msg.slice(0, 90), 'error');
   } finally {
     portalR2UploadRunning = false;
     setPortalR2UploadStatus(document.getElementById('portal-r2-upload-status')?.textContent || 'Chưa chọn file.', false);

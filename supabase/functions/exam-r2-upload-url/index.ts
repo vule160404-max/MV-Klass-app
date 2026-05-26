@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { PutObjectCommand, S3Client } from "npm:@aws-sdk/client-s3";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -171,15 +172,27 @@ async function createR2SignedPutUrl(objectKey: string, expiresIn = SIGNED_URL_TT
 }
 
 async function putR2Object(objectKey: string, file: File) {
-  const uploadUrl = await createR2SignedPutUrl(objectKey);
-  const res = await fetch(uploadUrl, {
-    method: "PUT",
-    body: file,
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`R2_PUT_FAILED_${res.status}${text ? `: ${text.slice(0, 180)}` : ""}`);
+  const accountId = (Deno.env.get("R2_ACCOUNT_ID") || "").trim();
+  const accessKeyId = (Deno.env.get("R2_ACCESS_KEY_ID") || "").trim();
+  const secretAccessKey = (Deno.env.get("R2_SECRET_ACCESS_KEY") || "").trim();
+  const bucket = (Deno.env.get("R2_BUCKET") || "mvklass-exam-files").trim();
+  if (!accountId || !accessKeyId || !secretAccessKey || !bucket) {
+    throw new Error("R2_NOT_CONFIGURED");
   }
+  const client = new S3Client({
+    region: "auto",
+    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+  await client.send(new PutObjectCommand({
+    Bucket: bucket,
+    Key: objectKey,
+    Body: new Uint8Array(await file.arrayBuffer()),
+    ContentType: file.type || "application/pdf",
+  }));
 }
 
 Deno.serve(async (req) => {
