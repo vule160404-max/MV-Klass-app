@@ -3737,8 +3737,9 @@
     .portal-picker-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start; padding:14px 16px; border-bottom:1px solid rgba(99,138,218,.12); background:#f8fbff; }
     .portal-picker-title{ color:#102858; font-size:14px; font-weight:950; line-height:1.25; }
     .portal-picker-sub{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; }
-    .portal-picker-filters{ display:grid; grid-template-columns:minmax(220px,1fr) 150px 120px; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-picker-filters{ display:grid; grid-template-columns:minmax(220px,1fr) 150px 120px auto; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
     .portal-picker-search,.portal-picker-select{ min-height:36px; border-radius:12px; border:1px solid rgba(99,138,218,.16); padding:0 11px; color:#263852; font-size:12px; font-weight:800; outline:none; background:#fff; min-width:0; }
+    .portal-picker-bulk{ min-height:36px; height:36px; padding:7px 11px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; }
     .portal-picker-list{ display:grid; gap:7px; overflow:auto; padding:12px 16px 16px; background:#fbfdff; }
     .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 11px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); }
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
@@ -16437,6 +16438,7 @@ let portalFreePickerQuery = '';
 let portalFreePickerLevel = '';
 let portalFreePickerYear = '';
 let portalFreeCurationGroup = 'entrance_10';
+let portalFreeBulkRunning = false;
 let portalR2SyncRunning = false;
 let portalR2UploadRunning = false;
 let portalR2UploadRows = [];
@@ -18194,6 +18196,7 @@ function renderPortalFreeCuration(exams) {
           <select class="portal-picker-select" id="portal-free-picker-year" onchange="onPortalFreePickerYear(this.value)">
             ${renderPortalFreeYearOptions(allRows)}
           </select>
+          <button type="button" class="btn-sm portal-picker-bulk" onclick="selectAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>${portalFreeBulkRunning ? 'Đang chọn...' : 'Chọn toàn bộ'}</button>
         </div>
         <div class="portal-picker-list" id="portal-free-picker-list">${renderPortalFreePickerList(allRows)}</div>
       </div>
@@ -18210,26 +18213,8 @@ function renderPortalFreeCuration(exams) {
 
 function renderPortalFreePickerList(rows) {
   if (!portalFreePickerRank) return '';
-  const q = normalizeText(String(portalFreePickerQuery || '')).toLowerCase().trim();
   const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
-  const levelFilter = String(portalFreePickerLevel || group);
-  const yearFilter = String(portalFreePickerYear || '');
-  const pickedIds = new Set((rows || [])
-    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank) !== Number(portalFreePickerRank))
-    .map(e => String(e.id || '')));
-  const candidates = (rows || [])
-    .filter(e => e.is_published !== false)
-    .filter(e => !pickedIds.has(String(e.id || '')))
-    .filter(e => levelFilter === 'all' ? true : portalExamGroupMatches(e, levelFilter))
-    .filter(e => !yearFilter || String(e.year || '') === yearFilter)
-    .filter(e => {
-      if (!q) return true;
-      const hay = [portalExamTitle(e), e.title, e.exam_code, studentExamDisplayProvince(e.province), e.province, e.year, studentExamLevelLabel(e.level), portalFreeGroupLabel(portalExamGroupKey(e))]
-        .map(x => normalizeText(String(x || '')).toLowerCase())
-        .join(' ');
-      return hay.includes(q);
-    })
-    .sort(studentExamCompareByYearCode);
+  const candidates = getPortalFreePickerCandidates(rows, { excludeCurrentRank: true });
   if (!candidates.length) {
     return '<div class="empty" style="padding:14px">Không tìm thấy tài liệu phù hợp.</div>';
   }
@@ -18243,6 +18228,32 @@ function renderPortalFreePickerList(rows) {
     <button type="button" class="btn-sm" onclick="setExamFreeRank('${escapeHtml(String(e.id || ''))}', ${Number(portalFreePickerRank)})">${isCurrent ? 'Đang chọn' : 'Chọn'}</button>
   </div>`;
   }).join('');
+}
+
+function getPortalFreePickerCandidates(rows, opts) {
+  const options = opts || {};
+  const q = normalizeText(String(portalFreePickerQuery || '')).toLowerCase().trim();
+  const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
+  const levelFilter = String(portalFreePickerLevel || group);
+  const yearFilter = String(portalFreePickerYear || '');
+  const currentRank = Number(portalFreePickerRank || 0);
+  const pickedIds = new Set((rows || [])
+    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1)
+    .filter(e => !options.excludeCurrentRank || Number(e.group_free_rank || 0) !== currentRank)
+    .map(e => String(e.id || '')));
+  return (rows || [])
+    .filter(e => e.is_published !== false)
+    .filter(e => !pickedIds.has(String(e.id || '')))
+    .filter(e => levelFilter === 'all' ? true : portalExamGroupMatches(e, levelFilter))
+    .filter(e => !yearFilter || String(e.year || '') === yearFilter)
+    .filter(e => {
+      if (!q) return true;
+      const hay = [portalExamTitle(e), e.title, e.exam_code, studentExamDisplayProvince(e.province), e.province, e.year, studentExamLevelLabel(e.level), portalFreeGroupLabel(portalExamGroupKey(e))]
+        .map(x => normalizeText(String(x || '')).toLowerCase())
+        .join(' ');
+      return hay.includes(q);
+    })
+    .sort(studentExamCompareByYearCode);
 }
 
 function openPortalFreePicker(rank) {
@@ -18291,6 +18302,52 @@ function onPortalFreePickerYear(value) {
   if (list) list.innerHTML = renderPortalFreePickerList(_portalAnalyticsExamRows || []);
 }
 
+async function selectAllPortalFreePicker() {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được chọn đề miễn phí.', 'warn');
+    return;
+  }
+  if (portalFreeBulkRunning) return;
+  const rows = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows : [];
+  const candidates = getPortalFreePickerCandidates(rows, { excludeCurrentRank: false });
+  if (!candidates.length) {
+    showAppToast('Không còn đề phù hợp để chọn thêm.', 'warn');
+    return;
+  }
+  const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
+  portalFreeBulkRunning = true;
+  renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+  let added = 0;
+  try {
+    for (const exam of candidates) {
+      const id = String(exam && exam.id || '').trim();
+      if (!id) continue;
+      const nextRank = portalNextFreeRank(_portalAnalyticsExamRows || [], group);
+      await requestSetExamFreeRank(id, nextRank, group);
+      const row = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows.find(e => String(e.id || '') === id) : null;
+      if (row) {
+        row.access_tier = 'free';
+        row.free_group = group;
+        row.group_free_rank = nextRank;
+      }
+      added += 1;
+    }
+    portalFreePickerRank = null;
+    portalFreePickerQuery = '';
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true);
+    showAppToast(`Đã chọn thêm ${added} đề miễn phí.`, 'success');
+  } catch (e) {
+    console.warn('selectAllPortalFreePicker failed', e);
+    showAppToast('Chưa chọn toàn bộ được. Em đã ghi log lỗi để kiểm tra tiếp.', 'warn');
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true).catch(() => {});
+  } finally {
+    portalFreeBulkRunning = false;
+    renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+  }
+}
+
 function portalNextFreeRank(rows, group) {
   const ranks = (rows || [])
     .filter(e => String(e.free_group || '') === portalNormalizeFreeGroup(group))
@@ -18326,20 +18383,7 @@ async function setExamFreeRank(examId, rank) {
   const nextRank = rank ? Number(rank) : null;
   const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/set_exam_free_rank', {
-      method: 'POST',
-      headers: getHeaders('return=representation'),
-      body: JSON.stringify({ p_exam_id: id, p_free_rank: nextRank, p_free_group: group }),
-      cache: 'no-store'
-    });
-    if (!r.ok) {
-      let msg = '';
-      try {
-        const data = await r.json();
-        msg = data.message || data.details || data.hint || data.code || '';
-      } catch (e) {}
-      throw new Error(msg || ('set_exam_free_rank_' + r.status));
-    }
+    await requestSetExamFreeRank(id, nextRank, group);
     const row = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows.find(e => String(e.id || '') === id) : null;
     if (row) {
       row.access_tier = nextRank ? 'free' : 'premium';
@@ -18362,6 +18406,23 @@ async function setExamFreeRank(examId, rank) {
       : 'Chưa lưu được vị trí đề miễn phí. Em đã ghi log lỗi để kiểm tra tiếp.';
     console.warn('setExamFreeRank failed', e);
     showAppToast(friendly, 'warn');
+  }
+}
+
+async function requestSetExamFreeRank(id, nextRank, group) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/set_exam_free_rank', {
+    method: 'POST',
+    headers: getHeaders('return=representation'),
+    body: JSON.stringify({ p_exam_id: id, p_free_rank: nextRank, p_free_group: group }),
+    cache: 'no-store'
+  });
+  if (!r.ok) {
+    let msg = '';
+    try {
+      const data = await r.json();
+      msg = data.message || data.details || data.hint || data.code || '';
+    } catch (e) {}
+    throw new Error(msg || ('set_exam_free_rank_' + r.status));
   }
 }
 
