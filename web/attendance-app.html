@@ -17352,7 +17352,8 @@ async function syncPortalR2ExamFiles() {
 }
 
 async function proxyUploadPortalR2File(file) {
-  const token = currentSession && currentSession.access_token ? currentSession.access_token : KEY;
+  const token = currentSession && currentSession.access_token ? currentSession.access_token : '';
+  if (!token) throw new Error('missing_admin_session');
   const form = new FormData();
   form.append('prefix', '');
   form.append('file', file, file.name);
@@ -17373,6 +17374,17 @@ async function proxyUploadPortalR2File(file) {
 
 async function uploadPortalR2ExamFiles() {
   if (portalR2UploadRunning) return;
+  if (!isAdmin()) {
+    setPortalR2UploadStatus('Chỉ admin được upload kho đề.', false);
+    showAppToast('Chỉ admin được upload kho đề.', 'error');
+    return;
+  }
+  const sessionOk = await ensureSessionFresh();
+  if (!sessionOk || !currentSession?.access_token) {
+    setPortalR2UploadStatus('Phiên đăng nhập admin đã hết hạn. Vui lòng đăng nhập lại.', false);
+    showAppToast('Phiên đăng nhập admin đã hết hạn. Vui lòng đăng nhập lại.', 'error');
+    return;
+  }
   const input = document.getElementById('portal-r2-upload-files');
   const files = input && input.files ? Array.from(input.files) : [];
   if (!files.length) {
