@@ -1,0 +1,218 @@
+-- =============================================================================
+-- 074 - IELTS free exam curation
+-- =============================================================================
+
+alter table public.profiles
+  drop constraint if exists profiles_portal_free_group_check;
+
+alter table public.profiles
+  add constraint profiles_portal_free_group_check
+  check (portal_free_group in ('entrance_10', 'university', 'ielts'));
+
+alter table public.exam_files
+  drop constraint if exists exam_files_level_check;
+
+alter table public.exam_files
+  add constraint exam_files_level_check
+  check (level in ('entrance_10', 'university', 'ielts'));
+
+alter table public.exam_files
+  drop constraint if exists exam_files_free_group_check;
+
+alter table public.exam_files
+  add constraint exam_files_free_group_check
+  check (free_group is null or free_group in ('entrance_10', 'university', 'ielts'));
+
+create or replace function public.current_portal_free_group()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select coalesce(
+    (
+      select case
+        when p.portal_free_group in ('university', 'ielts') then p.portal_free_group
+        else 'entrance_10'
+      end
+      from public.profiles p
+      where p.id = auth.uid()
+      limit 1
+    ),
+    'entrance_10'
+  );
+$$;
+
+create or replace function public.is_curated_free_exam(p_exam_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  with my_group as (
+    select public.current_portal_free_group() as g
+  ),
+  curated as (
+    select e.id
+    from public.exam_files e, my_group
+    where e.is_published = true
+      and e.access_tier = 'free'
+      and e.subject = 'english'
+      and e.category <> 'answer'
+      and e.free_group = my_group.g
+      and e.group_free_rank between 1 and 5
+  ),
+  fallback as (
+    select e.id
+    from public.exam_files e, my_group
+    where e.is_published = true
+      and e.access_tier = 'free'
+      and e.subject = 'english'
+      and e.category <> 'answer'
+      and (
+        (my_group.g = 'university' and e.level = 'university')
+        or (my_group.g = 'ielts' and e.level = 'ielts')
+        or (my_group.g = 'entrance_10' and coalesce(e.level, '') not in ('university', 'ielts'))
+      )
+    order by e.year desc nulls last, e.province asc nulls last, e.exam_sort_order asc nulls last, e.created_at desc
+    limit 5
+  )
+  select exists (
+    select 1
+    from (
+      select id from curated
+      union all
+      select id from fallback where not exists (select 1 from curated)
+    ) x
+    where x.id = p_exam_id
+  );
+$$;
+
+create or replace function public.set_exam_free_rank(
+  p_exam_id uuid,
+  p_free_rank integer default null,
+  p_free_group text default 'entrance_10'
+)
+returns table (
+  exam_id uuid,
+  free_rank integer,
+  free_group text,
+  group_free_rank integer
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor uuid := auth.uid();
+  v_group text := case
+    when lower(trim(coalesce(p_free_group, 'entrance_10'))) in ('university', 'ielts')
+      then lower(trim(coalesce(p_free_group, 'entrance_10')))
+    else 'entrance_10'
+  end;
+begin
+  if not exists (
+    select 1 from public.profiles p
+    where p.id = v_actor and p.role = 'admin'
+  ) then
+    raise exception 'admin_required';
+  end if;
+
+  if p_free_rank is not null and (p_free_rank < 1 or p_free_rank > 5) then
+    raise exception 'invalid_free_rank';
+  end if;
+
+  if p_free_rank is not null then
+    update public.exam_files ef
+    set group_free_rank = null,
+        free_group = null
+    where ef.free_group = v_group
+      and ef.group_free_rank = p_free_rank
+      and ef.id <> p_exam_id;
+  end if;
+
+  update public.exam_files ef
+  set group_free_rank = p_free_rank,
+      free_group = case when p_free_rank is not null then v_group else null end,
+      access_tier = case when p_free_rank is not null then 'free' else ef.access_tier end
+  where ef.id = p_exam_id
+    and ef.subject = 'english'
+    and ef.category <> 'answer';
+
+  if not found then
+    raise exception 'exam_not_found';
+  end if;
+
+  return query select p_exam_id, p_free_rank, case when p_free_rank is not null then v_group else null end, p_free_rank;
+end;
+$$;
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  r text;
+  display text;
+  status text;
+  free_group text;
+  class_label text;
+begin
+  r := lower(trim(coalesce(new.raw_user_meta_data->>'role', '')));
+  if r not in ('admin', 'teacher', 'student') then
+    r := 'teacher';
+  end if;
+
+  display := coalesce(
+    nullif(trim(new.raw_user_meta_data->>'display_name'), ''),
+    nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+    nullif(trim(new.raw_user_meta_data->>'name'), ''),
+    nullif(trim(split_part(coalesce(new.email, ''), '@', 1)), '')
+  );
+
+  class_label := coalesce(
+    nullif(trim(new.raw_user_meta_data->>'student_class_label'), ''),
+    nullif(trim(new.raw_user_meta_data->>'class_label'), '')
+  );
+
+  free_group := lower(trim(coalesce(
+    new.raw_user_meta_data->>'portal_free_group',
+    new.raw_user_meta_data->>'student_class_group',
+    ''
+  )));
+  if free_group not in ('entrance_10', 'university', 'ielts') then
+    free_group := 'entrance_10';
+  end if;
+  if class_label in ('THPT / Đại học', 'THPT / Dai hoc') then
+    class_label := 'THPT QG';
+  elsif class_label in ('Lớp 8', 'Lop 8', 'Lớp 9', 'Lop 9') then
+    class_label := 'Thi vào 10';
+  elsif free_group = 'ielts' then
+    class_label := 'IELTS';
+  end if;
+
+  status := 'active';
+
+  insert into public.profiles (id, email, role, display_name, portal_plan, portal_status, portal_free_group, portal_class_label)
+  values (new.id, new.email, r, display, 'free', status, free_group, class_label)
+  on conflict (id) do update
+  set
+    email = coalesce(excluded.email, public.profiles.email),
+    role = coalesce(nullif(excluded.role, ''), public.profiles.role),
+    display_name = coalesce(nullif(excluded.display_name, ''), public.profiles.display_name),
+    portal_free_group = case when public.profiles.role = 'student' then coalesce(excluded.portal_free_group, public.profiles.portal_free_group) else public.profiles.portal_free_group end,
+    portal_class_label = case when public.profiles.role = 'student' then coalesce(excluded.portal_class_label, public.profiles.portal_class_label) else public.profiles.portal_class_label end;
+
+  return new;
+end;
+$$;
+
+grant execute on function public.current_portal_free_group() to authenticated;
+grant execute on function public.is_curated_free_exam(uuid) to authenticated;
+grant execute on function public.set_exam_free_rank(uuid, integer, text) to authenticated;
+
+notify pgrst, 'reload schema';

@@ -173,6 +173,7 @@ function guessCategory(key: string) {
 
 function guessLevel(key: string) {
   const n = normalizeText(key);
+  if (/\bielts\b/.test(n)) return "ielts";
   return /\b(thpt|qg|dai hoc|university|12)\b/.test(n) ? "university" : "entrance_10";
 }
 
@@ -184,14 +185,19 @@ function guessYear(key: string) {
 function guessCode(key: string) {
   const n = normalizeText(stem(key));
   if (/\b(chinh thuc|official)\b/.test(n)) return "CHINH_THUC";
+  const series = n.match(/\bde\s+([a-z]{2,10})\s*0*(\d{1,4})\b/);
+  if (series) return `${series[1].toUpperCase()}${String(Number(series[2])).padStart(3, "0")}`;
   const m = n.match(/\bde\s*([a-z]{1,10}\d{1,4}|\d{1,3})\b/);
   if (!m) return null;
-  return /^\d+$/.test(m[1]) ? String(Number(m[1])).padStart(3, "0") : m[1].toUpperCase();
+  return /^\d+$/.test(m[1]) ? String(Number(m[1])).padStart(3, "0") : m[1].toUpperCase().replace(/([A-Z]+)0*(\d+)$/, (_, p, d) => `${p}${String(Number(d)).padStart(3, "0")}`);
 }
 
 function guessSortOrder(key: string) {
   const code = guessCode(key);
-  return /^\d+$/.test(String(code || "")) ? Number(code) : null;
+  const raw = String(code || "");
+  if (/^\d+$/.test(raw)) return Number(raw);
+  const m = raw.match(/(\d{1,4})$/);
+  return m ? Number(m[1]) : null;
 }
 
 function displayProvince(value: string) {
@@ -242,6 +248,30 @@ function prettyTitle(key: string) {
   return parts.length > 2 ? parts.join(" ") : stem(key) || "Tài liệu Tiếng Anh";
 }
 
+function guessSource(key: string) {
+  const n = normalizeText(stem(key));
+  if (/\b(vu mai phuong|vmp)\b/.test(n)) return "Vũ Mai Phương";
+  return null;
+}
+
+function titleCode(code: string | null) {
+  const raw = String(code || "").trim();
+  const m = raw.match(/^([A-Z]{2,10})0*(\d{1,4})$/);
+  return m ? `${m[1]} ${String(Number(m[2])).padStart(3, "0")}` : raw;
+}
+
+function prettyTitleClean(key: string) {
+  const category = guessCategory(key);
+  const prefix = category === "answer" ? "Đáp án đề" : category === "audio" ? "Audio đề" : "Đề";
+  const code = guessCode(key);
+  const levelKey = guessLevel(key);
+  const level = levelKey === "university" ? "THPT" : (levelKey === "ielts" ? "IELTS" : "Vào 10");
+  const source = guessProvince(key) || guessSource(key);
+  const year = guessYear(key);
+  const parts = [prefix, titleCode(code), level, source, year].filter(Boolean);
+  return parts.length > 2 ? parts.join(" ") : stem(key) || "Tài liệu Tiếng Anh";
+}
+
 function matchKey(key: string) {
   return normalizeText(stem(key))
     .replace(/\b(dap an|answer|audio|listening|nghe)\b/g, " ")
@@ -255,6 +285,7 @@ function accessTier(key: string, category: string) {
 }
 
 function description(level: string) {
+  if (level === "ielts") return "De luyen thi IELTS mon Tieng Anh.";
   return level === "university"
     ? "De luyen thi THPT mon Tieng Anh."
     : "De luyen thi Vao 10 mon Tieng Anh.";
@@ -313,11 +344,11 @@ Deno.serve(async (req) => {
       const category = guessCategory(key);
       const level = guessLevel(key);
       const payload = {
-        title: prettyTitle(key),
+        title: prettyTitleClean(key),
         level,
         subject: "english",
         year: guessYear(key),
-        province: guessProvince(key),
+        province: guessProvince(key) || guessSource(key),
         category,
         file_url: null,
         description: description(level),
