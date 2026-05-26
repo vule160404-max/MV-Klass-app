@@ -8285,6 +8285,35 @@ a:focus-visible,
   }
 }
 
+/* Student exam tier badges: keep them visually distinct from header plan badges. */
+.student-exam-card .student-exam-badges .student-exam-badge.exam-tier-premium{
+  background:#f5efe5 !important;
+  color:#80623c !important;
+  border:1px solid #e7dccb !important;
+  box-shadow:none !important;
+  font-weight:800 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+.student-exam-card .student-exam-badges .student-exam-badge.exam-tier-premium::before{
+  content:none !important;
+}
+.student-exam-card .student-exam-badges .student-exam-badge.exam-tier-free{
+  background:#dcfce7 !important;
+  color:#166534 !important;
+  border:1px solid rgba(34,197,94,.32) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), 0 4px 10px rgba(22,101,52,.06) !important;
+  font-weight:950 !important;
+}
+.student-exam-card .student-exam-badges .student-exam-badge.exam-tier-free::before{
+  content:"" !important;
+  width:6px !important;
+  height:6px !important;
+  border-radius:999px !important;
+  margin-right:5px !important;
+  background:#16a34a !important;
+  box-shadow:0 0 0 3px rgba(22,163,74,.12) !important;
+}
 </style>
 
 <!-- Sidebar sync: copy branding from app-header into sidebar (pure DOM, no data) -->
@@ -15118,7 +15147,7 @@ function studentExamCard(row, compact) {
           <div class="student-exam-badges">
             <span class="student-exam-badge gold">${escapeHtml(level)}</span>
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
-            <span class="student-exam-badge ${tier === 'premium' ? 'exam-premium' : 'exam-free'}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
+            <span class="student-exam-badge ${tier === 'premium' ? 'exam-tier-premium' : 'exam-tier-free'}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
             ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
             ${showCode ? `<span class="student-exam-badge">Mã ${escapeHtml(code)}</span>` : ''}
             <span class="student-exam-badge">${escapeHtml(year)}</span>
