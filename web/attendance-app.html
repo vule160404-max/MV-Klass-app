@@ -14659,13 +14659,14 @@ function studentExamLockedMessage(row) {
   return 'Tài liệu này hiện chưa mở cho tài khoản của em.';
 }
 
-async function getStudentExamSignedUrl(row, kind) {
+async function getStudentExamSignedUrl(row, kind, options) {
   const examId = String(row?.id || '').trim();
   if (!examId || !currentSession?.access_token) return studentExamUrlFor(row, kind);
+  const mode = options && options.disposition === 'inline' ? 'inline' : 'attachment';
   const r = await fetch(SUPABASE_URL + '/functions/v1/exam-download-url', {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ exam_id: examId, kind: kind || 'file' }),
+    body: JSON.stringify({ exam_id: examId, kind: kind || 'file', disposition: mode }),
     cache: 'no-store'
   });
   let data = {};
@@ -15448,7 +15449,7 @@ async function openStudentExamPreview(id, kind) {
   modal.setAttribute('aria-hidden', 'false');
   let url = '';
   try {
-    url = await getStudentExamSignedUrl(row, kind);
+    url = await getStudentExamSignedUrl(row, kind, { disposition: 'inline' });
   } catch (e) {
     body.innerHTML = '<div class="student-exam-preview-fallback">Tài khoản này chưa có quyền mở tài liệu hoặc link đã hết hạn.</div>';
     return;
@@ -15506,7 +15507,7 @@ async function downloadStudentExamFile(id, kind) {
   }
   let url = '';
   try {
-    url = await getStudentExamSignedUrl(row, kind);
+    url = await getStudentExamSignedUrl(row, kind, { disposition: 'attachment' });
   } catch (e) {
     showAppToast('Chưa lấy được link tải cho tài khoản này.', 'warn');
     return;

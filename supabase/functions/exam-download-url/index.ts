@@ -104,9 +104,18 @@ function contentDispositionAttachment(fileName: string) {
   return `attachment; filename="${fallback}"; filename*=UTF-8''${encodeRfc3986(fileName || fallback)}`;
 }
 
+function contentDispositionInline(fileName: string) {
+  const fallback = String(fileName || "tai-lieu")
+    .replace(/[^\x20-\x7E]/g, "_")
+    .replace(/["\\]/g, "_")
+    .trim() || "tai-lieu";
+  return `inline; filename="${fallback}"; filename*=UTF-8''${encodeRfc3986(fileName || fallback)}`;
+}
+
 async function createR2SignedGetUrl(
   objectKey: string,
   fileName: string,
+  disposition = "attachment",
   expiresIn = SIGNED_URL_TTL_SECONDS,
 ) {
   const accountId = (Deno.env.get("R2_ACCOUNT_ID") || "").trim();
@@ -124,8 +133,11 @@ async function createR2SignedGetUrl(
   const scope = `${dateStamp}/auto/s3/aws4_request`;
   const credential = `${accessKeyId}/${scope}`;
   const path = `/${encodePath(bucket)}/${encodePath(objectKey)}`;
+  const dispositionValue = disposition === "inline"
+    ? contentDispositionInline(fileName || objectKey.split("/").pop() || "tai-lieu")
+    : contentDispositionAttachment(fileName || objectKey.split("/").pop() || "tai-lieu");
   const params = [
-    ["response-content-disposition", contentDispositionAttachment(fileName || objectKey.split("/").pop() || "tai-lieu")],
+    ["response-content-disposition", dispositionValue],
     ["X-Amz-Algorithm", "AWS4-HMAC-SHA256"],
     ["X-Amz-Credential", credential],
     ["X-Amz-Date", amzDate],
@@ -189,6 +201,9 @@ Deno.serve(async (req) => {
 
   const examId = String(body.exam_id || body.examId || "").trim();
   const kind = String(body.kind || "file").trim().toLowerCase();
+  const disposition = String(body.disposition || body.mode || "attachment").trim().toLowerCase() === "inline"
+    ? "inline"
+    : "attachment";
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(examId)) {
     return json({ ok: false, error: "Invalid exam_id" }, 400);
   }
@@ -237,6 +252,7 @@ Deno.serve(async (req) => {
       url = await createR2SignedGetUrl(
         objectKey,
         objectKey.split("/").pop() || String(row.title || "tai-lieu"),
+        disposition,
         SIGNED_URL_TTL_SECONDS,
       );
     } else if (storagePath) {
