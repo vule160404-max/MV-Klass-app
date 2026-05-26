@@ -1698,11 +1698,32 @@
       gap: 10px;
     }
     .class-mgr-name{
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 16px;
       font-weight: 900;
       color: rgba(15,23,42,0.94);
       line-height: 1.3;
       letter-spacing: -0.015em;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .class-mgr-state-dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      background: #16a34a;
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.14);
+    }
+    .class-mgr-state-dot.paused{
+      background: #b45309;
+      box-shadow: 0 0 0 4px rgba(180,83,9,0.14);
+    }
+    .class-mgr-name-text{
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -21271,13 +21292,17 @@ function renderClassManager() {
   const totalWeeklySessions = stats.reduce((sum, x) => sum + x.sessionsPerWeek, 0);
   const projectedPerSession = activeStats.reduce((sum, x) => sum + x.studentCount * x.fee, 0);
   const projectedMonth = stats.reduce((sum, x) => sum + x.studentCount * x.fee * x.sessionsPerWeek * 4, 0);
+  const orderedStats = stats.slice().sort((a, b) => {
+    if (a.paused !== b.paused) return a.paused ? 1 : -1;
+    return String(a.className || '').localeCompare(String(b.className || ''), 'vi', { numeric: true, sensitivity: 'base' });
+  });
   const dashboardHtml = `<div class="class-mgr-dashboard">
     <div class="class-mgr-kpi"><div class="label">Lớp hoạt động</div><div class="value">${activeStats.length}</div><div class="hint">${stats.length - activeStats.length} lớp tạm dừng</div></div>
     <div class="class-mgr-kpi"><div class="label">Học viên theo lớp</div><div class="value">${totalStudents}</div><div class="hint">Tính cả học viên học nhiều lớp</div></div>
     <div class="class-mgr-kpi"><div class="label">Buổi / tuần</div><div class="value">${totalWeeklySessions}</div><div class="hint">Theo lịch đã thiết lập</div></div>
     <div class="class-mgr-kpi"><div class="label">Dự kiến / tháng</div><div class="value">${escapeHtml(formatVndCompact(projectedMonth))}</div><div class="hint">${escapeHtml(formatVnd(projectedPerSession))} nếu đủ 1 lượt học</div></div>
   </div>`;
-  const cardsHtml = stats.map(info => {
+  const cardsHtml = orderedStats.map(info => {
     const { className, def, fee, scheduleItems, studentCount, sessionsPerWeek, paused } = info;
     const feeText = `${formatVnd(fee)} / buổi`;
     const roadmap = String(classRoadmaps[className] || '').trim();
@@ -21306,7 +21331,10 @@ function renderClassManager() {
     return `<div class="class-mgr-row">
       <div class="class-mgr-head">
         <div>
-          <div class="class-mgr-name">${escapeHtml(def ? (def.name || def.label) : className)}</div>
+          <div class="class-mgr-name">
+            <span class="class-mgr-state-dot${paused ? ' paused' : ''}" title="${paused ? 'Lớp tạm dừng' : 'Lớp đang hoạt động'}" aria-label="${paused ? 'Lớp tạm dừng' : 'Lớp đang hoạt động'}"></span>
+            <span class="class-mgr-name-text">${escapeHtml(def ? (def.name || def.label) : className)}</span>
+          </div>
           <div class="class-mgr-sub">${escapeHtml(className)}</div>
         </div>
         <span class="class-mgr-status${paused ? ' paused' : ''}">${paused ? 'Tạm dừng' : 'Hoạt động'}</span>
