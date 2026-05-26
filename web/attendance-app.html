@@ -15002,6 +15002,10 @@ function studentExamSortForView(rows, sortMode) {
   });
 }
 
+function studentExamAccessTier(row) {
+  return String(row && row.access_tier || '').trim().toLowerCase() === 'free' ? 'free' : 'premium';
+}
+
 function applyStudentExamAccessState(rows) {
   const list = Array.isArray(rows) ? rows : [];
   if (isAdmin() || isTeacher() || currentPortalPlan === 'premium') {
@@ -15023,13 +15027,13 @@ function applyStudentExamAccessState(rows) {
     Number(r.group_free_rank || 0) <= 5
   );
   (curated.length ? curated : list)
-    .filter(r => String(r.access_tier || 'free') !== 'premium' && String(r.category || '') !== 'answer' && String(r.subject || '') === 'english' && levelOk(r))
+    .filter(r => studentExamAccessTier(r) === 'free' && String(r.category || '') !== 'answer' && String(r.subject || '') === 'english' && levelOk(r))
     .slice(0, 5)
     .forEach(r => freeIds.add(String(r.id || '')));
   return list.map(r => Object.assign({}, r, {
-    _can_access: String(r.access_tier || 'free') !== 'premium' && freeIds.has(String(r.id || '')),
-    can_access: String(r.access_tier || 'free') !== 'premium' && freeIds.has(String(r.id || '')),
-    locked_reason: String(r.access_tier || 'free') === 'premium'
+    _can_access: studentExamAccessTier(r) === 'free' && freeIds.has(String(r.id || '')),
+    can_access: studentExamAccessTier(r) === 'free' && freeIds.has(String(r.id || '')),
+    locked_reason: studentExamAccessTier(r) === 'premium'
       ? 'premium_required'
       : (freeIds.has(String(r.id || '')) ? null : 'free_limit')
   }));
@@ -15200,7 +15204,7 @@ function studentExamCard(row, compact) {
   const isSaved = studentExamIsFavorite(row);
   const canAccess = studentExamCanAccess(row);
   const locked = !canAccess;
-  const tier = String(row.access_tier || 'free') === 'premium' ? 'premium' : 'free';
+  const tier = studentExamAccessTier(row);
   const lockedText = studentExamLockedMessage(row);
   return `
     <article class="student-exam-card ${locked ? 'is-locked' : ''}" data-exam-id="${id}">
@@ -18010,7 +18014,7 @@ function renderPortalFreeCuration(exams) {
       <div class="portal-free-slot-num">${rank}</div>
       <div>
         <div class="portal-free-title">${escapeHtml(portalExamTitle(e))}</div>
-        <div class="portal-free-meta">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, String(e.access_tier || 'free') === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
+        <div class="portal-free-meta">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, studentExamAccessTier(e) === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
       </div>
       <div class="portal-free-actions">
         <button type="button" class="btn-sm" onclick="openPortalFreePicker(${rank})">Đổi</button>
@@ -18066,7 +18070,7 @@ function renderPortalFreePickerList(rows) {
   return candidates.map(e => `<div class="portal-picker-item">
     <div>
       <div class="portal-table-title">${escapeHtml(portalExamTitle(e))}</div>
-      <div class="portal-table-muted">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, String(e.access_tier || 'free') === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
+      <div class="portal-table-muted">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, studentExamAccessTier(e) === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
     </div>
     <button type="button" class="btn-sm" onclick="setExamFreeRank('${escapeHtml(String(e.id || ''))}', ${Number(portalFreePickerRank)})">Chọn</button>
   </div>`).join('');
