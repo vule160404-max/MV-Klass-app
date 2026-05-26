@@ -90,16 +90,37 @@ function cleanFileName(value: unknown) {
     .trim();
 }
 
+function normalizeText(value: unknown) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function isPdfFile(name: string, contentType: unknown) {
   const fileName = String(name || "").trim().toLowerCase();
   const mime = String(contentType || "").trim().toLowerCase();
   return fileName.endsWith(".pdf") && (!mime || mime === "application/pdf");
 }
 
+function autoFolderForFile(name: string) {
+  const n = normalizeText(name);
+  const compact = n.replace(/\s+/g, "");
+  if (/\bielts\b/.test(n)) return "ielts";
+  if (/\bthpt\b/.test(n)) return "thpt";
+  if (/\bvao\s*10\b/.test(n) || compact.includes("vao10")) return "vao 10";
+  return "";
+}
+
 function objectKeyFor(prefix: string, name: string) {
   const fileName = cleanFileName(name);
   if (!fileName || fileName === "." || fileName === "..") return "";
-  return [prefix, fileName].filter(Boolean).join("/");
+  const folder = prefix || autoFolderForFile(fileName);
+  return [folder, fileName].filter(Boolean).join("/");
 }
 
 async function createR2SignedPutUrl(objectKey: string, expiresIn = SIGNED_URL_TTL_SECONDS) {
