@@ -15190,7 +15190,10 @@ function studentExamCard(row, compact) {
   const code = String(row.exam_code || '').trim();
   const showCode = code && !studentExamIsOfficial(row);
   const downloads = Math.max(0, parseInt(String(row.download_count || 0), 10) || 0);
-  const desc = String(row.description || '').trim() || 'Xem trước đề và tải về để luyện tập.';
+  const rawDesc = String(row.description || '').trim();
+  const descKey = normalizeText(rawDesc).replace(/\s+/g, ' ').trim().toLowerCase();
+  const isDefaultDesc = !rawDesc || /^(de luyen thi|de thi thu|xem truoc de|tai lieu tieng anh)/.test(descKey);
+  const desc = isDefaultDesc ? '' : rawDesc;
   const hasFile = studentExamHasFile(row, 'file');
   const hasAnswer = studentExamHasFile(row, 'answer');
   const hasAudio = studentExamHasFile(row, 'audio');
@@ -15204,7 +15207,7 @@ function studentExamCard(row, compact) {
       <div class="student-exam-card-top">
         <div>
           <h3>${title}</h3>
-          ${compact ? '' : `<p class="student-exam-desc">${escapeHtml(desc)}</p>`}
+          ${compact || !desc ? '' : `<p class="student-exam-desc">${escapeHtml(desc)}</p>`}
           <div class="student-exam-badges">
             <span class="student-exam-badge gold">${escapeHtml(level)}</span>
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
