@@ -18148,7 +18148,7 @@ function renderPortalStudentUsers(rows) {
   }</tbody></table></div>` : '<div class="empty" style="padding:16px">Không có học sinh khớp bộ lọc.</div>';
   el.innerHTML = `<div class="portal-user-shell">
     <div class="portal-user-tools">
-      <input class="portal-user-search" id="portal-student-search" type="search" placeholder="Tìm tên, email, mã tài khoản..." value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
+      <input class="portal-user-search" id="portal-user-lookup-box" name="mvklass_portal_user_lookup" type="search" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" placeholder="Tìm tên, email, mã tài khoản..." value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
       <select class="portal-user-select" id="portal-student-sort" onchange="onPortalStudentSortChange(this.value)">
         <option value="priority">Ưu tiên xử lý</option>
         <option value="last">Hoạt động mới nhất</option>
@@ -18182,6 +18182,7 @@ function renderPortalStudentUsers(rows) {
   if (sortEl) sortEl.value = portalStudentSort;
   const sizeEl = document.getElementById('portal-student-page-size');
   if (sizeEl) sizeEl.value = String(portalStudentPageSize);
+  syncPortalStudentSearchInput();
 }
 
 function sortPortalStudentProfiles(list) {
@@ -18213,6 +18214,19 @@ function onPortalStudentSearch(value) {
   portalStudentQuery = String(value || '');
   portalStudentPage = 1;
   renderPortalStudentUsers(_portalAnalyticsRows || []);
+}
+
+function syncPortalStudentSearchInput() {
+  const input = document.getElementById('portal-user-lookup-box');
+  if (!input) return;
+  const expected = String(portalStudentQuery || '');
+  const apply = () => {
+    if (input.value !== expected) input.value = expected;
+  };
+  apply();
+  setTimeout(apply, 80);
+  setTimeout(apply, 350);
+  setTimeout(apply, 1000);
 }
 
 function onPortalStudentSortChange(value) {
