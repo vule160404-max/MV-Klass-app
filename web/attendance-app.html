@@ -8773,7 +8773,7 @@ a:focus-visible,
           <div class="portal-panel-body">
             <div class="portal-r2-upload">
               <div class="portal-r2-upload-top">
-                <input id="portal-r2-upload-files" class="portal-r2-upload-file" type="file" multiple accept=".pdf,.mp3,.m4a,.wav,.aac,.zip,.doc,.docx,.ppt,.pptx,.xls,.xlsx" onchange="onPortalR2UploadFilesChange()"/>
+                <input id="portal-r2-upload-files" class="portal-r2-upload-file" type="file" multiple accept="application/pdf,.pdf" onchange="onPortalR2UploadFilesChange()"/>
                 <input id="portal-r2-upload-prefix" class="portal-r2-upload-input" type="text" placeholder="Thư mục R2 (tuỳ chọn)" autocomplete="off"/>
                 <button type="button" class="btn-sm portal-r2-upload-btn" id="portal-r2-upload-btn" onclick="uploadPortalR2ExamFiles()">Upload lên R2</button>
               </div>
@@ -17172,9 +17172,24 @@ function renderPortalR2UploadList() {
 function onPortalR2UploadFilesChange() {
   const input = document.getElementById('portal-r2-upload-files');
   const files = input && input.files ? Array.from(input.files) : [];
+  const invalid = files.filter(file => !portalR2IsPdfFile(file));
+  if (invalid.length) {
+    if (input) input.value = '';
+    portalR2UploadRows = invalid.map(file => ({ file, state: 'error', objectKey: '', error: 'Chỉ nhận PDF' }));
+    renderPortalR2UploadList();
+    setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
+    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    return;
+  }
   portalR2UploadRows = files.map(file => ({ file, state: 'queued', objectKey: '' }));
   renderPortalR2UploadList();
   setPortalR2UploadStatus(files.length ? `Đã chọn ${files.length} file.` : 'Chưa chọn file.', false);
+}
+
+function portalR2IsPdfFile(file) {
+  const name = String(file && file.name || '').trim().toLowerCase();
+  const type = String(file && file.type || '').trim().toLowerCase();
+  return name.endsWith('.pdf') && (!type || type === 'application/pdf');
 }
 
 function portalR2UploadPrefix() {
@@ -17224,6 +17239,19 @@ async function uploadPortalR2ExamFiles() {
   if (!files.length) {
     setPortalR2UploadStatus('Vui lòng chọn file trước khi upload.', false);
     showAppToast('Chưa chọn file để upload.', 'warn');
+    return;
+  }
+  const invalid = files.filter(file => !portalR2IsPdfFile(file));
+  if (invalid.length) {
+    portalR2UploadRows = files.map(file => ({
+      file,
+      state: portalR2IsPdfFile(file) ? 'queued' : 'error',
+      objectKey: '',
+      error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF'
+    }));
+    renderPortalR2UploadList();
+    setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
+    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
     return;
   }
   portalR2UploadRunning = true;

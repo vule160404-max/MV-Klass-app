@@ -90,6 +90,12 @@ function cleanFileName(value: unknown) {
     .trim();
 }
 
+function isPdfFile(name: string, contentType: unknown) {
+  const fileName = String(name || "").trim().toLowerCase();
+  const mime = String(contentType || "").trim().toLowerCase();
+  return fileName.endsWith(".pdf") && (!mime || mime === "application/pdf");
+}
+
 function objectKeyFor(prefix: string, name: string) {
   const fileName = cleanFileName(name);
   if (!fileName || fileName === "." || fileName === "..") return "";
@@ -187,6 +193,9 @@ Deno.serve(async (req) => {
       const name = cleanFileName(item?.name);
       const size = Number(item?.size || 0);
       if (!name) return json({ ok: false, error: "Invalid file name" }, 400);
+      if (!isPdfFile(name, item?.content_type || item?.contentType)) {
+        return json({ ok: false, error: `Only PDF files are allowed: ${name}` }, 400);
+      }
       if (!Number.isFinite(size) || size < 0 || size > MAX_FILE_BYTES) {
         return json({ ok: false, error: `File too large: ${name}` }, 400);
       }
