@@ -14645,6 +14645,8 @@ function studentExamHasFile(row, kind) {
 function studentExamCanAccess(row) {
   if (!row) return false;
   if (isAdmin() || isTeacher()) return true;
+  if (currentPortalStatus === 'pending' || currentPortalStatus === 'blocked') return false;
+  if (currentPortalPlan === 'premium') return true;
   return row.can_access === true || row._can_access === true;
 }
 
@@ -14856,7 +14858,7 @@ function studentExamSortForView(rows, sortMode) {
 function applyStudentExamAccessState(rows) {
   const list = Array.isArray(rows) ? rows : [];
   if (isAdmin() || isTeacher() || currentPortalPlan === 'premium') {
-    return list.map(r => Object.assign({}, r, { _can_access: true, can_access: r.can_access !== false }));
+    return list.map(r => Object.assign({}, r, { _can_access: true, can_access: true, locked_reason: null }));
   }
   if (currentPortalStatus === 'pending' || currentPortalStatus === 'blocked') {
     return list.map(r => Object.assign({}, r, {
