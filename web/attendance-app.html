@@ -18164,6 +18164,8 @@ async function updatePortalStudentPlan(userId, plan) {
 function renderPortalFreeCuration(exams) {
   const el = document.getElementById('portal-free-curation');
   if (!el) return;
+  const existingPicker = document.getElementById('portal-free-picker');
+  if (existingPicker) existingPicker.remove();
   const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
   const rows = (Array.isArray(exams) ? exams : [])
     .filter(e => e.is_published !== false)
@@ -18248,6 +18250,8 @@ function renderPortalFreeCuration(exams) {
       </div>
     </div>
   </div>`;
+  const picker = el.querySelector('#portal-free-picker');
+  if (picker) document.body.appendChild(picker);
   const input = document.getElementById('portal-free-picker-search');
   if (input && portalFreePickerRank) {
     setTimeout(() => {
