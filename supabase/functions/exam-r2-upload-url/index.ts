@@ -113,7 +113,7 @@ function autoFolderForFile(name: string) {
   const compact = n.replace(/\s+/g, "");
   if (/\bielts\b/.test(n)) return "ielts";
   if (/\bthpt\b/.test(n)) return "thpt";
-  if (/\bvao\s*10\b/.test(n) || compact.includes("vao10")) return "vao 10";
+  if (/\bvao\s*10\b/.test(n) || compact.includes("vao10")) return "Vào 10";
   return "";
 }
 

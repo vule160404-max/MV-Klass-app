@@ -14814,6 +14814,8 @@ function studentExamDisplayProvince(value) {
     'soc trang': 'Sóc Trang',
     'bac lieu': 'Bạc Liêu',
     'ca mau': 'Cà Mau',
+    'vu mai phuong': 'Vũ Mai Phương',
+    'vmp': 'Vũ Mai Phương',
     'nguon tong hop': 'Nguồn tổng hợp',
     'tong hop': 'Nguồn tổng hợp'
   };
@@ -14855,12 +14857,55 @@ function studentExamSourceKey(row) {
   return normalizeText(studentExamSourceLabel(row)).replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
+function studentExamFileNameForDisplay(row) {
+  const candidates = [
+    studentExamObjectKeyFor(row, 'file'),
+    studentExamStoragePathFor(row, 'file'),
+    row?.title
+  ];
+  for (const item of candidates) {
+    const last = String(item || '').split('/').pop().trim();
+    if (last) return last.replace(/\.[a-z0-9]+$/i, '');
+  }
+  return '';
+}
+
+function studentExamCodeLabel(code) {
+  const raw = String(code || '').trim();
+  const m = raw.match(/^([A-Za-z]{2,10})\s*0*([0-9]{1,4})$/);
+  if (m) return `${m[1].toUpperCase()} ${String(Number(m[2])).padStart(3, '0')}`;
+  return raw;
+}
+
+function studentExamParsedTitleParts(row) {
+  const base = studentExamFileNameForDisplay(row);
+  const norm = normalizeText(base).replace(/\s+/g, ' ').trim().toLowerCase();
+  const yearMatch = norm.match(/\b(20\d{2})\b/);
+  const codeMatch = norm.match(/\bde\s+([a-z]{2,10})\s*0*([0-9]{1,4})\b/) || norm.match(/\bde\s+0*([0-9]{1,3})\b/);
+  let code = studentExamCodeLabel(row?.exam_code);
+  if (!code && codeMatch) {
+    code = codeMatch[2]
+      ? `${codeMatch[1].toUpperCase()} ${String(Number(codeMatch[2])).padStart(3, '0')}`
+      : String(Number(codeMatch[1])).padStart(3, '0');
+  }
+  let source = '';
+  if (/\bvu\s+mai\s+phuong\b|\bvmp\b/.test(norm)) source = 'Vũ Mai Phương';
+  else if (!studentExamIsGenericSource(row?.province)) source = studentExamDisplayProvince(row?.province);
+  return {
+    code,
+    source,
+    year: row?.year || (yearMatch ? yearMatch[1] : ''),
+    level: String(row?.level || '') === 'university' || /\b(thpt|qg|dai hoc)\b/.test(norm) ? 'THPT' : 'Vào 10'
+  };
+}
+
 function studentExamDisplayTitle(row) {
-  const code = String(row?.exam_code || '').trim();
+  const parsed = studentExamParsedTitleParts(row);
+  const code = parsed.code;
   if (!code) return String(row?.title || 'Đề thi Tiếng Anh');
-  const level = String(row?.level || '') === 'university' ? 'THPT' : 'Vào 10';
-  const province = studentExamDisplayProvince(row?.province);
-  const year = row?.year ? ' ' + String(row.year) : '';
+  const level = parsed.level;
+  const province = parsed.source || studentExamDisplayProvince(row?.province);
+  const year = parsed.year ? ' ' + String(parsed.year) : '';
   if (studentExamIsOfficial(row)) return `Đề chính thức ${level}${province ? ' ' + province : ''}${year}`;
   return `Đề ${code} ${level}${province ? ' ' + province : ''}${year}`;
 }
@@ -17570,6 +17615,8 @@ function portalActivityTimeLabel(value) {
 
 function portalExamTitle(row) {
   if (!row) return 'Tài liệu không rõ';
+  const parsed = studentExamDisplayTitle(row);
+  if (parsed && parsed !== 'Đề thi Tiếng Anh') return parsed;
   if (row.title) return String(row.title);
   const code = row.exam_code ? ' mã ' + row.exam_code : '';
   const province = row.province ? ' ' + studentExamDisplayProvince(row.province) : '';
