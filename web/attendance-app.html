@@ -15235,10 +15235,6 @@ function studentExamCard(row, compact) {
   const title = escapeHtml(studentExamDisplayTitle(row));
   const examType = studentExamTypeLabel(row);
   const downloads = Math.max(0, parseInt(String(row.download_count || 0), 10) || 0);
-  const rawDesc = String(row.description || '').trim();
-  const descKey = normalizeText(rawDesc).replace(/\s+/g, ' ').trim().toLowerCase();
-  const isDefaultDesc = !rawDesc || /^(de luyen thi|de thi thu|xem truoc de|tai lieu tieng anh)/.test(descKey);
-  const desc = isDefaultDesc ? '' : rawDesc;
   const hasFile = studentExamHasFile(row, 'file');
   const hasAnswer = studentExamHasFile(row, 'answer');
   const hasAudio = studentExamHasFile(row, 'audio');
@@ -15252,7 +15248,6 @@ function studentExamCard(row, compact) {
       <div class="student-exam-card-top">
         <div>
           <h3>${title}</h3>
-          ${compact || !desc ? '' : `<p class="student-exam-desc">${escapeHtml(desc)}</p>`}
           <div class="student-exam-badges">
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
             <span class="student-exam-badge ${tier === 'premium' ? 'exam-tier-premium' : 'exam-tier-free'}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
