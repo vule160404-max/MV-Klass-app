@@ -8359,6 +8359,21 @@ a:focus-visible,
 .student-exam-card .student-exam-badges .student-exam-badge.exam-tier-free::before{
   content:none !important;
 }
+.student-exam-list .student-exam-card,
+.student-exam-feature-grid .student-exam-card{
+  min-height:244px !important;
+  grid-template-rows:auto 1fr auto !important;
+  align-content:stretch !important;
+}
+.student-exam-card .student-exam-card-top{
+  min-height:84px !important;
+}
+.student-exam-card .student-exam-actions{
+  align-self:end !important;
+}
+.student-exam-card .student-exam-locked-note{
+  align-self:start !important;
+}
 </style>
 
 <!-- Sidebar sync: copy branding from app-header into sidebar (pure DOM, no data) -->
