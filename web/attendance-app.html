@@ -3698,13 +3698,12 @@
     .portal-free-toolbar-note{ min-width:0; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; }
     .portal-free-add-btn{ min-height:34px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; }
     .portal-free-add-btn:disabled{ opacity:.55; cursor:not-allowed; }
-    .portal-free-slots{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
-    .portal-free-slot{ min-width:0; display:grid; grid-template-columns:34px minmax(0,1fr) auto; gap:9px; align-items:center; padding:10px; border-radius:14px; border:1px solid rgba(99,138,218,.14); background:#f8fbff; }
-    .portal-free-slot.empty{ background:#fff; border-style:dashed; }
-    .portal-free-slot-num{ width:34px; height:34px; border-radius:12px; display:grid; place-items:center; background:#0f1f3d; color:#fff; font-size:12px; font-weight:950; font-variant-numeric:tabular-nums; }
-    .portal-free-slot.empty .portal-free-slot-num{ background:#eef3f9; color:#64748b; }
-    .portal-free-title{ color:#162743; font-size:12px; font-weight:950; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .portal-free-meta{ margin-top:2px; color:#718096; font-size:11px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-free-list{ display:grid; gap:6px; max-height:260px; overflow:auto; padding:6px; border-radius:14px; border:1px solid rgba(99,138,218,.12); background:#fbfdff; }
+    .portal-free-list-empty{ padding:14px; border-radius:12px; border:1px dashed rgba(99,138,218,.20); background:#fff; color:#718096; font-size:12px; font-weight:800; text-align:center; }
+    .portal-free-slot{ min-width:0; display:grid; grid-template-columns:32px minmax(0,1fr) auto; gap:8px; align-items:center; padding:8px 9px; border-radius:12px; border:1px solid rgba(99,138,218,.12); background:#fff; }
+    .portal-free-slot-num{ width:32px; height:28px; border-radius:10px; display:grid; place-items:center; background:#0f1f3d; color:#fff; font-size:11px; font-weight:950; font-variant-numeric:tabular-nums; }
+    .portal-free-title{ color:#162743; font-size:12px; font-weight:950; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-free-meta{ margin-top:1px; color:#718096; font-size:10.5px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-free-actions{ display:flex; gap:5px; align-items:center; justify-content:flex-end; }
     .portal-free-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
     .portal-r2-upload{ display:grid; gap:12px; }
@@ -3745,7 +3744,7 @@
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
     .portal-picker-item.is-picked{ background:#f3f7ff; border-color:rgba(29,78,216,.22); }
     .portal-picker-item .btn-sm{ min-height:30px; height:30px; padding:6px 10px; font-size:11px; }
-    @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:flex-end; } .portal-picker-card{ max-height:88vh; border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
+    @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-list{ max-height:300px; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:flex-end; } .portal-picker-card{ max-height:88vh; border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
     @media (max-width:900px){
       .portal-user-tools{ grid-template-columns:1fr; }
       .portal-user-table-wrap{ max-height:none; overflow:visible; border:0; border-radius:0; }
@@ -8489,7 +8488,7 @@ a:focus-visible,
                 <label for="register-password-confirm">Nhập lại mật khẩu</label>
                 <input type="password" id="register-password-confirm" name="password_confirm" autocomplete="new-password" placeholder="Nhập lại mật khẩu"/>
               </div>
-              <div class="analytics-muted" style="font-size:12px;line-height:1.45;margin:-4px 0 10px">Sau khi xác nhận email, tài khoản Free được mở 5 đề theo chương trình đã chọn.</div>
+              <div class="analytics-muted" style="font-size:12px;line-height:1.45;margin:-4px 0 10px">Sau khi xác nhận email, tài khoản Free được mở các đề miễn phí theo chương trình đã chọn.</div>
             </div>
             <label class="login-remember-row" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;margin:4px 0 10px;user-select:none;cursor:pointer">
               <input type="checkbox" id="login-remember" style="width:16px;height:16px;cursor:pointer"/>
@@ -8914,7 +8913,7 @@ a:focus-visible,
         <div class="portal-analytics-grid">
           <div class="portal-panel">
             <div class="portal-panel-head">
-              <div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn tối đa 5 đề cho Thi vào 10, THPT QG và IELTS. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div>
+              <div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn không giới hạn đề miễn phí cho Thi vào 10, THPT QG và IELTS. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div>
             </div>
             <div class="portal-panel-body" id="portal-free-curation"></div>
           </div>
@@ -10105,7 +10104,7 @@ a:focus-visible,
     <section class="student-exam-hero">
       <div class="student-exam-kicker">Kho đề thi Tiếng Anh</div>
       <h1>Kho đề Tiếng Anh Vào 10, THPT & IELTS</h1>
-      <p id="student-exam-plan-note">Bạn đang có quyền truy cập 5 đề miễn phí. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ.</p>
+      <p id="student-exam-plan-note">Bạn đang có quyền truy cập các đề miễn phí. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ.</p>
       <button type="button" class="student-exam-btn student-exam-cta" onclick="studentExamScrollToAll()">Xem tất cả đề</button>
     </section>
 
@@ -14716,7 +14715,7 @@ function renderStudentExamPlanState() {
       ? 'Tài khoản hiện đang bị khóa quyền truy cập kho tài liệu. Em liên hệ thầy/cô để được hỗ trợ.'
       : plan === 'premium'
       ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
-      : `Bạn đang có quyền truy cập 5 đề miễn phí nhóm ${groupLabel}. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.`;
+      : `Bạn đang có quyền truy cập các đề miễn phí nhóm ${groupLabel}. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.`;
   }
   const approvalNote = document.getElementById('student-exam-approval-note');
   if (approvalNote) {
@@ -15101,12 +15100,12 @@ function applyStudentExamAccessState(rows) {
   const levelOk = r => portalExamGroupMatches(r, group);
   const curated = list.filter(r =>
     String(r.free_group || '') === group &&
-    Number(r.group_free_rank || 0) >= 1 &&
-    Number(r.group_free_rank || 0) <= 5
+    Number(r.group_free_rank || 0) >= 1
   );
-  (curated.length ? curated : list)
+  const fallback = list
     .filter(r => studentExamAccessTier(r) === 'free' && String(r.category || '') !== 'answer' && String(r.subject || '') === 'english' && levelOk(r))
-    .slice(0, 5)
+    .slice(0, 5);
+  (curated.length ? curated : fallback)
     .forEach(r => freeIds.add(String(r.id || '')));
   return list.map(r => Object.assign({}, r, {
     _can_access: studentExamAccessTier(r) === 'free' && freeIds.has(String(r.id || '')),
@@ -18142,21 +18141,18 @@ function renderPortalFreeCuration(exams) {
     el.innerHTML = '<div class="empty" style="padding:16px">Chưa có tài liệu để cấu hình miễn phí.</div>';
     return;
   }
-  const byRank = new Map(rows
-    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank || 0) <= 5)
-    .map(e => [Number(e.group_free_rank), e]));
-  const slots = Array.from({ length: 5 }, (_, i) => {
-    const rank = i + 1;
-    const e = byRank.get(rank);
-    if (!e) {
-      return `<div class="portal-free-slot empty">
-        <div class="portal-free-slot-num">${rank}</div>
-        <div><div class="portal-free-title">Chưa chọn đề</div><div class="portal-free-meta">Vị trí miễn phí nhóm ${escapeHtml(portalFreeGroupLabel(group))}</div></div>
-        <div class="portal-free-actions"><button type="button" class="btn-sm" onclick="openPortalFreePicker(${rank})">Chọn</button></div>
-      </div>`;
-    }
+  const selectedRows = rows
+    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1)
+    .sort((a, b) => {
+      const ra = Number(a.group_free_rank || 999999);
+      const rb = Number(b.group_free_rank || 999999);
+      if (ra !== rb) return ra - rb;
+      return studentExamCompareByYearCode(a, b);
+    });
+  const selectedList = selectedRows.length ? selectedRows.map((e, i) => {
+    const rank = Number(e.group_free_rank || 0) || (i + 1);
     return `<div class="portal-free-slot">
-      <div class="portal-free-slot-num">${rank}</div>
+      <div class="portal-free-slot-num">${i + 1}</div>
       <div>
         <div class="portal-free-title">${escapeHtml(portalExamTitle(e))}</div>
         <div class="portal-free-meta">${escapeHtml([portalFreeGroupLabel(group), studentExamDisplayProvince(e.province), e.year, studentExamAccessTier(e) === 'premium' ? 'Premium' : 'Free'].filter(Boolean).join(' · '))}</div>
@@ -18166,27 +18162,26 @@ function renderPortalFreeCuration(exams) {
         <button type="button" class="btn-sm" onclick="clearExamFreeRank('${escapeHtml(String(e.id || ''))}')">Bỏ</button>
       </div>
     </div>`;
-  }).join('');
-  const selectedCount = byRank.size;
-  const nextRank = portalNextFreeRank(rows, group);
+  }).join('') : '<div class="portal-free-list-empty">Chưa chọn đề miễn phí nào cho nhóm này.</div>';
+  const selectedCount = selectedRows.length;
   const groupTabs = portalFreeGroups().map(g => `
-      <button type="button" class="btn-sm ${group === g.key ? 'active' : ''}" onclick="setPortalFreeCurationGroup('${escapeHtml(g.key)}')">${escapeHtml(g.label)} · 5 đề</button>
+      <button type="button" class="btn-sm ${group === g.key ? 'active' : ''}" onclick="setPortalFreeCurationGroup('${escapeHtml(g.key)}')">${escapeHtml(g.label)} · ${countPortalFreeGroupRows(rows, g.key)}</button>
     `).join('');
   el.innerHTML = `<div class="portal-curation-shell">
     <div class="portal-free-tabs">
       ${groupTabs}
     </div>
     <div class="portal-free-toolbar">
-      <div class="portal-free-toolbar-note">${escapeHtml(portalFreeGroupLabel(group))}: đã chọn ${selectedCount}/5 đề miễn phí.</div>
-      <button type="button" class="btn-sm portal-free-add-btn" onclick="openPortalFreePicker()" ${nextRank ? '' : 'disabled'}>+ Thêm đề miễn phí</button>
+      <div class="portal-free-toolbar-note">${escapeHtml(portalFreeGroupLabel(group))}: ${selectedCount} đề miễn phí đang chọn.</div>
+      <button type="button" class="btn-sm portal-free-add-btn" onclick="openPortalFreePicker()">+ Thêm đề miễn phí</button>
     </div>
-    <div class="portal-free-slots">${slots}</div>
+    <div class="portal-free-list">${selectedList}</div>
     <div class="portal-picker ${portalFreePickerRank ? 'show' : ''}" id="portal-free-picker">
       <div class="portal-picker-card">
         <div class="portal-picker-head">
           <div>
             <div class="portal-picker-title">Chọn đề miễn phí cho ${escapeHtml(portalFreeGroupLabel(group))}</div>
-            <div class="portal-picker-sub">Đề được thêm vào vị trí ${Number(portalFreePickerRank || nextRank || 1)}. Có thể tìm nhanh theo tên, mã đề, tỉnh/thành hoặc nguồn.</div>
+            <div class="portal-picker-sub">Chọn thêm đề miễn phí hoặc đổi một đề đang có. Có thể tìm nhanh theo tên, mã đề, tỉnh/thành hoặc nguồn.</div>
           </div>
           <button type="button" class="btn-sm" onclick="closePortalFreePicker()">Đóng</button>
         </div>
@@ -18220,7 +18215,7 @@ function renderPortalFreePickerList(rows) {
   const levelFilter = String(portalFreePickerLevel || group);
   const yearFilter = String(portalFreePickerYear || '');
   const pickedIds = new Set((rows || [])
-    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank || 0) <= 5 && Number(e.group_free_rank) !== Number(portalFreePickerRank))
+    .filter(e => String(e.free_group || '') === group && Number(e.group_free_rank || 0) >= 1 && Number(e.group_free_rank) !== Number(portalFreePickerRank))
     .map(e => String(e.id || '')));
   const candidates = (rows || [])
     .filter(e => e.is_published !== false)
@@ -18234,8 +18229,7 @@ function renderPortalFreePickerList(rows) {
         .join(' ');
       return hay.includes(q);
     })
-    .sort(studentExamCompareByYearCode)
-    .slice(0, 80);
+    .sort(studentExamCompareByYearCode);
   if (!candidates.length) {
     return '<div class="empty" style="padding:14px">Không tìm thấy tài liệu phù hợp.</div>';
   }
@@ -18255,11 +18249,7 @@ function openPortalFreePicker(rank) {
   const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
   const rows = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows : [];
   const nextRank = rank ? Number(rank) : portalNextFreeRank(rows, group);
-  if (!nextRank) {
-    showAppToast('Nhóm này đã đủ 5 đề miễn phí. Hãy bỏ một đề trước khi thêm.', 'warn');
-    return;
-  }
-  portalFreePickerRank = Math.max(1, Math.min(5, Number(nextRank) || 1));
+  portalFreePickerRank = Math.max(1, Number(nextRank) || 1);
   portalFreePickerQuery = '';
   portalFreePickerLevel = group;
   portalFreePickerYear = '';
@@ -18302,14 +18292,16 @@ function onPortalFreePickerYear(value) {
 }
 
 function portalNextFreeRank(rows, group) {
-  const picked = new Set((rows || [])
+  const ranks = (rows || [])
     .filter(e => String(e.free_group || '') === portalNormalizeFreeGroup(group))
     .map(e => Number(e.group_free_rank || 0))
-    .filter(n => n >= 1 && n <= 5));
-  for (let i = 1; i <= 5; i += 1) {
-    if (!picked.has(i)) return i;
-  }
-  return null;
+    .filter(n => n >= 1);
+  return ranks.length ? Math.max.apply(null, ranks) + 1 : 1;
+}
+
+function countPortalFreeGroupRows(rows, group) {
+  const key = portalNormalizeFreeGroup(group);
+  return (rows || []).filter(e => String(e.free_group || '') === key && Number(e.group_free_rank || 0) >= 1).length;
 }
 
 function renderPortalFreeYearOptions(rows) {
