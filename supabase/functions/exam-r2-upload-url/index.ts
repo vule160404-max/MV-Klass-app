@@ -198,14 +198,32 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data: userData, error: userErr } = await service.auth.getUser(token);
-  if (userErr || !userData?.user?.id) return json({ ok: false, error: "Unauthorized" }, 401);
-  const { data: profile, error: profileErr } = await service
+  if (userErr || !userData?.user?.id) {
+    return json({ ok: false, error: "UNAUTHORIZED_USER_TOKEN" }, 401);
+  }
+  let { data: profile, error: profileErr } = await service
     .from("profiles")
-    .select("role")
+    .select("role,email")
     .eq("id", userData.user.id)
     .maybeSingle();
-  if (profileErr || String(profile?.role || "") !== "admin") {
-    return json({ ok: false, error: "Admin required" }, 403);
+  if (!profile && userData.user.email) {
+    const byEmail = await service
+      .from("profiles")
+      .select("role,email")
+      .eq("email", userData.user.email)
+      .maybeSingle();
+    profile = byEmail.data;
+    profileErr = byEmail.error;
+  }
+  if (profileErr) {
+    return json({ ok: false, error: `PROFILE_LOOKUP_FAILED: ${profileErr.message}` }, 403);
+  }
+  const role = String(profile?.role || "").trim().toLowerCase();
+  if (!profile) {
+    return json({ ok: false, error: `PROFILE_NOT_FOUND: ${userData.user.email || userData.user.id}` }, 403);
+  }
+  if (role !== "admin") {
+    return json({ ok: false, error: `ROLE_NOT_ADMIN: ${role || "empty"}` }, 403);
   }
 
   const url = new URL(req.url);
