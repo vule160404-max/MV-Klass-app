@@ -279,7 +279,7 @@ function matchKey(key: string) {
 
 function accessTier(key: string, category: string) {
   const n = normalizeText(key);
-  return n.includes("premium") || category === "topic" ? "premium" : "free";
+  return n.includes("free") && category !== "topic" ? "free" : "premium";
 }
 
 function description(level: string) {

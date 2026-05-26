@@ -15018,7 +15018,15 @@ function studentExamSortForView(rows, sortMode) {
 }
 
 function studentExamAccessTier(row) {
-  return String(row && row.access_tier || '').trim().toLowerCase() === 'free' ? 'free' : 'premium';
+  const raw = String(row && row.access_tier || '').trim().toLowerCase();
+  if (raw !== 'free') return 'premium';
+  const provider = String(row && row.storage_provider || '').trim().toLowerCase();
+  const isR2 = provider === 'r2' || !!String(row && row.object_key || '').trim();
+  if (!isR2) return 'free';
+  const hasFreeRank = Number(row && (row.group_free_rank || row.free_rank) || 0) > 0;
+  const key = normalizeText(String(row && (row.object_key || row.storage_path || row.title) || ''));
+  const explicitlyFreeKey = /\bfree\b/.test(key);
+  return hasFreeRank || explicitlyFreeKey ? 'free' : 'premium';
 }
 
 function applyStudentExamAccessState(rows) {
@@ -18188,7 +18196,7 @@ async function setExamFreeRank(examId, rank) {
     }
     const row = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows.find(e => String(e.id || '') === id) : null;
     if (row) {
-      if (nextRank) row.access_tier = 'free';
+      row.access_tier = nextRank ? 'free' : 'premium';
       row.free_group = nextRank ? group : null;
       row.group_free_rank = nextRank;
     }
