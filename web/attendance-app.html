@@ -12883,13 +12883,13 @@ function renderAdminWorkPanel() {
   const teacherAssignHtml = `<div class="work-card teacher-assign-panel" id="teacher-assign-section">
     <div class="teacher-assign-panel-head">
       <div>
-        <h2>Phân công giáo viên theo l?p</h2>
-        <p class="analytics-muted">Tick giáo viên ph? trách t?ng l?p. Giáo viên du?c phân công m?i th?y l?p dó khi di?m danh và ch?m công.</p>
+        <h2>Phân công giáo viên theo lớp</h2>
+        <p class="analytics-muted">Tick giáo viên phụ trách từng lớp. Giáo viên được phân công mới thấy lớp đó khi điểm danh và chấm công.</p>
       </div>
-      <button type="button" class="btn-sm" onclick="renderTeacherAssignPanel(true)">Làm m?i</button>
+      <button type="button" class="btn-sm" onclick="renderTeacherAssignPanel(true)">Làm mới</button>
     </div>
     <div id="teacher-assign-msg" class="field-error" style="min-height:0;margin-bottom:8px"></div>
-    <div id="teacher-assign-list"><div class="empty">Ðang t?i…</div></div>
+    <div id="teacher-assign-list"><div class="empty">Đang tải…</div></div>
   </div>`;
   if (!allSorted.length) {
     adminWorkCheckInPage = 1;
@@ -19688,11 +19688,11 @@ async function renderTeacherAssignPanel(forceReload) {
   };
   if (!teachers.length) {
     wrap.innerHTML =
-      '<div class="empty">Chua có tài kho?n giáo viên. T?o user trong Supabase Authentication và d?t role <code>teacher</code> trong b?ng profiles.</div>';
+      '<div class="empty">Chưa có tài khoản giáo viên. Tạo user trong Supabase Authentication và đặt role <code>teacher</code> trong bảng profiles.</div>';
     return;
   }
   if (!classes.length) {
-    wrap.innerHTML = '<div class="empty">Chua có l?p.</div>';
+    wrap.innerHTML = '<div class="empty">Chưa có lớp.</div>';
     return;
   }
   const teacherLabel = (t) => {
@@ -19713,12 +19713,12 @@ async function renderTeacherAssignPanel(forceReload) {
     const active = id === teacherAssignSelectedTeacherId ? ' active' : '';
     return `<button type="button" class="teacher-assign-teacher-btn${active}" data-teacher-assign-select="${escapeHtml(id)}" title="${escapeHtml(teacherLabel(t))}">
       <span class="teacher-assign-teacher-name">${escapeHtml(teacherLabel(t))}</span>
-      <span class="teacher-assign-teacher-count">${countForTeacher(id)} l?p</span>
+      <span class="teacher-assign-teacher-count">${countForTeacher(id)} lớp</span>
     </button>`;
   }).join('');
   const selectedTeacher = teacherById[teacherAssignSelectedTeacherId] || teachers[0] || {};
   const selectedTeacherLabel = teacherLabel(selectedTeacher);
-  const selectedTeacherSub = 'Tick l?p giáo viên này ph? trách';
+  const selectedTeacherSub = 'Tick lớp giáo viên này phụ trách';
   const classOptionsHtml = classes.map(cn => {
     const key = teacherAssignSelectedTeacherId + '\t' + String(cn);
     const checked = assigned.has(key);
@@ -19732,19 +19732,19 @@ async function renderTeacherAssignPanel(forceReload) {
     const assignedClasses = classes.filter(cn => assigned.has(tid + '\t' + String(cn)));
     const chips = assignedClasses.length
       ? assignedClasses.map(cn => `<span class="teacher-assign-chip">${escapeHtml(displayClassVi(cn))}</span>`).join('')
-      : '<span class="teacher-assign-chip-empty">Chua ph? trách l?p nào</span>';
+      : '<span class="teacher-assign-chip-empty">Chưa phụ trách lớp nào</span>';
     return `<tr>
       <td>${escapeHtml(teacherLabel(t))}</td>
       <td><div class="teacher-assign-chip-row">${chips}</div></td>
     </tr>`;
   }).join('');
-  const meta = `<div class="teacher-assign-meta">${teachers.length} giáo viên · ${classes.length} l?p</div>`;
+  const meta = `<div class="teacher-assign-meta">${teachers.length} giáo viên · ${classes.length} lớp</div>`;
   wrap.innerHTML = meta + `
     <div class="teacher-assign-workspace">
       <div class="teacher-assign-teacher-list">
         <div class="teacher-assign-box-head">
-          <div class="teacher-assign-box-title">Ch?n giáo viên</div>
-          <div class="teacher-assign-box-sub">Dùng tên hi?n th? trong h? so user</div>
+          <div class="teacher-assign-box-title">Chọn giáo viên</div>
+          <div class="teacher-assign-box-sub">Dùng tên hiển thị trong hồ sơ người dùng</div>
         </div>
         <div class="teacher-assign-teacher-options">${teacherOptionsHtml}</div>
       </div>
@@ -19758,12 +19758,12 @@ async function renderTeacherAssignPanel(forceReload) {
     </div>
     <div class="teacher-assign-overview">
       <div class="teacher-assign-box-head">
-        <div class="teacher-assign-box-title">T?ng quan phân công</div>
-        <div class="teacher-assign-box-sub">Xem nhanh giáo viên nào dang ph? trách l?p nào</div>
+        <div class="teacher-assign-box-title">Tổng quan phân công</div>
+        <div class="teacher-assign-box-sub">Xem nhanh giáo viên nào đang phụ trách lớp nào</div>
       </div>
       <div style="overflow-x:auto">
         <table class="teacher-assign-overview-table">
-          <thead><tr><th>Giáo viên</th><th>L?p dang ph? trách</th></tr></thead>
+          <thead><tr><th>Giáo viên</th><th>Lớp đang phụ trách</th></tr></thead>
           <tbody>${overviewRows}</tbody>
         </table>
       </div>
@@ -27574,6 +27574,7 @@ const MVK_TEXT_REPAIRS = [
   ['T?t c? d?ng d?', 'Tất cả dạng đề'], ['T?t c? c?p h?c', 'Tất cả cấp học'], ['T?t c? tài li?u', 'Tất cả tài liệu'],
   ['ngh?', 'nghỉ'], ['Ngh?', 'Nghỉ'], ['giáo viên ngh?', 'giáo viên nghỉ'], ['Giáo viên ngh?', 'Giáo viên nghỉ'],
   ['ph? trách', 'phụ trách'], ['Ph? trách', 'Phụ trách'], ['phân công', 'phân công'],
+  ['h? so user', 'hồ sơ người dùng'], ['h? sơ user', 'hồ sơ người dùng'], ['h? so', 'hồ sơ'], ['H? so', 'Hồ sơ'],
   ['du?c', 'được'], ['Du?c', 'Được'], ['dã', 'đã'], ['Dã', 'Đã'], ['dang', 'đang'], ['Dang', 'Đang'],
   ['duy?t', 'duyệt'], ['Duy?t', 'Duyệt'], ['dúng', 'đúng'], ['Dúng', 'Đúng'],
   ['Ðúng', 'Đúng'], ['Ðon', 'Đơn'], ['don giá', 'đơn giá'], ['Don giá', 'Đơn giá'],
