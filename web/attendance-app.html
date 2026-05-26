@@ -3669,7 +3669,7 @@
     .portal-free-actions{ display:flex; gap:5px; align-items:center; justify-content:flex-end; }
     .portal-free-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
     .portal-r2-upload{ display:grid; gap:12px; }
-    .portal-r2-upload-top{ display:grid; grid-template-columns:minmax(0,1fr) minmax(160px,210px) auto; gap:10px; align-items:stretch; }
+    .portal-r2-upload-top{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:stretch; }
     .portal-r2-upload-file-native{ position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
     .portal-r2-dropzone{ min-width:0; min-height:74px; display:grid; grid-template-columns:46px minmax(0,1fr); gap:12px; align-items:center; padding:12px 14px; border-radius:16px; border:1px dashed rgba(79,142,247,.42); background:linear-gradient(180deg,#fbfdff,#f3f7ff); cursor:pointer; transition:border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease; }
     .portal-r2-dropzone:hover{ transform:translateY(-1px); border-color:rgba(26,84,201,.56); box-shadow:0 12px 28px rgba(26,84,201,.10); background:#f8fbff; }
@@ -3678,8 +3678,6 @@
     .portal-r2-dropzone-main{ min-width:0; }
     .portal-r2-dropzone-title{ color:#162743; font-size:13px; font-weight:950; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-r2-dropzone-sub{ margin-top:4px; color:#718096; font-size:11px; font-weight:800; line-height:1.35; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .portal-r2-upload-select{ min-height:74px; border-radius:16px; border:1px solid rgba(99,138,218,.16); background:#fff; color:#263852; padding:0 12px; font-size:12px; font-weight:900; outline:none; }
-    .portal-r2-upload-select:focus{ border-color:rgba(79,142,247,.45); box-shadow:0 0 0 3px rgba(79,142,247,.10); }
     .portal-r2-upload-btn{ min-height:74px; border-radius:16px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; padding-left:16px; padding-right:16px; }
     .portal-r2-upload-btn:disabled{ opacity:.58; cursor:wait; }
     .portal-r2-upload-status{ color:#718096; font-size:11px; font-weight:850; line-height:1.35; }
@@ -3698,7 +3696,7 @@
     .portal-picker-list{ display:grid; gap:6px; max-height:300px; overflow:auto; padding:10px; }
     .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:center; padding:9px 10px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); }
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
-    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn,.portal-r2-upload-select{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
+    @media (max-width:900px){ .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
     @media (max-width:900px){ .portal-user-tools{ grid-template-columns:1fr; } .portal-user-table-wrap{ max-height:none; overflow:visible; } .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ max-width:unset; } }
     .portal-audit-list{ display:grid; gap:8px; max-height:280px; overflow:auto; }
     .portal-audit-item{ padding:10px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); }
@@ -8774,7 +8772,7 @@ a:focus-visible,
           <div class="portal-panel-head">
             <div>
               <div class="portal-panel-title">Upload kho đề R2</div>
-              <div class="portal-panel-sub">Chọn nhiều file PDF; hệ thống tự phân thư mục theo tên file hoặc theo lựa chọn bên dưới.</div>
+              <div class="portal-panel-sub">Chọn nhiều file PDF; hệ thống tự phân vào 10, thpt hoặc ielts theo tên file.</div>
             </div>
           </div>
           <div class="portal-panel-body">
@@ -8788,12 +8786,6 @@ a:focus-visible,
                   </span>
                 </label>
                 <input id="portal-r2-upload-files" class="portal-r2-upload-file-native" type="file" multiple accept="application/pdf,.pdf" onchange="onPortalR2UploadFilesChange()"/>
-                <select id="portal-r2-upload-prefix" class="portal-r2-upload-select" aria-label="Chọn thư mục R2">
-                  <option value="">Tự phân loại</option>
-                  <option value="vao 10">Thư mục vào 10</option>
-                  <option value="thpt">Thư mục thpt</option>
-                  <option value="ielts">Thư mục ielts</option>
-                </select>
                 <button type="button" class="btn-sm portal-r2-upload-btn" id="portal-r2-upload-btn" onclick="uploadPortalR2ExamFiles()">Upload lên R2</button>
               </div>
               <div class="portal-r2-upload-status" id="portal-r2-upload-status">Chưa chọn file.</div>
@@ -17140,14 +17132,12 @@ function setPortalR2UploadStatus(message, busy) {
   const status = document.getElementById('portal-r2-upload-status');
   const btn = document.getElementById('portal-r2-upload-btn');
   const input = document.getElementById('portal-r2-upload-files');
-  const prefix = document.getElementById('portal-r2-upload-prefix');
   if (status) status.textContent = message || 'Chưa chọn file.';
   if (btn) {
     btn.disabled = !!busy;
     btn.textContent = busy ? 'Đang upload...' : 'Upload lên R2';
   }
   if (input) input.disabled = !!busy;
-  if (prefix) prefix.disabled = !!busy;
 }
 
 function portalR2FileSizeLabel(size) {
@@ -17217,11 +17207,6 @@ function portalR2IsPdfFile(file) {
   return name.endsWith('.pdf') && (!type || type === 'application/pdf');
 }
 
-function portalR2UploadPrefix() {
-  const el = document.getElementById('portal-r2-upload-prefix');
-  return String(el && el.value || '').replace(/\\/g, '/').replace(/^\/+|\/+$/g, '').trim();
-}
-
 async function syncPortalR2ExamFiles() {
   if (portalR2SyncRunning) return;
   portalR2SyncRunning = true;
@@ -17288,7 +17273,7 @@ async function uploadPortalR2ExamFiles() {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
-        prefix: portalR2UploadPrefix(),
+        prefix: '',
         files: files.map(file => ({
           name: file.name,
           size: file.size,
