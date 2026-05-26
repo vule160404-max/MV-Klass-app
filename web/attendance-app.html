@@ -3733,21 +3733,25 @@
     .portal-r2-upload-state.busy{ background:#fff4d6; color:#8a5208; }
     .portal-picker{ position:fixed; inset:0; z-index:1200; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,31,61,.42); backdrop-filter:blur(5px); }
     .portal-picker.show{ display:flex; }
-    .portal-picker-card{ width:min(760px, 100%); max-height:min(680px, calc(100vh - 44px)); display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; border-radius:18px; border:1px solid rgba(99,138,218,.20); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.26); }
+    .portal-picker-card{ width:min(860px, 100%); max-height:min(720px, calc(100vh - 44px)); display:grid; grid-template-rows:auto auto auto minmax(0,1fr); overflow:hidden; border-radius:18px; border:1px solid rgba(99,138,218,.20); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.26); }
     .portal-picker-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start; padding:14px 16px; border-bottom:1px solid rgba(99,138,218,.12); background:#f8fbff; }
     .portal-picker-title{ color:#102858; font-size:14px; font-weight:950; line-height:1.25; }
     .portal-picker-sub{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; }
-    .portal-picker-filters{ display:grid; grid-template-columns:minmax(220px,1fr) 150px 120px auto auto auto; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-picker-filters{ display:grid; grid-template-columns:minmax(260px,1fr) 160px 130px; gap:8px; padding:12px 16px 8px; background:#fff; }
     .portal-picker-search,.portal-picker-select{ min-height:36px; border-radius:12px; border:1px solid rgba(99,138,218,.16); padding:0 11px; color:#263852; font-size:12px; font-weight:800; outline:none; background:#fff; min-width:0; }
-    .portal-picker-bulk{ min-height:36px; height:36px; padding:7px 11px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; }
+    .portal-picker-actionbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:0 16px 12px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-picker-action-note{ min-width:0; color:#72809b; font-size:11px; font-weight:850; line-height:1.35; }
+    .portal-picker-actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+    .portal-picker-bulk{ min-height:36px; height:36px; padding:7px 12px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; }
     .portal-picker-bulk.danger{ background:#fff; color:#991b1b; border-color:rgba(220,38,38,.24); }
-    .portal-picker-bulk.primary{ background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
+    .portal-picker-bulk.primary{ background:#1d4ed8; color:#fff; border-color:#1d4ed8; min-width:104px; }
     .portal-picker-list{ display:grid; gap:7px; overflow:auto; padding:12px 16px 16px; background:#fbfdff; }
-    .portal-picker-item{ display:grid; grid-template-columns:minmax(0,1fr); gap:10px; align-items:center; padding:10px 11px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); cursor:pointer; text-align:left; }
+    .portal-picker-item{ appearance:none; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; align-items:center; padding:10px 11px; border-radius:13px; background:#fff; border:1px solid rgba(99,138,218,.12); cursor:pointer; text-align:left; font:inherit; outline:none; }
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
-    .portal-picker-item.is-picked{ background:#f3f7ff; border-color:#1d4ed8; box-shadow:0 0 0 2px rgba(29,78,216,.18); }
+    .portal-picker-item:focus-visible{ border-color:rgba(29,78,216,.55); box-shadow:0 0 0 2px rgba(29,78,216,.12); }
+    .portal-picker-item.is-picked{ background:#f3f7ff; border-color:#1d4ed8; box-shadow:0 0 0 1px rgba(29,78,216,.22); }
     .portal-picker-item .btn-sm{ min-height:30px; height:30px; padding:6px 10px; font-size:11px; }
-    @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-list{ max-height:300px; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:flex-end; } .portal-picker-card{ max-height:88vh; border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
+    @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-list{ max-height:300px; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:flex-end; } .portal-picker-card{ max-height:88vh; border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-picker-actionbar{ align-items:stretch; flex-direction:column; } .portal-picker-actions{ display:grid; grid-template-columns:1fr; } .portal-picker-bulk{ width:100%; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
     @media (max-width:900px){
       .portal-user-tools{ grid-template-columns:1fr; }
       .portal-user-table-wrap{ max-height:none; overflow:visible; border:0; border-radius:0; }
@@ -18230,9 +18234,14 @@ function renderPortalFreeCuration(exams) {
           <select class="portal-picker-select" id="portal-free-picker-year" onchange="onPortalFreePickerYear(this.value)">
             ${renderPortalFreeYearOptions(allRows)}
           </select>
-          <button type="button" class="btn-sm portal-picker-bulk" onclick="selectAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>Chọn toàn bộ</button>
-          <button type="button" class="btn-sm portal-picker-bulk danger" onclick="clearAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>Bỏ chọn tất cả</button>
-          <button type="button" class="btn-sm portal-picker-bulk primary" onclick="updatePortalFreePickerSelection()" ${portalFreeBulkRunning ? 'disabled' : ''}>${portalFreeBulkRunning ? 'Đang cập nhật...' : 'Cập nhật'}</button>
+        </div>
+        <div class="portal-picker-actionbar">
+          <div class="portal-picker-action-note">${portalFreeDraftIds.size} đề đang được đánh dấu. Bấm Cập nhật để lưu vào danh sách miễn phí.</div>
+          <div class="portal-picker-actions">
+            <button type="button" class="btn-sm portal-picker-bulk" onclick="selectAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>Chọn toàn bộ</button>
+            <button type="button" class="btn-sm portal-picker-bulk danger" onclick="clearAllPortalFreePicker()" ${portalFreeBulkRunning ? 'disabled' : ''}>Bỏ chọn tất cả</button>
+            <button type="button" class="btn-sm portal-picker-bulk primary" onclick="updatePortalFreePickerSelection()" ${portalFreeBulkRunning ? 'disabled' : ''}>${portalFreeBulkRunning ? 'Đang cập nhật...' : 'Cập nhật'}</button>
+          </div>
         </div>
         <div class="portal-picker-list" id="portal-free-picker-list">${renderPortalFreePickerList(allRows)}</div>
       </div>
