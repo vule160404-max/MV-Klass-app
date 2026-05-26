@@ -14793,9 +14793,8 @@ function studentExamLockedMessage(row) {
   const reason = String(row?.locked_reason || '').trim();
   if (reason === 'pending_approval') return 'Tài khoản đang chờ duyệt.';
   if (reason === 'account_blocked') return 'Tài khoản đang bị khóa quyền truy cập kho tài liệu.';
-  if (reason === 'premium_required') return 'Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.';
-  if (reason === 'free_limit') return 'Tài liệu này nằm ngoài 5 đề miễn phí của tài khoản Free. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ - 0916 045 202.';
-  return 'Tài liệu này hiện chưa mở cho tài khoản của em.';
+  if (reason === 'premium_required' || reason === 'free_limit') return 'Đăng ký Premium để sử dụng tài liệu.';
+  return 'Đăng ký Premium để sử dụng tài liệu.';
 }
 
 async function getStudentExamSignedUrl(row, kind, options) {
@@ -15272,7 +15271,7 @@ function studentExamCard(row, compact) {
         <button type="button" class="student-exam-action primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Tải đề</button>
         ${hasAnswer ? `<button type="button" class="student-exam-action answer" data-exam-preview="${id}" data-exam-kind="answer" ${canAccess ? '' : 'disabled'}>Xem đáp án</button>` : ''}
         ${hasAudio ? `<button type="button" class="student-exam-action audio" data-exam-preview="${id}" data-exam-kind="audio" ${canAccess ? '' : 'disabled'}>Nghe audio</button>` : ''}
-        ${locked ? `<button type="button" class="student-exam-action upgrade" onclick="requestStudentExamUpgrade('${id}')">${String(row.locked_reason || '') === 'pending_approval' ? 'Đang chờ duyệt' : 'Liên hệ mở khóa'}</button>` : ''}
+        ${locked ? `<button type="button" class="student-exam-action upgrade" onclick="requestStudentExamUpgrade('${id}')">${String(row.locked_reason || '') === 'pending_approval' ? 'Đang chờ duyệt' : 'Đăng ký Premium'}</button>` : ''}
       </div>
     </article>`;
 }
