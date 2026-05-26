@@ -10078,7 +10078,7 @@ a:focus-visible,
       <div class="student-exam-kicker">Kho đề thi Tiếng Anh</div>
       <h1>Kho đề Tiếng Anh Vào 10 & THPT</h1>
       <p id="student-exam-plan-note">Bạn đang có quyền truy cập 5 đề miễn phí. Để mở khóa toàn bộ kho tài liệu, vui lòng liên hệ thầy Vũ.</p>
-      <button type="button" class="student-exam-btn student-exam-cta" onclick="studentExamScrollToLatest()">Xem đề mới nhất</button>
+      <button type="button" class="student-exam-btn student-exam-cta" onclick="studentExamScrollToAll()">Xem tất cả đề</button>
     </section>
 
     <section class="student-exam-public-stats" aria-label="Số liệu kho đề">
@@ -10145,17 +10145,7 @@ a:focus-visible,
       </div>
     </section>
 
-    <section class="student-exam-section" id="student-exam-latest-section">
-      <div class="student-exam-section-head">
-        <h2>Đề mới cập nhật</h2>
-        <span class="student-exam-count" id="student-exam-latest-count">Đang tải...</span>
-      </div>
-      <div class="student-exam-feature-grid" id="student-exam-latest-list">
-        <div class="student-exam-state">Đang tải kho đề...</div>
-      </div>
-    </section>
-
-    <section class="student-exam-section">
+    <section class="student-exam-section" id="student-exam-all-section">
       <div class="student-exam-section-head">
         <h2>Tất cả đề thi</h2>
         <span class="student-exam-count" id="student-exam-all-count">0 đề</span>
@@ -15019,24 +15009,35 @@ function studentExamCompareByYearCode(a, b) {
 function studentExamSortForView(rows, sortMode) {
   const mode = String(sortMode || 'code');
   const list = Array.isArray(rows) ? rows.slice() : [];
+  const accessPriority = row => {
+    if (studentExamCanAccess(row)) return 0;
+    if (studentExamAccessTier(row) === 'free') return 1;
+    return 2;
+  };
+  const withAccessFirst = compare => (a, b) => {
+    const ap = accessPriority(a);
+    const bp = accessPriority(b);
+    if (ap !== bp) return ap - bp;
+    return compare(a, b);
+  };
   if (mode === 'popular') {
-    return list.sort((a, b) => {
+    return list.sort(withAccessFirst((a, b) => {
       const da = Number(a.download_count || 0) || 0;
       const db = Number(b.download_count || 0) || 0;
       if (da !== db) return db - da;
       return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-    });
+    }));
   }
   if (mode === 'code') {
-    return list.sort(studentExamCompareByYearCode);
+    return list.sort(withAccessFirst(studentExamCompareByYearCode));
   }
-  return list.sort((a, b) => {
+  return list.sort(withAccessFirst((a, b) => {
     const dc = new Date(b.created_at || 0) - new Date(a.created_at || 0);
     if (dc) return dc;
     const yc = (Number(b.year || 0) || 0) - (Number(a.year || 0) || 0);
     if (yc) return yc;
     return String(a.exam_code || '').localeCompare(String(b.exam_code || ''), 'vi', { numeric: true });
-  });
+  }));
 }
 
 function studentExamAccessTier(row) {
@@ -15414,7 +15415,7 @@ function renderStudentExamPortal() {
     : (Array.isArray(studentExamRows) ? studentExamRows.length : null);
   renderStudentExamPublicStats();
   if (studentExamLoading) {
-    ['student-exam-saved-list', 'student-exam-latest-list', 'student-exam-list'].forEach(id => {
+    ['student-exam-saved-list', 'student-exam-list'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = studentExamState('Đang tải đề...');
     });
@@ -15430,10 +15431,8 @@ function renderStudentExamPortal() {
     return;
   }
   const rows = studentExamFilteredRows;
-  const latest = rows.slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 3);
   const visibleRows = rows.slice(0, Math.max(STUDENT_EXAM_PAGE_SIZE, studentExamVisibleCount));
   renderStudentExamPersonalSections();
-  setStudentExamList('student-exam-latest-list', latest, 'Chưa có đề mới.', true);
   setStudentExamList('student-exam-list', visibleRows, 'Kho đề đang cập nhật.', false);
   const more = document.getElementById('student-exam-more-wrap');
   if (more) {
@@ -15446,7 +15445,6 @@ function renderStudentExamPortal() {
     const el = document.getElementById(id);
     if (el) el.textContent = String(n) + ' đề';
   };
-  setCount('student-exam-latest-count', latest.length);
   setCount('student-exam-all-count', rows.length);
 }
 
@@ -15788,8 +15786,8 @@ async function downloadStudentExamFile(id, kind) {
   }
 }
 
-function studentExamScrollToLatest() {
-  document.getElementById('student-exam-latest-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function studentExamScrollToAll() {
+  document.getElementById('student-exam-all-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function bootStudentExamPortal() {
