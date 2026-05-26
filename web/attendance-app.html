@@ -14966,6 +14966,32 @@ function studentExamCodeLabel(code) {
   return raw;
 }
 
+function studentExamCleanFileLabel(row) {
+  const raw = studentExamFileNameForDisplay(row);
+  return String(raw || '')
+    .replace(/\.[a-z0-9]+$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function studentExamTitleIsTooGeneric(title, row) {
+  const t = normalizeText(String(title || '')).replace(/\s+/g, ' ').trim().toLowerCase();
+  if (!t) return true;
+  const level = normalizeText(studentExamLevelLabel(row && row.level)).toLowerCase();
+  const year = String(row && row.year || '').trim();
+  const generic = [
+    'de thi tieng anh',
+    'tai lieu tieng anh',
+    ['de', level, year].filter(Boolean).join(' '),
+    ['de', 'thi vao 10', year].filter(Boolean).join(' '),
+    ['de', 'vao 10', year].filter(Boolean).join(' '),
+    ['de', 'thpt', year].filter(Boolean).join(' '),
+    ['de', 'ielts', year].filter(Boolean).join(' ')
+  ].map(x => normalizeText(x).replace(/\s+/g, ' ').trim().toLowerCase());
+  return generic.includes(t);
+}
+
 function studentExamParsedTitleParts(row) {
   const base = studentExamFileNameForDisplay(row);
   const norm = normalizeText(base).replace(/\s+/g, ' ').trim().toLowerCase();
@@ -14991,7 +15017,12 @@ function studentExamParsedTitleParts(row) {
 function studentExamDisplayTitle(row) {
   const parsed = studentExamParsedTitleParts(row);
   const code = parsed.code;
-  if (!code) return String(row?.title || 'Đề thi Tiếng Anh');
+  if (!code) {
+    const title = String(row?.title || '').trim();
+    const fileLabel = studentExamCleanFileLabel(row);
+    if (fileLabel && (!title || studentExamTitleIsTooGeneric(title, row))) return fileLabel;
+    return title || fileLabel || 'Đề thi Tiếng Anh';
+  }
   const level = parsed.level;
   const province = parsed.source || studentExamDisplayProvince(row?.province);
   const year = parsed.year ? ' ' + String(parsed.year) : '';
@@ -17347,7 +17378,7 @@ async function fetchPortalAnalyticsData() {
   const activityPath =
     'student_exam_activity?select=user_id,exam_file_id,is_favorite,favorite_at,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
   const examPath =
-    'exam_files?select=id,title,level,year,province,exam_code,category,access_tier,free_rank,free_group,group_free_rank,download_count,created_at,is_published&is_published=eq.true&order=download_count.desc.nullslast,created_at.desc&limit=1000';
+    'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,storage_provider,object_key,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published&is_published=eq.true&order=download_count.desc.nullslast,created_at.desc&limit=1000';
   const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label&limit=5000';
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const [activityRows, examRows, profileRows, auditRows] = await Promise.all([
