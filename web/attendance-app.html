@@ -3723,14 +3723,24 @@
     .portal-r2-upload-btn{ min-height:74px; border-radius:16px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; padding-left:16px; padding-right:16px; }
     .portal-r2-upload-btn:disabled{ opacity:.58; cursor:wait; }
     .portal-r2-upload-status{ color:#718096; font-size:11px; font-weight:850; line-height:1.35; }
-    .portal-r2-upload-list{ display:grid; gap:7px; }
+    .portal-r2-upload-list{ position:relative; display:grid; gap:7px; }
+    .portal-r2-upload-list.with-dismiss{ padding-top:36px; }
+    .portal-r2-upload-dismiss{ position:absolute; top:0; right:0; width:30px; height:30px; display:grid; place-items:center; border-radius:10px; border:1px solid rgba(99,138,218,.16); background:#fff; color:#64748b; font-size:18px; font-weight:900; line-height:1; cursor:pointer; box-shadow:0 8px 18px rgba(15,31,61,.08); transition:color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+    .portal-r2-upload-dismiss:hover{ transform:translateY(-1px); color:#0f1f3d; border-color:rgba(15,31,61,.25); box-shadow:0 12px 24px rgba(15,31,61,.12); }
     .portal-r2-upload-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:9px 10px; border-radius:13px; border:1px solid rgba(99,138,218,.12); background:#fff; }
     .portal-r2-upload-name{ color:#162743; font-size:12px; font-weight:950; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-r2-upload-meta{ margin-top:2px; color:#718096; font-size:10.5px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .portal-r2-upload-state{ min-width:82px; min-height:25px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:4px 8px; background:#eef3f9; color:#475569; font-size:10.5px; font-weight:950; }
-    .portal-r2-upload-state.ok{ background:#e8f8ef; color:#14532d; }
+    .portal-r2-upload-state{ width:30px; height:30px; min-width:30px; display:grid; place-items:center; border-radius:999px; padding:0; background:#f4f7fb; color:#64748b; }
+    .portal-r2-upload-state.ok{ background:#e9f9ef; color:#15803d; }
     .portal-r2-upload-state.error{ background:#fee2e2; color:#991b1b; }
-    .portal-r2-upload-state.busy{ background:#fff4d6; color:#8a5208; }
+    .portal-r2-upload-state.busy{ background:#eef5ff; color:#1d4ed8; }
+    .portal-r2-upload-spinner{ width:18px; height:18px; border-radius:999px; border:2px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .72s linear infinite; }
+    .portal-r2-upload-check{ width:24px; height:24px; display:grid; place-items:center; border-radius:999px; background:#16a34a; color:#fff; box-shadow:0 8px 18px rgba(22,163,74,.24); animation:portalR2CheckPop .42s cubic-bezier(.2,.9,.25,1.28) both; }
+    .portal-r2-upload-check svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:22; stroke-dashoffset:22; animation:portalR2CheckDraw .36s ease forwards .14s; }
+    .portal-r2-upload-error-dot{ width:22px; height:22px; display:grid; place-items:center; border-radius:999px; background:#ef4444; color:#fff; font-size:14px; font-weight:950; line-height:1; }
+    @keyframes portalR2Spin{ to{ transform:rotate(360deg); } }
+    @keyframes portalR2CheckPop{ 0%{ opacity:0; transform:scale(.55); } 68%{ opacity:1; transform:scale(1.08); } 100%{ opacity:1; transform:scale(1); } }
+    @keyframes portalR2CheckDraw{ to{ stroke-dashoffset:0; } }
     .portal-picker{ position:fixed; inset:0; width:100vw; height:100dvh; max-width:100vw; box-sizing:border-box; z-index:1200; display:none; align-items:center; justify-content:center; padding:18px; overflow:hidden; background:rgba(15,31,61,.42); backdrop-filter:blur(5px); }
     .portal-picker.show{ display:flex; }
     .portal-picker-card{ width:min(820px, calc(100vw - 36px)); max-height:min(700px, calc(100dvh - 36px)); display:grid; grid-template-rows:auto auto auto minmax(0,1fr); overflow:hidden; border-radius:18px; border:1px solid rgba(99,138,218,.20); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.26); }
@@ -9546,7 +9556,7 @@ a:focus-visible,
         <div class="portal-panel">
           <div class="portal-panel-head">
             <div>
-              <div class="portal-panel-title">Upload kho đề R2</div>
+              <div class="portal-panel-title">Upload kho tài liệu</div>
               <div class="portal-panel-sub">Chọn nhiều file PDF; hệ thống tự phân vào 10, thpt hoặc ielts theo tên file.</div>
             </div>
           </div>
@@ -9556,12 +9566,12 @@ a:focus-visible,
                 <label class="portal-r2-dropzone" id="portal-r2-dropzone" for="portal-r2-upload-files" ondragenter="onPortalR2DragEnter(event)" ondragover="onPortalR2DragOver(event)" ondragleave="onPortalR2DragLeave(event)" ondrop="onPortalR2Drop(event)">
                   <span class="portal-r2-dropzone-mark">PDF</span>
                   <span class="portal-r2-dropzone-main">
-                    <span class="portal-r2-dropzone-title" id="portal-r2-upload-file-title">Chọn file đề để upload</span>
+                    <span class="portal-r2-dropzone-title" id="portal-r2-upload-file-title">Chọn tài liệu để upload</span>
                     <span class="portal-r2-dropzone-sub" id="portal-r2-upload-file-hint">Có thể chọn nhiều file PDF cùng lúc.</span>
                   </span>
                 </label>
                 <input id="portal-r2-upload-files" class="portal-r2-upload-file-native" type="file" multiple accept="application/pdf,.pdf" onchange="onPortalR2UploadFilesChange()"/>
-                <button type="button" class="btn-sm portal-r2-upload-btn" id="portal-r2-upload-btn" onclick="uploadPortalR2ExamFiles()">Upload lên R2</button>
+                <button type="button" class="btn-sm portal-r2-upload-btn" id="portal-r2-upload-btn" onclick="uploadPortalR2ExamFiles()">Upload</button>
               </div>
               <div class="portal-r2-upload-status" id="portal-r2-upload-status">Chưa chọn file.</div>
               <div class="portal-r2-upload-list" id="portal-r2-upload-list"></div>
@@ -17140,6 +17150,7 @@ let portalFreeBulkRunning = false;
 let portalR2SyncRunning = false;
 let portalR2UploadRunning = false;
 let portalR2UploadRows = [];
+let portalR2UploadComplete = false;
 let portalR2DragDepth = 0;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
@@ -18067,7 +18078,7 @@ function setPortalR2UploadStatus(message, busy) {
   if (status) status.textContent = message || 'Chưa chọn file.';
   if (btn) {
     btn.disabled = !!busy;
-    btn.textContent = busy ? 'Đang upload...' : 'Upload lên R2';
+    btn.textContent = 'Upload';
   }
   if (input) input.disabled = !!busy;
 }
@@ -18081,33 +18092,65 @@ function portalR2FileSizeLabel(size) {
   return Math.round(n) + ' B';
 }
 
-function portalR2StateLabel(state) {
-  if (state === 'queued') return 'Chờ';
-  if (state === 'signing') return 'Ký URL';
-  if (state === 'uploading') return 'Đang tải';
-  if (state === 'uploaded') return 'Đã lên R2';
-  if (state === 'synced') return 'Đã đồng bộ';
-  if (state === 'error') return 'Lỗi';
-  return 'Sẵn sàng';
+function portalR2UploadStateHtml(state) {
+  if (state === 'error') {
+    return '<div class="portal-r2-upload-state error" title="Lỗi" aria-label="Lỗi">' +
+      '<span class="portal-r2-upload-error-dot" aria-hidden="true">!</span>' +
+      '</div>';
+  }
+  if (state === 'uploaded' || state === 'synced') {
+    return '<div class="portal-r2-upload-state ok" title="Hoàn tất" aria-label="Hoàn tất">' +
+      '<span class="portal-r2-upload-check" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.4 4.2L19 7.5"/></svg>' +
+      '</span>' +
+      '</div>';
+  }
+  return '<div class="portal-r2-upload-state busy" title="Đang xử lý" aria-label="Đang xử lý">' +
+    '<span class="portal-r2-upload-spinner" aria-hidden="true"></span>' +
+    '</div>';
+}
+
+function dismissPortalR2UploadList() {
+  const input = document.getElementById('portal-r2-upload-files');
+  const title = document.getElementById('portal-r2-upload-file-title');
+  const hint = document.getElementById('portal-r2-upload-file-hint');
+  portalR2UploadRows = [];
+  portalR2UploadComplete = false;
+  if (input) input.value = '';
+  if (title) title.textContent = 'Chọn tài liệu để upload';
+  if (hint) hint.textContent = 'Có thể chọn nhiều file PDF cùng lúc.';
+  renderPortalR2UploadList();
+  setPortalR2UploadStatus('Chưa chọn file.', false);
 }
 
 function renderPortalR2UploadList() {
   const list = document.getElementById('portal-r2-upload-list');
   if (!list) return;
   if (!portalR2UploadRows.length) {
+    list.classList.remove('with-dismiss');
     list.innerHTML = '';
     return;
   }
-  list.innerHTML = portalR2UploadRows.map((row, idx) => {
+  const canDismiss = portalR2UploadComplete && portalR2UploadRows.every(row => {
+    const state = String(row.state || '');
+    return state === 'uploaded' || state === 'synced';
+  });
+  list.classList.toggle('with-dismiss', !!canDismiss);
+  const dismissHtml = canDismiss
+    ? '<button type="button" class="portal-r2-upload-dismiss" onclick="dismissPortalR2UploadList()" aria-label="Ẩn danh sách vừa upload" title="Ẩn danh sách vừa upload">&times;</button>'
+    : '';
+  const rowHtml = portalR2UploadRows.map((row, idx) => {
     const state = String(row.state || 'queued');
-    const stateClass = state === 'error' ? 'error' : (state === 'uploaded' || state === 'synced' ? 'ok' : (state === 'uploading' || state === 'signing' ? 'busy' : ''));
-    const meta = [portalR2FileSizeLabel(row.file && row.file.size), row.objectKey || row.error || ''].filter(Boolean).join(' · ');
+    const metaParts = [portalR2FileSizeLabel(row.file && row.file.size)];
+    if (row.error && state !== 'uploaded' && state !== 'synced') metaParts.push(row.error);
+    const meta = metaParts.filter(Boolean).join(' · ');
     return '<div class="portal-r2-upload-row" data-idx="' + idx + '">' +
       '<div><div class="portal-r2-upload-name">' + escapeHtml(row.file && row.file.name || 'file') + '</div>' +
       '<div class="portal-r2-upload-meta">' + escapeHtml(meta) + '</div></div>' +
-      '<div class="portal-r2-upload-state ' + stateClass + '">' + escapeHtml(portalR2StateLabel(state)) + '</div>' +
+      portalR2UploadStateHtml(state) +
       '</div>';
   }).join('');
+  list.innerHTML = dismissHtml + rowHtml;
 }
 
 function portalR2SetDropState(state) {
@@ -18182,7 +18225,7 @@ function onPortalR2DragLeave(e) {
   const files = input && input.files ? Array.from(input.files) : [];
   const title = document.getElementById('portal-r2-upload-file-title');
   const hint = document.getElementById('portal-r2-upload-file-hint');
-  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn file đề để upload';
+  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn tài liệu để upload';
   if (hint) hint.textContent = files.length ? files.map(f => f.name).slice(0, 2).join(', ') + (files.length > 2 ? ` và ${files.length - 2} file khác` : '') : 'Có thể chọn nhiều file PDF cùng lúc.';
 }
 
@@ -18198,10 +18241,11 @@ function onPortalR2Drop(e) {
     const hint = document.getElementById('portal-r2-upload-file-hint');
     if (title) title.textContent = 'Chọn lại file PDF';
     if (hint) hint.textContent = 'Chỉ được thả file PDF vào đây.';
+    portalR2UploadComplete = false;
     portalR2UploadRows = files.map(file => ({ file, state: portalR2IsPdfFile(file) ? 'queued' : 'error', objectKey: '', error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF' }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
-    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
     setTimeout(() => portalR2SetDropState(''), 900);
     return;
   }
@@ -18222,18 +18266,20 @@ function onPortalR2UploadFilesChange() {
   const invalid = files.filter(file => !portalR2IsPdfFile(file));
   if (invalid.length) {
     if (input) input.value = '';
+    portalR2UploadComplete = false;
     portalR2UploadRows = invalid.map(file => ({ file, state: 'error', objectKey: '', error: 'Chỉ nhận PDF' }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
-    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
     if (title) title.textContent = 'Chọn lại file PDF';
     if (hint) hint.textContent = invalid.length + ' file không đúng định dạng.';
     return;
   }
+  portalR2UploadComplete = false;
   portalR2UploadRows = files.map(file => ({ file, state: 'queued', objectKey: '' }));
   renderPortalR2UploadList();
   setPortalR2UploadStatus(files.length ? `Đã chọn ${files.length} file.` : 'Chưa chọn file.', false);
-  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn file đề để upload';
+  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn tài liệu để upload';
   if (hint) hint.textContent = files.length ? files.map(f => f.name).slice(0, 2).join(', ') + (files.length > 2 ? ` và ${files.length - 2} file khác` : '') : 'Có thể chọn nhiều file PDF cùng lúc.';
 }
 
@@ -18246,7 +18292,7 @@ function portalR2IsPdfFile(file) {
 async function syncPortalR2ExamFiles() {
   if (portalR2SyncRunning) return;
   portalR2SyncRunning = true;
-  setPortalR2UploadStatus('Đang cập nhật danh sách đề...', true);
+  setPortalR2UploadStatus('Đang cập nhật kho tài liệu...', true);
   try {
     const r = await fetch(SUPABASE_URL + '/functions/v1/exam-sync-r2', {
       method: 'POST',
@@ -18260,7 +18306,7 @@ async function syncPortalR2ExamFiles() {
     const synced = Number(data.synced || 0) || 0;
     const objects = Number(data.object_count || 0) || 0;
     const unpublished = Number(data.unpublished || 0) || 0;
-    setPortalR2UploadStatus(`Đã cập nhật ${synced} đề từ ${objects} file; ẩn ${unpublished} đề đã xóa.`, false);
+    setPortalR2UploadStatus(`Đã cập nhật ${synced} tài liệu từ ${objects} file; ẩn ${unpublished} tài liệu đã xóa.`, false);
     invalidatePortalAnalyticsCache();
     await loadPortalAnalyticsIfNeeded(true);
     if (document.getElementById('student-exam-portal')?.style.display !== 'none') {
@@ -18270,8 +18316,8 @@ async function syncPortalR2ExamFiles() {
   } catch (e) {
     console.warn('syncPortalR2ExamFiles', e);
     const msg = String(e && e.message || e || 'sync_failed');
-    setPortalR2UploadStatus('Đã upload, nhưng chưa cập nhật được danh sách đề.', false);
-    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được cập nhật kho đề.' : 'Chưa cập nhật được danh sách đề R2.', 'error');
+    setPortalR2UploadStatus('Đã upload, nhưng chưa cập nhật được kho tài liệu.', false);
+    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được cập nhật kho tài liệu.' : 'Chưa cập nhật được kho tài liệu.', 'error');
     throw e;
   } finally {
     portalR2SyncRunning = false;
@@ -18302,8 +18348,8 @@ async function proxyUploadPortalR2File(file) {
 async function uploadPortalR2ExamFiles() {
   if (portalR2UploadRunning) return;
   if (!isAdmin()) {
-    setPortalR2UploadStatus('Chỉ admin được upload kho đề.', false);
-    showAppToast('Chỉ admin được upload kho đề.', 'error');
+    setPortalR2UploadStatus('Chỉ admin được upload kho tài liệu.', false);
+    showAppToast('Chỉ admin được upload kho tài liệu.', 'error');
     return;
   }
   const sessionOk = await ensureSessionFresh();
@@ -18321,6 +18367,7 @@ async function uploadPortalR2ExamFiles() {
   }
   const invalid = files.filter(file => !portalR2IsPdfFile(file));
   if (invalid.length) {
+    portalR2UploadComplete = false;
     portalR2UploadRows = files.map(file => ({
       file,
       state: portalR2IsPdfFile(file) ? 'queued' : 'error',
@@ -18329,13 +18376,14 @@ async function uploadPortalR2ExamFiles() {
     }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
-    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
     return;
   }
   portalR2UploadRunning = true;
+  portalR2UploadComplete = false;
   portalR2UploadRows = files.map(file => ({ file, state: 'signing', objectKey: '' }));
   renderPortalR2UploadList();
-  setPortalR2UploadStatus(`Đang tạo link upload cho ${files.length} file...`, true);
+  setPortalR2UploadStatus(`Đang chuẩn bị upload ${files.length} file...`, true);
   try {
     const signResp = await fetch(SUPABASE_URL + '/functions/v1/exam-r2-upload-url', {
       method: 'POST',
@@ -18412,20 +18460,22 @@ async function uploadPortalR2ExamFiles() {
     if (uploadErrors.length) {
       throw new Error(uploadErrors[0]);
     }
-    setPortalR2UploadStatus(`Đã upload ${okCount}/${files.length} file. Đang cập nhật kho đề...`, true);
+    setPortalR2UploadStatus(`Đã upload ${okCount}/${files.length} file. Đang cập nhật kho tài liệu...`, true);
     await syncPortalR2ExamFiles();
     portalR2UploadRows = portalR2UploadRows.map(row => ({ ...row, state: row.state === 'uploaded' ? 'synced' : row.state }));
+    portalR2UploadComplete = true;
     renderPortalR2UploadList();
     setPortalR2UploadStatus(`Hoàn tất: ${okCount} file đã upload và đồng bộ.`, false);
-    showAppToast(`Đã upload ${okCount} file lên R2 và cập nhật kho đề.`, 'ok');
+    showAppToast(`Đã upload ${okCount} file và cập nhật kho tài liệu.`, 'ok');
   } catch (e) {
     console.warn('uploadPortalR2ExamFiles', e);
     const msg = String(e && e.message || e || 'upload_failed');
     const corsHint = /Failed to fetch|NetworkError|Load failed/i.test(msg)
       ? ' Kiểm tra CORS của R2 bucket.'
       : '';
+    portalR2UploadComplete = false;
     setPortalR2UploadStatus('Upload lỗi: ' + msg + corsHint, false);
-    showAppToast(/Admin required|ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được upload kho đề.' : 'Chưa upload được file lên R2: ' + msg.slice(0, 90), 'error');
+    showAppToast(/Admin required|ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được upload kho tài liệu.' : 'Chưa upload được tài liệu: ' + msg.slice(0, 90), 'error');
   } finally {
     portalR2UploadRunning = false;
     setPortalR2UploadStatus(document.getElementById('portal-r2-upload-status')?.textContent || 'Chưa chọn file.', false);
