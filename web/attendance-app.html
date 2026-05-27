@@ -23434,6 +23434,10 @@ function renderClassCollectOptions(rows) {
 }
 
 async function loadRevenue() {
+  if (isAuthEmailSearchAutofillValue(tuitionQuery)) {
+    tuitionQuery = '';
+    tuitionPage = 1;
+  }
   const el = document.getElementById('revenue-list');
   if (!el) return;
   const gen = ++loadRevenueGeneration;
@@ -23615,7 +23619,8 @@ function onTuitionSearchCompositionStart() {
 function onTuitionSearchCompositionEnd() {
   tuitionSearchComposing = false;
   const inp = document.getElementById('tuition-search-input');
-  tuitionQuery = inp ? String(inp.value || '') : '';
+  const next = inp ? String(inp.value || '') : '';
+  tuitionQuery = isAuthEmailSearchAutofillValue(next) ? '' : next;
   tuitionPage = 1;
   clearTimeout(tuitionSearchDebounceTimer);
   tuitionSearchDebounceTimer = setTimeout(() => {
@@ -23624,7 +23629,16 @@ function onTuitionSearchCompositionEnd() {
 }
 
 function setTuitionQuery(v) {
-  tuitionQuery = v || '';
+  if (isAuthEmailSearchAutofillValue(v)) {
+    tuitionQuery = '';
+    const inp = document.getElementById('tuition-search-input');
+    if (inp) {
+      inp.value = '';
+      inp.defaultValue = '';
+    }
+  } else {
+    tuitionQuery = v || '';
+  }
   tuitionPage = 1;
   clearTimeout(tuitionSearchDebounceTimer);
   if (tuitionSearchComposing) return;
@@ -27724,10 +27738,28 @@ function getAuthEmailForSearchAutofillGuard() {
   const loginEmail = String(document.getElementById('login-email')?.value || '').trim();
   return loginEmail && loginEmail.includes('@') ? loginEmail.toLowerCase() : '';
 }
+function isAuthEmailSearchAutofillValue(value) {
+  const authEmail = getAuthEmailForSearchAutofillGuard();
+  const normalized = String(value || '').trim().toLowerCase();
+  return !!(authEmail && normalized && normalized === authEmail);
+}
+function clearSearchAutofillState() {
+  let changedTuition = false;
+  if (isAuthEmailSearchAutofillValue(tuitionQuery)) {
+    tuitionQuery = '';
+    tuitionPage = 1;
+    changedTuition = true;
+  }
+  if (isAuthEmailSearchAutofillValue(portalStudentQuery)) portalStudentQuery = '';
+  if (isAuthEmailSearchAutofillValue(bankTxSearch)) bankTxSearch = '';
+  if (isAuthEmailSearchAutofillValue(consultSearchQuery)) consultSearchQuery = '';
+  return { changedTuition };
+}
 function scrubNoAutofillSearchInputs(root) {
   const scope = root && root.querySelectorAll ? root : document;
   const authEmail = getAuthEmailForSearchAutofillGuard();
   if (!authEmail) return;
+  const stateChanges = clearSearchAutofillState();
   const nodes = scope.matches && scope.matches('[data-no-autofill-search="1"]')
     ? [scope]
     : Array.from(scope.querySelectorAll('[data-no-autofill-search="1"]'));
@@ -27746,6 +27778,10 @@ function scrubNoAutofillSearchInputs(root) {
       el.dispatchEvent(new Event('input', { bubbles: true }));
     }
   });
+  if (stateChanges.changedTuition && document.getElementById('tab-tuition')?.classList.contains('active')) {
+    clearTimeout(tuitionSearchDebounceTimer);
+    tuitionSearchDebounceTimer = setTimeout(() => loadRevenue(), 0);
+  }
 }
 document.addEventListener('focusin', e => {
   if (!e.target || !e.target.matches || !e.target.matches('[data-no-autofill-search="1"]')) return;
@@ -27753,6 +27789,17 @@ document.addEventListener('focusin', e => {
   setTimeout(() => scrubNoAutofillSearchInputs(e.target), 80);
 });
 window.addEventListener('pageshow', () => setTimeout(() => scrubNoAutofillSearchInputs(document), 80));
+function startSearchAutofillBootScrub() {
+  let remaining = 30;
+  const tick = () => {
+    scrubNoAutofillSearchInputs(document);
+    remaining -= 1;
+    if (remaining <= 0) clearInterval(timer);
+  };
+  const timer = setInterval(tick, 250);
+  tick();
+}
+startSearchAutofillBootScrub();
 new MutationObserver(records => {
   records.forEach(record => {
     record.addedNodes.forEach(node => {
