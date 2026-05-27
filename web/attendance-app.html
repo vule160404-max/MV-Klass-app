@@ -6217,7 +6217,7 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 }
 #tab-students #mgr-list{
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)) !important;
   gap: 12px !important;
   border-radius: 0 !important;
   overflow: visible !important;
@@ -6287,100 +6287,40 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   border-radius: 8px !important;
   white-space: nowrap;
 }
-.student-status-row,
-.student-class-chip-row{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.student-status-pill,
-.student-class-chip{
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  max-width: 100%;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(99,138,218,0.16);
-  background: #f8fafc;
-  color: #334155;
-  font-size: 11px;
-  font-weight: 850;
-  line-height: 1.2;
-}
-.student-status-pill.good{
-  color: #166534;
-  background: #ecfdf3;
-  border-color: rgba(22,163,74,0.22);
-}
-.student-status-pill.warn{
-  color: #92400e;
-  background: #fff7ed;
-  border-color: rgba(245,158,11,0.24);
-}
-.student-status-pill.danger{
-  color: #991b1b;
-  background: #fef2f2;
-  border-color: rgba(220,38,38,0.22);
-}
-.student-status-pill.info{
-  color: #1d4ed8;
-  background: #eff6ff;
-  border-color: rgba(37,99,235,0.20);
-}
-.student-class-chip{
-  background: #eef5ff;
-  color: #1E3A8A;
-}
-.student-class-chip.muted{
-  background: #f8fafc;
-  color: #64748b;
-  border-style: dashed;
-}
 .student-card-contact{
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-.student-contact-item,
-.student-metric-item{
+.student-contact-item{
   min-width: 0;
-  padding: 9px 10px;
+  min-height: 66px;
+  padding: 10px 11px;
   border-radius: 8px;
   background: rgba(248,250,252,0.94);
   border: 1px solid rgba(226,232,240,0.88);
 }
-.student-contact-label,
-.student-metric-label{
+.student-contact-item.wide{
+  grid-column: 1 / -1;
+}
+.student-contact-label{
   color: #64748b;
   font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0;
   text-transform: uppercase;
 }
-.student-contact-value,
-.student-metric-value{
+.student-contact-value{
   margin-top: 3px;
   color: var(--ink);
   font-size: 12px;
   font-weight: 850;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.38;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .student-contact-item.missing .student-contact-value{
   color: #dc2626;
-}
-.student-card-metrics{
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-.student-metric-value.debt{
-  color: #b45309;
-}
-.student-metric-value.good{
-  color: #166534;
 }
 #tab-students button.mgr-note-caption{
   margin-top: 0;
@@ -6444,8 +6384,7 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   #tab-students .c-row-actions > button{
     flex: 1 1 0;
   }
-  .student-card-contact,
-  .student-card-metrics{
+  .student-card-contact{
     grid-template-columns: 1fr;
   }
   .students-class-bar{
@@ -9450,8 +9389,6 @@ a:focus-visible,
             <option value="missing_phone">Thiếu SĐT</option>
             <option value="missing_parent">Thiếu phụ huynh</option>
             <option value="missing_birth_year">Thiếu năm sinh</option>
-            <option value="debt">Còn nợ học phí</option>
-            <option value="prepaid">Có dư học phí</option>
             <option value="absence_risk">Vắng 3 buổi</option>
             <option value="multi_class">Học nhiều lớp</option>
             <option value="no_class">Chưa có lớp</option>
@@ -16972,7 +16909,6 @@ async function signOutUser() {
   bankCashRowsCache = [];
   tuitionRowsCache = [];
   tuitionAttendancePresentCache = [];
-  tuitionDataLoaded = false;
   bankTxSearch = '';
   bankTxStatusFilter = 'all';
   bankSourceFilter = 'all';
@@ -17150,7 +17086,6 @@ let tuitionStatusFilter = 'all';
 let tuitionExpanded = {};
 let tuitionRowsCache = [];
 let tuitionAttendancePresentCache = [];
-let tuitionDataLoaded = false;
 let tuitionSearchDebounceTimer = null;
 /** IME (gõ ti?ng Vi?t): tránh loadRevenue thay DOM gi?a ch?ng composition ? nh?y ch? / m?t d?u */
 let tuitionSearchComposing = false;
@@ -23545,34 +23480,6 @@ function syncMgrClassFilterSelect() {
   sel.value = next;
 }
 
-function getMgrStudentTuitionSummary(st) {
-  const sid = String(st && st.id != null ? st.id : '').trim();
-  if (!sid) {
-    return { pendingSessions: 0, owedVnd: 0, prepaidVnd: 0, hasDebt: false, hasPrepaid: false };
-  }
-  let pendingSessions = 0;
-  let owedVnd = 0;
-  (tuitionRowsCache || []).forEach(r => {
-    if (!r || String(r.id || '').trim() !== sid) return;
-    const pending = Math.max(0, parseInt(String(r.pending != null ? r.pending : 0), 10) || 0);
-    if (pending < 1) return;
-    const owedRaw = Math.max(0, parseInt(String(r.owed != null ? r.owed : 0), 10) || 0);
-    const fee = Math.max(0, parseInt(String(r.fee != null ? r.fee : 0), 10) || 0);
-    pendingSessions += pending;
-    owedVnd += owedRaw > 0 ? owedRaw : pending * fee;
-  });
-  const prepaidVnd = typeof totalPrepaidVndForStudent === 'function'
-    ? totalPrepaidVndForStudent(sid)
-    : 0;
-  return {
-    pendingSessions,
-    owedVnd,
-    prepaidVnd,
-    hasDebt: pendingSessions > 0,
-    hasPrepaid: prepaidVnd > 0
-  };
-}
-
 function getMgrStats(list) {
   const rows = Array.isArray(list) ? list : [];
   const nowYear = new Date().getFullYear();
@@ -23589,11 +23496,6 @@ function getMgrStats(list) {
     withClass: 0,
     noClass: 0,
     multiClass: 0,
-    debtStudents: 0,
-    debtSessions: 0,
-    debtVnd: 0,
-    prepaidStudents: 0,
-    prepaidVnd: 0,
     absenceRisk: 0,
     ageKnown: 0,
     ageTotal: 0
@@ -23616,16 +23518,6 @@ function getMgrStats(list) {
     if (note) out.withNote += 1; else out.withoutNote += 1;
     if (classes.length) out.withClass += 1; else out.noClass += 1;
     if (classes.length > 1) out.multiClass += 1;
-    const tuition = getMgrStudentTuitionSummary(st);
-    if (tuition.hasDebt) {
-      out.debtStudents += 1;
-      out.debtSessions += tuition.pendingSessions;
-      out.debtVnd += tuition.owedVnd;
-    }
-    if (tuition.hasPrepaid) {
-      out.prepaidStudents += 1;
-      out.prepaidVnd += tuition.prepaidVnd;
-    }
     if (absentStreak3ByStudent[String(st && st.id != null ? st.id : '')]) out.absenceRisk += 1;
   });
   out.avgAge = out.ageKnown ? Math.round(out.ageTotal / out.ageKnown) : 0;
@@ -23677,19 +23569,18 @@ function renderMgrInsights(filtered) {
       `${stats.total} học viên`,
       `${getMgrClassDistribution().filter(x => x.className !== 'No class').length} lớp`,
       `${stats.missingPhone} thiếu SĐT`,
-      tuitionDataLoaded ? `${stats.debtStudents} còn nợ học phí` : 'học phí đang đồng bộ'
+      `${stats.missingParent} thiếu phụ huynh`
     ];
     hero.textContent = parts.join(' · ');
   }
 
   if (insights) {
-    const debtValue = tuitionDataLoaded ? formatMgrMoneyCompact(stats.debtVnd) : 'Đang tính';
     insights.innerHTML = `
       <div class="students-kpi topline"><div class="k">Tổng học viên</div><div class="v">${stats.total}</div><div class="hint">${filteredStats.total} đang hiển thị</div></div>
       <div class="students-kpi"><div class="k">Lớp đang học</div><div class="v">${getMgrClassDistribution().filter(x => x.className !== 'No class').length}</div><div class="hint">${stats.multiClass} học nhiều lớp · ${stats.noClass} chưa lớp</div></div>
       <div class="students-kpi good"><div class="k">Có nhận xét</div><div class="v">${stats.withNote}</div><div class="hint">${mgrPct(stats.withNote, stats.total)}% hồ sơ có ghi chú học lực</div></div>
       <div class="students-kpi danger"><div class="k">Thiếu SĐT</div><div class="v">${stats.missingPhone}</div><div class="hint">${stats.withPhone} hồ sơ đã có số liên hệ</div></div>
-      <div class="students-kpi warn"><div class="k">Còn nợ học phí</div><div class="v">${stats.debtStudents}</div><div class="hint">${debtValue} · ${stats.debtSessions} buổi</div></div>
+      <div class="students-kpi warn"><div class="k">Thiếu phụ huynh</div><div class="v">${stats.missingParent}</div><div class="hint">${stats.withParent} hồ sơ đã có tên phụ huynh</div></div>
       <div class="students-kpi danger"><div class="k">Cảnh báo vắng</div><div class="v">${stats.absenceRisk}</div><div class="hint">Vắng trong 3 lần điểm danh gần nhất</div></div>
     `;
   }
@@ -23741,8 +23632,7 @@ function renderMgrInsights(filtered) {
   }
 
   if (resultSummary) {
-    const debtSeg = tuitionDataLoaded ? ` · ${filteredStats.debtStudents} còn nợ` : '';
-    resultSummary.textContent = `${filteredStats.total}/${stats.total} học viên phù hợp bộ lọc${debtSeg}.`;
+    resultSummary.textContent = `${filteredStats.total}/${stats.total} học viên phù hợp bộ lọc.`;
   }
 
   if (activeFilters) {
@@ -23774,10 +23664,6 @@ function getMgrFiltered() {
     list = list.filter(s => !String(s.parent_name || '').trim());
   } else if (statusMode === 'missing_birth_year') {
     list = list.filter(s => s.birth_year == null || !String(s.birth_year).trim());
-  } else if (statusMode === 'debt') {
-    list = list.filter(s => getMgrStudentTuitionSummary(s).hasDebt);
-  } else if (statusMode === 'prepaid') {
-    list = list.filter(s => getMgrStudentTuitionSummary(s).hasPrepaid);
   } else if (statusMode === 'absence_risk') {
     list = list.filter(s => absentStreak3ByStudent[String(s.id)] === true);
   } else if (statusMode === 'multi_class') {
@@ -23807,7 +23693,6 @@ function getMgrFiltered() {
 function renderMgrStudentCard(s, actionButtons) {
   const sid = String(s.id);
   const classes = getStudentClasses(s).filter(Boolean);
-  const tuition = getMgrStudentTuitionSummary(s);
   const phone = String(s.phone || '').trim();
   const parentName = String(s.parent_name || '').trim();
   const birthYear = s.birth_year != null ? String(s.birth_year) : '';
@@ -23817,31 +23702,18 @@ function renderMgrStudentCard(s, actionButtons) {
   const noteBtnInner = noteRaw
     ? `<span class="mgr-note-label">Nhận xét</span><span class="mgr-note-text">${notePreview}</span>`
     : `<span class="mgr-note-placeholder">Chưa có nhận xét - bấm để thêm.</span>`;
-  const classChips = classes.length
-    ? classes.map(c => {
-      const label = classNameShortForTransfer(c) || displayClassVi(c);
-      return `<span class="student-class-chip" title="${escapeHtml(displayClassVi(c))}">${escapeHtml(compactClassLabel(label, 24))}</span>`;
-    }).join('')
-    : '<span class="student-class-chip muted">Chưa có lớp</span>';
-  const flags = [];
-  if (!phone) flags.push('<span class="student-status-pill danger">Thiếu SĐT</span>');
-  if (!parentName) flags.push('<span class="student-status-pill warn">Thiếu phụ huynh</span>');
-  if (tuition.hasDebt) flags.push(`<span class="student-status-pill warn">Nợ ${tuition.pendingSessions} buổi</span>`);
-  if (tuition.hasPrepaid) flags.push(`<span class="student-status-pill good">Dư ${escapeHtml(formatMgrMoneyCompact(tuition.prepaidVnd))}</span>`);
-  if (absentStreak3ByStudent[sid]) flags.push('<span class="student-status-pill danger">Vắng 3 buổi</span>');
-  if (classes.length > 1) flags.push(`<span class="student-status-pill info">${classes.length} lớp</span>`);
-  if (!flags.length) flags.push('<span class="student-status-pill good">Hồ sơ ổn</span>');
+  const classText = classes.length
+    ? classes.map(c => classNameShortForTransfer(c) || displayClassVi(c)).join(' | ')
+    : 'Chưa có lớp';
   const contactItems = [
+    { label: 'Lớp đang học', value: classText, missing: !classes.length, wide: true },
     { label: 'SĐT', value: phone || 'Chưa có', missing: !phone },
     { label: 'Phụ huynh', value: parentName || 'Chưa có', missing: !parentName },
     { label: 'Năm sinh', value: birthYear || 'Chưa có', missing: !birthYear }
-  ].map(item => `<div class="student-contact-item ${item.missing ? 'missing' : ''}">
+  ].map(item => `<div class="student-contact-item ${item.missing ? 'missing' : ''} ${item.wide ? 'wide' : ''}">
       <div class="student-contact-label">${escapeHtml(item.label)}</div>
       <div class="student-contact-value" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</div>
     </div>`).join('');
-  const debtValue = tuitionDataLoaded ? formatMgrMoneyCompact(tuition.owedVnd) : 'Đang tính';
-  const pendingValue = tuitionDataLoaded ? String(tuition.pendingSessions) : '...';
-  const prepaidValue = tuitionDataLoaded ? formatMgrMoneyCompact(tuition.prepaidVnd) : '...';
   return `<div class="c-row">
     <div class="student-card-top">
       <div class="student-card-avatar" aria-hidden="true">${escapeHtml(initials(s.name).slice(0, 2))}</div>
@@ -23851,14 +23723,7 @@ function renderMgrStudentCard(s, actionButtons) {
       </div>
       ${actionButtons.replaceAll('__SID__', escapeHtml(sid))}
     </div>
-    <div class="student-status-row">${flags.join('')}</div>
-    <div class="student-class-chip-row">${classChips}</div>
     <div class="student-card-contact">${contactItems}</div>
-    <div class="student-card-metrics">
-      <div class="student-metric-item"><div class="student-metric-label">Buổi nợ</div><div class="student-metric-value ${tuition.hasDebt ? 'debt' : ''}">${escapeHtml(pendingValue)}</div></div>
-      <div class="student-metric-item"><div class="student-metric-label">Còn nợ</div><div class="student-metric-value ${tuition.hasDebt ? 'debt' : ''}">${escapeHtml(debtValue)}</div></div>
-      <div class="student-metric-item"><div class="student-metric-label">Dư phí</div><div class="student-metric-value ${tuition.hasPrepaid ? 'good' : ''}">${escapeHtml(prepaidValue)}</div></div>
-    </div>
     <button type="button" class="${noteBtnClass}" data-student-id="${escapeHtml(sid)}">${noteBtnInner}</button>
   </div>`;
 }
@@ -24347,12 +24212,7 @@ async function loadRevenue() {
   const rows = aggregateTuitionRowsByStudent(mergedRaw);
   tuitionAttendancePresentCache = Array.isArray(d) ? d.slice() : [];
   tuitionRowsCache = mergedRaw.slice();
-  tuitionDataLoaded = true;
   renderClassCollectOptions(mergedRaw);
-  const studentsTab = document.getElementById('tab-students');
-  if (studentsTab && studentsTab.style.display !== 'none') {
-    renderMgr();
-  }
 
   const filteredClassSet = new Set();
   mergedRaw.forEach(r => {
@@ -28465,9 +28325,6 @@ function showTab(t, options = {}) {
   if (t === 'students') {
     mgrPage = 1;
     renderMgr();
-    if (isAdmin()) {
-      loadRevenue().catch(e => console.warn('showTab students tuition refresh', e));
-    }
   }
   if (t === 'analytics') {
     populateAnalyticsClassSelects();
