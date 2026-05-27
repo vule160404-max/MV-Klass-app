@@ -1115,7 +1115,7 @@
 
     /* Inputs & buttons */
     label{ color: var(--muted); font-size: 13px; }
-    input[type=date], input[type=text], input[type=email], input[type=password], input[type=month], input[type=number], select{
+    input[type=date], input[type=text], input[type=search], input[type=email], input[type=password], input[type=month], input[type=number], select{
       font-family: var(--font);
       outline: none;
       border: 1px solid var(--border);
@@ -1126,7 +1126,7 @@
       box-shadow: var(--shadow-xs);
     }
     input[type=date], input[type=month]{ padding: 10px 14px; font-size: 14px; }
-    input[type=text], input[type=email], input[type=password]{ padding: 11px 14px; font-size: 14px; min-width: 0; }
+    input[type=text], input[type=search], input[type=email], input[type=password]{ padding: 11px 14px; font-size: 14px; min-width: 0; }
     input[type=number], select{ padding: 10px 14px; font-size: 13px; }
     input:focus, select:focus{
       border-color: rgba(79,142,247,0.55);
@@ -5785,7 +5785,7 @@ button, input, select, textarea { font-family: var(--f) !important; }
 .btn-checkin:disabled { opacity: 0.5 !important; box-shadow: none !important; transform: none !important; }
 
 /* -- INPUTS ----------------------------------------------- */
-input[type=text], input[type=email], input[type=password],
+input[type=text], input[type=search], input[type=email], input[type=password],
 input[type=date], input[type=month], input[type=number],
 select:not(.attendance-class-select), textarea {
   font-family: var(--f) !important;
@@ -6305,6 +6305,7 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
     min-height: 44px !important;
   }
   input[type="text"],
+  input[type="search"],
   input[type="email"],
   input[type="password"],
   input[type="date"],
@@ -8834,7 +8835,7 @@ a:focus-visible,
       <div class="analytics-muted" style="font-size:12px;margin-top:6px">Bắt buộc chọn 1 lớp cụ thể trước khi chấm điểm danh.</div>
     </div>
     <div class="controls">
-      <input type="text" id="search" placeholder="Tìm theo tên, SĐT, lớp…"/>
+      <input type="search" id="search" name="mvk_attendance_search" placeholder="Tìm theo tên, SĐT, lớp…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
       <button class="btn-sm" onclick="markAll('present')">Tất cả có mặt</button>
       <button class="btn-sm" onclick="markAll('absent')">Tất cả vắng</button>
     </div>
@@ -8872,7 +8873,7 @@ a:focus-visible,
 
     <div class="students-block-label">Danh sách học viên</div>
     <div class="mgr-toolbar">
-      <input type="text" id="mgr-search" placeholder="Tìm theo tên, SĐT phụ huynh, lớp…" class="mgr-toolbar-search"/>
+      <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm theo tên, SĐT phụ huynh, lớp…" class="mgr-toolbar-search" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
       <div class="mgr-toolbar-filter">
         <label for="mgr-class-filter">Lớp</label>
         <select id="mgr-class-filter" aria-label="Lọc theo lớp">
@@ -9111,7 +9112,7 @@ a:focus-visible,
         <div class="leaderboard-manage">
           <div class="leaderboard-manage-title">Cập nhật nhanh thành tích · cống hiến · minigame</div>
           <div class="leaderboard-manage-grid">
-            <input type="text" id="leaderboard-manage-search" placeholder="Tìm học sinh..." oninput="renderLeaderboardManageStudents()"/>
+            <input type="search" id="leaderboard-manage-search" name="mvk_leaderboard_student_search" placeholder="Tìm học sinh..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" oninput="renderLeaderboardManageStudents()"/>
             <input type="number" id="leaderboard-manage-performance" placeholder="+ điểm thành tích" step="1"/>
             <input type="number" id="leaderboard-manage-contribution" placeholder="+ lượt giới thiệu" step="1"/>
             <input type="number" id="leaderboard-manage-minigame" placeholder="+ điểm minigame" step="1"/>
@@ -9917,7 +9918,7 @@ a:focus-visible,
           <option value="closed">Hoàn tất</option>
           <option value="archived">Lưu trữ</option>
         </select>
-        <input type="text" id="consult-search" placeholder="Tìm theo tên, SĐT, lớp, chương trình…" oninput="onConsultSearchInput(this.value)" style="flex:1;min-width:160px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);font-family:var(--font);font-size:13px"/>
+        <input type="search" id="consult-search" name="mvk_consult_search" placeholder="Tìm theo tên, SĐT, lớp, chương trình…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" oninput="onConsultSearchInput(this.value)" style="flex:1;min-width:160px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);font-family:var(--font);font-size:13px"/>
       </div>
       <div class="bank-summary" id="consult-summary"></div>
       <div id="consult-list" class="bank-table">
@@ -9988,7 +9989,7 @@ a:focus-visible,
             <option value="transfer">Chuyển khoản</option>
             <option value="cash">Tiền mặt</option>
           </select>
-          <input type="text" id="bank-search" placeholder="Tìm nội dung CK, học viên, SĐT, mã…"/>
+          <input type="search" id="bank-search" name="mvk_bank_transaction_search" placeholder="Tìm nội dung CK, học viên, SĐT, mã…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
           <select id="bank-status-filter" onchange="setBankTxStatusFilter(this.value)">
             <option value="all">Tất cả trạng thái</option>
             <option value="success">Thành công</option>
@@ -10275,7 +10276,7 @@ a:focus-visible,
     </section>
 
     <section class="student-exam-filters" aria-label="Tìm kiếm và lọc đề thi">
-      <input id="student-exam-search" class="student-exam-search" type="search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="off"/>
+      <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
       <div class="student-exam-filter-grid">
         <div class="student-exam-filter-main">
           <select id="student-exam-level" aria-label="Lọc cấp học">
@@ -10398,9 +10399,14 @@ a:focus-visible,
       <input
         type="text"
         id="bank-tx-receive-picker-search"
+        name="mvk_bank_receive_student_search"
         class="bank-tx-receive-picker-search"
         placeholder="Ví dụ: Minh, hoặc 0912…"
         autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+        data-no-autofill-search="1"
       />
       <div id="bank-tx-receive-picker-hint" class="analytics-muted" style="font-size:12px;margin-top:6px;min-height:1.2em"></div>
       <div id="bank-tx-receive-picker-list" class="bank-tx-receive-picker-list" aria-live="polite"></div>
@@ -18148,7 +18154,7 @@ function renderPortalStudentUsers(rows) {
   }</tbody></table></div>` : '<div class="empty" style="padding:16px">Không có học sinh khớp bộ lọc.</div>';
   el.innerHTML = `<div class="portal-user-shell">
     <div class="portal-user-tools">
-      <input class="portal-user-search" id="portal-user-lookup-box" name="mvklass_portal_user_lookup" type="search" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" placeholder="Tìm tên, email, mã tài khoản..." value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
+      <input class="portal-user-search" id="portal-user-lookup-box" name="mvklass_portal_user_lookup" type="search" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" placeholder="Tìm tên, email, mã tài khoản..." value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
       <select class="portal-user-select" id="portal-student-sort" onchange="onPortalStudentSortChange(this.value)">
         <option value="priority">Ưu tiên xử lý</option>
         <option value="last">Hoạt động mới nhất</option>
@@ -18376,7 +18382,7 @@ function renderPortalFreeCuration(exams) {
           <button type="button" class="btn-sm" onclick="closePortalFreePicker()">Đóng</button>
         </div>
         <div class="portal-picker-filters">
-          <input class="portal-picker-search" id="portal-free-picker-search" type="search" placeholder="Tìm theo tên đề, mã đề, tỉnh/thành, nguồn..." value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
+          <input class="portal-picker-search" id="portal-free-picker-search" type="search" name="mvk_portal_free_exam_search" placeholder="Tìm theo tên đề, mã đề, tỉnh/thành, nguồn..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
           <select class="portal-picker-select" id="portal-free-picker-level" onchange="onPortalFreePickerLevel(this.value)">
             ${portalFreeGroups().map(g => `<option value="${escapeHtml(g.key)}" ${String(portalFreePickerLevel || '') !== 'all' && portalNormalizeFreeGroup(portalFreePickerLevel || group) === g.key ? 'selected' : ''}>${escapeHtml(g.label)}</option>`).join('')}
             <option value="all" ${String(portalFreePickerLevel || '') === 'all' ? 'selected' : ''}>Tất cả nhóm</option>
@@ -23559,7 +23565,7 @@ async function loadRevenue() {
 
   el.innerHTML = `
     <div class="rev-toolbar">
-      <input type="text" id="tuition-search-input" placeholder="Tìm theo tên học viên, SĐT, lớp…" autocomplete="off" value="${escapeHtml(tuitionQuery)}" oncompositionstart="onTuitionSearchCompositionStart()" oncompositionend="onTuitionSearchCompositionEnd()" oninput="setTuitionQuery(this.value)"/>
+      <input type="search" id="tuition-search-input" name="mvk_tuition_search" placeholder="Tìm theo tên học viên, SĐT, lớp…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(tuitionQuery)}" oncompositionstart="onTuitionSearchCompositionStart()" oncompositionend="onTuitionSearchCompositionEnd()" oninput="setTuitionQuery(this.value)"/>
       <select onchange="setTuitionClassFilter(this.value)">${optionsClass}</select>
       <select onchange="setTuitionStatusFilter(this.value)">
         <option value="all" ${tuitionStatusFilter==='all'?'selected':''}>Mọi trạng thái</option>
@@ -24850,7 +24856,7 @@ function renderParentPhoneLookupForm(token, mode = 'class', className = '') {
         <div class="analytics-muted">Link ${escapeHtml(mode === 'center' ? 'toàn trung tâm' : 'theo lớp')} ${className ? '· ' + escapeHtml(className) : ''}. Nhập SĐT phụ huynh (từ 9 số) hoặc tên học sinh (từ 2 ký tự).</div>
         <div class="modal-row">
           <label for="parent-phone-lookup">Số điện thoại hoặc tên học sinh</label>
-          <input type="search" id="parent-phone-lookup" placeholder="Ví dụ: 0905123456 hoặc Nguyễn Văn A" autocomplete="off"/>
+          <input type="search" id="parent-phone-lookup" name="mvk_parent_phone_lookup" placeholder="Ví dụ: 0905123456 hoặc Nguyễn Văn A" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
         </div>
         <div id="parent-phone-candidates" class="analytics-muted" style="margin:8px 0"></div>
         <div class="modal-actions">
@@ -27705,7 +27711,48 @@ document.addEventListener('visibilitychange', () => {
 });
 bindSidebarEdgeHover();
 syncSidebarEdgeHoverAvailability();
+function getAuthEmailForSearchAutofillGuard() {
+  const sessionEmail = String(currentSession?.user?.email || '').trim();
+  if (sessionEmail && sessionEmail.includes('@')) return sessionEmail.toLowerCase();
+  const loginEmail = String(document.getElementById('login-email')?.value || '').trim();
+  return loginEmail && loginEmail.includes('@') ? loginEmail.toLowerCase() : '';
+}
+function scrubNoAutofillSearchInputs(root) {
+  const scope = root && root.querySelectorAll ? root : document;
+  const authEmail = getAuthEmailForSearchAutofillGuard();
+  if (!authEmail) return;
+  const nodes = scope.matches && scope.matches('[data-no-autofill-search="1"]')
+    ? [scope]
+    : Array.from(scope.querySelectorAll('[data-no-autofill-search="1"]'));
+  nodes.forEach(el => {
+    if (!el || el.disabled || el.readOnly) return;
+    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocorrect', 'off');
+    el.setAttribute('autocapitalize', 'none');
+    el.setAttribute('spellcheck', 'false');
+    const value = String(el.value || '').trim().toLowerCase();
+    const defaultValue = String(el.defaultValue || '').trim();
+    if (value && value === authEmail && !defaultValue) {
+      el.value = '';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+}
+document.addEventListener('focusin', e => {
+  if (!e.target || !e.target.matches || !e.target.matches('[data-no-autofill-search="1"]')) return;
+  scrubNoAutofillSearchInputs(e.target);
+  setTimeout(() => scrubNoAutofillSearchInputs(e.target), 80);
+});
+window.addEventListener('pageshow', () => setTimeout(() => scrubNoAutofillSearchInputs(document), 80));
+new MutationObserver(records => {
+  records.forEach(record => {
+    record.addedNodes.forEach(node => {
+      if (node && node.nodeType === 1) setTimeout(() => scrubNoAutofillSearchInputs(node), 80);
+    });
+  });
+}).observe(document.body, { childList: true, subtree: true });
 ;(function bindSearchInputs() {
+  scrubNoAutofillSearchInputs(document);
   const mainSearch = document.getElementById('search');
   if (mainSearch) {
     mainSearch.addEventListener('input', () => {
