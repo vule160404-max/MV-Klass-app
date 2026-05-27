@@ -23575,9 +23575,14 @@ function renderMgrInsights(filtered) {
   }
 
   if (insights) {
+    const totalClassCount = getMgrClassDistribution().filter(x => x.className !== 'No class').length;
+    const classHintParts = [];
+    if (stats.multiClass > 0) classHintParts.push(`${stats.multiClass} học sinh học nhiều lớp`);
+    if (stats.noClass > 0) classHintParts.push(`${stats.noClass} chưa lớp`);
+    const classHint = classHintParts.length ? classHintParts.join(' · ') : 'Tất cả học viên đã có lớp';
     insights.innerHTML = `
       <div class="students-kpi topline"><div class="k">Tổng học viên</div><div class="v">${stats.total}</div><div class="hint">${filteredStats.total} đang hiển thị</div></div>
-      <div class="students-kpi"><div class="k">Lớp đang học</div><div class="v">${getMgrClassDistribution().filter(x => x.className !== 'No class').length}</div><div class="hint">${stats.multiClass} học nhiều lớp · ${stats.noClass} chưa lớp</div></div>
+      <div class="students-kpi"><div class="k">Tổng số lớp</div><div class="v">${totalClassCount}</div><div class="hint">${escapeHtml(classHint)}</div></div>
       <div class="students-kpi good"><div class="k">Có nhận xét</div><div class="v">${stats.withNote}</div><div class="hint">${mgrPct(stats.withNote, stats.total)}% hồ sơ có ghi chú học lực</div></div>
       <div class="students-kpi danger"><div class="k">Thiếu SĐT</div><div class="v">${stats.missingPhone}</div><div class="hint">${stats.withPhone} hồ sơ đã có số liên hệ</div></div>
       <div class="students-kpi warn"><div class="k">Thiếu phụ huynh</div><div class="v">${stats.missingParent}</div><div class="hint">${stats.withParent} hồ sơ đã có tên phụ huynh</div></div>
