@@ -6227,8 +6227,8 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 }
 #tab-students #mgr-list{
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)) !important;
-  gap: 12px !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr)) !important;
+  gap: 14px !important;
   border-radius: 0 !important;
   overflow: visible !important;
   background: transparent !important;
@@ -6236,106 +6236,126 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   border: 0 !important;
 }
 #tab-students #mgr-list .c-row{
+  position: relative;
   display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 11px !important;
-  min-height: 100%;
-  padding: 14px !important;
-  border: 1px solid rgba(99,138,218,0.16) !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px !important;
+  min-height: 202px;
+  padding: 15px 15px 14px !important;
+  border: 1px solid rgba(99,138,218,0.18) !important;
   border-right: 1px solid rgba(99,138,218,0.16) !important;
   border-radius: 8px !important;
-  background: rgba(255,255,255,0.98) !important;
-  box-shadow: var(--s-xs) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.94)),
+    radial-gradient(circle at top right, rgba(61,126,248,0.08), transparent 42%) !important;
+  box-shadow: 0 10px 24px rgba(15,31,61,0.06), inset 0 1px 0 rgba(255,255,255,0.88) !important;
   overflow: hidden !important;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+#tab-students #mgr-list .c-row::before{
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #3D7EF8, #16A34A);
+  opacity: .82;
 }
 #tab-students #mgr-list .c-row:hover{
+  transform: translateY(-2px);
   background: #fff !important;
-  border-color: rgba(61,126,248,0.28) !important;
-  box-shadow: var(--s-sm) !important;
+  border-color: rgba(61,126,248,0.34) !important;
+  box-shadow: 0 16px 34px rgba(15,31,61,0.11) !important;
 }
-.student-card-top{
+#tab-students #mgr-list .c-row-body{
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 11px;
-  align-items: start;
+  grid-template-rows: auto minmax(76px, 1fr);
+  gap: 10px;
+  min-width: 0;
 }
-.student-card-avatar{
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
+#tab-students .c-row-info{
   display: grid;
-  place-items: center;
-  background: rgba(61,126,248,0.10);
-  border: 1px solid rgba(61,126,248,0.16);
-  color: #2560D0;
-  font-size: 13px;
-  font-weight: 950;
+  gap: 5px;
+  min-width: 0;
 }
 #tab-students .c-row-name{
   color: var(--ink);
-  font-size: 15px;
-  font-weight: 900;
+  font-size: 15.5px;
+  font-weight: 950;
   letter-spacing: 0;
-}
-.student-card-idline{
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 11.5px;
-  font-weight: 700;
+  line-height: 1.22;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+#tab-students .c-row-sub{
+  color: #536680;
+  font-size: 12.5px;
+  font-weight: 760;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+#tab-students .c-row-sub .warn-missing{
+  color: #dc2626;
+  font-weight: 950;
+}
 #tab-students .c-row-actions{
+  align-self: end;
+  justify-self: end;
   padding-top: 0;
   flex-wrap: nowrap;
+  gap: 7px;
 }
 #tab-students .c-row-actions .btn-edit.mgr-edit,
 #tab-students .c-row-actions .btn-del.mgr-remove{
   min-height: 34px !important;
-  padding: 7px 10px !important;
+  padding: 7px 12px !important;
   border-radius: 8px !important;
   white-space: nowrap;
-}
-.student-card-contact{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-.student-contact-item{
-  min-width: 0;
-  min-height: 66px;
-  padding: 10px 11px;
-  border-radius: 8px;
-  background: rgba(248,250,252,0.94);
-  border: 1px solid rgba(226,232,240,0.88);
-}
-.student-contact-item.wide{
-  grid-column: 1 / -1;
-}
-.student-contact-label{
-  color: #64748b;
-  font-size: 10.5px;
-  font-weight: 900;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-.student-contact-value{
-  margin-top: 3px;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 850;
-  line-height: 1.38;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-.student-contact-item.missing .student-contact-value{
-  color: #dc2626;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
 }
 #tab-students button.mgr-note-caption{
   margin-top: 0;
-  min-height: 44px;
+  min-height: 76px;
   border-radius: 8px;
+  padding: 11px 12px;
+  border-color: rgba(99,138,218,0.24);
+  background: rgba(255,251,235,0.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.88);
+}
+#tab-students button.mgr-note-caption:hover{
+  border-color: rgba(61,126,248,0.34);
+  background: rgba(255,251,235,0.96);
+}
+#tab-students button.mgr-note-caption.empty{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  border-color: rgba(99,138,218,0.30);
+  background: rgba(248,250,252,0.74);
+}
+#tab-students button.mgr-note-caption .mgr-note-label{
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(180,83,9,0.10);
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 950;
+  margin-right: 6px;
+}
+#tab-students button.mgr-note-caption .mgr-note-text{
+  color: #334155;
+  font-size: 12px;
+  font-weight: 650;
+}
+#tab-students button.mgr-note-caption.empty .mgr-note-placeholder{
+  color: #8291a9;
+  font-size: 12.5px;
+  font-weight: 720;
 }
 #tab-students .pager{
   grid-column: 1 / -1;
@@ -6383,9 +6403,6 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   #tab-students #mgr-list{
     grid-template-columns: 1fr !important;
   }
-  .student-card-top{
-    grid-template-columns: auto minmax(0, 1fr);
-  }
   #tab-students .c-row-actions{
     grid-column: 1 / -1;
     width: 100%;
@@ -6393,9 +6410,6 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   }
   #tab-students .c-row-actions > button{
     flex: 1 1 0;
-  }
-  .student-card-contact{
-    grid-template-columns: 1fr;
   }
   .students-class-bar{
     grid-template-columns: minmax(0, 1fr) auto;
