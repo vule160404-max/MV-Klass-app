@@ -5924,6 +5924,549 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 .rev-row { transition: background var(--fast) !important; }
 .rev-row:hover { background: rgba(61,126,248,0.03) !important; }
 
+/* -- STUDENT ADMIN WORKSPACE ------------------------------ */
+#tab-students{
+  gap: 14px !important;
+}
+.students-admin-hero{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid rgba(61,126,248,0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.98), rgba(245,248,255,0.98) 58%, rgba(232,241,255,0.96));
+  box-shadow: var(--s-sm);
+}
+.students-admin-title{
+  min-width: 0;
+}
+.students-eyebrow{
+  margin-bottom: 5px;
+  color: #2560D0;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.students-admin-title h2{
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.students-admin-title p{
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.students-insights{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+.students-kpi{
+  min-width: 0;
+  min-height: 108px;
+  padding: 13px 14px;
+  border: 1px solid rgba(99,138,218,0.16);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--s-xs);
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+}
+.students-kpi.topline{
+  background: linear-gradient(180deg, #102447, #17386E);
+  border-color: rgba(15,31,61,0.24);
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(15,31,61,0.18);
+}
+.students-kpi.warn{
+  background: linear-gradient(180deg, #fff8ed, #fffdf8);
+  border-color: rgba(245,158,11,0.24);
+}
+.students-kpi.danger{
+  background: linear-gradient(180deg, #fff5f5, #fff);
+  border-color: rgba(220,38,38,0.20);
+}
+.students-kpi.good{
+  background: linear-gradient(180deg, #f0fdf4, #fff);
+  border-color: rgba(22,163,74,0.20);
+}
+.students-kpi .k{
+  color: rgba(71,85,105,0.86);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.students-kpi.topline .k{
+  color: rgba(255,255,255,0.72);
+}
+.students-kpi .v{
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.students-kpi.topline .v{
+  color: #fff;
+}
+.students-kpi .hint{
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.students-kpi.topline .hint{
+  color: rgba(255,255,255,0.72);
+}
+.students-ops-grid{
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+  gap: 12px;
+}
+.students-ops-panel,
+.students-directory{
+  border: 1px solid rgba(99,138,218,0.16);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--s-sm);
+}
+.students-ops-panel{
+  min-width: 0;
+  padding: 14px;
+}
+.students-panel-head{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.students-panel-title{
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.students-panel-meta{
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.students-class-bars{
+  display: grid;
+  gap: 8px;
+}
+.students-class-bar{
+  display: grid;
+  grid-template-columns: minmax(120px, .7fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 30px;
+}
+.students-class-name{
+  min-width: 0;
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.students-class-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(226,232,240,0.92);
+  overflow: hidden;
+}
+.students-class-fill{
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3D7EF8, #16a34a);
+}
+.students-class-count{
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.students-health-list{
+  display: grid;
+  gap: 11px;
+}
+.students-health-row{
+  display: grid;
+  gap: 6px;
+}
+.students-health-top{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 800;
+}
+.students-health-top span:last-child{
+  color: var(--muted);
+  font-weight: 850;
+}
+.students-health-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(226,232,240,0.92);
+  overflow: hidden;
+}
+.students-health-fill{
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #16a34a, #84cc16);
+}
+.students-health-fill.warn{
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+}
+.students-health-fill.danger{
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+.students-directory{
+  padding: 14px;
+}
+.students-directory-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.students-directory .students-block-label{
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+.students-directory-sub{
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+.students-clear-filter{
+  min-height: 36px !important;
+  padding: 7px 12px !important;
+  white-space: nowrap;
+}
+#tab-students .mgr-toolbar{
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) repeat(3, minmax(150px, 190px));
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid rgba(99,138,218,0.13);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(248,250,252,0.96), rgba(241,246,255,0.84));
+}
+#tab-students .mgr-toolbar-filter{
+  min-width: 0;
+  width: 100%;
+}
+#tab-students .mgr-toolbar-filter label{
+  color: #526179;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+#tab-students .mgr-toolbar-filter select,
+#tab-students .mgr-toolbar-search{
+  min-width: 0;
+  width: 100%;
+}
+.students-active-filters{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 0;
+  margin: 0 0 12px;
+}
+.students-filter-chip{
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  max-width: 100%;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(99,138,218,0.16);
+  background: #fff;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+#tab-students #mgr-list{
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)) !important;
+  gap: 12px !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+#tab-students #mgr-list .c-row{
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 11px !important;
+  min-height: 100%;
+  padding: 14px !important;
+  border: 1px solid rgba(99,138,218,0.16) !important;
+  border-right: 1px solid rgba(99,138,218,0.16) !important;
+  border-radius: 8px !important;
+  background: rgba(255,255,255,0.98) !important;
+  box-shadow: var(--s-xs) !important;
+  overflow: hidden !important;
+}
+#tab-students #mgr-list .c-row:hover{
+  background: #fff !important;
+  border-color: rgba(61,126,248,0.28) !important;
+  box-shadow: var(--s-sm) !important;
+}
+.student-card-top{
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 11px;
+  align-items: start;
+}
+.student-card-avatar{
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(61,126,248,0.10);
+  border: 1px solid rgba(61,126,248,0.16);
+  color: #2560D0;
+  font-size: 13px;
+  font-weight: 950;
+}
+#tab-students .c-row-name{
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.student-card-idline{
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#tab-students .c-row-actions{
+  padding-top: 0;
+  flex-wrap: nowrap;
+}
+#tab-students .c-row-actions .btn-edit.mgr-edit,
+#tab-students .c-row-actions .btn-del.mgr-remove{
+  min-height: 34px !important;
+  padding: 7px 10px !important;
+  border-radius: 8px !important;
+  white-space: nowrap;
+}
+.student-status-row,
+.student-class-chip-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.student-status-pill,
+.student-class-chip{
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(99,138,218,0.16);
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+.student-status-pill.good{
+  color: #166534;
+  background: #ecfdf3;
+  border-color: rgba(22,163,74,0.22);
+}
+.student-status-pill.warn{
+  color: #92400e;
+  background: #fff7ed;
+  border-color: rgba(245,158,11,0.24);
+}
+.student-status-pill.danger{
+  color: #991b1b;
+  background: #fef2f2;
+  border-color: rgba(220,38,38,0.22);
+}
+.student-status-pill.info{
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: rgba(37,99,235,0.20);
+}
+.student-class-chip{
+  background: #eef5ff;
+  color: #1E3A8A;
+}
+.student-class-chip.muted{
+  background: #f8fafc;
+  color: #64748b;
+  border-style: dashed;
+}
+.student-card-contact{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.student-contact-item,
+.student-metric-item{
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: rgba(248,250,252,0.94);
+  border: 1px solid rgba(226,232,240,0.88);
+}
+.student-contact-label,
+.student-metric-label{
+  color: #64748b;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.student-contact-value,
+.student-metric-value{
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 850;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.student-contact-item.missing .student-contact-value{
+  color: #dc2626;
+}
+.student-card-metrics{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.student-metric-value.debt{
+  color: #b45309;
+}
+.student-metric-value.good{
+  color: #166534;
+}
+#tab-students button.mgr-note-caption{
+  margin-top: 0;
+  min-height: 44px;
+  border-radius: 8px;
+}
+#tab-students .pager{
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  border: 1px solid rgba(99,138,218,0.14);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+}
+#tab-students #mgr-list > .empty{
+  grid-column: 1 / -1;
+  border: 1px dashed rgba(99,138,218,0.22);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.96);
+}
+@media (max-width: 1220px){
+  .students-insights{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .students-ops-grid{
+    grid-template-columns: 1fr;
+  }
+  #tab-students .mgr-toolbar{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #tab-students .mgr-toolbar-search{
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 760px){
+  .students-admin-hero,
+  .students-directory-head{
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .students-admin-hero .student-add-open-btn,
+  .students-clear-filter{
+    width: 100%;
+  }
+  .students-insights{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #tab-students .mgr-toolbar{
+    grid-template-columns: 1fr;
+  }
+  #tab-students #mgr-list{
+    grid-template-columns: 1fr !important;
+  }
+  .student-card-top{
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  #tab-students .c-row-actions{
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: stretch;
+  }
+  #tab-students .c-row-actions > button{
+    flex: 1 1 0;
+  }
+  .student-card-contact,
+  .student-card-metrics{
+    grid-template-columns: 1fr;
+  }
+  .students-class-bar{
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .students-class-track{
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 480px){
+  .students-insights{
+    grid-template-columns: 1fr;
+  }
+  .students-admin-hero,
+  .students-directory,
+  .students-ops-panel{
+    padding: 12px;
+  }
+}
+
 /* -- WORK CALENDAR ---------------------------------------- */
 .work-cal-cell {
   border-radius: 10px !important;
@@ -8866,30 +9409,66 @@ a:focus-visible,
   </div>
 
   <div id="tab-students" style="display:none">
-    <div id="students-add-section" class="card students-add-compact">
-      <div class="students-block-label">Thêm học viên mới</div>
-      <button type="button" class="btn-save student-add-open-btn" onclick="openAddStudentModal()">+ Thêm học viên</button>
-    </div>
+    <section class="students-admin-hero">
+      <div class="students-admin-title">
+        <div class="students-eyebrow">Quản trị học viên</div>
+        <h2>Hồ sơ học viên</h2>
+        <p id="mgr-hero-subtitle">Đang tải dữ liệu học viên.</p>
+      </div>
+      <button type="button" class="btn-save student-add-open-btn" onclick="openAddStudentModal()">
+        <span aria-hidden="true">+</span> Thêm học viên
+      </button>
+    </section>
 
-    <div class="students-block-label">Danh sách học viên</div>
-    <div class="mgr-toolbar">
-      <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm theo tên, SĐT phụ huynh, lớp…" class="mgr-toolbar-search" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
-      <div class="mgr-toolbar-filter">
-        <label for="mgr-class-filter">Lớp</label>
-        <select id="mgr-class-filter" aria-label="Lọc theo lớp">
-          <option value="All">Tất cả lớp</option>
-        </select>
+    <section class="students-insights" id="mgr-insights" aria-live="polite"></section>
+
+    <section class="students-ops-grid">
+      <div class="students-ops-panel" id="mgr-class-breakdown"></div>
+      <div class="students-ops-panel" id="mgr-data-health"></div>
+    </section>
+
+    <section class="students-directory">
+      <div class="students-directory-head">
+        <div>
+          <div class="students-block-label">Danh sách học viên</div>
+          <div class="students-directory-sub" id="mgr-result-summary">Đang tải danh sách.</div>
+        </div>
+        <button type="button" class="btn-sm students-clear-filter" onclick="clearMgrFilters()">Xóa lọc</button>
       </div>
-      <div class="mgr-toolbar-filter">
-        <label for="mgr-note-filter">Nhận xét</label>
-        <select id="mgr-note-filter" aria-label="Lọc theo nhận xét học lực">
-          <option value="all">Tất cả</option>
-          <option value="with">Có nhận xét</option>
-          <option value="without">Chưa có nhận xét</option>
-        </select>
+      <div class="mgr-toolbar">
+        <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm tên, SĐT, phụ huynh, lớp, nhận xét…" class="mgr-toolbar-search" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
+        <div class="mgr-toolbar-filter">
+          <label for="mgr-class-filter">Lớp</label>
+          <select id="mgr-class-filter" aria-label="Lọc theo lớp">
+            <option value="All">Tất cả lớp</option>
+          </select>
+        </div>
+        <div class="mgr-toolbar-filter">
+          <label for="mgr-status-filter">Trạng thái</label>
+          <select id="mgr-status-filter" aria-label="Lọc theo trạng thái hồ sơ">
+            <option value="all">Tất cả</option>
+            <option value="missing_phone">Thiếu SĐT</option>
+            <option value="missing_parent">Thiếu phụ huynh</option>
+            <option value="missing_birth_year">Thiếu năm sinh</option>
+            <option value="debt">Còn nợ học phí</option>
+            <option value="prepaid">Có dư học phí</option>
+            <option value="absence_risk">Vắng 3 buổi</option>
+            <option value="multi_class">Học nhiều lớp</option>
+            <option value="no_class">Chưa có lớp</option>
+          </select>
+        </div>
+        <div class="mgr-toolbar-filter">
+          <label for="mgr-note-filter">Nhận xét</label>
+          <select id="mgr-note-filter" aria-label="Lọc theo nhận xét học lực">
+            <option value="all">Tất cả</option>
+            <option value="with">Có nhận xét</option>
+            <option value="without">Chưa có nhận xét</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="card" id="mgr-list"></div>
+      <div class="students-active-filters" id="mgr-active-filters"></div>
+      <div id="mgr-list" class="students-directory-grid"></div>
+    </section>
   </div>
 
   <div id="tab-tuition" style="display:none">
@@ -16391,6 +16970,9 @@ async function signOutUser() {
   teacherWorkListPage = 1;
   bankTxRowsCache = [];
   bankCashRowsCache = [];
+  tuitionRowsCache = [];
+  tuitionAttendancePresentCache = [];
+  tuitionDataLoaded = false;
   bankTxSearch = '';
   bankTxStatusFilter = 'all';
   bankSourceFilter = 'all';
@@ -16568,6 +17150,7 @@ let tuitionStatusFilter = 'all';
 let tuitionExpanded = {};
 let tuitionRowsCache = [];
 let tuitionAttendancePresentCache = [];
+let tuitionDataLoaded = false;
 let tuitionSearchDebounceTimer = null;
 /** IME (gõ ti?ng Vi?t): tránh loadRevenue thay DOM gi?a ch?ng composition ? nh?y ch? / m?t d?u */
 let tuitionSearchComposing = false;
@@ -21688,12 +22271,12 @@ function formatPaymentDateTime(iso) {
 /** Hi?n th? tên l?p (giá tr? n?i b? v?n có th? là null / "No class"). */
 function displayClassVi(c) {
   const v = c == null || c === '' ? 'No class' : c;
-  if (v === 'No class') return 'Chua có l?p';
+  if (v === 'No class') return 'Chưa có lớp';
   return compactClassLabel(String(v), 28);
 }
 
 function uiClassOrFilter(s) {
-  if (s === 'All') return 'T?t c?';
+  if (s === 'All') return 'Tất cả';
   return displayClassVi(s);
 }
 
@@ -22947,7 +23530,7 @@ function syncMgrClassFilterSelect() {
   const prev = String(sel.value || 'All');
   const classes = getMgrClassFilterOptionValues();
   sel.innerHTML =
-    '<option value="All">T?t c? l?p</option>' +
+    '<option value="All">Tất cả lớp</option>' +
     classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(displayClassVi(c))}</option>`).join('');
   let next = 'All';
   if (prev !== 'All') {
@@ -22962,12 +23545,245 @@ function syncMgrClassFilterSelect() {
   sel.value = next;
 }
 
+function getMgrStudentTuitionSummary(st) {
+  const sid = String(st && st.id != null ? st.id : '').trim();
+  if (!sid) {
+    return { pendingSessions: 0, owedVnd: 0, prepaidVnd: 0, hasDebt: false, hasPrepaid: false };
+  }
+  let pendingSessions = 0;
+  let owedVnd = 0;
+  (tuitionRowsCache || []).forEach(r => {
+    if (!r || String(r.id || '').trim() !== sid) return;
+    const pending = Math.max(0, parseInt(String(r.pending != null ? r.pending : 0), 10) || 0);
+    if (pending < 1) return;
+    const owedRaw = Math.max(0, parseInt(String(r.owed != null ? r.owed : 0), 10) || 0);
+    const fee = Math.max(0, parseInt(String(r.fee != null ? r.fee : 0), 10) || 0);
+    pendingSessions += pending;
+    owedVnd += owedRaw > 0 ? owedRaw : pending * fee;
+  });
+  const prepaidVnd = typeof totalPrepaidVndForStudent === 'function'
+    ? totalPrepaidVndForStudent(sid)
+    : 0;
+  return {
+    pendingSessions,
+    owedVnd,
+    prepaidVnd,
+    hasDebt: pendingSessions > 0,
+    hasPrepaid: prepaidVnd > 0
+  };
+}
+
+function getMgrStats(list) {
+  const rows = Array.isArray(list) ? list : [];
+  const nowYear = new Date().getFullYear();
+  const out = {
+    total: rows.length,
+    withPhone: 0,
+    missingPhone: 0,
+    withParent: 0,
+    missingParent: 0,
+    withBirthYear: 0,
+    missingBirthYear: 0,
+    withNote: 0,
+    withoutNote: 0,
+    withClass: 0,
+    noClass: 0,
+    multiClass: 0,
+    debtStudents: 0,
+    debtSessions: 0,
+    debtVnd: 0,
+    prepaidStudents: 0,
+    prepaidVnd: 0,
+    absenceRisk: 0,
+    ageKnown: 0,
+    ageTotal: 0
+  };
+  rows.forEach(st => {
+    const classes = getStudentClasses(st).filter(Boolean);
+    const phone = String(st && st.phone || '').trim();
+    const parent = String(st && st.parent_name || '').trim();
+    const note = String(st && st.learning_note || '').trim();
+    const birthYear = st && st.birth_year != null ? parseInt(String(st.birth_year), 10) : 0;
+    if (phone) out.withPhone += 1; else out.missingPhone += 1;
+    if (parent) out.withParent += 1; else out.missingParent += 1;
+    if (Number.isFinite(birthYear) && birthYear > 1900) {
+      out.withBirthYear += 1;
+      out.ageKnown += 1;
+      out.ageTotal += Math.max(0, nowYear - birthYear);
+    } else {
+      out.missingBirthYear += 1;
+    }
+    if (note) out.withNote += 1; else out.withoutNote += 1;
+    if (classes.length) out.withClass += 1; else out.noClass += 1;
+    if (classes.length > 1) out.multiClass += 1;
+    const tuition = getMgrStudentTuitionSummary(st);
+    if (tuition.hasDebt) {
+      out.debtStudents += 1;
+      out.debtSessions += tuition.pendingSessions;
+      out.debtVnd += tuition.owedVnd;
+    }
+    if (tuition.hasPrepaid) {
+      out.prepaidStudents += 1;
+      out.prepaidVnd += tuition.prepaidVnd;
+    }
+    if (absentStreak3ByStudent[String(st && st.id != null ? st.id : '')]) out.absenceRisk += 1;
+  });
+  out.avgAge = out.ageKnown ? Math.round(out.ageTotal / out.ageKnown) : 0;
+  return out;
+}
+
+function mgrPct(value, total) {
+  const t = Math.max(0, Number(total || 0));
+  if (!t) return 0;
+  return Math.max(0, Math.min(100, Math.round((Number(value || 0) / t) * 100)));
+}
+
+function formatMgrMoneyCompact(v) {
+  if (typeof formatVndCompact === 'function') return formatVndCompact(v);
+  return Number(v || 0).toLocaleString('vi-VN') + 'đ';
+}
+
+function getMgrClassDistribution() {
+  const map = new Map();
+  (students || []).forEach(st => {
+    const classes = getStudentClasses(st).filter(Boolean);
+    if (!classes.length) {
+      map.set('No class', (map.get('No class') || 0) + 1);
+      return;
+    }
+    classes.forEach(c => {
+      const key = String(c || '').trim() || 'No class';
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+  });
+  return Array.from(map.entries())
+    .map(([className, count]) => ({ className, count }))
+    .sort((a, b) => b.count - a.count || displayClassVi(a.className).localeCompare(displayClassVi(b.className), 'vi'));
+}
+
+function renderMgrInsights(filtered) {
+  const all = students || [];
+  const stats = getMgrStats(all);
+  const filteredStats = getMgrStats(filtered || []);
+  const hero = document.getElementById('mgr-hero-subtitle');
+  const insights = document.getElementById('mgr-insights');
+  const classPanel = document.getElementById('mgr-class-breakdown');
+  const healthPanel = document.getElementById('mgr-data-health');
+  const resultSummary = document.getElementById('mgr-result-summary');
+  const activeFilters = document.getElementById('mgr-active-filters');
+
+  if (hero) {
+    const parts = [
+      `${stats.total} học viên`,
+      `${getMgrClassDistribution().filter(x => x.className !== 'No class').length} lớp`,
+      `${stats.missingPhone} thiếu SĐT`,
+      tuitionDataLoaded ? `${stats.debtStudents} còn nợ học phí` : 'học phí đang đồng bộ'
+    ];
+    hero.textContent = parts.join(' · ');
+  }
+
+  if (insights) {
+    const debtValue = tuitionDataLoaded ? formatMgrMoneyCompact(stats.debtVnd) : 'Đang tính';
+    insights.innerHTML = `
+      <div class="students-kpi topline"><div class="k">Tổng học viên</div><div class="v">${stats.total}</div><div class="hint">${filteredStats.total} đang hiển thị</div></div>
+      <div class="students-kpi"><div class="k">Lớp đang học</div><div class="v">${getMgrClassDistribution().filter(x => x.className !== 'No class').length}</div><div class="hint">${stats.multiClass} học nhiều lớp · ${stats.noClass} chưa lớp</div></div>
+      <div class="students-kpi good"><div class="k">Có nhận xét</div><div class="v">${stats.withNote}</div><div class="hint">${mgrPct(stats.withNote, stats.total)}% hồ sơ có ghi chú học lực</div></div>
+      <div class="students-kpi danger"><div class="k">Thiếu SĐT</div><div class="v">${stats.missingPhone}</div><div class="hint">${stats.withPhone} hồ sơ đã có số liên hệ</div></div>
+      <div class="students-kpi warn"><div class="k">Còn nợ học phí</div><div class="v">${stats.debtStudents}</div><div class="hint">${debtValue} · ${stats.debtSessions} buổi</div></div>
+      <div class="students-kpi danger"><div class="k">Cảnh báo vắng</div><div class="v">${stats.absenceRisk}</div><div class="hint">Vắng trong 3 lần điểm danh gần nhất</div></div>
+    `;
+  }
+
+  if (classPanel) {
+    const dist = getMgrClassDistribution();
+    const maxCount = dist.reduce((m, x) => Math.max(m, x.count), 0);
+    const top = dist.slice(0, 8);
+    const rows = top.length
+      ? top.map(x => {
+        const pct = mgrPct(x.count, maxCount || 1);
+        return `<div class="students-class-bar">
+          <div class="students-class-name" title="${escapeHtml(displayClassVi(x.className))}">${escapeHtml(displayClassVi(x.className))}</div>
+          <div class="students-class-track"><div class="students-class-fill" style="width:${pct}%"></div></div>
+          <div class="students-class-count">${x.count}</div>
+        </div>`;
+      }).join('')
+      : '<div class="empty">Chưa có lớp nào.</div>';
+    classPanel.innerHTML = `
+      <div class="students-panel-head">
+        <div class="students-panel-title">Sĩ số theo lớp</div>
+        <div class="students-panel-meta">${dist.length} nhóm lớp</div>
+      </div>
+      <div class="students-class-bars">${rows}</div>
+    `;
+  }
+
+  if (healthPanel) {
+    const healthRows = [
+      { label: 'SĐT phụ huynh', done: stats.withPhone, total: stats.total },
+      { label: 'Tên phụ huynh', done: stats.withParent, total: stats.total },
+      { label: 'Năm sinh', done: stats.withBirthYear, total: stats.total },
+      { label: 'Nhận xét học lực', done: stats.withNote, total: stats.total }
+    ].map(item => {
+      const pct = mgrPct(item.done, item.total);
+      const tone = pct < 60 ? 'danger' : (pct < 85 ? 'warn' : '');
+      return `<div class="students-health-row">
+        <div class="students-health-top"><span>${escapeHtml(item.label)}</span><span>${item.done}/${item.total} · ${pct}%</span></div>
+        <div class="students-health-track"><div class="students-health-fill ${tone}" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+    healthPanel.innerHTML = `
+      <div class="students-panel-head">
+        <div class="students-panel-title">Chất lượng hồ sơ</div>
+        <div class="students-panel-meta">${stats.avgAge ? `Tuổi TB ${stats.avgAge}` : 'Chưa đủ năm sinh'}</div>
+      </div>
+      <div class="students-health-list">${healthRows}</div>
+    `;
+  }
+
+  if (resultSummary) {
+    const debtSeg = tuitionDataLoaded ? ` · ${filteredStats.debtStudents} còn nợ` : '';
+    resultSummary.textContent = `${filteredStats.total}/${stats.total} học viên phù hợp bộ lọc${debtSeg}.`;
+  }
+
+  if (activeFilters) {
+    const chips = [];
+    const q = String(document.getElementById('mgr-search')?.value || '').trim();
+    const cf = document.getElementById('mgr-class-filter');
+    const sf = document.getElementById('mgr-status-filter');
+    const nf = document.getElementById('mgr-note-filter');
+    if (q) chips.push(`Tìm: ${q}`);
+    if (cf && cf.value && cf.value !== 'All') chips.push(`Lớp: ${displayClassVi(cf.value)}`);
+    if (sf && sf.value && sf.value !== 'all') chips.push(`Trạng thái: ${sf.options[sf.selectedIndex]?.text || sf.value}`);
+    if (nf && nf.value && nf.value !== 'all') chips.push(`Nhận xét: ${nf.options[nf.selectedIndex]?.text || nf.value}`);
+    activeFilters.innerHTML = chips.map(x => `<span class="students-filter-chip">${escapeHtml(x)}</span>`).join('');
+  }
+}
+
 function getMgrFiltered() {
   let list = students.slice();
   const cf = document.getElementById('mgr-class-filter');
   const classPick = cf && cf.value && cf.value !== 'All' ? String(cf.value).trim() : '';
   if (classPick) {
     list = list.filter(s => isStudentAssignedToClass(s, classPick));
+  }
+  const sf = document.getElementById('mgr-status-filter');
+  const statusMode = sf && sf.value ? sf.value : 'all';
+  if (statusMode === 'missing_phone') {
+    list = list.filter(s => !String(s.phone || '').trim());
+  } else if (statusMode === 'missing_parent') {
+    list = list.filter(s => !String(s.parent_name || '').trim());
+  } else if (statusMode === 'missing_birth_year') {
+    list = list.filter(s => s.birth_year == null || !String(s.birth_year).trim());
+  } else if (statusMode === 'debt') {
+    list = list.filter(s => getMgrStudentTuitionSummary(s).hasDebt);
+  } else if (statusMode === 'prepaid') {
+    list = list.filter(s => getMgrStudentTuitionSummary(s).hasPrepaid);
+  } else if (statusMode === 'absence_risk') {
+    list = list.filter(s => absentStreak3ByStudent[String(s.id)] === true);
+  } else if (statusMode === 'multi_class') {
+    list = list.filter(s => getStudentClasses(s).filter(Boolean).length > 1);
+  } else if (statusMode === 'no_class') {
+    list = list.filter(s => getStudentClasses(s).filter(Boolean).length < 1);
   }
   const nf = document.getElementById('mgr-note-filter');
   const mode = nf && nf.value ? nf.value : 'all';
@@ -22988,14 +23804,88 @@ function getMgrFiltered() {
   );
 }
 
+function renderMgrStudentCard(s, actionButtons) {
+  const sid = String(s.id);
+  const classes = getStudentClasses(s).filter(Boolean);
+  const tuition = getMgrStudentTuitionSummary(s);
+  const phone = String(s.phone || '').trim();
+  const parentName = String(s.parent_name || '').trim();
+  const birthYear = s.birth_year != null ? String(s.birth_year) : '';
+  const noteRaw = String(s.learning_note || '').trim();
+  const notePreview = noteRaw ? escapeHtml(truncateMgrNotePreview(noteRaw, 168)) : '';
+  const noteBtnClass = noteRaw ? 'mgr-note-caption mgr-note' : 'mgr-note-caption mgr-note empty';
+  const noteBtnInner = noteRaw
+    ? `<span class="mgr-note-label">Nhận xét</span><span class="mgr-note-text">${notePreview}</span>`
+    : `<span class="mgr-note-placeholder">Chưa có nhận xét - bấm để thêm.</span>`;
+  const classChips = classes.length
+    ? classes.map(c => {
+      const label = classNameShortForTransfer(c) || displayClassVi(c);
+      return `<span class="student-class-chip" title="${escapeHtml(displayClassVi(c))}">${escapeHtml(compactClassLabel(label, 24))}</span>`;
+    }).join('')
+    : '<span class="student-class-chip muted">Chưa có lớp</span>';
+  const flags = [];
+  if (!phone) flags.push('<span class="student-status-pill danger">Thiếu SĐT</span>');
+  if (!parentName) flags.push('<span class="student-status-pill warn">Thiếu phụ huynh</span>');
+  if (tuition.hasDebt) flags.push(`<span class="student-status-pill warn">Nợ ${tuition.pendingSessions} buổi</span>`);
+  if (tuition.hasPrepaid) flags.push(`<span class="student-status-pill good">Dư ${escapeHtml(formatMgrMoneyCompact(tuition.prepaidVnd))}</span>`);
+  if (absentStreak3ByStudent[sid]) flags.push('<span class="student-status-pill danger">Vắng 3 buổi</span>');
+  if (classes.length > 1) flags.push(`<span class="student-status-pill info">${classes.length} lớp</span>`);
+  if (!flags.length) flags.push('<span class="student-status-pill good">Hồ sơ ổn</span>');
+  const contactItems = [
+    { label: 'SĐT', value: phone || 'Chưa có', missing: !phone },
+    { label: 'Phụ huynh', value: parentName || 'Chưa có', missing: !parentName },
+    { label: 'Năm sinh', value: birthYear || 'Chưa có', missing: !birthYear }
+  ].map(item => `<div class="student-contact-item ${item.missing ? 'missing' : ''}">
+      <div class="student-contact-label">${escapeHtml(item.label)}</div>
+      <div class="student-contact-value" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</div>
+    </div>`).join('');
+  const debtValue = tuitionDataLoaded ? formatMgrMoneyCompact(tuition.owedVnd) : 'Đang tính';
+  const pendingValue = tuitionDataLoaded ? String(tuition.pendingSessions) : '...';
+  const prepaidValue = tuitionDataLoaded ? formatMgrMoneyCompact(tuition.prepaidVnd) : '...';
+  return `<div class="c-row">
+    <div class="student-card-top">
+      <div class="student-card-avatar" aria-hidden="true">${escapeHtml(initials(s.name).slice(0, 2))}</div>
+      <div class="c-row-info">
+        <div class="c-row-name">${escapeHtml(s.name || 'Học viên')}</div>
+        <div class="student-card-idline">${classes.length ? `${classes.length} lớp đang học` : 'Chưa xếp lớp'} · ${noteRaw ? 'Có nhận xét' : 'Chưa có nhận xét'}</div>
+      </div>
+      ${actionButtons.replaceAll('__SID__', escapeHtml(sid))}
+    </div>
+    <div class="student-status-row">${flags.join('')}</div>
+    <div class="student-class-chip-row">${classChips}</div>
+    <div class="student-card-contact">${contactItems}</div>
+    <div class="student-card-metrics">
+      <div class="student-metric-item"><div class="student-metric-label">Buổi nợ</div><div class="student-metric-value ${tuition.hasDebt ? 'debt' : ''}">${escapeHtml(pendingValue)}</div></div>
+      <div class="student-metric-item"><div class="student-metric-label">Còn nợ</div><div class="student-metric-value ${tuition.hasDebt ? 'debt' : ''}">${escapeHtml(debtValue)}</div></div>
+      <div class="student-metric-item"><div class="student-metric-label">Dư phí</div><div class="student-metric-value ${tuition.hasPrepaid ? 'good' : ''}">${escapeHtml(prepaidValue)}</div></div>
+    </div>
+    <button type="button" class="${noteBtnClass}" data-student-id="${escapeHtml(sid)}">${noteBtnInner}</button>
+  </div>`;
+}
+
+function clearMgrFilters() {
+  const search = document.getElementById('mgr-search');
+  const cls = document.getElementById('mgr-class-filter');
+  const status = document.getElementById('mgr-status-filter');
+  const note = document.getElementById('mgr-note-filter');
+  if (search) search.value = '';
+  if (cls) cls.value = 'All';
+  if (status) status.value = 'all';
+  if (note) note.value = 'all';
+  mgrPage = 1;
+  renderMgr();
+}
+
 function renderMgr() {
   const el = document.getElementById('mgr-list');
+  if (!el) return;
   syncMgrClassFilterSelect();
+  const filtered = getMgrFiltered();
+  renderMgrInsights(filtered);
   if (!students.length) {
-    el.innerHTML = '<div class="empty">Chua có h?c viên nào.</div>';
+    el.innerHTML = '<div class="empty">Chưa có học viên nào.</div>';
     return;
   }
-  const filtered = getMgrFiltered();
   const total = filtered.length;
   const pages = Math.max(1, Math.ceil(total / MGR_PAGE_SIZE));
   if (mgrPage > pages) mgrPage = pages;
@@ -23457,7 +24347,12 @@ async function loadRevenue() {
   const rows = aggregateTuitionRowsByStudent(mergedRaw);
   tuitionAttendancePresentCache = Array.isArray(d) ? d.slice() : [];
   tuitionRowsCache = mergedRaw.slice();
+  tuitionDataLoaded = true;
   renderClassCollectOptions(mergedRaw);
+  const studentsTab = document.getElementById('tab-students');
+  if (studentsTab && studentsTab.style.display !== 'none') {
+    renderMgr();
+  }
 
   const filteredClassSet = new Set();
   mergedRaw.forEach(r => {
@@ -27570,6 +28465,9 @@ function showTab(t, options = {}) {
   if (t === 'students') {
     mgrPage = 1;
     renderMgr();
+    if (isAdmin()) {
+      loadRevenue().catch(e => console.warn('showTab students tuition refresh', e));
+    }
   }
   if (t === 'analytics') {
     populateAnalyticsClassSelects();
@@ -27832,6 +28730,13 @@ new MutationObserver(records => {
   const mgrNoteFilter = document.getElementById('mgr-note-filter');
   if (mgrNoteFilter) {
     mgrNoteFilter.addEventListener('change', () => {
+      mgrPage = 1;
+      renderMgr();
+    });
+  }
+  const mgrStatusFilter = document.getElementById('mgr-status-filter');
+  if (mgrStatusFilter) {
+    mgrStatusFilter.addEventListener('change', () => {
       mgrPage = 1;
       renderMgr();
     });
