@@ -8835,7 +8835,7 @@ a:focus-visible,
       <div class="analytics-muted" style="font-size:12px;margin-top:6px">Bắt buộc chọn 1 lớp cụ thể trước khi chấm điểm danh.</div>
     </div>
     <div class="controls">
-      <input type="search" id="search" name="mvk_attendance_search" placeholder="Tìm theo tên, SĐT, lớp…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+      <input type="search" id="search" name="mvk_attendance_search" placeholder="Tìm theo tên, SĐT, lớp…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
       <button class="btn-sm" onclick="markAll('present')">Tất cả có mặt</button>
       <button class="btn-sm" onclick="markAll('absent')">Tất cả vắng</button>
     </div>
@@ -8873,7 +8873,7 @@ a:focus-visible,
 
     <div class="students-block-label">Danh sách học viên</div>
     <div class="mgr-toolbar">
-      <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm theo tên, SĐT phụ huynh, lớp…" class="mgr-toolbar-search" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+      <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm theo tên, SĐT phụ huynh, lớp…" class="mgr-toolbar-search" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
       <div class="mgr-toolbar-filter">
         <label for="mgr-class-filter">Lớp</label>
         <select id="mgr-class-filter" aria-label="Lọc theo lớp">
@@ -9112,7 +9112,7 @@ a:focus-visible,
         <div class="leaderboard-manage">
           <div class="leaderboard-manage-title">Cập nhật nhanh thành tích · cống hiến · minigame</div>
           <div class="leaderboard-manage-grid">
-            <input type="search" id="leaderboard-manage-search" name="mvk_leaderboard_student_search" placeholder="Tìm học sinh..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" oninput="renderLeaderboardManageStudents()"/>
+            <input type="search" id="leaderboard-manage-search" name="mvk_leaderboard_student_search" placeholder="Tìm học sinh..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="renderLeaderboardManageStudents()"/>
             <input type="number" id="leaderboard-manage-performance" placeholder="+ điểm thành tích" step="1"/>
             <input type="number" id="leaderboard-manage-contribution" placeholder="+ lượt giới thiệu" step="1"/>
             <input type="number" id="leaderboard-manage-minigame" placeholder="+ điểm minigame" step="1"/>
@@ -9918,7 +9918,7 @@ a:focus-visible,
           <option value="closed">Hoàn tất</option>
           <option value="archived">Lưu trữ</option>
         </select>
-        <input type="search" id="consult-search" name="mvk_consult_search" placeholder="Tìm theo tên, SĐT, lớp, chương trình…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" oninput="onConsultSearchInput(this.value)" style="flex:1;min-width:160px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);font-family:var(--font);font-size:13px"/>
+        <input type="search" id="consult-search" name="mvk_consult_search" placeholder="Tìm theo tên, SĐT, lớp, chương trình…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="onConsultSearchInput(this.value)" style="flex:1;min-width:160px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);font-family:var(--font);font-size:13px"/>
       </div>
       <div class="bank-summary" id="consult-summary"></div>
       <div id="consult-list" class="bank-table">
@@ -9989,7 +9989,7 @@ a:focus-visible,
             <option value="transfer">Chuyển khoản</option>
             <option value="cash">Tiền mặt</option>
           </select>
-          <input type="search" id="bank-search" name="mvk_bank_transaction_search" placeholder="Tìm nội dung CK, học viên, SĐT, mã…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+          <input type="search" id="bank-search" name="mvk_bank_transaction_search" placeholder="Tìm nội dung CK, học viên, SĐT, mã…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
           <select id="bank-status-filter" onchange="setBankTxStatusFilter(this.value)">
             <option value="all">Tất cả trạng thái</option>
             <option value="success">Thành công</option>
@@ -10276,7 +10276,7 @@ a:focus-visible,
     </section>
 
     <section class="student-exam-filters" aria-label="Tìm kiếm và lọc đề thi">
-      <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+      <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
       <div class="student-exam-filter-grid">
         <div class="student-exam-filter-main">
           <select id="student-exam-level" aria-label="Lọc cấp học">
@@ -10402,10 +10402,12 @@ a:focus-visible,
         name="mvk_bank_receive_student_search"
         class="bank-tx-receive-picker-search"
         placeholder="Ví dụ: Minh, hoặc 0912…"
-        autocomplete="off"
+        autocomplete="new-password"
         autocorrect="off"
         autocapitalize="none"
         spellcheck="false"
+        data-lpignore="true"
+        data-1p-ignore="true"
         data-no-autofill-search="1"
       />
       <div id="bank-tx-receive-picker-hint" class="analytics-muted" style="font-size:12px;margin-top:6px;min-height:1.2em"></div>
@@ -18382,7 +18384,7 @@ function renderPortalFreeCuration(exams) {
           <button type="button" class="btn-sm" onclick="closePortalFreePicker()">Đóng</button>
         </div>
         <div class="portal-picker-filters">
-          <input class="portal-picker-search" id="portal-free-picker-search" type="search" name="mvk_portal_free_exam_search" placeholder="Tìm theo tên đề, mã đề, tỉnh/thành, nguồn..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
+          <input class="portal-picker-search" id="portal-free-picker-search" type="search" name="mvk_portal_free_exam_search" placeholder="Tìm theo tên đề, mã đề, tỉnh/thành, nguồn..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
           <select class="portal-picker-select" id="portal-free-picker-level" onchange="onPortalFreePickerLevel(this.value)">
             ${portalFreeGroups().map(g => `<option value="${escapeHtml(g.key)}" ${String(portalFreePickerLevel || '') !== 'all' && portalNormalizeFreeGroup(portalFreePickerLevel || group) === g.key ? 'selected' : ''}>${escapeHtml(g.label)}</option>`).join('')}
             <option value="all" ${String(portalFreePickerLevel || '') === 'all' ? 'selected' : ''}>Tất cả nhóm</option>
@@ -23565,7 +23567,7 @@ async function loadRevenue() {
 
   el.innerHTML = `
     <div class="rev-toolbar">
-      <input type="search" id="tuition-search-input" name="mvk_tuition_search" placeholder="Tìm theo tên học viên, SĐT, lớp…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(tuitionQuery)}" oncompositionstart="onTuitionSearchCompositionStart()" oncompositionend="onTuitionSearchCompositionEnd()" oninput="setTuitionQuery(this.value)"/>
+      <input type="search" id="tuition-search-input" name="mvk_tuition_search" placeholder="Tìm theo tên học viên, SĐT, lớp…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" value="${escapeHtml(tuitionQuery)}" oncompositionstart="onTuitionSearchCompositionStart()" oncompositionend="onTuitionSearchCompositionEnd()" oninput="setTuitionQuery(this.value)"/>
       <select onchange="setTuitionClassFilter(this.value)">${optionsClass}</select>
       <select onchange="setTuitionStatusFilter(this.value)">
         <option value="all" ${tuitionStatusFilter==='all'?'selected':''}>Mọi trạng thái</option>
@@ -24856,7 +24858,7 @@ function renderParentPhoneLookupForm(token, mode = 'class', className = '') {
         <div class="analytics-muted">Link ${escapeHtml(mode === 'center' ? 'toàn trung tâm' : 'theo lớp')} ${className ? '· ' + escapeHtml(className) : ''}. Nhập SĐT phụ huynh (từ 9 số) hoặc tên học sinh (từ 2 ký tự).</div>
         <div class="modal-row">
           <label for="parent-phone-lookup">Số điện thoại hoặc tên học sinh</label>
-          <input type="search" id="parent-phone-lookup" name="mvk_parent_phone_lookup" placeholder="Ví dụ: 0905123456 hoặc Nguyễn Văn A" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+          <input type="search" id="parent-phone-lookup" name="mvk_parent_phone_lookup" placeholder="Ví dụ: 0905123456 hoặc Nguyễn Văn A" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
         </div>
         <div id="parent-phone-candidates" class="analytics-muted" style="margin:8px 0"></div>
         <div class="modal-actions">
@@ -27714,6 +27716,11 @@ syncSidebarEdgeHoverAvailability();
 function getAuthEmailForSearchAutofillGuard() {
   const sessionEmail = String(currentSession?.user?.email || '').trim();
   if (sessionEmail && sessionEmail.includes('@')) return sessionEmail.toLowerCase();
+  try {
+    const stored = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || 'null');
+    const storedEmail = String(stored?.user?.email || '').trim();
+    if (storedEmail && storedEmail.includes('@')) return storedEmail.toLowerCase();
+  } catch (e) {}
   const loginEmail = String(document.getElementById('login-email')?.value || '').trim();
   return loginEmail && loginEmail.includes('@') ? loginEmail.toLowerCase() : '';
 }
@@ -27726,14 +27733,16 @@ function scrubNoAutofillSearchInputs(root) {
     : Array.from(scope.querySelectorAll('[data-no-autofill-search="1"]'));
   nodes.forEach(el => {
     if (!el || el.disabled || el.readOnly) return;
-    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocomplete', 'new-password');
     el.setAttribute('autocorrect', 'off');
     el.setAttribute('autocapitalize', 'none');
     el.setAttribute('spellcheck', 'false');
+    el.setAttribute('data-lpignore', 'true');
+    el.setAttribute('data-1p-ignore', 'true');
     const value = String(el.value || '').trim().toLowerCase();
-    const defaultValue = String(el.defaultValue || '').trim();
-    if (value && value === authEmail && !defaultValue) {
+    if (value && value === authEmail) {
       el.value = '';
+      el.defaultValue = '';
       el.dispatchEvent(new Event('input', { bubbles: true }));
     }
   });
