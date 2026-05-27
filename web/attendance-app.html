@@ -18834,6 +18834,40 @@ async function updatePortalStudentPlan(userId, plan) {
   return updatePortalStudentAccess(userId, plan, 'active');
 }
 
+function capturePortalFreeScrollState() {
+  const list = document.querySelector('#portal-free-curation .portal-free-list');
+  const pickerList = document.getElementById('portal-free-picker-list');
+  return {
+    windowX: window.scrollX || window.pageXOffset || 0,
+    windowY: window.scrollY || window.pageYOffset || 0,
+    listTop: list ? list.scrollTop : 0,
+    listLeft: list ? list.scrollLeft : 0,
+    pickerTop: pickerList ? pickerList.scrollTop : 0,
+    pickerLeft: pickerList ? pickerList.scrollLeft : 0
+  };
+}
+
+function restorePortalFreeScrollState(state) {
+  if (!state) return;
+  const restore = () => {
+    const list = document.querySelector('#portal-free-curation .portal-free-list');
+    if (list) {
+      list.scrollTop = state.listTop || 0;
+      list.scrollLeft = state.listLeft || 0;
+    }
+    const pickerList = document.getElementById('portal-free-picker-list');
+    if (pickerList) {
+      pickerList.scrollTop = state.pickerTop || 0;
+      pickerList.scrollLeft = state.pickerLeft || 0;
+    }
+    window.scrollTo(state.windowX || 0, state.windowY || 0);
+  };
+  requestAnimationFrame(() => {
+    restore();
+    setTimeout(restore, 0);
+  });
+}
+
 function renderPortalFreeCuration(exams) {
   const el = document.getElementById('portal-free-curation');
   if (!el) return;
@@ -18953,10 +18987,12 @@ function renderPortalFreePickerList(rows) {
 }
 
 function refreshPortalFreePickerUi() {
+  const scrollState = capturePortalFreeScrollState();
   const list = document.getElementById('portal-free-picker-list');
   if (list) list.innerHTML = renderPortalFreePickerList(_portalAnalyticsExamRows || []);
   const note = document.getElementById('portal-free-picker-note');
   if (note) note.textContent = `${portalFreeDraftIds.size} đề đang được đánh dấu. Bấm Cập nhật để lưu vào danh sách miễn phí.`;
+  restorePortalFreeScrollState(scrollState);
 }
 
 function getPortalFreePickerCandidates(rows) {
@@ -19077,8 +19113,10 @@ async function updatePortalFreePickerSelection() {
     showAppToast('Chưa có thay đổi đề miễn phí.', 'warn');
     return;
   }
+  const scrollState = capturePortalFreeScrollState();
   portalFreeBulkRunning = true;
   renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+  restorePortalFreeScrollState(scrollState);
   try {
     for (const exam of toRemove) {
       const id = String(exam && exam.id || '').trim();
@@ -19101,6 +19139,7 @@ async function updatePortalFreePickerSelection() {
     portalFreeDraftIds = new Set();
     invalidatePortalAnalyticsCache();
     await loadPortalAnalyticsIfNeeded(true);
+    restorePortalFreeScrollState(scrollState);
     showAppToast(`Đã cập nhật ${toAdd.length} thêm, ${toRemove.length} bỏ.`, 'success');
   } catch (e) {
     console.warn('updatePortalFreePickerSelection failed', e);
@@ -19116,6 +19155,7 @@ async function updatePortalFreePickerSelection() {
   } finally {
     portalFreeBulkRunning = false;
     renderPortalFreeCuration(_portalAnalyticsExamRows || []);
+    restorePortalFreeScrollState(scrollState);
   }
 }
 
@@ -19153,6 +19193,7 @@ async function setExamFreeRank(examId, rank) {
   const id = String(examId || '').trim();
   const nextRank = rank ? Number(rank) : null;
   const group = portalNormalizeFreeGroup(portalFreeCurationGroup);
+  const scrollState = capturePortalFreeScrollState();
   try {
     await requestSetExamFreeRank(id, nextRank, group);
     const row = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows.find(e => String(e.id || '') === id) : null;
@@ -19165,6 +19206,7 @@ async function setExamFreeRank(examId, rank) {
     portalFreePickerQuery = '';
     invalidatePortalAnalyticsCache();
     await loadPortalAnalyticsIfNeeded(true);
+    restorePortalFreeScrollState(scrollState);
     showAppToast(nextRank ? 'Đã cập nhật đề miễn phí.' : 'Đã bỏ khỏi danh sách đề miễn phí.', 'success');
   } catch (e) {
     const msg = String(e && e.message || '');
