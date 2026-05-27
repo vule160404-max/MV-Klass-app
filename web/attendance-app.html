@@ -23217,19 +23217,19 @@ function changeTuitionPage(delta) {
 
 async function clearStudentDebtWithPassword(studentId) {
   if (isTeacher()) {
-    showAppToast('Tài kho?n giáo viên không có quy?n xóa n? h?c phí.');
+    showAppToast('Tài khoản giáo viên không có quyền xóa nợ học phí.');
     return;
   }
   const sid = String(studentId || '').trim();
   if (!sid) return;
   const student = (students || []).find(s => String((s && s.id) || '').trim() === sid) || null;
-  const studentName = String((student && student.name) || 'H?c sinh');
+  const studentName = String((student && student.name) || 'Học sinh');
 
   const debtRows = (Array.isArray(tuitionRowsCache) ? tuitionRowsCache : []).filter(
     r => r && String((r.id || '')).trim() === sid
   );
   if (!debtRows.length) {
-    showAppToast('Chua có d? li?u n? d? xóa.');
+    showAppToast('Chưa có dữ liệu nợ để xóa.');
     return;
   }
   const byClass = new Map();
@@ -23265,28 +23265,28 @@ async function clearStudentDebtWithPassword(studentId) {
     .filter(x => x.pending > 0 && x.className && x.nk)
     .sort((a, b) => b.pending - a.pending || a.className.localeCompare(b.className, 'vi'));
   if (!debtSegments.length) {
-    showAppToast('H?c viên này hi?n không còn n? bu?i d? xóa.');
+    showAppToast('Học viên này hiện không còn nợ buổi để xóa.');
     return;
   }
   const classOptionsHtml = debtSegments.map((seg, idx) => {
     const cls = classNameShortForTransfer(seg.className) || displayClassVi(seg.className);
-    const label = `${cls} · n? ${seg.pending} bu?i · ${formatVnd(seg.owed)}`;
+    const label = `${cls} · nợ ${seg.pending} buổi · ${formatVnd(seg.owed)}`;
     return `<option value="${escapeHtml(seg.nk)}"${idx === 0 ? ' selected' : ''}>${escapeHtml(label)}</option>`;
   }).join('');
 
   const passwordResult = await promptPasswordApp({
-    title: 'Xác nh?n xóa n? h?c phí',
+    title: 'Xác nhận xóa nợ học phí',
     message:
-      'Ch?n l?p c?n xóa n? cho "' +
+      'Chọn lớp cần xóa nợ cho "' +
       studentName +
-      '". Thao tác này ch? xóa n? c?a l?p dã ch?n, không ?nh hu?ng n? ? l?p khác.',
+      '". Thao tác này chỉ xóa nợ của lớp đã chọn, không ảnh hưởng nợ ở lớp khác.',
     extraHtml:
-      '<label for="clear-debt-class-select">L?p c?n xóa n?</label>' +
+      '<label for="clear-debt-class-select">Lớp cần xóa nợ</label>' +
       '<select id="clear-debt-class-select">' + classOptionsHtml + '</select>' +
-      '<div class="app-password-extra-note">H? th?ng s? h?y dúng s? bu?i di?m danh chua thu c?a l?p du?c ch?n.</div>',
-    placeholder: 'Nh?p m?t kh?u dang nh?p',
+      '<div class="app-password-extra-note">Hệ thống sẽ hủy đúng số buổi điểm danh chưa thu của lớp được chọn.</div>',
+    placeholder: 'Nhập mật khẩu đăng nhập',
     okLabel: 'Xóa nợ',
-    cancelLabel: 'H?y',
+    cancelLabel: 'Hủy',
     collectExtra: (root) => {
       const sel = root && root.querySelector ? root.querySelector('#clear-debt-class-select') : null;
       return { classNk: sel ? String(sel.value || '').trim() : '' };
@@ -23294,14 +23294,14 @@ async function clearStudentDebtWithPassword(studentId) {
     validate: async (pwd) => {
       const authCheck = await verifyCurrentPassword(pwd);
       if (authCheck && authCheck.ok) return { ok: true };
-      return { ok: false, message: 'M?t kh?u không dúng. Vui lòng nh?p l?i.' };
+      return { ok: false, message: 'Mật khẩu không đúng. Vui lòng nhập lại.' };
     }
   });
   if (passwordResult == null) return;
   const selectedNk = String(passwordResult && passwordResult.extra && passwordResult.extra.classNk || '').trim();
   const selectedSeg = debtSegments.find(seg => seg.nk === selectedNk) || debtSegments[0];
   if (!selectedSeg) {
-    showAppToast('Chua ch?n l?p c?n xóa n?.');
+    showAppToast('Chưa chọn lớp cần xóa nợ.');
     return;
   }
   const selectedClassLabel = classNameShortForTransfer(selectedSeg.className) || displayClassVi(selectedSeg.className);
@@ -23352,7 +23352,7 @@ async function clearStudentDebtWithPassword(studentId) {
     if (!(rDel.ok || rDel.status === 204)) {
       let detail = '';
       try { detail = await rDel.text(); } catch (e) {}
-      throw new Error(detail || 'Không xóa du?c parent payment refs.');
+      throw new Error(detail || 'Không xóa được parent payment refs.');
     }
     return { deletedRefs: linkIds.length };
   };
@@ -23394,7 +23394,7 @@ async function clearStudentDebtWithPassword(studentId) {
     if (!toDelete.length) continue;
     const okDelete = await deleteAttendanceByIds(toDelete);
     if (!okDelete) {
-      showAppToast('Không th? xóa di?m danh tuong ?ng kho?n n?. Vui lòng th? l?i.');
+      showAppToast('Không thể xóa điểm danh tương ứng khoản nợ. Vui lòng thử lại.');
       return;
     }
     allDeleted += toDelete.length;
@@ -23407,12 +23407,12 @@ async function clearStudentDebtWithPassword(studentId) {
   try {
     await cleanupParentPaymentRefsForClassDebt(selectedSeg);
   } catch (e) {
-    showAppToast('Đã xóa điểm danh nhưng không dẫn được dữ liệu parent payment. Vui lòng làm mới và kiểm tra lại.');
+    showAppToast('Đã xóa điểm danh nhưng không dọn được dữ liệu phiếu thu phụ huynh. Vui lòng làm mới và kiểm tra lại.');
     return;
   }
   await loadChargedSessions();
   await loadRevenue();
-  showAppToast('Ðã xóa n? ' + selectedClassLabel + ' cho ' + studentName + ' (' + allDeleted + ' bu?i).');
+  showAppToast('Đã xóa nợ ' + selectedClassLabel + ' cho ' + studentName + ' (' + allDeleted + ' buổi).');
 }
 
 function toggleTuitionRow(studentId) {
