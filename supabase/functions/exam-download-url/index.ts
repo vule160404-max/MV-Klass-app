@@ -50,6 +50,26 @@ function safeHttpUrl(value: unknown) {
   return /^https?:\/\//i.test(s) ? s : "";
 }
 
+function canUseFreePortalAccess(profile: any) {
+  if (!profile) return false;
+  const role = String(profile?.role || "").trim().toLowerCase();
+  if (role === "admin" || role === "teacher") return true;
+  const status = String(profile?.portal_status || "active").trim().toLowerCase();
+  return status !== "pending" && status !== "blocked";
+}
+
+function isOpenFreeExamRow(row: any) {
+  if (!row || row.is_published !== true) return false;
+  if (String(row.access_tier || "").trim().toLowerCase() !== "free") return false;
+  if (String(row.subject || "").trim().toLowerCase() !== "english") return false;
+  if (String(row.category || "").trim().toLowerCase() === "answer") return false;
+  const provider = String(row.storage_provider || "").trim().toLowerCase();
+  if (provider !== "r2" && !String(row.object_key || "").trim()) return true;
+  const rank = Number(row.group_free_rank || row.free_rank || 0) || 0;
+  const key = String(row.object_key || row.storage_path || row.title || "").trim().toLowerCase();
+  return rank >= 1 || key.includes("free");
+}
+
 function encodeRfc3986(value: string) {
   return encodeURIComponent(value).replace(/[!'()*]/g, (c) =>
     "%" + c.charCodeAt(0).toString(16).toUpperCase()
@@ -277,28 +297,39 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { headers: { Authorization: auth } },
   });
-  const { data: canAccess, error: accessErr } = await userClient.rpc("can_access_exam_file", {
-    p_exam_id: examId,
-  });
-  if (accessErr) {
-    return json({ ok: false, error: "Access check failed" }, 500);
-  }
-  if (canAccess !== true) {
-    return json({ ok: false, error: "Forbidden" }, 403);
-  }
-
   const serviceClient = createClient(supabaseUrl, serviceRole, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data: row, error: rowErr } = await serviceClient
     .from("exam_files")
     .select(
-      "id,is_published,storage_provider,storage_path,answer_path,audio_path,object_key,answer_object_key,audio_object_key,file_url,answer_url,audio_url,title",
+      "id,is_published,subject,category,access_tier,free_rank,free_group,group_free_rank,storage_provider,storage_path,answer_path,audio_path,object_key,answer_object_key,audio_object_key,file_url,answer_url,audio_url,title",
     )
     .eq("id", examId)
     .maybeSingle();
   if (rowErr) return json({ ok: false, error: "Exam lookup failed" }, 500);
   if (!row || row.is_published !== true) return json({ ok: false, error: "Not found" }, 404);
+
+  const { data: canAccess, error: accessErr } = await userClient.rpc("can_access_exam_file", {
+    p_exam_id: examId,
+  });
+  if (accessErr) {
+    return json({ ok: false, error: "Access check failed" }, 500);
+  }
+  let allowed = canAccess === true;
+  if (!allowed && isOpenFreeExamRow(row)) {
+    const { data: userData, error: userErr } = await userClient.auth.getUser();
+    const uid = String(userData?.user?.id || "").trim();
+    if (!userErr && uid) {
+      const { data: profile } = await serviceClient
+        .from("profiles")
+        .select("role,portal_status")
+        .eq("id", uid)
+        .maybeSingle();
+      allowed = canUseFreePortalAccess(profile);
+    }
+  }
+  if (!allowed) return json({ ok: false, error: "Forbidden" }, 403);
 
   const field = pickFileField(kind);
   const provider = String(row.storage_provider || "supabase").toLowerCase();
