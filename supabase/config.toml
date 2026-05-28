@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.exam-r2-upload-url]
 verify_jwt = false
+
+[functions.exam-admin-files]
+verify_jwt = false

@@ -4094,6 +4094,36 @@
     @keyframes portalR2Spin{ to{ transform:rotate(360deg); } }
     @keyframes portalR2CheckPop{ 0%{ opacity:0; transform:scale(.55); } 68%{ opacity:1; transform:scale(1.08); } 100%{ opacity:1; transform:scale(1); } }
     @keyframes portalR2CheckDraw{ to{ stroke-dashoffset:0; } }
+    .portal-exam-manager-open{ min-height:34px; white-space:nowrap; background:#fff; }
+    .portal-exam-manager{ position:fixed; inset:0; z-index:1260; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,31,61,.46); backdrop-filter:blur(6px); }
+    .portal-exam-manager.show{ display:flex; }
+    .portal-exam-manager-card{ width:min(980px,100%); max-height:min(740px,calc(100vh - 44px)); display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; border-radius:12px; border:1px solid rgba(99,138,218,.22); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.28); }
+    .portal-exam-manager-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start; padding:16px 18px 13px; border-bottom:1px solid rgba(99,138,218,.12); background:linear-gradient(180deg,#fbfdff,#f5f8ff); }
+    .portal-exam-manager-title{ color:#102858; font-size:16px; line-height:1.2; font-weight:950; }
+    .portal-exam-manager-sub{ margin-top:4px; color:#72809b; font-size:11.5px; font-weight:760; line-height:1.4; }
+    .portal-exam-manager-close{ width:34px; height:34px; min-height:34px; padding:0; border-radius:8px; display:grid; place-items:center; font-size:20px; line-height:1; font-weight:900; color:#64748b; background:#fff; }
+    .portal-exam-manager-close:hover{ color:#0f1f3d; border-color:rgba(15,31,61,.24); }
+    .portal-exam-manager-toolbar{ display:grid; grid-template-columns:minmax(260px,1fr) 150px 140px 150px auto; gap:8px; padding:12px 18px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-exam-manager-toolbar input,.portal-exam-manager-toolbar select{ min-width:0; width:100%; min-height:36px; border-radius:8px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
+    .portal-exam-manager-toolbar .btn-sm{ min-height:36px; white-space:nowrap; }
+    .portal-exam-manager-list{ min-height:220px; overflow:auto; display:grid; align-content:start; gap:9px; padding:14px 18px 18px; background:#fbfdff; }
+    .portal-exam-manager-row{ display:grid; grid-template-columns:44px minmax(0,1fr) auto; gap:12px; align-items:start; padding:12px; border:1px solid rgba(99,138,218,.14); border-radius:10px; background:#fff; box-shadow:0 8px 20px rgba(15,31,61,.05); }
+    .portal-exam-manager-row:hover{ border-color:rgba(79,142,247,.28); box-shadow:0 12px 26px rgba(15,31,61,.08); }
+    .portal-exam-manager-mark{ width:44px; height:44px; border-radius:10px; display:grid; place-items:center; color:#0f3f91; background:#eef6ff; border:1px solid rgba(79,142,247,.20); font-size:11px; font-weight:950; text-transform:uppercase; }
+    .portal-exam-manager-info{ min-width:0; display:grid; gap:7px; }
+    .portal-exam-manager-name{ color:#102033; font-size:13px; line-height:1.35; font-weight:950; overflow-wrap:anywhere; }
+    .portal-exam-manager-meta{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; color:#64748b; font-size:11px; font-weight:780; line-height:1.25; }
+    .portal-exam-manager-pill{ display:inline-flex; align-items:center; max-width:100%; min-height:24px; padding:4px 8px; border-radius:999px; border:1px solid rgba(99,138,218,.16); background:#f8fbff; color:#42526c; font-size:10.5px; font-weight:900; line-height:1.1; }
+    .portal-exam-manager-pill.r2{ color:#7c3aed; background:#f5f3ff; border-color:rgba(124,58,237,.16); }
+    .portal-exam-manager-pill.supabase{ color:#047857; background:#ecfdf5; border-color:rgba(4,120,87,.16); }
+    .portal-exam-manager-pill.hidden{ color:#9a3412; background:#fff7ed; border-color:rgba(249,115,22,.20); }
+    .portal-exam-manager-path{ color:#7a879b; font-size:10.5px; line-height:1.35; font-weight:720; overflow-wrap:anywhere; }
+    .portal-exam-manager-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; max-width:230px; }
+    .portal-exam-manager-actions .btn-sm{ min-height:31px; height:31px; padding:6px 9px; border-radius:8px; font-size:11px; }
+    .portal-exam-manager-actions .danger{ color:#b91c1c; background:#fff1f2; border-color:rgba(239,68,68,.28); }
+    .portal-exam-manager-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
+    .portal-exam-manager-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
+    .portal-exam-manager-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
     .portal-picker{ position:fixed; inset:0; width:100vw; height:100dvh; max-width:100vw; box-sizing:border-box; z-index:1200; display:none; align-items:center; justify-content:center; padding:18px; overflow:hidden; background:rgba(15,31,61,.42); backdrop-filter:blur(5px); }
     .portal-picker.show{ display:flex; }
     .portal-picker-card{ width:min(820px, calc(100vw - 36px)); max-height:min(700px, calc(100dvh - 36px)); display:grid; grid-template-rows:auto auto auto minmax(0,1fr); overflow:hidden; border-radius:18px; border:1px solid rgba(99,138,218,.20); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.26); }
@@ -4116,6 +4146,7 @@
     .portal-picker-item.is-picked::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:3px; border-radius:999px; background:#1d4ed8; }
     .portal-picker-item .btn-sm{ min-height:30px; height:30px; padding:6px 10px; font-size:11px; }
     @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-list{ max-height:300px; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:center; } .portal-picker-card{ width:min(760px, calc(100vw - 24px)); max-height:calc(100dvh - 24px); border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-picker-actionbar{ align-items:stretch; flex-direction:column; } .portal-picker-actions{ display:grid; grid-template-columns:1fr; } .portal-picker-bulk{ width:100%; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
+    @media (max-width:900px){ .portal-exam-manager{ padding:12px; align-items:flex-end; } .portal-exam-manager-card{ max-height:88vh; border-radius:12px; } .portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-row{ grid-template-columns:38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } }
     @media (max-width:900px){
       .portal-user-tools{ grid-template-columns:1fr; }
       .portal-user-table-wrap{ max-height:none; overflow:visible; border:0; border-radius:0; }
@@ -9980,6 +10011,7 @@ a:focus-visible,
               <div class="portal-panel-title">Upload kho tài liệu</div>
               <div class="portal-panel-sub">Chọn nhiều file PDF; hệ thống tự phân vào 10, thpt hoặc ielts theo tên file.</div>
             </div>
+            <button type="button" class="btn-sm portal-exam-manager-open" onclick="openPortalExamManager()">Quản lý tài liệu</button>
           </div>
           <div class="portal-panel-body">
             <div class="portal-r2-upload">
@@ -9997,6 +10029,39 @@ a:focus-visible,
               <div class="portal-r2-upload-status" id="portal-r2-upload-status">Chưa chọn file.</div>
               <div class="portal-r2-upload-list" id="portal-r2-upload-list"></div>
             </div>
+          </div>
+        </div>
+        <div class="portal-exam-manager" id="portal-exam-manager" onclick="onPortalExamManagerBackdrop(event)">
+          <div class="portal-exam-manager-card" role="dialog" aria-modal="true" aria-labelledby="portal-exam-manager-title">
+            <div class="portal-exam-manager-head">
+              <div>
+                <div class="portal-exam-manager-title" id="portal-exam-manager-title">Quản lý kho tài liệu</div>
+                <div class="portal-exam-manager-sub" id="portal-exam-manager-summary">Xem, mở nhanh và xóa tài liệu đã upload lên Supabase hoặc R2.</div>
+              </div>
+              <button type="button" class="btn-sm portal-exam-manager-close" onclick="closePortalExamManager()" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="portal-exam-manager-toolbar">
+              <input type="search" id="portal-exam-manager-search" name="mvk_portal_exam_manager_search" placeholder="Tìm theo tên, mã đề, tỉnh/thành, đường dẫn..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="onPortalExamManagerSearch(this.value)"/>
+              <select id="portal-exam-manager-provider" onchange="onPortalExamManagerProvider(this.value)">
+                <option value="all">Mọi nguồn</option>
+                <option value="r2">R2</option>
+                <option value="supabase">Supabase</option>
+                <option value="url">URL cũ</option>
+              </select>
+              <select id="portal-exam-manager-status" onchange="onPortalExamManagerStatus(this.value)">
+                <option value="all">Mọi trạng thái</option>
+                <option value="published">Đang hiện</option>
+                <option value="hidden">Đang ẩn</option>
+              </select>
+              <select id="portal-exam-manager-level" onchange="onPortalExamManagerLevel(this.value)">
+                <option value="all">Mọi chương trình</option>
+                <option value="entrance_10">Thi vào 10</option>
+                <option value="university">THPT QG</option>
+                <option value="ielts">IELTS</option>
+              </select>
+              <button type="button" class="btn-sm" onclick="loadPortalExamManager(true)">Làm mới</button>
+            </div>
+            <div class="portal-exam-manager-list" id="portal-exam-manager-list"></div>
           </div>
         </div>
         <div class="portal-analytics-grid">
@@ -17814,6 +17879,15 @@ let portalR2UploadRunning = false;
 let portalR2UploadRows = [];
 let portalR2UploadComplete = false;
 let portalR2DragDepth = 0;
+let portalExamManagerRows = [];
+let portalExamManagerLoadedAt = 0;
+let portalExamManagerLoading = false;
+let portalExamManagerError = '';
+let portalExamManagerDeletingId = '';
+let portalExamManagerQuery = '';
+let portalExamManagerProvider = 'all';
+let portalExamManagerStatus = 'all';
+let portalExamManagerLevel = 'all';
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -19162,6 +19236,319 @@ async function uploadPortalR2ExamFiles() {
   } finally {
     portalR2UploadRunning = false;
     setPortalR2UploadStatus(document.getElementById('portal-r2-upload-status')?.textContent || 'Chưa chọn file.', false);
+  }
+}
+
+async function callPortalExamManager(action, payload = {}) {
+  const sessionOk = await ensureSessionFresh();
+  if (!sessionOk || !currentSession?.access_token) throw new Error('missing_admin_session');
+  const r = await fetch(SUPABASE_URL + '/functions/v1/exam-admin-files', {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ ...payload, action }),
+    cache: 'no-store'
+  });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok || data.ok === false) throw new Error(data.error || ('exam_admin_files_' + r.status));
+  return data;
+}
+
+function openPortalExamManager() {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được quản lý kho tài liệu.', 'warn');
+    return;
+  }
+  const modal = document.getElementById('portal-exam-manager');
+  if (modal) modal.classList.add('show');
+  document.addEventListener('keydown', onPortalExamManagerKeydown);
+  loadPortalExamManager(false).catch(e => console.warn('loadPortalExamManager', e));
+  setTimeout(() => {
+    const input = document.getElementById('portal-exam-manager-search');
+    if (input) input.focus();
+  }, 0);
+}
+
+function closePortalExamManager() {
+  const modal = document.getElementById('portal-exam-manager');
+  if (modal) modal.classList.remove('show');
+  document.removeEventListener('keydown', onPortalExamManagerKeydown);
+}
+
+function onPortalExamManagerBackdrop(e) {
+  if (e && e.target && e.target.id === 'portal-exam-manager') closePortalExamManager();
+}
+
+function onPortalExamManagerKeydown(e) {
+  if (e && e.key === 'Escape') {
+    e.preventDefault();
+    closePortalExamManager();
+  }
+}
+
+async function loadPortalExamManager(force = false) {
+  if (!isAdmin()) {
+    portalExamManagerError = 'Chỉ admin được xem kho tài liệu.';
+    renderPortalExamManager();
+    return;
+  }
+  if (!force && !portalExamManagerError && portalExamManagerRows.length && portalExamManagerLoadedAt) {
+    renderPortalExamManager();
+    return;
+  }
+  portalExamManagerLoading = true;
+  portalExamManagerError = '';
+  renderPortalExamManager();
+  try {
+    const data = await callPortalExamManager('list');
+    portalExamManagerRows = Array.isArray(data.rows) ? data.rows : [];
+    portalExamManagerLoadedAt = Date.now();
+  } catch (e) {
+    console.warn('loadPortalExamManager', e);
+    portalExamManagerError = /ROLE_NOT_ADMIN|Admin required|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(String(e && e.message || e))
+      ? 'Tài khoản hiện tại chưa có quyền admin để xem kho tài liệu.'
+      : 'Chưa tải được danh sách tài liệu. Kiểm tra Edge Function exam-admin-files.';
+  } finally {
+    portalExamManagerLoading = false;
+    renderPortalExamManager();
+  }
+}
+
+function onPortalExamManagerSearch(value) {
+  portalExamManagerQuery = String(value || '');
+  renderPortalExamManager();
+}
+
+function onPortalExamManagerProvider(value) {
+  portalExamManagerProvider = ['all', 'r2', 'supabase', 'url'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalExamManager();
+}
+
+function onPortalExamManagerStatus(value) {
+  portalExamManagerStatus = ['all', 'published', 'hidden'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalExamManager();
+}
+
+function onPortalExamManagerLevel(value) {
+  portalExamManagerLevel = ['all', 'entrance_10', 'university', 'ielts'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalExamManager();
+}
+
+function portalExamManagerProviderKey(row) {
+  const provider = String(row && row.storage_provider || '').trim().toLowerCase();
+  if (provider === 'r2' || row?.object_key || row?.answer_object_key || row?.audio_object_key) return 'r2';
+  if (row?.storage_path || row?.answer_path || row?.audio_path) return 'supabase';
+  const urls = [row?.file_url, row?.answer_url, row?.audio_url].map(x => String(x || '').trim()).filter(Boolean);
+  if (urls.some(url => /\/storage\/v1\/object\//i.test(url) || /supabase/i.test(url))) return 'supabase';
+  return urls.length ? 'url' : 'supabase';
+}
+
+function portalExamManagerProviderLabel(row) {
+  const key = portalExamManagerProviderKey(row);
+  if (key === 'r2') return 'R2';
+  if (key === 'url') return 'URL cũ';
+  return 'Supabase';
+}
+
+function portalExamManagerStatusLabel(row) {
+  return row && row.is_published === false ? 'Đang ẩn' : 'Đang hiện';
+}
+
+function portalExamManagerFileRefs(row) {
+  const refs = [];
+  if (row?.object_key || row?.storage_path || row?.file_url) {
+    refs.push({ kind: 'file', label: 'Mở đề', ref: row.object_key || row.storage_path || row.file_url });
+  }
+  if (row?.answer_object_key || row?.answer_path || row?.answer_url) {
+    refs.push({ kind: 'answer', label: 'Đáp án', ref: row.answer_object_key || row.answer_path || row.answer_url });
+  }
+  if (row?.audio_object_key || row?.audio_path || row?.audio_url) {
+    refs.push({ kind: 'audio', label: 'Audio', ref: row.audio_object_key || row.audio_path || row.audio_url });
+  }
+  return refs;
+}
+
+function portalExamManagerPathText(row) {
+  return portalExamManagerFileRefs(row)
+    .map(item => `${item.label}: ${item.ref}`)
+    .join(' · ');
+}
+
+function portalExamManagerMatchesLevel(row) {
+  if (portalExamManagerLevel === 'all') return true;
+  return portalExamGroupKey(row) === portalExamManagerLevel;
+}
+
+function portalExamManagerFilteredRows() {
+  const q = normalizeText(portalExamManagerQuery).toLowerCase().trim();
+  const rows = Array.isArray(portalExamManagerRows) ? portalExamManagerRows.slice() : [];
+  return rows
+    .filter(row => portalExamManagerProvider === 'all' || portalExamManagerProviderKey(row) === portalExamManagerProvider)
+    .filter(row => portalExamManagerStatus === 'all' || (portalExamManagerStatus === 'published' ? row?.is_published !== false : row?.is_published === false))
+    .filter(row => portalExamManagerMatchesLevel(row))
+    .filter(row => {
+      if (!q) return true;
+      const hay = [
+        portalExamTitle(row),
+        row?.title,
+        row?.exam_code,
+        row?.province,
+        studentExamDisplayProvince(row?.province),
+        row?.year,
+        row?.description,
+        row?.object_key,
+        row?.answer_object_key,
+        row?.audio_object_key,
+        row?.storage_path,
+        row?.answer_path,
+        row?.audio_path,
+        row?.file_url,
+        row?.answer_url,
+        row?.audio_url,
+      ].map(x => normalizeText(String(x || '')).toLowerCase()).join(' ');
+      return hay.includes(q);
+    })
+    .sort((a, b) => {
+      const pub = Number(b?.is_published !== false) - Number(a?.is_published !== false);
+      if (pub) return pub;
+      const at = Date.parse(a?.created_at || '') || 0;
+      const bt = Date.parse(b?.created_at || '') || 0;
+      return bt - at || portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi');
+    });
+}
+
+function renderPortalExamManagerError(message) {
+  const list = document.getElementById('portal-exam-manager-list');
+  const summary = document.getElementById('portal-exam-manager-summary');
+  if (summary) summary.textContent = 'Không tải được danh sách tài liệu.';
+  if (list) list.innerHTML = `<div class="portal-exam-manager-empty">${escapeHtml(message || 'Chưa tải được dữ liệu.')}</div>`;
+}
+
+function renderPortalExamManager() {
+  const list = document.getElementById('portal-exam-manager-list');
+  const summary = document.getElementById('portal-exam-manager-summary');
+  if (!list) return;
+  if (portalExamManagerLoading) {
+    list.innerHTML = '<div class="portal-exam-manager-loading"><span>Đang tải kho tài liệu...</span></div>';
+    if (summary) summary.textContent = 'Đang đồng bộ danh sách từ Supabase và R2.';
+    return;
+  }
+  if (portalExamManagerError) {
+    renderPortalExamManagerError(portalExamManagerError);
+    return;
+  }
+  const rows = portalExamManagerFilteredRows();
+  const total = portalExamManagerRows.length;
+  const r2Count = portalExamManagerRows.filter(row => portalExamManagerProviderKey(row) === 'r2').length;
+  const hiddenCount = portalExamManagerRows.filter(row => row?.is_published === false).length;
+  if (summary) {
+    const syncedAt = portalExamManagerLoadedAt ? new Date(portalExamManagerLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'chưa tải';
+    summary.textContent = `${rows.length}/${total} tài liệu phù hợp bộ lọc · ${r2Count} R2 · ${hiddenCount} đang ẩn · cập nhật ${syncedAt}.`;
+  }
+  if (!total) {
+    list.innerHTML = '<div class="portal-exam-manager-empty">Chưa có tài liệu nào trong kho.</div>';
+    return;
+  }
+  if (!rows.length) {
+    list.innerHTML = '<div class="portal-exam-manager-empty">Không có tài liệu khớp bộ lọc hiện tại.</div>';
+    return;
+  }
+  list.innerHTML = rows.slice(0, 300).map(row => renderPortalExamManagerRow(row)).join('');
+}
+
+function renderPortalExamManagerRow(row) {
+  const id = String(row && row.id || '');
+  const providerKey = portalExamManagerProviderKey(row);
+  const providerLabel = portalExamManagerProviderLabel(row);
+  const statusHidden = row && row.is_published === false;
+  const groupLabel = portalFreeGroupLabel(portalExamGroupKey(row));
+  const province = studentExamDisplayProvince(row && row.province);
+  const year = row && row.year ? String(row.year) : '';
+  const accessTier = String(row && row.access_tier || 'free') === 'premium' ? 'Premium' : 'Free';
+  const downloads = Math.max(0, Number(row && row.download_count || 0));
+  const createdAt = row && row.created_at ? portalActivityTimeLabel(row.created_at) : '';
+  const refs = portalExamManagerFileRefs(row);
+  const fileButtons = refs.map(ref =>
+    `<button type="button" class="btn-sm" onclick="openPortalExamManagerFile('${escapeHtml(id)}','${escapeHtml(ref.kind)}')">${escapeHtml(ref.label)}</button>`
+  ).join('');
+  const deleting = portalExamManagerDeletingId && portalExamManagerDeletingId === id;
+  const mark = providerKey === 'r2' ? 'R2' : 'PDF';
+  return `<div class="portal-exam-manager-row">
+    <div class="portal-exam-manager-mark">${escapeHtml(mark)}</div>
+    <div class="portal-exam-manager-info">
+      <div class="portal-exam-manager-name">${escapeHtml(portalExamTitle(row))}</div>
+      <div class="portal-exam-manager-meta">
+        <span class="portal-exam-manager-pill ${escapeHtml(providerKey)}">${escapeHtml(providerLabel)}</span>
+        <span class="portal-exam-manager-pill ${statusHidden ? 'hidden' : ''}">${escapeHtml(portalExamManagerStatusLabel(row))}</span>
+        <span class="portal-exam-manager-pill">${escapeHtml(groupLabel)}</span>
+        ${province || year ? `<span class="portal-exam-manager-pill">${escapeHtml([province, year].filter(Boolean).join(' · '))}</span>` : ''}
+        <span class="portal-exam-manager-pill">${escapeHtml(accessTier)}</span>
+        <span class="portal-exam-manager-pill">${downloads} lượt tải</span>
+      </div>
+      <div class="portal-exam-manager-path">${escapeHtml([row && row.exam_code ? 'Mã ' + row.exam_code : '', createdAt ? 'Tạo ' + createdAt : '', portalExamManagerPathText(row)].filter(Boolean).join(' · '))}</div>
+    </div>
+    <div class="portal-exam-manager-actions">
+      ${fileButtons || '<button type="button" class="btn-sm" disabled>Không có file</button>'}
+      <button type="button" class="btn-sm danger" onclick="deletePortalExamFile('${escapeHtml(id)}')" ${deleting ? 'disabled' : ''}>${deleting ? 'Đang xóa' : 'Xóa'}</button>
+    </div>
+  </div>`;
+}
+
+async function openPortalExamManagerFile(examId, kind) {
+  const id = String(examId || '').trim();
+  const fileKind = ['file', 'answer', 'audio'].includes(String(kind || '')) ? String(kind) : 'file';
+  if (!id) return;
+  let popup = null;
+  try { popup = window.open('', '_blank'); } catch (e) {}
+  try {
+    const data = await callPortalExamManager('sign', { id, kind: fileKind });
+    if (!data.url) throw new Error('missing_signed_url');
+    if (popup) {
+      popup.location.href = String(data.url);
+    } else {
+      window.open(String(data.url), '_blank', 'noopener');
+    }
+  } catch (e) {
+    if (popup) try { popup.close(); } catch (_) {}
+    console.warn('openPortalExamManagerFile', e);
+    showAppToast('Chưa mở được tài liệu này.', 'warn');
+  }
+}
+
+async function deletePortalExamFile(examId) {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được xóa tài liệu.', 'warn');
+    return;
+  }
+  const id = String(examId || '').trim();
+  const row = portalExamManagerRows.find(item => String(item && item.id || '') === id);
+  if (!id || !row) return;
+  const title = portalExamTitle(row);
+  const ok = await confirmApp(
+    `Xóa "${title}" khỏi kho tài liệu? Thao tác này xóa object liên quan trên R2/Supabase nếu có và gỡ tài liệu khỏi portal.`,
+    { title: 'Xóa tài liệu', okLabel: 'Xóa', cancelLabel: 'Hủy' }
+  );
+  if (!ok) return;
+  portalExamManagerDeletingId = id;
+  renderPortalExamManager();
+  try {
+    await callPortalExamManager('delete', { id });
+    portalExamManagerRows = portalExamManagerRows.filter(item => String(item && item.id || '') !== id);
+    portalExamManagerLoadedAt = Date.now();
+    portalExamManagerDeletingId = '';
+    renderPortalExamManager();
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true).catch(e => console.warn('refresh portal analytics after delete', e));
+    if (typeof loadStudentExamFiles === 'function' && document.getElementById('student-exam-portal')?.style.display !== 'none') {
+      await loadStudentExamFiles().catch(e => console.warn('refresh student exams after delete', e));
+    }
+    showAppToast('Đã xóa tài liệu khỏi kho.', 'success');
+  } catch (e) {
+    portalExamManagerDeletingId = '';
+    renderPortalExamManager();
+    console.warn('deletePortalExamFile', e);
+    const msg = String(e && e.message || e || '');
+    showAppToast(/ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được xóa tài liệu.' : 'Chưa xóa được tài liệu: ' + msg.slice(0, 90), 'error');
   }
 }
 
