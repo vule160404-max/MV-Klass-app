@@ -16209,21 +16209,65 @@ function applyRoleUI() {
   syncSidebarEdgeHoverAvailability();
 }
 
-function showLoginUI() {
+const AUTH_LOADING_MIN_MS = 850;
+let authLoadingStartedAt = (window.performance && typeof window.performance.now === 'function') ? window.performance.now() : Date.now();
+let authLoadingTransitionSeq = 0;
+
+function authLoadingNowMs() {
+  return (window.performance && typeof window.performance.now === 'function') ? window.performance.now() : Date.now();
+}
+
+function setAuthLoadingText(text) {
+  const el = document.querySelector('#auth-loading .auth-loading-text');
+  if (el && text) el.textContent = text;
+}
+
+function showAuthLoading(text) {
+  authLoadingStartedAt = authLoadingNowMs();
+  authLoadingTransitionSeq++;
+  setAuthLoadingText(text || 'Đang chuẩn bị dữ liệu...');
+  const loadEl = document.getElementById('auth-loading');
+  if (loadEl) loadEl.style.display = 'grid';
+}
+
+function isAuthLoadingVisible() {
+  const loadEl = document.getElementById('auth-loading');
+  return !!(loadEl && loadEl.style.display !== 'none');
+}
+
+function hideAuthLoadingNow() {
   const loadEl = document.getElementById('auth-loading');
   if (loadEl) loadEl.style.display = 'none';
-  const loginEl = document.getElementById('login-screen');
-  if (loginEl) loginEl.style.display = 'flex';
-  const shell = document.getElementById('app-shell');
-  if (shell) shell.style.display = 'none';
-  const chooser = document.getElementById('module-choice-screen');
-  if (chooser) chooser.style.display = 'none';
-  hideStudentExamPortalUI();
-  document.body.classList.remove('menu-edge-active');
-  closeSidebarMenu();
-  applyTenantConfig();
-  syncRememberCheckbox();
-  applySignupLoginNotice();
+}
+
+function runAfterAuthLoadingMinimum(render) {
+  const seq = ++authLoadingTransitionSeq;
+  const elapsed = authLoadingNowMs() - authLoadingStartedAt;
+  const remaining = isAuthLoadingVisible() ? Math.max(0, AUTH_LOADING_MIN_MS - elapsed) : 0;
+  const finish = () => {
+    if (seq !== authLoadingTransitionSeq) return;
+    render();
+  };
+  if (remaining > 16) window.setTimeout(finish, remaining);
+  else finish();
+}
+
+function showLoginUI() {
+  runAfterAuthLoadingMinimum(() => {
+    hideAuthLoadingNow();
+    const loginEl = document.getElementById('login-screen');
+    if (loginEl) loginEl.style.display = 'flex';
+    const shell = document.getElementById('app-shell');
+    if (shell) shell.style.display = 'none';
+    const chooser = document.getElementById('module-choice-screen');
+    if (chooser) chooser.style.display = 'none';
+    hideStudentExamPortalUI();
+    document.body.classList.remove('menu-edge-active');
+    closeSidebarMenu();
+    applyTenantConfig();
+    syncRememberCheckbox();
+    applySignupLoginNotice();
+  });
 }
 
 function showAppUI() {
@@ -16231,16 +16275,17 @@ function showAppUI() {
     showLoginUI();
     return;
   }
-  const loadEl = document.getElementById('auth-loading');
-  if (loadEl) loadEl.style.display = 'none';
-  const loginEl = document.getElementById('login-screen');
-  if (loginEl) loginEl.style.display = 'none';
-  const chooser = document.getElementById('module-choice-screen');
-  if (chooser) chooser.style.display = 'none';
-  prepareInitialAppTab();
-  const shell = document.getElementById('app-shell');
-  if (shell) shell.style.display = 'block';
-  hideStudentExamPortalUI();
+  runAfterAuthLoadingMinimum(() => {
+    hideAuthLoadingNow();
+    const loginEl = document.getElementById('login-screen');
+    if (loginEl) loginEl.style.display = 'none';
+    const chooser = document.getElementById('module-choice-screen');
+    if (chooser) chooser.style.display = 'none';
+    prepareInitialAppTab();
+    const shell = document.getElementById('app-shell');
+    if (shell) shell.style.display = 'block';
+    hideStudentExamPortalUI();
+  });
 }
 
 function initAppShellDefaults() {
@@ -16249,24 +16294,25 @@ function initAppShellDefaults() {
 }
 
 function showStudentExamPortalUI() {
-  const loadEl = document.getElementById('auth-loading');
-  if (loadEl) loadEl.style.display = 'none';
-  const loginEl = document.getElementById('login-screen');
-  if (loginEl) loginEl.style.display = 'none';
-  const chooser = document.getElementById('module-choice-screen');
-  if (chooser) chooser.style.display = 'none';
-  const shell = document.getElementById('app-shell');
-  if (shell) shell.style.display = 'none';
-  const portal = document.getElementById('student-exam-portal');
-  if (portal) portal.style.display = 'block';
-  document.body.classList.remove('role-admin', 'role-teacher', 'tab-attendance-active');
-  document.body.classList.add('role-student');
-  closeSidebarMenu();
-  const hello = document.getElementById('student-exam-hello');
-  if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
-  const adminSwitch = document.getElementById('student-exam-admin-switch');
-  if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
-  renderStudentExamPlanState();
+  runAfterAuthLoadingMinimum(() => {
+    hideAuthLoadingNow();
+    const loginEl = document.getElementById('login-screen');
+    if (loginEl) loginEl.style.display = 'none';
+    const chooser = document.getElementById('module-choice-screen');
+    if (chooser) chooser.style.display = 'none';
+    const shell = document.getElementById('app-shell');
+    if (shell) shell.style.display = 'none';
+    const portal = document.getElementById('student-exam-portal');
+    if (portal) portal.style.display = 'block';
+    document.body.classList.remove('role-admin', 'role-teacher', 'tab-attendance-active');
+    document.body.classList.add('role-student');
+    closeSidebarMenu();
+    const hello = document.getElementById('student-exam-hello');
+    if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
+    const adminSwitch = document.getElementById('student-exam-admin-switch');
+    if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
+    renderStudentExamPlanState();
+  });
 }
 
 function renderStudentExamPlanState() {
@@ -17592,17 +17638,18 @@ function showModuleChoiceUI() {
     showLoginUI();
     return;
   }
-  const loadEl = document.getElementById('auth-loading');
-  if (loadEl) loadEl.style.display = 'none';
-  const loginEl = document.getElementById('login-screen');
-  if (loginEl) loginEl.style.display = 'none';
-  const shell = document.getElementById('app-shell');
-  if (shell) shell.style.display = 'none';
-  hideStudentExamPortalUI();
-  const chooser = document.getElementById('module-choice-screen');
-  if (chooser) chooser.style.display = 'flex';
-  document.body.classList.remove('role-student', 'menu-edge-active');
-  closeSidebarMenu();
+  runAfterAuthLoadingMinimum(() => {
+    hideAuthLoadingNow();
+    const loginEl = document.getElementById('login-screen');
+    if (loginEl) loginEl.style.display = 'none';
+    const shell = document.getElementById('app-shell');
+    if (shell) shell.style.display = 'none';
+    hideStudentExamPortalUI();
+    const chooser = document.getElementById('module-choice-screen');
+    if (chooser) chooser.style.display = 'flex';
+    document.body.classList.remove('role-student', 'menu-edge-active');
+    closeSidebarMenu();
+  });
 }
 
 async function openAdminDashboardModule() {
@@ -17697,6 +17744,9 @@ async function signInWithPassword() {
     return;
   }
   currentRole = role;
+  showAuthLoading('Đang mở không gian làm việc...');
+  const loginEl = document.getElementById('login-screen');
+  if (loginEl) loginEl.style.display = 'none';
   if (isStudent()) {
     rememberWorkspaceModule('portal');
     await bootStudentExamPortal();
@@ -18045,12 +18095,12 @@ async function runBoot() {
 }
 
 async function initAuth() {
-  await loadPaymentConfigFromSupabase();
-  document.getElementById('auth-loading').style.display = 'grid';
+  showAuthLoading('Đang chuẩn bị dữ liệu...');
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-shell').style.display = 'none';
   const chooser = document.getElementById('module-choice-screen');
   if (chooser) chooser.style.display = 'none';
+  await loadPaymentConfigFromSupabase();
   authRememberMe = getAuthRememberChoice();
   let raw = null;
   try { raw = localStorage.getItem(AUTH_STORAGE_KEY); } catch (e) {}
