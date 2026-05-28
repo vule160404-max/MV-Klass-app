@@ -16689,6 +16689,23 @@ function studentExamTitleIsTooGeneric(title, row) {
   return generic.includes(t);
 }
 
+function studentExamTitleHasAggregateSource(row) {
+  const fields = [
+    row?.title,
+    studentExamFileNameForDisplay(row)
+  ];
+  return fields.some(value => {
+    const key = normalizeText(String(value || '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[\\/_-]+/g, ' ')
+      .replace(/[()[\]{}.,;:]+/g, ' '))
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+    return /\bnguon\s+tong\s+hop\b/.test(key) || /\btong\s+hop\b/.test(key);
+  });
+}
+
 function studentExamParsedTitleParts(row) {
   const base = studentExamFileNameForDisplay(row);
   const norm = normalizeText(base).replace(/\s+/g, ' ').trim().toLowerCase();
@@ -16701,7 +16718,7 @@ function studentExamParsedTitleParts(row) {
       : String(Number(codeMatch[1])).padStart(3, '0');
   }
   let source = studentExamSourceLabel(row);
-  if (source === 'Tổng hợp') source = '';
+  if (source === 'Tổng hợp') source = studentExamTitleHasAggregateSource(row) ? 'Nguồn Tổng Hợp' : '';
   return {
     code,
     source,
