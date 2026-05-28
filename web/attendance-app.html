@@ -12811,7 +12811,9 @@ let adminWorkMonthFilter = '';
 const TEACHER_SUBSTITUTE_STORAGE_KEY = 'mvklass_teacher_substitutions_v1';
 const TEACHER_RATE_STORAGE_KEY = 'mvklass_teacher_rates_v1';
 let teacherSubstitutions = [];
+let teacherSubstitutionsStale = false;
 let teacherRatesByTeacher = {};
+let teacherRatesStale = false;
 let adminPayrollMonthFilter = '';
 let teacherDirectoryById = {};
 let teacherAssignSelectedTeacherId = '';
@@ -12848,10 +12850,12 @@ async function loadTeacherSubstitutions() {
     if (!r.ok) throw new Error(await r.text());
     const rows = await r.json();
     teacherSubstitutions = Array.isArray(rows) ? rows : [];
+    teacherSubstitutionsStale = false;
     try {
       localStorage.setItem(TEACHER_SUBSTITUTE_STORAGE_KEY, JSON.stringify(teacherSubstitutions || []));
     } catch (e) {}
   } catch (e) {
+    teacherSubstitutionsStale = true;
     try {
       const raw = localStorage.getItem(TEACHER_SUBSTITUTE_STORAGE_KEY);
       const parsed = raw ? JSON.parse(raw) : [];
@@ -12882,7 +12886,9 @@ async function loadTeacherRates() {
     try {
       localStorage.setItem(TEACHER_RATE_STORAGE_KEY, JSON.stringify(teacherRatesByTeacher || {}));
     } catch (e) {}
+    teacherRatesStale = false;
   } catch (e) {
+    teacherRatesStale = true;
     try {
       const raw = localStorage.getItem(TEACHER_RATE_STORAGE_KEY);
       const parsed = raw ? JSON.parse(raw) : {};
@@ -12904,10 +12910,13 @@ function getTeacherLabelById(tid) {
   return hit ? String(hit[1] || id) : (id.slice(0, 8) + '…');
 }
 
-function getEffectiveTeacherClassesForDate(teacherId, ymd) {
+function getEffectiveTeacherClassesForDateFromBase(teacherId, ymd, baseClassNames) {
   const id = String(teacherId || '').trim();
   const dateKey = String(ymd || '').trim();
-  const set = new Set((teacherClasses || []).map(x => String(x || '').trim()).filter(Boolean));
+  const set = new Set((baseClassNames || []).map(x => String(x || '').trim()).filter(Boolean));
+  if (teacherSubstitutionsStale) {
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'vi'));
+  }
   (teacherSubstitutions || []).forEach(s => {
     if (!s || String(s.date || '') !== dateKey) return;
     const className = String(s.class_name || '').trim();
@@ -12916,6 +12925,10 @@ function getEffectiveTeacherClassesForDate(teacherId, ymd) {
     if (String(s.to_teacher_id || '') === id) set.add(className);
   });
   return Array.from(set).sort((a, b) => a.localeCompare(b, 'vi'));
+}
+
+function getEffectiveTeacherClassesForDate(teacherId, ymd) {
+  return getEffectiveTeacherClassesForDateFromBase(teacherId, ymd, teacherClasses || []);
 }
 
 function checkinBadgeHtml(st) {
@@ -13379,6 +13392,9 @@ function renderTeacherWorkPanel() {
   ensureUserObject();
   const uid = currentSession && currentSession.user ? String(currentSession.user.id || '') : '';
   const assigned = getEffectiveTeacherClassesForDate(uid, todayYmd);
+  const substitutionStaleNote = teacherSubstitutionsStale
+    ? '<div class="field-error" style="margin:0 0 10px">Không tải được lịch dạy thay từ Supabase. Hệ thống chỉ cho điểm danh các lớp được gán trực tiếp để tránh ghi sai dữ liệu.</div>'
+    : '';
   if (teacherWorkClassFilter && !assigned.includes(teacherWorkClassFilter)) {
     teacherWorkClassFilter = '';
   }
@@ -13489,6 +13505,7 @@ function renderTeacherWorkPanel() {
     <div class="work-card">
       <h2>Ði?m danh theo l?p</h2>
       <p class="analytics-muted" style="margin:0 0 10px">Tr?ng thái c?p nh?t sau khi admin duy?t.</p>
+      ${substitutionStaleNote}
       ${checkinByClassHtml}
       <p class="analytics-muted" style="margin:12px 0 0;font-size:12px">${escapeHtml(lastLine)}</p>
     </div>
@@ -13595,6 +13612,12 @@ function renderAdminWorkPanel() {
     .slice()
     .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
     .slice(0, 10);
+  const substitutionStaleAdminNote = teacherSubstitutionsStale
+    ? '<div class="field-error" style="margin:0 0 10px">Không tải được lịch dạy thay từ Supabase; bảng dưới đây chỉ là bản lưu cục bộ và không được dùng để ghi quyền điểm danh.</div>'
+    : '';
+  const teacherRatesStaleNote = teacherRatesStale
+    ? '<div class="field-error" style="margin:0 0 10px">Không tải được đơn giá giáo viên từ Supabase; lương tạm tính có thể đang dùng bản lưu cục bộ.</div>'
+    : '';
   const subRowsHtml = subRows.length
     ? `<table class="admin-chk-table"><thead><tr><th>Ngày</th><th>L?p</th><th>Ngh?</th><th>D?y thay</th><th>Ghi chú</th><th></th></tr></thead><tbody>${
         subRows.map(r => `<tr>
@@ -13643,6 +13666,7 @@ function renderAdminWorkPanel() {
       <div class="admin-chk-filter-field" style="flex:1 1 220px"><label for="admin-sub-note">Ghi chú</label><input type="text" id="admin-sub-note" placeholder="Lý do / l?p bù"/></div>
       <div class="admin-chk-filter-field" style="align-self:flex-end"><button type="button" class="btn-sm" onclick="adminCreateSubstitutionFromUI()">Luu d?y thay</button></div>
     </div>
+    ${substitutionStaleAdminNote}
     <div style="overflow-x:auto">${subRowsHtml}</div>
   </div>`;
   const payrollHtml = `<div class="work-card" style="margin-top:10px">
@@ -13652,6 +13676,7 @@ function renderAdminWorkPanel() {
       <div class="admin-chk-filter-field"><label for="admin-payroll-rate-teacher">Giáo viên (luu don giá)</label><select id="admin-payroll-rate-teacher"><option value="">Ch?n giáo viên</option>${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
       <div class="admin-chk-filter-field"><label for="admin-payroll-rate">Ðon giá / bu?i (VND)</label><div class="admin-chk-month-row"><input type="number" id="admin-payroll-rate" min="0" step="1000" placeholder="VD: 200000"/><button type="button" class="btn-sm" onclick="saveTeacherRateFromUI()">Luu don giá</button></div></div>
     </div>
+    ${teacherRatesStaleNote}
     <div style="overflow-x:auto"><table class="admin-chk-table"><thead><tr><th>Giáo viên</th><th>S? bu?i (dã duy?t)</th><th>Ðon giá</th><th>T?m tính luong</th></tr></thead><tbody>${payrollTableRows || '<tr><td colspan="4" class="analytics-muted">Không có d? li?u ch?m công dã duy?t trong tháng.</td></tr>'}</tbody></table></div>
   </div>`;
   const teacherAssignHtml = `<div class="work-card teacher-assign-panel" id="teacher-assign-section">
@@ -13809,6 +13834,28 @@ function formatTeacherCheckInConfirmNow() {
   return { now, dateStr, timeStr };
 }
 
+function teacherWorkMutationMessage(e, fallback) {
+  const msg = String(
+    (e && (e.message || e.details || e.hint || e.code)) ||
+      (e && e.body && typeof e.body === 'object' && (e.body.message || e.body.details || e.body.hint || e.body.code)) ||
+      ''
+  );
+  if (isRpcMissingError(e)) return 'Chưa có RPC bảo vệ dữ liệu. Hãy chạy migration 076_teacher_work_integrity.sql trên Supabase rồi tải lại trang.';
+  if (/teacher_required/i.test(msg)) return 'Tài khoản hiện tại chưa có quyền giáo viên.';
+  if (/admin_required/i.test(msg)) return 'Tài khoản hiện tại chưa có quyền admin.';
+  if (/class_not_assigned/i.test(msg)) return 'Lớp này không nằm trong phân công hiệu lực của giáo viên.';
+  if (/duplicate_teacher_check_in/i.test(msg)) return 'Hôm nay giáo viên đã có bản ghi điểm danh hiệu lực cho lớp này.';
+  if (/teacher_check_in_stale/i.test(msg)) return 'Bản ghi này đã được xử lý ở nơi khác. Tải lại để xem trạng thái mới nhất.';
+  if (/teacher_check_in_not_found/i.test(msg)) return 'Không tìm thấy bản ghi chấm công này. Có thể bản ghi đã bị xóa.';
+  if (/from_teacher_not_assigned/i.test(msg)) return 'Giáo viên nghỉ không được phân công trực tiếp lớp này.';
+  if (/from_teacher_not_teacher/i.test(msg)) return 'Tài khoản giáo viên nghỉ không phải role teacher.';
+  if (/to_teacher_not_teacher/i.test(msg)) return 'Tài khoản giáo viên dạy thay không phải role teacher.';
+  if (/duplicate_teacher_substitution/i.test(msg)) return 'Ngày này lớp đã có lịch dạy thay/lớp bù. Xóa lịch cũ nếu muốn thay đổi.';
+  if (/teacher_substitution_not_found/i.test(msg)) return 'Không tìm thấy lịch dạy thay này. Có thể lịch đã bị xóa.';
+  if (/same_teacher/i.test(msg)) return 'Giáo viên nghỉ và dạy thay không được trùng nhau.';
+  return fallback || 'Không thực hiện được thao tác. Vui lòng tải lại và thử lại.';
+}
+
 async function submitTeacherCheckIn(className) {
   if (!isTeacher()) return;
   const cn = String(className || '').trim();
@@ -13840,41 +13887,25 @@ async function submitTeacherCheckIn(className) {
       'Ngày: ' +
       dateStr +
       '\n' +
-      'Giờ: ' +
+      'Giờ gửi: ' +
       timeStr +
-      '\n(theo thời gian thực trên thiết bị của bạn)\n\n' +
+      '\nMáy chủ sẽ ghi nhận thời gian chính thức khi bạn bấm Gửi.\n\n' +
       'Bấm Gửi để gửi, Hủy để hủy.',
     { title: 'Xác nhận điểm danh', okLabel: 'Gửi', cancelLabel: 'Hủy' }
   );
   if (!ok) return;
-  const checkedInAtIso = new Date().toISOString();
   ensureUserObject();
   const btns = () => Array.from(document.querySelectorAll('button.btn-checkin-class'));
   btns().forEach(b => {
     b.disabled = true;
   });
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_check_ins', {
-      method: 'POST',
-      headers: getHeaders('return=representation'),
-      body: JSON.stringify({
-        teacher_id: uid,
-        status: 'pending',
-        class_name: cn,
-        auto_absent: false,
-        checked_in_at: checkedInAtIso
-      })
-    });
-    if (!(r.ok || r.status === 201)) {
-      let msg = '';
-      try {
-        msg = await r.text();
-      } catch (e) {}
-      showAppToast('Không ghi được điểm danh. Kiểm tra quyền tài khoản và kết nối. ' + msg);
-      return;
-    }
+    await callSupabaseRpc('teacher_submit_check_in', { p_class_name: cn });
     showMsg('saved-msg');
     await loadWorkCheckIns();
+  } catch (e) {
+    console.warn('submitTeacherCheckIn', e);
+    showAppToast(teacherWorkMutationMessage(e, 'Không ghi được điểm danh. Kiểm tra quyền tài khoản và kết nối.'));
   } finally {
     btns().forEach(b => {
       b.disabled = false;
@@ -13886,24 +13917,50 @@ async function adminReviewCheckIn(rowId, status) {
   if (!isAdmin()) return;
   if (status !== 'on_time' && status !== 'late' && status !== 'absent') return;
   ensureUserObject();
-  const adminUid = currentSession.user.id;
-  const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_check_ins?id=eq.' + encodeURIComponent(rowId), {
-    method: 'PATCH',
-    headers: getHeaders('return=minimal'),
-    body: JSON.stringify({
-      status,
-      reviewed_at: new Date().toISOString(),
-      reviewed_by: adminUid
-    })
-  });
-  if (!(r.ok || r.status === 204)) {
-    let msg = '';
-    try { msg = await r.text(); } catch (e) {}
-    showAppToast('Không c?p nh?t du?c. ' + msg);
-    return;
+  try {
+    try {
+      await callSupabaseRpc('admin_review_teacher_check_in', {
+        p_check_in_id: Number(rowId),
+        p_status: status
+      });
+    } catch (e) {
+      if (!isRpcMissingError(e)) throw e;
+      const adminUid = currentSession.user.id;
+      const r = await fetch(
+        SUPABASE_URL +
+          '/rest/v1/teacher_check_ins?id=eq.' +
+          encodeURIComponent(rowId) +
+          '&status=eq.pending',
+        {
+          method: 'PATCH',
+          headers: getHeaders('return=representation'),
+          body: JSON.stringify({
+            status,
+            reviewed_at: new Date().toISOString(),
+            reviewed_by: adminUid
+          })
+        }
+      );
+      const text = await r.text().catch(() => '');
+      if (!(r.ok || r.status === 204)) throw new Error(text || ('review_' + r.status));
+      let rows = [];
+      try {
+        rows = text && String(text).trim() ? JSON.parse(text) : [];
+      } catch (_) {
+        rows = [];
+      }
+      if (r.status !== 204 && Array.isArray(rows) && !rows.length) {
+        const stale = new Error('teacher_check_in_stale');
+        stale.code = 'teacher_check_in_stale';
+        throw stale;
+      }
+    }
+    showMsg('saved-msg');
+    await loadWorkCheckIns();
+  } catch (e) {
+    console.warn('adminReviewCheckIn', e);
+    showAppToast(teacherWorkMutationMessage(e, 'Không cập nhật được bản ghi chấm công.'));
   }
-  showMsg('saved-msg');
-  await loadWorkCheckIns();
 }
 
 async function adminDeleteTeacherCheckIn(rowId) {
@@ -13917,20 +13974,35 @@ async function adminDeleteTeacherCheckIn(rowId) {
     { title: 'Xóa b?n ghi ch?m công', okLabel: 'Xóa', cancelLabel: 'H?y' }
   );
   if (!ok) return;
-  const r = await fetch(
-    SUPABASE_URL + '/rest/v1/teacher_check_ins?id=eq.' + encodeURIComponent(id),
-    { method: 'DELETE', headers: getHeaders('return=minimal') }
-  );
-  if (!(r.ok || r.status === 204)) {
-    let msg = '';
+  try {
     try {
-      msg = await r.text();
-    } catch (e) {}
-    showAppToast('Không xóa du?c b?n ghi. Ki?m tra quy?n admin. ' + msg);
-    return;
+      await callSupabaseRpc('admin_delete_teacher_check_in', { p_check_in_id: Number(id) });
+    } catch (e) {
+      if (!isRpcMissingError(e)) throw e;
+      const r = await fetch(
+        SUPABASE_URL + '/rest/v1/teacher_check_ins?id=eq.' + encodeURIComponent(id),
+        { method: 'DELETE', headers: getHeaders('return=representation') }
+      );
+      const text = await r.text().catch(() => '');
+      if (!(r.ok || r.status === 204)) throw new Error(text || ('delete_' + r.status));
+      let rows = [];
+      try {
+        rows = text && String(text).trim() ? JSON.parse(text) : [];
+      } catch (_) {
+        rows = [];
+      }
+      if (r.status !== 204 && Array.isArray(rows) && !rows.length) {
+        const missing = new Error('teacher_check_in_not_found');
+        missing.code = 'teacher_check_in_not_found';
+        throw missing;
+      }
+    }
+    showMsg('saved-msg');
+    await loadWorkCheckIns();
+  } catch (e) {
+    console.warn('adminDeleteTeacherCheckIn', e);
+    showAppToast(teacherWorkMutationMessage(e, 'Không xóa được bản ghi chấm công.'));
   }
-  showMsg('saved-msg');
-  await loadWorkCheckIns();
 }
 
 const AUTO_ABSENCE_GRACE_MS = 30 * 60 * 1000;
@@ -14067,12 +14139,16 @@ function teacherHasRealCheckInInSlot(rows, ymd, startMin, endMin, className) {
   return false;
 }
 
-async function runAutoAbsenceForTeacher(teacherUserId, assignedClassNames) {
+async function runAutoAbsenceForTeacher(teacherUserId, assignedClassNames, options = {}) {
   if (!teacherUserId || !Array.isArray(assignedClassNames) || !assignedClassNames.length) return false;
+  if (!options.skipSubstitutionReload) await loadTeacherSubstitutions();
+  if (teacherSubstitutionsStale) return false;
   const now = Date.now();
   const today = new Date();
   const ymd = localYmdFromDateObj(today);
   const wd = weekdayEnFromDateObj(today);
+  const effectiveClassNames = getEffectiveTeacherClassesForDateFromBase(teacherUserId, ymd, assignedClassNames);
+  if (!effectiveClassNames.length) return false;
   let myRows = [];
   try {
     const r = await fetch(
@@ -14086,7 +14162,7 @@ async function runAutoAbsenceForTeacher(teacherUserId, assignedClassNames) {
     }
   } catch (e) {}
   const slots = [];
-  for (const className of assignedClassNames) {
+  for (const className of effectiveClassNames) {
     const def = classDefinitions.find(c => c.label === className);
     if (!def || !def.schedule) continue;
     const slot = def.schedule[wd];
@@ -14138,6 +14214,8 @@ async function runAutoAbsenceForTeacher(teacherUserId, assignedClassNames) {
 
 async function ensureAutoAbsenceAllTeachers() {
   if (!isAdmin()) return false;
+  await loadTeacherSubstitutions();
+  if (teacherSubstitutionsStale) return false;
   let links = [];
   try {
     const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_classes?select=teacher_id,class_name', {
@@ -14160,7 +14238,7 @@ async function ensureAutoAbsenceAllTeachers() {
   let any = false;
   for (const [tid, names] of map) {
     const uniq = Array.from(new Set(names));
-    const ok = await runAutoAbsenceForTeacher(tid, uniq);
+    const ok = await runAutoAbsenceForTeacher(tid, uniq, { skipSubstitutionReload: true });
     if (ok) any = true;
   }
   return any;
@@ -14325,6 +14403,52 @@ function getHeaders(prefer) {
   };
   h.Prefer = prefer || 'return=minimal';
   return h;
+}
+
+async function callSupabaseRpc(name, payload, prefer = 'return=representation') {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + encodeURIComponent(String(name || '')), {
+    method: 'POST',
+    headers: getHeaders(prefer),
+    body: JSON.stringify(payload || {}),
+    cache: 'no-store'
+  });
+  const text = await r.text().catch(() => '');
+  let data = null;
+  if (text && String(text).trim()) {
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      data = text;
+    }
+  }
+  if (!r.ok) {
+    const err = new Error(
+      (data && typeof data === 'object' && (data.message || data.details || data.hint || data.code)) ||
+        String(text || '') ||
+        ('rpc_' + String(name || '') + '_' + r.status)
+    );
+    err.status = r.status;
+    err.code = data && typeof data === 'object' ? data.code : '';
+    err.details = data && typeof data === 'object' ? data.details : '';
+    err.hint = data && typeof data === 'object' ? data.hint : '';
+    err.body = data;
+    throw err;
+  }
+  return data;
+}
+
+function isRpcMissingError(e) {
+  const msg = String(
+    (e && (e.message || e.details || e.hint || e.code)) ||
+      (e && e.body && typeof e.body === 'object' && (e.body.message || e.body.details || e.body.hint || e.body.code)) ||
+      ''
+  );
+  return !!(
+    e &&
+    (e.status === 404 ||
+      e.code === 'PGRST202' ||
+      /could not find.*function|schema cache|function .* does not exist|not found/i.test(msg))
+  );
 }
 
 const AUTH_STORAGE_KEY = APP.storage.authKey || 'sb-auth';
@@ -21067,6 +21191,82 @@ async function renderTeacherAssignPanel(forceReload) {
   });
 }
 
+async function ensureTeacherAssignmentPairsForGuard() {
+  if (teacherAssignLoaded && Array.isArray(teacherAssignPairsCache)) return true;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_classes?select=teacher_id,class_name', {
+      headers: getHeaders(),
+      cache: 'no-store'
+    });
+    const text = await r.text();
+    if (!r.ok) return false;
+    teacherAssignPairsCache = r.ok && text && String(text).trim() ? JSON.parse(text) : [];
+    return Array.isArray(teacherAssignPairsCache);
+  } catch (e) {
+    return false;
+  }
+}
+
+function teacherHasDirectClassAssignment(teacherId, className) {
+  const tid = String(teacherId || '').trim();
+  const cn = String(className || '').trim();
+  if (!tid || !cn) return false;
+  return (teacherAssignPairsCache || []).some(p => {
+    return String(p && p.teacher_id || '') === tid && String(p && p.class_name || '') === cn;
+  });
+}
+
+function getTeacherWorkClassSlots(classNameRaw) {
+  const className = String(classNameRaw || '').trim();
+  if (!className) return [];
+  const def = (classDefinitions || []).find(x => x && String(x.label || '').trim() === className);
+  if (!def || !def.schedule || typeof def.schedule !== 'object') return [];
+  const slots = [];
+  Object.keys(def.schedule).forEach(day => {
+    const slot = def.schedule[day];
+    if (!slot) return;
+    const startMin = parseHmToMinutes(slot.start);
+    const endMin = parseHmToMinutes(slot.end);
+    if (startMin == null || endMin == null) return;
+    slots.push({ day, startMin, endMin, start: String(slot.start || ''), end: String(slot.end || '') });
+  });
+  return slots;
+}
+
+function findTeacherSubstitutionScheduleConflicts(teacherId, targetClass, ymd) {
+  const tid = String(teacherId || '').trim();
+  const cn = String(targetClass || '').trim();
+  if (!tid || !cn) return [];
+  const targetSlots = getTeacherWorkClassSlots(cn);
+  if (!targetSlots.length) return [];
+  const baseClasses = (teacherAssignPairsCache || [])
+    .filter(p => String(p && p.teacher_id || '') === tid)
+    .map(p => String(p && p.class_name || '').trim())
+    .filter(Boolean);
+  const assignedClasses = getEffectiveTeacherClassesForDateFromBase(tid, ymd, baseClasses)
+    .filter(x => x && x !== cn);
+  const conflicts = [];
+  assignedClasses.forEach(otherClass => {
+    const otherSlots = getTeacherWorkClassSlots(otherClass);
+    targetSlots.forEach(t => {
+      otherSlots.forEach(o => {
+        if (String(t.day) !== String(o.day)) return;
+        if (!(t.startMin < o.endMin && o.startMin < t.endMin)) return;
+        conflicts.push({
+          day: t.day,
+          targetClass: cn,
+          targetStart: t.start,
+          targetEnd: t.end,
+          otherClass,
+          otherStart: o.start,
+          otherEnd: o.end
+        });
+      });
+    });
+  });
+  return conflicts;
+}
+
 async function adminCreateSubstitutionFromUI() {
   if (!isAdmin()) return;
   const dateEl = document.getElementById('admin-sub-date');
@@ -21087,15 +21287,35 @@ async function adminCreateSubstitutionFromUI() {
     showAppToast('Giáo viên ngh? và d?y thay không du?c trùng nhau.');
     return;
   }
+  await loadTeacherSubstitutions();
+  if (teacherSubstitutionsStale) {
+    showAppToast('Không tải được lịch dạy thay từ Supabase để kiểm tra trùng lịch. Tải lại trang rồi thử lại.');
+    return;
+  }
+  const assignmentLoaded = await ensureTeacherAssignmentPairsForGuard();
+  if (!assignmentLoaded) {
+    showAppToast('Không tải được phân công giáo viên để kiểm tra lịch dạy thay. Tải lại trang rồi thử lại.');
+    return;
+  }
+  if (!teacherHasDirectClassAssignment(fromTeacher, className)) {
+    showAppToast('Giáo viên nghỉ không được phân công trực tiếp lớp này.');
+    return;
+  }
+  const conflicts = findTeacherSubstitutionScheduleConflicts(toTeacher, className, date);
+  if (conflicts.length) {
+    const detail = conflicts.slice(0, 3).map(c => {
+      return `${weekdayVi(c.day)}: ${displayClassVi(c.otherClass)} (${c.otherStart}-${c.otherEnd}) trùng ${displayClassVi(c.targetClass)} (${c.targetStart}-${c.targetEnd})`;
+    }).join('; ');
+    showAppToast('Giáo viên dạy thay đang bị trùng lịch: ' + detail);
+    return;
+  }
   const duplicated = (teacherSubstitutions || []).some(
     x =>
       x &&
       String(x.date || '') === date &&
-      String(x.class_name || '') === className &&
-      String(x.from_teacher_id || '') === fromTeacher &&
-      String(x.to_teacher_id || '') === toTeacher
+      String(x.class_name || '') === className
   );
-  if (duplicated) {
+  if (!teacherSubstitutionsStale && duplicated) {
     showAppToast('L?ch d?y thay này dã t?n t?i.');
     return;
   }
@@ -21107,22 +21327,33 @@ async function adminCreateSubstitutionFromUI() {
     note: note || null
   };
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_substitutions', {
-      method: 'POST',
-      headers: getHeaders('return=representation'),
-      body: JSON.stringify(payload)
-    });
-    if (!(r.ok || r.status === 201)) {
-      let msg = '';
-      try { msg = await r.text(); } catch (e) {}
-      showAppToast('Không luu du?c l?ch d?y thay. ' + msg);
-      return;
+    try {
+      await callSupabaseRpc('admin_create_teacher_substitution', {
+        p_date: date,
+        p_class_name: className,
+        p_from_teacher_id: fromTeacher,
+        p_to_teacher_id: toTeacher,
+        p_note: note || null
+      });
+    } catch (e) {
+      if (!isRpcMissingError(e) || teacherSubstitutionsStale) throw e;
+      const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_substitutions', {
+        method: 'POST',
+        headers: getHeaders('return=representation'),
+        body: JSON.stringify(payload)
+      });
+      if (!(r.ok || r.status === 201)) {
+        let msg = '';
+        try { msg = await r.text(); } catch (_) {}
+        throw new Error(msg || ('substitution_' + r.status));
+      }
     }
     await loadTeacherSubstitutions();
     renderAdminWorkPanel();
     showAppToast('Ðã luu l?ch d?y thay/l?p bù lên Supabase.');
   } catch (e) {
-    showAppToast('Không kết nối được Supabase để lưu lịch dạy thay.');
+    console.warn('adminCreateSubstitutionFromUI', e);
+    showAppToast(teacherWorkMutationMessage(e, 'Không lưu được lịch dạy thay.'));
   }
 }
 
@@ -21130,18 +21361,29 @@ async function adminDeleteSubstitution(id) {
   if (!isAdmin()) return;
   const sid = String(id || '').trim();
   if (!sid) return;
-  const r = await fetch(
-    SUPABASE_URL + '/rest/v1/teacher_substitutions?id=eq.' + encodeURIComponent(sid),
-    { method: 'DELETE', headers: getHeaders('return=minimal') }
+  const ok = await confirmApp(
+    'Xóa lịch dạy thay/lớp bù này?\n\nThao tác này chỉ xóa lịch dạy thay, không xóa lịch sử chấm công đã có.',
+    { title: 'Xóa lịch dạy thay', okLabel: 'Xóa', cancelLabel: 'Hủy' }
   );
-  if (!(r.ok || r.status === 204)) {
-    let msg = '';
-    try { msg = await r.text(); } catch (e) {}
-    showAppToast('Không xóa du?c l?ch d?y thay. ' + msg);
-    return;
+  if (!ok) return;
+  try {
+    try {
+      await callSupabaseRpc('admin_delete_teacher_substitution', { p_substitution_id: Number(sid) });
+    } catch (e) {
+      if (!isRpcMissingError(e)) throw e;
+      const r = await fetch(
+        SUPABASE_URL + '/rest/v1/teacher_substitutions?id=eq.' + encodeURIComponent(sid),
+        { method: 'DELETE', headers: getHeaders('return=representation') }
+      );
+      const text = await r.text().catch(() => '');
+      if (!(r.ok || r.status === 204)) throw new Error(text || ('delete_substitution_' + r.status));
+    }
+    await loadTeacherSubstitutions();
+    renderAdminWorkPanel();
+  } catch (e) {
+    console.warn('adminDeleteSubstitution', e);
+    showAppToast(teacherWorkMutationMessage(e, 'Không xóa được lịch dạy thay.'));
   }
-  await loadTeacherSubstitutions();
-  renderAdminWorkPanel();
 }
 
 async function saveTeacherRateFromUI() {
