@@ -17621,7 +17621,7 @@ async function signUpStudentAccount() {
       body: JSON.stringify({
         email,
         password,
-        data: { role: 'student', display_name: name, full_name: name, ...classMeta }
+        data: { display_name: name, full_name: name, ...classMeta }
       })
     });
   } catch (networkError) {

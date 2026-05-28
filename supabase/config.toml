@@ -4,6 +4,9 @@
 [functions.parent-payment]
 verify_jwt = false
 
+[functions.bank-webhook]
+verify_jwt = false
+
 [functions.exam-download-url]
 verify_jwt = false
 
