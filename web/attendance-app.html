@@ -4135,7 +4135,14 @@
     .portal-exam-manager-pill.hidden{ color:#9a3412; background:#fff7ed; border-color:rgba(249,115,22,.20); }
     .portal-exam-manager-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; max-width:230px; }
     .portal-exam-manager-actions .btn-sm{ min-height:31px; height:31px; padding:6px 9px; border-radius:8px; font-size:11px; }
+    .portal-exam-manager-actions .action-file{ color:#1d4ed8; background:#eff6ff; border-color:rgba(37,99,235,.22); }
+    .portal-exam-manager-actions .action-answer{ color:#047857; background:#ecfdf5; border-color:rgba(16,185,129,.22); }
+    .portal-exam-manager-actions .action-audio{ color:#7c3aed; background:#f5f3ff; border-color:rgba(124,58,237,.20); }
+    .portal-exam-manager-actions .action-file:hover{ background:#dbeafe; border-color:rgba(37,99,235,.34); }
+    .portal-exam-manager-actions .action-answer:hover{ background:#d1fae5; border-color:rgba(16,185,129,.34); }
+    .portal-exam-manager-actions .action-audio:hover{ background:#ede9fe; border-color:rgba(124,58,237,.32); }
     .portal-exam-manager-actions .danger{ color:#b91c1c; background:#fff1f2; border-color:rgba(239,68,68,.28); }
+    .portal-exam-manager-actions .danger:hover{ background:#ffe4e6; border-color:rgba(225,29,72,.36); }
     .portal-exam-manager-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
     .portal-exam-manager-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
     .portal-exam-manager-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
@@ -19938,9 +19945,10 @@ function renderPortalExamManagerRow(row) {
   const accessTier = String(row && row.access_tier || 'free') === 'premium' ? 'Premium' : 'Free';
   const downloads = Math.max(0, Number(row && row.download_count || 0));
   const refs = portalExamManagerFileRefs(row);
-  const fileButtons = refs.map(ref =>
-    `<button type="button" class="btn-sm" onclick="openPortalExamManagerFile('${escapeHtml(id)}','${escapeHtml(ref.kind)}')">${escapeHtml(ref.label)}</button>`
-  ).join('');
+  const fileButtons = refs.map(ref => {
+    const actionClass = ref.kind === 'answer' ? 'action-answer' : (ref.kind === 'audio' ? 'action-audio' : 'action-file');
+    return `<button type="button" class="btn-sm ${actionClass}" onclick="openPortalExamManagerFile('${escapeHtml(id)}','${escapeHtml(ref.kind)}')">${escapeHtml(ref.label)}</button>`;
+  }).join('');
   const selected = portalExamManagerSelectedIds.has(id);
   const isAnswerRow = portalExamManagerIsAnswerRow(row);
   const deleting = (portalExamManagerDeletingId && portalExamManagerDeletingId === id) || portalExamManagerDeletingIds.has(id);
