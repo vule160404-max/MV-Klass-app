@@ -4080,12 +4080,16 @@
     .portal-r2-upload-name{ color:#162743; font-size:12px; font-weight:950; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-r2-upload-meta{ margin-top:2px; color:#718096; font-size:10.5px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-r2-upload-state{ width:30px; height:30px; min-width:30px; display:grid; place-items:center; border-radius:999px; padding:0; background:#f4f7fb; color:#64748b; }
+    .portal-r2-upload-state.queued{ background:#f4f7fb; color:#64748b; }
     .portal-r2-upload-state.ok{ background:#e9f9ef; color:#15803d; }
     .portal-r2-upload-state.error{ background:#fee2e2; color:#991b1b; }
     .portal-r2-upload-state.busy{ background:#eef5ff; color:#1d4ed8; }
+    .portal-r2-upload-idle-dot{ width:10px; height:10px; border-radius:999px; background:#94a3b8; box-shadow:0 0 0 5px rgba(148,163,184,.14); }
     .portal-r2-upload-spinner{ width:18px; height:18px; border-radius:999px; border:2px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .72s linear infinite; }
-    .portal-r2-upload-check{ width:24px; height:24px; display:grid; place-items:center; border-radius:999px; background:#16a34a; color:#fff; box-shadow:0 8px 18px rgba(22,163,74,.24); animation:portalR2CheckPop .42s cubic-bezier(.2,.9,.25,1.28) both; }
-    .portal-r2-upload-check svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:22; stroke-dashoffset:22; animation:portalR2CheckDraw .36s ease forwards .14s; }
+    .portal-r2-upload-check{ width:24px; height:24px; display:grid; place-items:center; border-radius:999px; background:#16a34a; color:#fff; box-shadow:0 8px 18px rgba(22,163,74,.24); }
+    .portal-r2-upload-check.animate-once{ animation:portalR2CheckPop .42s cubic-bezier(.2,.9,.25,1.28) both; }
+    .portal-r2-upload-check svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:22; stroke-dashoffset:0; }
+    .portal-r2-upload-check.animate-once svg{ stroke-dashoffset:22; animation:portalR2CheckDraw .36s ease forwards .14s; }
     .portal-r2-upload-error-dot{ width:22px; height:22px; display:grid; place-items:center; border-radius:999px; background:#ef4444; color:#fff; font-size:14px; font-weight:950; line-height:1; }
     @keyframes portalR2Spin{ to{ transform:rotate(360deg); } }
     @keyframes portalR2CheckPop{ 0%{ opacity:0; transform:scale(.55); } 68%{ opacity:1; transform:scale(1.08); } 100%{ opacity:1; transform:scale(1); } }
@@ -18739,21 +18743,29 @@ function portalR2FileSizeLabel(size) {
   return Math.round(n) + ' B';
 }
 
-function portalR2UploadStateHtml(state) {
+function portalR2UploadStateHtml(rowOrState) {
+  const row = rowOrState && typeof rowOrState === 'object' ? rowOrState : { state: rowOrState };
+  const state = String(row.state || 'queued');
   if (state === 'error') {
     return '<div class="portal-r2-upload-state error" title="Lỗi" aria-label="Lỗi">' +
       '<span class="portal-r2-upload-error-dot" aria-hidden="true">!</span>' +
       '</div>';
   }
   if (state === 'uploaded' || state === 'synced') {
+    const pulseClass = row.okPulse ? ' animate-once' : '';
     return '<div class="portal-r2-upload-state ok" title="Hoàn tất" aria-label="Hoàn tất">' +
-      '<span class="portal-r2-upload-check" aria-hidden="true">' +
+      '<span class="portal-r2-upload-check' + pulseClass + '" aria-hidden="true">' +
       '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.4 4.2L19 7.5"/></svg>' +
       '</span>' +
       '</div>';
   }
-  return '<div class="portal-r2-upload-state busy" title="Đang xử lý" aria-label="Đang xử lý">' +
-    '<span class="portal-r2-upload-spinner" aria-hidden="true"></span>' +
+  if (state === 'signing' || state === 'uploading' || state === 'syncing') {
+    return '<div class="portal-r2-upload-state busy" title="Đang xử lý" aria-label="Đang xử lý">' +
+      '<span class="portal-r2-upload-spinner" aria-hidden="true"></span>' +
+      '</div>';
+  }
+  return '<div class="portal-r2-upload-state queued" title="Chờ upload" aria-label="Chờ upload">' +
+    '<span class="portal-r2-upload-idle-dot" aria-hidden="true"></span>' +
     '</div>';
 }
 
@@ -18786,18 +18798,29 @@ function renderPortalR2UploadList() {
   const dismissHtml = canDismiss
     ? '<button type="button" class="portal-r2-upload-dismiss" onclick="dismissPortalR2UploadList()" aria-label="Ẩn danh sách vừa upload" title="Ẩn danh sách vừa upload">&times;</button>'
     : '';
+  let hasOkPulse = false;
   const rowHtml = portalR2UploadRows.map((row, idx) => {
     const state = String(row.state || 'queued');
+    if (row.okPulse) hasOkPulse = true;
     const metaParts = [portalR2FileSizeLabel(row.file && row.file.size)];
+    if (state === 'queued') metaParts.push('Chờ upload');
+    if (state === 'signing') metaParts.push('Đang chuẩn bị');
+    if (state === 'uploading') metaParts.push('Đang upload');
+    if (state === 'uploaded' || state === 'synced') metaParts.push('Hoàn tất');
     if (row.error && state !== 'uploaded' && state !== 'synced') metaParts.push(row.error);
     const meta = metaParts.filter(Boolean).join(' · ');
     return '<div class="portal-r2-upload-row" data-idx="' + idx + '">' +
       '<div><div class="portal-r2-upload-name">' + escapeHtml(row.file && row.file.name || 'file') + '</div>' +
       '<div class="portal-r2-upload-meta">' + escapeHtml(meta) + '</div></div>' +
-      portalR2UploadStateHtml(state) +
+      portalR2UploadStateHtml(row) +
       '</div>';
   }).join('');
   list.innerHTML = dismissHtml + rowHtml;
+  if (hasOkPulse) {
+    portalR2UploadRows.forEach(row => {
+      if (row) row.okPulse = false;
+    });
+  }
 }
 
 function portalR2SetDropState(state) {
@@ -18889,7 +18912,7 @@ function onPortalR2Drop(e) {
     if (title) title.textContent = 'Chọn lại file PDF';
     if (hint) hint.textContent = 'Chỉ được thả file PDF vào đây.';
     portalR2UploadComplete = false;
-    portalR2UploadRows = files.map(file => ({ file, state: portalR2IsPdfFile(file) ? 'queued' : 'error', objectKey: '', error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF' }));
+    portalR2UploadRows = files.map(file => ({ file, state: portalR2IsPdfFile(file) ? 'queued' : 'error', objectKey: '', okPulse: false, error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF' }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
     showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
@@ -18914,7 +18937,7 @@ function onPortalR2UploadFilesChange() {
   if (invalid.length) {
     if (input) input.value = '';
     portalR2UploadComplete = false;
-    portalR2UploadRows = invalid.map(file => ({ file, state: 'error', objectKey: '', error: 'Chỉ nhận PDF' }));
+    portalR2UploadRows = invalid.map(file => ({ file, state: 'error', objectKey: '', okPulse: false, error: 'Chỉ nhận PDF' }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
     showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
@@ -18923,9 +18946,9 @@ function onPortalR2UploadFilesChange() {
     return;
   }
   portalR2UploadComplete = false;
-  portalR2UploadRows = files.map(file => ({ file, state: 'queued', objectKey: '' }));
+  portalR2UploadRows = files.map(file => ({ file, state: 'queued', objectKey: '', okPulse: false }));
   renderPortalR2UploadList();
-  setPortalR2UploadStatus(files.length ? `Đã chọn ${files.length} file.` : 'Chưa chọn file.', false);
+  setPortalR2UploadStatus(files.length ? `Đã chọn ${files.length} file. Bấm Upload để bắt đầu.` : 'Chưa chọn file.', false);
   if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn tài liệu để upload';
   if (hint) hint.textContent = files.length ? files.map(f => f.name).slice(0, 2).join(', ') + (files.length > 2 ? ` và ${files.length - 2} file khác` : '') : 'Có thể chọn nhiều file PDF cùng lúc.';
 }
@@ -19019,6 +19042,7 @@ async function uploadPortalR2ExamFiles() {
       file,
       state: portalR2IsPdfFile(file) ? 'queued' : 'error',
       objectKey: '',
+      okPulse: false,
       error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF'
     }));
     renderPortalR2UploadList();
@@ -19028,7 +19052,7 @@ async function uploadPortalR2ExamFiles() {
   }
   portalR2UploadRunning = true;
   portalR2UploadComplete = false;
-  portalR2UploadRows = files.map(file => ({ file, state: 'signing', objectKey: '' }));
+  portalR2UploadRows = files.map(file => ({ file, state: 'signing', objectKey: '', okPulse: false }));
   renderPortalR2UploadList();
   setPortalR2UploadStatus(`Đang chuẩn bị upload ${files.length} file...`, true);
   try {
@@ -19083,6 +19107,7 @@ async function uploadPortalR2ExamFiles() {
           portalR2UploadRows[i].objectKey = String(proxyData.object_key || portalR2UploadRows[i].objectKey || '');
         }
         portalR2UploadRows[i].state = 'uploaded';
+        portalR2UploadRows[i].okPulse = true;
         okCount += 1;
         renderPortalR2UploadList();
         setPortalR2UploadStatus(`Đang upload ${okCount}/${files.length} file...`, true);
@@ -19109,7 +19134,7 @@ async function uploadPortalR2ExamFiles() {
     }
     setPortalR2UploadStatus(`Đã upload ${okCount}/${files.length} file. Đang cập nhật kho tài liệu...`, true);
     await syncPortalR2ExamFiles();
-    portalR2UploadRows = portalR2UploadRows.map(row => ({ ...row, state: row.state === 'uploaded' ? 'synced' : row.state }));
+    portalR2UploadRows = portalR2UploadRows.map(row => ({ ...row, state: row.state === 'uploaded' ? 'synced' : row.state, okPulse: false }));
     portalR2UploadComplete = true;
     renderPortalR2UploadList();
     setPortalR2UploadStatus(`Hoàn tất: ${okCount} file đã upload và đồng bộ.`, false);
