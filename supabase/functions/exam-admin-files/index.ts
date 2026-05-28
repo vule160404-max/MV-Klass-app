@@ -312,6 +312,134 @@ function keyForKind(row: any, kind: string) {
   };
 }
 
+function normalizeText(value: unknown) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripAnswerTokens(value: unknown) {
+  return normalizeText(value)
+    .replace(/\b(dap an|answer|loi giai|audio|listening|nghe|de|pdf|docx?|mp3|wav)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function rowIdentityRefs(row: any) {
+  return uniqueClean([
+    row?.object_key,
+    row?.storage_path,
+    row?.file_url,
+    row?.answer_object_key,
+    row?.answer_path,
+    row?.answer_url,
+  ]);
+}
+
+function rowAnswerRefs(row: any) {
+  return uniqueClean([
+    row?.answer_object_key,
+    row?.answer_path,
+    storagePathFromUrl(row?.answer_url),
+    row?.answer_url,
+  ]);
+}
+
+function rowExamCodeKey(row: any) {
+  const code = normalizeText(row?.exam_code);
+  if (!code) return "";
+  return [
+    normalizeText(row?.subject),
+    normalizeText(row?.level),
+    String(row?.year || "").trim(),
+    code,
+    normalizeText(row?.province),
+  ].join("|");
+}
+
+function rowLoosePairKey(row: any) {
+  return stripAnswerTokens([
+    row?.exam_code,
+    row?.level,
+    row?.year,
+    row?.province,
+    row?.title,
+    row?.object_key,
+    row?.storage_path,
+    row?.file_url,
+  ].filter(Boolean).join(" "));
+}
+
+function looksLikeRelatedAnswer(mainRow: any, answerRow: any) {
+  if (!answerRow || String(answerRow.category || "").trim().toLowerCase() !== "answer") return false;
+  const mainAnswerRefs = new Set(rowAnswerRefs(mainRow));
+  if (mainAnswerRefs.size) {
+    const answerRefs = rowIdentityRefs(answerRow);
+    if (answerRefs.some((ref) => mainAnswerRefs.has(ref))) return true;
+  }
+
+  const mainCodeKey = rowExamCodeKey(mainRow);
+  const answerCodeKey = rowExamCodeKey(answerRow);
+  if (mainCodeKey && answerCodeKey && mainCodeKey === answerCodeKey) return true;
+
+  const mainLooseKey = rowLoosePairKey(mainRow);
+  const answerLooseKey = rowLoosePairKey(answerRow);
+  return !!(mainLooseKey && answerLooseKey && mainLooseKey === answerLooseKey);
+}
+
+async function fetchRelatedAnswerRows(service: any, row: any) {
+  if (!row || String(row.category || "").trim().toLowerCase() === "answer") return [];
+  let query = service
+    .from("exam_files")
+    .select(EXAM_SELECT_FIELDS)
+    .eq("category", "answer")
+    .neq("id", row.id)
+    .limit(3000);
+  const subject = String(row.subject || "").trim();
+  if (subject) query = query.eq("subject", subject);
+  const { data, error } = await query;
+  if (error) throw new Error(error.message || "related_answers_fetch_failed");
+  return (Array.isArray(data) ? data : []).filter((candidate) => looksLikeRelatedAnswer(row, candidate));
+}
+
+async function deleteExamRows(service: any, rows: any[]) {
+  const uniqueRows = Array.from(new Map((rows || [])
+    .filter((row) => row && row.id)
+    .map((row) => [String(row.id), row]))
+    .values());
+  const ids = uniqueRows.map((row: any) => String(row.id));
+  const r2Keys = uniqueClean(uniqueRows.flatMap((row: any) => [
+    row.object_key,
+    row.answer_object_key,
+    row.audio_object_key,
+  ]));
+  const storagePaths = uniqueStoragePaths(uniqueRows.flatMap((row: any) => [
+    row.storage_path,
+    row.answer_path,
+    row.audio_path,
+    storagePathFromUrl(row.file_url),
+    storagePathFromUrl(row.answer_url),
+    storagePathFromUrl(row.audio_url),
+  ]));
+  const deletedR2 = await deleteR2Objects(r2Keys);
+  let deletedStorage: string[] = [];
+  if (storagePaths.length) {
+    const { data, error } = await service.storage.from("exam-files").remove(storagePaths);
+    if (error) throw new Error(error.message || "supabase_storage_delete_failed");
+    deletedStorage = Array.isArray(data) ? data.map((x: any) => String(x?.name || "")).filter(Boolean) : storagePaths;
+  }
+  if (ids.length) {
+    const { error: deleteErr } = await service.from("exam_files").delete().in("id", ids);
+    if (deleteErr) throw new Error(deleteErr.message || "exam_row_delete_failed");
+  }
+  return { ids, r2: deletedR2, supabase: deletedStorage };
+}
+
 async function fetchExamRow(service: any, id: string) {
   const { data, error } = await service
     .from("exam_files")
@@ -397,25 +525,15 @@ Deno.serve(async (req) => {
     }
 
     if (action === "delete") {
-      const r2Keys = uniqueClean([row.object_key, row.answer_object_key, row.audio_object_key]);
-      const storagePaths = uniqueStoragePaths([
-        row.storage_path,
-        row.answer_path,
-        row.audio_path,
-        storagePathFromUrl(row.file_url),
-        storagePathFromUrl(row.answer_url),
-        storagePathFromUrl(row.audio_url),
-      ]);
-      const deletedR2 = await deleteR2Objects(r2Keys);
-      let deletedStorage: string[] = [];
-      if (storagePaths.length) {
-        const { data, error } = await service.storage.from("exam-files").remove(storagePaths);
-        if (error) throw new Error(error.message || "supabase_storage_delete_failed");
-        deletedStorage = Array.isArray(data) ? data.map((x: any) => String(x?.name || "")).filter(Boolean) : storagePaths;
-      }
-      const { error: deleteErr } = await service.from("exam_files").delete().eq("id", id);
-      if (deleteErr) throw new Error(deleteErr.message || "exam_row_delete_failed");
-      return json({ ok: true, deleted: { r2: deletedR2, supabase: deletedStorage }, id });
+      const relatedAnswers = await fetchRelatedAnswerRows(service, row);
+      const deleted = await deleteExamRows(service, [row, ...relatedAnswers]);
+      return json({
+        ok: true,
+        deleted: { r2: deleted.r2, supabase: deleted.supabase },
+        id,
+        ids: deleted.ids,
+        related_answer_ids: relatedAnswers.map((item: any) => String(item.id)).filter(Boolean),
+      });
     }
 
     return json({ ok: false, error: "Unknown action" }, 400);

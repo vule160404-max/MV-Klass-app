@@ -20014,6 +20014,17 @@ async function refreshPortalAfterExamDelete() {
   }
 }
 
+function portalExamManagerDeletedIdsFromResponse(data, fallbackId) {
+  const ids = Array.isArray(data && data.ids) ? data.ids : [fallbackId];
+  return new Set(ids.map(id => String(id || '').trim()).filter(Boolean));
+}
+
+function removeDeletedPortalExamRows(deletedIds) {
+  if (!deletedIds || !deletedIds.size) return;
+  portalExamManagerRows = portalExamManagerRows.filter(item => !deletedIds.has(portalExamManagerRowId(item)));
+  deletedIds.forEach(id => portalExamManagerSelectedIds.delete(id));
+}
+
 async function deletePortalExamFile(examId) {
   if (!isAdmin()) {
     showAppToast('Chỉ admin được xóa tài liệu.', 'warn');
@@ -20028,7 +20039,7 @@ async function deletePortalExamFile(examId) {
   if (!id || !row) return;
   const title = portalExamTitle(row);
   const ok = await confirmApp(
-    `Xóa "${title}" khỏi kho tài liệu? Thao tác này xóa object liên quan trên R2/Supabase nếu có và gỡ tài liệu khỏi portal.`,
+    `Xóa "${title}" khỏi kho tài liệu? Thao tác này xóa đề, đáp án đi kèm nếu có, object liên quan trên R2/Supabase và gỡ tài liệu khỏi portal.`,
     { title: 'Xóa tài liệu', okLabel: 'Xóa', cancelLabel: 'Hủy' }
   );
   if (!ok) return;
@@ -20036,9 +20047,8 @@ async function deletePortalExamFile(examId) {
   portalExamManagerDeletingIds.add(id);
   renderPortalExamManager();
   try {
-    await callPortalExamManager('delete', { id });
-    portalExamManagerRows = portalExamManagerRows.filter(item => String(item && item.id || '') !== id);
-    portalExamManagerSelectedIds.delete(id);
+    const data = await callPortalExamManager('delete', { id });
+    removeDeletedPortalExamRows(portalExamManagerDeletedIdsFromResponse(data, id));
     portalExamManagerLoadedAt = Date.now();
     portalExamManagerDeletingId = '';
     portalExamManagerDeletingIds.delete(id);
@@ -20069,7 +20079,7 @@ async function deleteSelectedPortalExamFiles() {
   const sample = rows.slice(0, 5).map(row => '• ' + portalExamTitle(row)).join('\n');
   const more = rows.length > 5 ? `\n• ... và ${rows.length - 5} tài liệu khác` : '';
   const ok = await confirmApp(
-    `Xóa ${rows.length} tài liệu đã chọn khỏi kho?\n\n${sample}${more}\n\nThao tác này xóa object liên quan trên R2/Supabase nếu có và gỡ tài liệu khỏi portal.`,
+    `Xóa ${rows.length} tài liệu đã chọn khỏi kho?\n\n${sample}${more}\n\nThao tác này xóa cả đáp án đi kèm nếu có, object liên quan trên R2/Supabase và gỡ tài liệu khỏi portal.`,
     { title: 'Xóa nhiều tài liệu', okLabel: `Xóa ${rows.length} tài liệu`, cancelLabel: 'Hủy' }
   );
   if (!ok) return;
@@ -20085,13 +20095,18 @@ async function deleteSelectedPortalExamFiles() {
   for (const row of rows) {
     const id = portalExamManagerRowId(row);
     if (!id) continue;
+    if (!portalExamManagerRows.some(item => portalExamManagerRowId(item) === id)) {
+      portalExamManagerBulkProgress.done += 1;
+      renderPortalExamManager();
+      continue;
+    }
     portalExamManagerDeletingIds.add(id);
     renderPortalExamManager();
     try {
-      await callPortalExamManager('delete', { id });
-      deletedCount += 1;
-      portalExamManagerRows = portalExamManagerRows.filter(item => portalExamManagerRowId(item) !== id);
-      portalExamManagerSelectedIds.delete(id);
+      const data = await callPortalExamManager('delete', { id });
+      const deletedIds = portalExamManagerDeletedIdsFromResponse(data, id);
+      deletedCount += deletedIds.has(id) ? 1 : 0;
+      removeDeletedPortalExamRows(deletedIds);
     } catch (e) {
       const msg = String(e && e.message || e || 'delete_failed');
       errors.push(`${portalExamTitle(row)}: ${msg}`);
