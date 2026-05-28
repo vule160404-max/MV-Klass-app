@@ -5730,6 +5730,20 @@
     .student-exam-filter-grid{display:grid;gap:9px}.student-exam-filter-grid select{width:100%;min-width:0}.student-exam-filter-main,.student-exam-filter-advanced{display:grid;grid-template-columns:1fr 1fr;gap:9px}.student-exam-filter-main>*,.student-exam-filter-advanced>*{min-width:0}.student-exam-filter-main{grid-template-columns:1fr 1fr auto}.student-exam-filter-advanced{display:none}.student-exam-filter-advanced.open{display:grid}.student-exam-filter-toggle{min-height:42px;border-radius:14px;border:1px solid rgba(18,33,61,.1);background:#0f1f3d;color:#fff;padding:0 13px;font-size:13px;font-weight:900;cursor:pointer}.student-exam-filter-toggle[aria-expanded="true"]{background:linear-gradient(180deg,#ffd66f,#f4a71d);color:#14213d;border-color:rgba(244,167,29,.55)}.student-exam-more-wrap{display:flex;justify-content:center;margin-top:14px}.student-exam-more{min-height:46px;border-radius:999px;border:1px solid rgba(18,33,61,.12);background:#fff;color:#12213d;padding:0 18px;font-size:13px;font-weight:900;box-shadow:0 10px 24px rgba(18,33,61,.08);cursor:pointer}.student-exam-action{min-height:44px}.student-exam-card{min-height:100%}.student-exam-card-top>div:first-child{min-width:0}.student-exam-card h3{overflow-wrap:anywhere}.student-exam-desc{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     @media (max-width:699px){.student-exam-shell{padding-top:8px}.student-exam-header{margin-bottom:10px}.student-exam-hero{border-radius:22px;padding:20px 16px}.student-exam-hero h1{font-size:30px}.student-exam-hero p{margin:10px 0 14px;font-size:13px;line-height:1.55}.student-exam-data-overview{padding:13px;border-radius:18px}.student-exam-data-line{display:grid;grid-template-columns:1fr;gap:6px}.student-exam-data-title{font-size:15px}.student-exam-data-mini{text-align:left}.student-exam-data-columns{grid-template-columns:1fr}.student-exam-data-column{padding:11px}.student-exam-data-source-name{font-size:11.5px}.student-exam-filters{margin-top:10px;border-radius:20px}.student-exam-filter-grid{display:grid;grid-template-columns:1fr}.student-exam-filter-main{grid-template-columns:1fr 1fr}.student-exam-filter-main .student-exam-filter-toggle{grid-column:1/-1}.student-exam-filter-advanced{display:none;grid-template-columns:1fr}.student-exam-filter-advanced.open{display:grid}.student-exam-search{min-height:44px}.student-exam-section{margin-top:18px}.student-exam-feature-grid{display:flex;grid-template-columns:none;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 2px 4px;scrollbar-width:none}.student-exam-feature-grid::-webkit-scrollbar{display:none}.student-exam-feature-grid .student-exam-card{min-width:84%;scroll-snap-align:start}.student-exam-card{border-radius:18px;padding:14px}.student-exam-card-top{display:grid;grid-template-columns:1fr;gap:8px}.student-exam-card-tools{justify-content:space-between}.student-exam-downloads{justify-self:start}.student-exam-actions{gap:9px}.student-exam-action{min-height:46px}.student-exam-more{width:100%}.student-exam-preview-modal{padding:10px}.student-exam-preview-dialog{width:100%;max-height:92vh;border-radius:20px;grid-template-rows:auto minmax(320px,1fr) auto}.student-exam-preview-body{min-height:320px}.student-exam-preview-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}.student-exam-preview-actions .student-exam-action{width:100%;min-width:0;min-height:48px}.student-exam-pdf-pages{padding:10px}.student-exam-pdf-page{border-radius:8px}}
     @media (min-width:700px){.student-exam-filter-grid{grid-template-columns:1fr}.student-exam-filter-main{grid-template-columns:repeat(2,minmax(0,1fr)) auto}.student-exam-filter-advanced{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    .student-exam-data-overview{position:relative;overflow:hidden;margin-top:16px;padding:20px 22px;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,251,255,.96) 54%,rgba(255,248,232,.82));border:1px solid rgba(26,52,96,.12);box-shadow:0 18px 44px rgba(18,33,61,.10)}
+    .student-exam-data-overview::before{content:"";position:absolute;right:-48px;top:-62px;width:170px;height:170px;border-radius:999px;background:radial-gradient(circle,rgba(244,167,29,.18),transparent 66%);pointer-events:none}
+    .student-exam-data-line{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;margin-bottom:16px}
+    .student-exam-data-eyebrow{display:inline-flex;align-items:center;gap:8px;color:#1a3460;font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}
+    .student-exam-data-eyebrow::before{content:"";width:26px;height:3px;border-radius:999px;background:#f4a71d;box-shadow:0 0 0 4px rgba(244,167,29,.12)}
+    .student-exam-data-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-top:8px;color:#12213d;font-size:17px;line-height:1.12;font-weight:950}
+    .student-exam-data-count{color:#0f3f91;font-size:38px;line-height:.95;font-weight:950;letter-spacing:0}
+    .student-exam-data-label{color:#12213d;font-size:17px;font-weight:950;letter-spacing:0}
+    .student-exam-data-mini{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;align-items:center;min-width:220px;padding-top:0;text-align:left;white-space:normal}
+    .student-exam-data-tier{display:inline-flex;align-items:baseline;gap:5px;min-height:38px;padding:8px 12px;border-radius:14px;border:1px solid rgba(18,33,61,.09);background:#fff;color:#475569;font-size:12px;font-weight:950;box-shadow:0 8px 20px rgba(18,33,61,.06)}
+    .student-exam-data-tier strong{color:#12213d;font-size:19px;line-height:1;font-weight:950}
+    .student-exam-data-tier.free{background:#ecfdf5;color:#047857;border-color:rgba(16,185,129,.22)}
+    .student-exam-data-tier.premium{background:#fff8e8;color:#8a5208;border-color:rgba(244,167,29,.30)}
+    @media (max-width:699px){.student-exam-data-overview{padding:17px;border-radius:22px}.student-exam-data-line{grid-template-columns:1fr;gap:12px;margin-bottom:14px}.student-exam-data-title{font-size:15px}.student-exam-data-count{font-size:34px}.student-exam-data-label{font-size:15px}.student-exam-data-mini{justify-content:flex-start;min-width:0}.student-exam-data-tier{min-height:36px;padding:7px 11px}.student-exam-data-tier strong{font-size:18px}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -17206,9 +17220,15 @@ function renderStudentExamDataOverview() {
     <div class="student-exam-data-line">
       <div>
         <div class="student-exam-data-eyebrow">Kho đề hiện có</div>
-        <div class="student-exam-data-title">${formatStudentExamStat(total.total)} tài liệu tiếng Anh</div>
+        <div class="student-exam-data-title">
+          <span class="student-exam-data-count">${formatStudentExamStat(total.total)}</span>
+          <span class="student-exam-data-label">đề thi tiếng Anh</span>
+        </div>
       </div>
-      <div class="student-exam-data-mini">${formatStudentExamStat(total.free)} free · ${formatStudentExamStat(total.premium)} premium</div>
+      <div class="student-exam-data-mini">
+        <span class="student-exam-data-tier free">Free <strong>${formatStudentExamStat(total.free)}</strong></span>
+        <span class="student-exam-data-tier premium">Premium <strong>${formatStudentExamStat(total.premium)}</strong></span>
+      </div>
     </div>
     <div class="student-exam-data-columns">${columns}</div>`;
 }
