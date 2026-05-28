@@ -4133,7 +4133,6 @@
     .portal-exam-manager-pill.r2{ color:#7c3aed; background:#f5f3ff; border-color:rgba(124,58,237,.16); }
     .portal-exam-manager-pill.supabase{ color:#047857; background:#ecfdf5; border-color:rgba(4,120,87,.16); }
     .portal-exam-manager-pill.hidden{ color:#9a3412; background:#fff7ed; border-color:rgba(249,115,22,.20); }
-    .portal-exam-manager-path{ color:#7a879b; font-size:10.5px; line-height:1.35; font-weight:720; overflow-wrap:anywhere; }
     .portal-exam-manager-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; max-width:230px; }
     .portal-exam-manager-actions .btn-sm{ min-height:31px; height:31px; padding:6px 9px; border-radius:8px; font-size:11px; }
     .portal-exam-manager-actions .danger{ color:#b91c1c; background:#fff1f2; border-color:rgba(239,68,68,.28); }
@@ -19561,15 +19560,23 @@ function portalExamManagerRowId(row) {
   return String(row && row.id || '').trim();
 }
 
+function portalExamManagerIsAnswerRow(row) {
+  return String(row && row.category || '').trim().toLowerCase() === 'answer';
+}
+
+function portalExamManagerSelectableRows(rows) {
+  return (Array.isArray(rows) ? rows : []).filter(row => !portalExamManagerIsAnswerRow(row));
+}
+
 function portalExamManagerPruneSelection() {
-  const validIds = new Set((portalExamManagerRows || []).map(portalExamManagerRowId).filter(Boolean));
+  const validIds = new Set(portalExamManagerSelectableRows(portalExamManagerRows).map(portalExamManagerRowId).filter(Boolean));
   portalExamManagerSelectedIds.forEach(id => {
     if (!validIds.has(id)) portalExamManagerSelectedIds.delete(id);
   });
 }
 
 function portalExamManagerSelectedRows() {
-  const byId = new Map((portalExamManagerRows || []).map(row => [portalExamManagerRowId(row), row]));
+  const byId = new Map(portalExamManagerSelectableRows(portalExamManagerRows).map(row => [portalExamManagerRowId(row), row]));
   return Array.from(portalExamManagerSelectedIds)
     .map(id => byId.get(id))
     .filter(Boolean);
@@ -19592,7 +19599,7 @@ function togglePortalExamManagerSelection(id, checked) {
 
 function togglePortalExamManagerVisibleSelection(checked) {
   if (portalExamManagerBulkDeleting) return;
-  const rows = portalExamManagerFilteredRows().slice(0, 300);
+  const rows = portalExamManagerSelectableRows(portalExamManagerFilteredRows().slice(0, 300));
   rows.forEach(row => {
     const id = portalExamManagerRowId(row);
     if (!id) return;
@@ -19606,17 +19613,17 @@ function renderPortalExamManagerBulk(visibleRows) {
   const bulk = document.getElementById('portal-exam-manager-bulk');
   if (!bulk) return;
   portalExamManagerPruneSelection();
-  const visibleIds = (visibleRows || []).map(portalExamManagerRowId).filter(Boolean);
+  const visibleIds = portalExamManagerSelectableRows(visibleRows).map(portalExamManagerRowId).filter(Boolean);
   const selectedCount = portalExamManagerSelectedRows().length;
   const visibleSelectedCount = visibleIds.filter(id => portalExamManagerSelectedIds.has(id)).length;
   const allVisibleSelected = visibleIds.length > 0 && visibleSelectedCount === visibleIds.length;
   const disabled = portalExamManagerBulkDeleting || portalExamManagerLoading;
   const selectLabel = visibleIds.length
-    ? `Chọn ${visibleIds.length} tài liệu đang hiển thị`
-    : 'Không có tài liệu để chọn';
+    ? `Chọn ${visibleIds.length} đề đang hiển thị`
+    : 'Không có đề để chọn';
   const progress = portalExamManagerBulkDeleting && portalExamManagerBulkProgress.total
     ? `Đang xóa ${portalExamManagerBulkProgress.done}/${portalExamManagerBulkProgress.total}`
-    : (selectedCount ? `Đã chọn ${selectedCount} tài liệu` : 'Chưa chọn tài liệu');
+    : (selectedCount ? `Đã chọn ${selectedCount} đề` : 'Chưa chọn đề');
   bulk.innerHTML = `
     <div class="portal-exam-manager-bulk-main">
       <label class="portal-exam-manager-select">
@@ -19628,7 +19635,7 @@ function renderPortalExamManagerBulk(visibleRows) {
     </div>
     <div class="portal-exam-manager-bulk-actions">
       <button type="button" class="btn-sm" onclick="clearPortalExamManagerSelection()" ${disabled || !selectedCount ? 'disabled' : ''}>Bỏ chọn</button>
-      <button type="button" class="btn-sm danger" onclick="deleteSelectedPortalExamFiles()" ${disabled || !selectedCount ? 'disabled' : ''}>${portalExamManagerBulkDeleting ? 'Đang xóa' : `Xóa ${selectedCount || ''}`}</button>
+      <button type="button" class="btn-sm danger" onclick="deleteSelectedPortalExamFiles()" ${disabled || !selectedCount ? 'disabled' : ''}>${portalExamManagerBulkDeleting ? 'Đang xóa' : (selectedCount ? `Xóa ${selectedCount} đề` : 'Xóa đề')}</button>
     </div>`;
   const master = document.getElementById('portal-exam-manager-select-visible');
   if (master) master.indeterminate = visibleSelectedCount > 0 && visibleSelectedCount < visibleIds.length;
@@ -19832,12 +19839,6 @@ function portalExamManagerFileRefs(row) {
   return refs;
 }
 
-function portalExamManagerPathText(row) {
-  return portalExamManagerFileRefs(row)
-    .map(item => `${item.label}: ${item.ref}`)
-    .join(' · ');
-}
-
 function portalExamManagerMatchesLevel(row) {
   if (portalExamManagerLevel === 'all') return true;
   return portalExamGroupKey(row) === portalExamManagerLevel;
@@ -19936,17 +19937,17 @@ function renderPortalExamManagerRow(row) {
   const year = row && row.year ? String(row.year) : '';
   const accessTier = String(row && row.access_tier || 'free') === 'premium' ? 'Premium' : 'Free';
   const downloads = Math.max(0, Number(row && row.download_count || 0));
-  const createdAt = row && row.created_at ? portalActivityTimeLabel(row.created_at) : '';
   const refs = portalExamManagerFileRefs(row);
   const fileButtons = refs.map(ref =>
     `<button type="button" class="btn-sm" onclick="openPortalExamManagerFile('${escapeHtml(id)}','${escapeHtml(ref.kind)}')">${escapeHtml(ref.label)}</button>`
   ).join('');
   const selected = portalExamManagerSelectedIds.has(id);
+  const isAnswerRow = portalExamManagerIsAnswerRow(row);
   const deleting = (portalExamManagerDeletingId && portalExamManagerDeletingId === id) || portalExamManagerDeletingIds.has(id);
   const mark = providerKey === 'r2' ? 'R2' : 'PDF';
   return `<div class="portal-exam-manager-row ${selected ? 'is-selected' : ''}">
     <label class="portal-exam-manager-select" title="Chọn tài liệu này">
-      <input type="checkbox" onchange="togglePortalExamManagerSelection('${escapeHtml(id)}', this.checked)" ${selected ? 'checked' : ''} ${portalExamManagerBulkDeleting ? 'disabled' : ''}/>
+      <input type="checkbox" onchange="togglePortalExamManagerSelection('${escapeHtml(id)}', this.checked)" ${selected ? 'checked' : ''} ${portalExamManagerBulkDeleting || isAnswerRow ? 'disabled' : ''}/>
       <span class="portal-exam-manager-check-box" aria-hidden="true"></span>
     </label>
     <div class="portal-exam-manager-mark">${escapeHtml(mark)}</div>
@@ -19960,7 +19961,6 @@ function renderPortalExamManagerRow(row) {
         <span class="portal-exam-manager-pill">${escapeHtml(accessTier)}</span>
         <span class="portal-exam-manager-pill">${downloads} lượt tải</span>
       </div>
-      <div class="portal-exam-manager-path">${escapeHtml([row && row.exam_code ? 'Mã ' + row.exam_code : '', createdAt ? 'Tạo ' + createdAt : '', portalExamManagerPathText(row)].filter(Boolean).join(' · '))}</div>
     </div>
     <div class="portal-exam-manager-actions">
       ${fileButtons || '<button type="button" class="btn-sm" disabled>Không có file</button>'}
@@ -20079,8 +20079,8 @@ async function deleteSelectedPortalExamFiles() {
   const sample = rows.slice(0, 5).map(row => '• ' + portalExamTitle(row)).join('\n');
   const more = rows.length > 5 ? `\n• ... và ${rows.length - 5} tài liệu khác` : '';
   const ok = await confirmApp(
-    `Xóa ${rows.length} tài liệu đã chọn khỏi kho?\n\n${sample}${more}\n\nThao tác này xóa cả đáp án đi kèm nếu có, object liên quan trên R2/Supabase và gỡ tài liệu khỏi portal.`,
-    { title: 'Xóa nhiều tài liệu', okLabel: `Xóa ${rows.length} tài liệu`, cancelLabel: 'Hủy' }
+    `Xóa ${rows.length} đề đã chọn khỏi kho?\n\n${sample}${more}\n\nThao tác này xóa cả đáp án đi kèm nếu có, object liên quan trên R2/Supabase và gỡ tài liệu khỏi portal.`,
+    { title: 'Xóa nhiều đề', okLabel: `Xóa ${rows.length} đề`, cancelLabel: 'Hủy' }
   );
   if (!ok) return;
 
