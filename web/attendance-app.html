@@ -4094,10 +4094,11 @@
     @keyframes portalR2Spin{ to{ transform:rotate(360deg); } }
     @keyframes portalR2CheckPop{ 0%{ opacity:0; transform:scale(.55); } 68%{ opacity:1; transform:scale(1.08); } 100%{ opacity:1; transform:scale(1); } }
     @keyframes portalR2CheckDraw{ to{ stroke-dashoffset:0; } }
+    html.portal-modal-open,body.portal-modal-open{ overflow:hidden; }
     .portal-exam-manager-open{ min-height:34px; white-space:nowrap; background:#fff; }
-    .portal-exam-manager{ position:fixed; inset:0; z-index:1260; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,31,61,.46); backdrop-filter:blur(6px); }
+    .portal-exam-manager{ position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; max-width:100vw; box-sizing:border-box; z-index:1260; display:none; align-items:center; justify-content:center; padding:clamp(12px,2.2vh,22px); overflow:auto; background:rgba(15,31,61,.46); backdrop-filter:blur(6px); }
     .portal-exam-manager.show{ display:flex; }
-    .portal-exam-manager-card{ width:min(980px,100%); max-height:min(740px,calc(100vh - 44px)); display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; border-radius:12px; border:1px solid rgba(99,138,218,.22); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.28); }
+    .portal-exam-manager-card{ width:min(980px,calc(100vw - 44px)); max-height:min(740px,calc(100dvh - 44px)); margin:auto; display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; border-radius:12px; border:1px solid rgba(99,138,218,.22); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.28); }
     .portal-exam-manager-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start; padding:16px 18px 13px; border-bottom:1px solid rgba(99,138,218,.12); background:linear-gradient(180deg,#fbfdff,#f5f8ff); }
     .portal-exam-manager-title{ color:#102858; font-size:16px; line-height:1.2; font-weight:950; }
     .portal-exam-manager-sub{ margin-top:4px; color:#72809b; font-size:11.5px; font-weight:760; line-height:1.4; }
@@ -4146,7 +4147,7 @@
     .portal-picker-item.is-picked::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:3px; border-radius:999px; background:#1d4ed8; }
     .portal-picker-item .btn-sm{ min-height:30px; height:30px; padding:6px 10px; font-size:11px; }
     @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-list{ max-height:300px; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:center; } .portal-picker-card{ width:min(760px, calc(100vw - 24px)); max-height:calc(100dvh - 24px); border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-picker-actionbar{ align-items:stretch; flex-direction:column; } .portal-picker-actions{ display:grid; grid-template-columns:1fr; } .portal-picker-bulk{ width:100%; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
-    @media (max-width:900px){ .portal-exam-manager{ padding:12px; align-items:flex-end; } .portal-exam-manager-card{ max-height:88vh; border-radius:12px; } .portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-row{ grid-template-columns:38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } }
+    @media (max-width:900px){ .portal-exam-manager{ padding:12px; align-items:center; } .portal-exam-manager-card{ width:calc(100vw - 24px); max-height:calc(100dvh - 24px); border-radius:12px; } .portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-row{ grid-template-columns:38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } }
     @media (max-width:900px){
       .portal-user-tools{ grid-template-columns:1fr; }
       .portal-user-table-wrap{ max-height:none; overflow:visible; border:0; border-radius:0; }
@@ -19254,13 +19255,30 @@ async function callPortalExamManager(action, payload = {}) {
   return data;
 }
 
+function getPortalExamManagerModal() {
+  const modal = document.getElementById('portal-exam-manager');
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+  return modal;
+}
+
+function setPortalExamManagerScrollLock(locked) {
+  document.documentElement.classList.toggle('portal-modal-open', !!locked);
+  document.body.classList.toggle('portal-modal-open', !!locked);
+}
+
 function openPortalExamManager() {
   if (!isAdmin()) {
     showAppToast('Chỉ admin được quản lý kho tài liệu.', 'warn');
     return;
   }
-  const modal = document.getElementById('portal-exam-manager');
-  if (modal) modal.classList.add('show');
+  const modal = getPortalExamManagerModal();
+  if (modal) {
+    modal.scrollTop = 0;
+    modal.classList.add('show');
+    setPortalExamManagerScrollLock(true);
+  }
   document.addEventListener('keydown', onPortalExamManagerKeydown);
   loadPortalExamManager(false).catch(e => console.warn('loadPortalExamManager', e));
   setTimeout(() => {
@@ -19270,8 +19288,9 @@ function openPortalExamManager() {
 }
 
 function closePortalExamManager() {
-  const modal = document.getElementById('portal-exam-manager');
+  const modal = getPortalExamManagerModal();
   if (modal) modal.classList.remove('show');
+  setPortalExamManagerScrollLock(false);
   document.removeEventListener('keydown', onPortalExamManagerKeydown);
 }
 
