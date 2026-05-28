@@ -19518,19 +19518,25 @@ async function openPortalExamManagerFile(examId, kind) {
   const fileKind = ['file', 'answer', 'audio'].includes(String(kind || '')) ? String(kind) : 'file';
   if (!id) return;
   let popup = null;
-  try { popup = window.open('', '_blank'); } catch (e) {}
+  try {
+    popup = window.open('about:blank', '_blank');
+    if (popup) popup.opener = null;
+  } catch (e) {}
   try {
     const data = await callPortalExamManager('sign', { id, kind: fileKind });
-    if (!data.url) throw new Error('missing_signed_url');
-    if (popup) {
+    const url = String(data.url || '').trim();
+    if (!url) throw new Error('missing_signed_url');
+    if (popup && !popup.closed) {
       popup.location.href = String(data.url);
     } else {
-      window.open(String(data.url), '_blank', 'noopener');
+      const opened = window.open(url, '_blank', 'noopener');
+      if (!opened) window.location.assign(url);
     }
   } catch (e) {
     if (popup) try { popup.close(); } catch (_) {}
     console.warn('openPortalExamManagerFile', e);
-    showAppToast('Chưa mở được tài liệu này.', 'warn');
+    const msg = String(e && e.message || e || '').trim();
+    showAppToast('Chưa mở được tài liệu này' + (msg ? ': ' + msg.slice(0, 90) : '.'), 'warn');
   }
 }
 

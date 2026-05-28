@@ -72,12 +72,31 @@ async function r2SigningKey(secret: string, date: string) {
   return await hmacSha256(kService, "aws4_request");
 }
 
+function contentDispositionInline(fileName: string) {
+  const fallback = String(fileName || "tai-lieu")
+    .replace(/[^\x20-\x7E]/g, "_")
+    .replace(/["\\]/g, "_")
+    .trim() || "tai-lieu";
+  return `inline; filename="${fallback}"; filename*=UTF-8''${encodeRfc3986(fileName || fallback)}`;
+}
+
 function cleanObjectKey(value: unknown) {
   return String(value || "").replace(/^\/+/, "").trim();
 }
 
 function uniqueClean(values: unknown[]) {
   return Array.from(new Set(values.map(cleanObjectKey).filter(Boolean)));
+}
+
+function uniqueStrings(values: string[]) {
+  const seen = new Set<string>();
+  return values
+    .map((value) => cleanObjectKey(value))
+    .filter((value) => {
+      if (!value || seen.has(value)) return false;
+      seen.add(value);
+      return true;
+    });
 }
 
 function cleanStoragePath(value: unknown) {
@@ -122,7 +141,11 @@ function r2Env() {
   return { accountId, accessKeyId, secretAccessKey, bucket };
 }
 
-async function createR2SignedGetUrl(objectKey: string, expiresIn = SIGNED_URL_TTL_SECONDS) {
+async function createR2SignedGetUrl(
+  objectKey: string,
+  expiresIn = SIGNED_URL_TTL_SECONDS,
+  fileName = "",
+) {
   const { accountId, accessKeyId, secretAccessKey, bucket } = r2Env();
   const now = new Date();
   const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
@@ -130,7 +153,9 @@ async function createR2SignedGetUrl(objectKey: string, expiresIn = SIGNED_URL_TT
   const host = `${accountId}.r2.cloudflarestorage.com`;
   const scope = `${dateStamp}/auto/s3/aws4_request`;
   const path = `/${encodePath(bucket)}/${encodePath(objectKey)}`;
+  const name = fileName || objectKey.split("/").pop() || "tai-lieu";
   const params = [
+    ["response-content-disposition", contentDispositionInline(name)],
     ["X-Amz-Algorithm", "AWS4-HMAC-SHA256"],
     ["X-Amz-Credential", `${accessKeyId}/${scope}`],
     ["X-Amz-Date", amzDate],
@@ -160,6 +185,52 @@ async function createR2SignedGetUrl(objectKey: string, expiresIn = SIGNED_URL_TT
   const signingKey = await r2SigningKey(secretAccessKey, dateStamp);
   const signature = bytesToHex(await hmacSha256(signingKey, stringToSign));
   return `https://${host}${path}?${canonicalQuery}&X-Amz-Signature=${signature}`;
+}
+
+function r2ObjectKeyCandidates(objectKey: string) {
+  const key = cleanObjectKey(objectKey);
+  if (!key) return [];
+  const parts = key.split("/");
+  const fileName = parts.pop() || "";
+  const folder = parts.join("/");
+  const folderVariants = [
+    folder,
+    "V\u00e0o 10",
+    "Vao 10",
+    "vao 10",
+    "vao-10",
+    "V\u00c3\u00a0o 10",
+    "THPT",
+    "thpt",
+  ].filter(Boolean);
+  const candidates = [key];
+  if (fileName) {
+    for (const variant of folderVariants) {
+      candidates.push([variant, fileName].filter(Boolean).join("/"));
+    }
+  }
+  return uniqueStrings(candidates);
+}
+
+async function r2ObjectExists(objectKey: string) {
+  const probeUrl = await createR2SignedGetUrl(objectKey, 60);
+  const res = await fetch(probeUrl, {
+    method: "GET",
+    headers: { Range: "bytes=0-0" },
+  });
+  try { await res.body?.cancel(); } catch {}
+  return res.ok || res.status === 206;
+}
+
+async function resolveR2ObjectKey(objectKey: string) {
+  for (const candidate of r2ObjectKeyCandidates(objectKey)) {
+    try {
+      if (await r2ObjectExists(candidate)) return candidate;
+    } catch {
+      // Continue trying the next likely key; the final response remains a normal 404.
+    }
+  }
+  return "";
 }
 
 function r2Client() {
@@ -222,16 +293,19 @@ async function requireAdmin(service: any, req: Request) {
 
 function keyForKind(row: any, kind: string) {
   if (kind === "answer") return {
+    objectField: "answer_object_key",
     objectKey: cleanObjectKey(row?.answer_object_key),
     storagePath: cleanStoragePath(row?.answer_path) || storagePathFromUrl(row?.answer_url),
     publicUrl: String(row?.answer_url || "").trim(),
   };
   if (kind === "audio") return {
+    objectField: "audio_object_key",
     objectKey: cleanObjectKey(row?.audio_object_key),
     storagePath: cleanStoragePath(row?.audio_path) || storagePathFromUrl(row?.audio_url),
     publicUrl: String(row?.audio_url || "").trim(),
   };
   return {
+    objectField: "object_key",
     objectKey: cleanObjectKey(row?.object_key),
     storagePath: cleanStoragePath(row?.storage_path) || storagePathFromUrl(row?.file_url),
     publicUrl: String(row?.file_url || "").trim(),
@@ -292,9 +366,24 @@ Deno.serve(async (req) => {
 
     if (action === "sign") {
       const kind = ["file", "answer", "audio"].includes(String(body?.kind || "")) ? String(body.kind) : "file";
-      const { objectKey, storagePath, publicUrl } = keyForKind(row, kind);
+      const { objectField, objectKey, storagePath, publicUrl } = keyForKind(row, kind);
       if (objectKey) {
-        return json({ ok: true, provider: "r2", kind, url: await createR2SignedGetUrl(objectKey) });
+        const resolvedObjectKey = await resolveR2ObjectKey(objectKey);
+        if (!resolvedObjectKey) return json({ ok: false, error: "R2 file not found" }, 404);
+        if (resolvedObjectKey !== objectKey && objectField) {
+          await service.from("exam_files").update({ [objectField]: resolvedObjectKey }).eq("id", id);
+        }
+        return json({
+          ok: true,
+          provider: "r2",
+          kind,
+          url: await createR2SignedGetUrl(
+            resolvedObjectKey,
+            SIGNED_URL_TTL_SECONDS,
+            resolvedObjectKey.split("/").pop() || String(row.title || "tai-lieu"),
+          ),
+          object_key: resolvedObjectKey,
+        });
       }
       if (storagePath) {
         const { data, error } = await service.storage.from("exam-files").createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS);
