@@ -1112,6 +1112,355 @@
       line-height: 1.45;
     }
     .admin-chk-kpi span{ white-space: nowrap; }
+    #work-teacher-wrap,
+    #work-admin-wrap{
+      --work-navy:#0f1f3d;
+      --work-blue:#2f6ee8;
+      --work-green:#15803d;
+      --work-amber:#b45309;
+      --work-red:#b91c1c;
+      display:grid;
+      gap:14px;
+    }
+    .work-console-hero{
+      display:grid;
+      grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+      gap:16px;
+      align-items:stretch;
+      padding:18px;
+      border:1px solid rgba(99,138,218,0.18);
+      border-radius:8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.98), rgba(246,249,255,0.94)),
+        linear-gradient(90deg, rgba(47,110,232,0.10), rgba(21,128,61,0.07));
+      box-shadow:0 18px 42px rgba(15,31,61,0.08), inset 0 1px 0 rgba(255,255,255,0.88);
+      overflow:hidden;
+    }
+    .work-console-title{
+      margin:0;
+      color:var(--work-navy);
+      font-size:22px;
+      line-height:1.16;
+      font-weight:950;
+      letter-spacing:0;
+    }
+    .work-console-sub{
+      margin:7px 0 0;
+      max-width:760px;
+      color:#526179;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:650;
+    }
+    .work-console-eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      min-height:24px;
+      margin-bottom:8px;
+      color:#526179;
+      font-size:11px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:0;
+      text-transform:uppercase;
+    }
+    .work-console-eyebrow::before{
+      content:"";
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--work-green);
+      box-shadow:0 0 0 5px rgba(21,128,61,0.10);
+    }
+    .work-console-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-top:14px;
+    }
+    .work-metric-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      align-content:stretch;
+    }
+    .work-metric{
+      min-width:0;
+      min-height:86px;
+      padding:12px;
+      border:1px solid rgba(99,138,218,0.15);
+      border-radius:8px;
+      background:rgba(255,255,255,0.82);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.86);
+    }
+    .work-metric .k{
+      display:block;
+      color:#64748b;
+      font-size:10.5px;
+      line-height:1.2;
+      font-weight:950;
+      letter-spacing:0;
+      text-transform:uppercase;
+    }
+    .work-metric .v{
+      display:block;
+      margin-top:7px;
+      color:var(--work-navy);
+      font-size:26px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:0;
+      white-space:nowrap;
+    }
+    .work-metric .hint{
+      display:block;
+      margin-top:6px;
+      color:#64748b;
+      font-size:11.5px;
+      line-height:1.35;
+      font-weight:700;
+    }
+    .work-metric.good{ border-color:rgba(21,128,61,0.20); background:linear-gradient(180deg,rgba(240,253,244,0.92),rgba(255,255,255,0.86)); }
+    .work-metric.warn{ border-color:rgba(180,83,9,0.22); background:linear-gradient(180deg,rgba(255,251,235,0.94),rgba(255,255,255,0.86)); }
+    .work-metric.bad{ border-color:rgba(185,28,28,0.20); background:linear-gradient(180deg,rgba(254,242,242,0.94),rgba(255,255,255,0.86)); }
+    .work-metric.info{ border-color:rgba(47,110,232,0.20); background:linear-gradient(180deg,rgba(239,246,255,0.94),rgba(255,255,255,0.86)); }
+    .work-card{
+      border-radius:8px;
+      border:1px solid rgba(99,138,218,0.16);
+      background:rgba(255,255,255,0.98);
+      box-shadow:0 14px 34px rgba(15,31,61,0.07), inset 0 1px 0 rgba(255,255,255,0.86);
+    }
+    .work-card.work-panel{
+      padding:0;
+      overflow:hidden;
+    }
+    .work-card-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      padding:16px 16px 13px;
+      border-bottom:1px solid rgba(99,138,218,0.12);
+      background:linear-gradient(180deg,rgba(248,251,255,0.98),rgba(255,255,255,0.94));
+    }
+    .work-card h2.work-card-title,
+    .work-card-title{
+      margin:0;
+      color:var(--work-navy);
+      font-size:16px;
+      line-height:1.24;
+      font-weight:950;
+      letter-spacing:0;
+    }
+    .work-card-subtitle{
+      margin:4px 0 0;
+      color:#64748b;
+      font-size:12.5px;
+      line-height:1.45;
+      font-weight:650;
+    }
+    .work-card-body{
+      padding:16px;
+    }
+    .work-toolbar{
+      margin:0;
+    }
+    .work-subtabs{
+      border-radius:8px;
+      background:rgba(238,244,255,0.78);
+      border:1px solid rgba(99,138,218,0.18);
+    }
+    .work-subtabs button{
+      border-radius:7px;
+      min-height:34px;
+      color:#526179;
+    }
+    .work-subtabs button.active{
+      background:#fff;
+      color:var(--work-blue);
+      box-shadow:0 6px 16px rgba(15,31,61,0.08);
+    }
+    .teacher-checkin-class-list{
+      border-radius:8px;
+      border-color:rgba(99,138,218,0.16);
+      box-shadow:0 10px 22px rgba(15,31,61,0.05);
+    }
+    .teacher-class-checkin-row{
+      min-height:72px;
+      padding:14px 16px;
+      background:#fff;
+    }
+    .teacher-class-checkin-row:nth-child(even){
+      background:rgba(248,251,255,0.62);
+    }
+    .teacher-class-checkin-name{
+      color:var(--work-navy);
+      font-weight:950;
+      letter-spacing:0;
+    }
+    .btn-checkin.btn-checkin-class{
+      border-radius:8px;
+      background:linear-gradient(135deg,#15803d,#16a34a);
+      box-shadow:0 10px 22px rgba(21,128,61,0.22);
+    }
+    .admin-chk-toolbar{
+      padding:12px;
+      border:1px solid rgba(99,138,218,0.13);
+      border-radius:8px;
+      background:linear-gradient(180deg,rgba(248,251,255,0.98),rgba(255,255,255,0.92));
+    }
+    .admin-chk-filter-field label{
+      color:#526179;
+      font-size:10.5px;
+      font-weight:950;
+      letter-spacing:0;
+      text-transform:uppercase;
+    }
+    .admin-chk-filter-field input[type="date"],
+    .admin-chk-filter-field input[type="month"],
+    .admin-chk-filter-field input[type="number"],
+    .admin-chk-filter-field input[type="text"],
+    .admin-chk-filter-field select{
+      min-height:40px;
+      border-radius:8px;
+      border-color:rgba(99,138,218,0.18);
+      box-shadow:0 6px 14px rgba(15,31,61,0.04);
+    }
+    .admin-chk-kpi,
+    .work-summary-strip{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin:0 0 14px;
+      padding:0;
+      border:0;
+      background:transparent;
+    }
+    .work-summary-item{
+      min-width:0;
+      padding:12px;
+      border:1px solid rgba(99,138,218,0.15);
+      border-radius:8px;
+      background:#fff;
+      box-shadow:0 8px 20px rgba(15,31,61,0.05);
+    }
+    .work-summary-item .label{
+      color:#64748b;
+      font-size:10.5px;
+      font-weight:950;
+      letter-spacing:0;
+      text-transform:uppercase;
+    }
+    .work-summary-item .value{
+      margin-top:7px;
+      color:var(--work-navy);
+      font-size:22px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:0;
+    }
+    .work-summary-item.good .value{ color:var(--work-green); }
+    .work-summary-item.warn .value{ color:var(--work-amber); }
+    .work-summary-item.bad .value{ color:var(--work-red); }
+    .work-summary-item.info .value{ color:var(--work-blue); }
+    .admin-chk-table{
+      border-collapse:separate;
+      border-spacing:0;
+      font-size:12.5px;
+    }
+    .admin-chk-table th,
+    .admin-chk-table td{
+      padding:11px 12px;
+      border-bottom:1px solid rgba(99,138,218,0.12);
+    }
+    .admin-chk-table th{
+      background:rgba(248,251,255,0.98);
+      color:#526179;
+      font-size:10.5px;
+      font-weight:950;
+      letter-spacing:0;
+      text-transform:uppercase;
+    }
+    .admin-chk-table tbody tr:hover td{
+      background:rgba(239,246,255,0.52);
+    }
+    .admin-chk-actions{
+      gap:7px;
+    }
+    .admin-chk-actions .btn-sm{
+      border-radius:8px;
+      font-weight:850;
+    }
+    .work-payroll-total{
+      color:var(--work-navy);
+      font-size:20px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+    .work-cal-nav{
+      margin:0 0 12px;
+    }
+    .work-cal-nav .cal-title{
+      color:var(--work-navy);
+      font-weight:950;
+    }
+    .work-cal-grid{
+      gap:6px;
+    }
+    .work-cal-grid .wk{
+      color:#64748b;
+      font-size:10.5px;
+      font-weight:950;
+    }
+    .work-cal-cell{
+      border-radius:8px;
+      border-color:rgba(99,138,218,0.16);
+      background:#fff;
+      box-shadow:0 4px 12px rgba(15,31,61,0.04);
+    }
+    .work-list-row,
+    .work-month-block{
+      border-radius:8px;
+      border-color:rgba(99,138,218,0.16);
+      box-shadow:0 6px 16px rgba(15,31,61,0.04);
+    }
+    @media (max-width: 980px){
+      .work-console-hero{
+        grid-template-columns:1fr;
+      }
+      .admin-chk-kpi,
+      .work-summary-strip{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+    @media (max-width: 640px){
+      .work-console-hero,
+      .work-card-head,
+      .work-card-body{
+        padding:12px;
+      }
+      .work-console-title{
+        font-size:19px;
+      }
+      .work-metric-grid,
+      .admin-chk-kpi,
+      .work-summary-strip{
+        grid-template-columns:1fr;
+      }
+      .work-card-head{
+        display:grid;
+      }
+      .teacher-class-checkin-row{
+        align-items:stretch;
+      }
+      .teacher-class-checkin-act,
+      .teacher-class-checkin-act .btn-checkin,
+      .teacher-class-checkin-act .btn-sm{
+        width:100%;
+      }
+    }
 
     /* Inputs & buttons */
     label{ color: var(--muted); font-size: 13px; }
@@ -6436,6 +6785,59 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   transition: transform var(--fast), box-shadow var(--fast) !important;
 }
 .work-cal-cell:hover { transform: scale(1.08) !important; box-shadow: var(--s-sm) !important; position: relative !important; z-index: 2 !important; }
+
+/* -- WORK CONSOLE FINAL OVERRIDES ------------------------- */
+#work-teacher-wrap *,
+#work-admin-wrap *{
+  letter-spacing:0 !important;
+}
+#work-teacher-wrap .work-card,
+#work-admin-wrap .work-card,
+#work-teacher-wrap .work-console-hero,
+#work-admin-wrap .work-console-hero,
+#work-teacher-wrap .work-metric,
+#work-admin-wrap .work-metric,
+#work-teacher-wrap .work-summary-item,
+#work-admin-wrap .work-summary-item{
+  border-radius:8px !important;
+}
+#work-teacher-wrap .work-card,
+#work-admin-wrap .work-card{
+  border-color:rgba(99,138,218,0.16) !important;
+  box-shadow:0 14px 34px rgba(15,31,61,0.07), inset 0 1px 0 rgba(255,255,255,0.86) !important;
+}
+#work-teacher-wrap .work-card:hover,
+#work-admin-wrap .work-card:hover{
+  transform:none !important;
+  border-color:rgba(99,138,218,0.20) !important;
+  box-shadow:0 14px 34px rgba(15,31,61,0.07), inset 0 1px 0 rgba(255,255,255,0.86) !important;
+}
+#work-teacher-wrap .work-card.work-panel,
+#work-admin-wrap .work-card.work-panel{
+  padding:0 !important;
+}
+#work-teacher-wrap .work-card h2.work-card-title,
+#work-admin-wrap .work-card h2.work-card-title{
+  margin:0 !important;
+  color:#0f1f3d !important;
+  font-size:16px !important;
+  line-height:1.24 !important;
+  font-weight:950 !important;
+}
+#work-teacher-wrap .work-console-title,
+#work-admin-wrap .work-console-title{
+  font-size:22px !important;
+  line-height:1.16 !important;
+  font-weight:950 !important;
+}
+#work-teacher-wrap .work-cal-cell,
+#work-admin-wrap .work-cal-cell{
+  border-radius:8px !important;
+}
+#work-teacher-wrap .work-cal-cell:hover,
+#work-admin-wrap .work-cal-cell:hover{
+  transform:translateY(-1px) !important;
+}
 
 /* -- LOADING SPINNER -------------------------------------- */
 .auth-loading-spinner {
@@ -12831,7 +13233,7 @@ let consultPollTimer = null;
 const CONSULT_POLL_MS = 90000;
 
 function checkinStatusLabel(st) {
-  const m = { pending: 'Ch? duy?t', on_time: 'Ðúng gi?', late: 'Mu?n', absent: 'Không d?n' };
+  const m = { pending: 'Chờ duyệt', on_time: 'Đúng giờ', late: 'Muộn', absent: 'Không đến' };
   return m[st] || st;
 }
 
@@ -13046,7 +13448,7 @@ function buildTeacherCalendarDayCell(dayNum, rows, y, mo, locale) {
   });
   const titleBody = entries
     .map(([k, v]) => {
-      const name = k === '__none__' ? 'Không gán l?p' : displayClassVi(v.raw || k);
+      const name = k === '__none__' ? 'Không gán lớp' : displayClassVi(v.raw || k);
       return `${name}: ${checkinStatusLabel(v.st)}`;
     })
     .join('\n');
@@ -13163,6 +13565,23 @@ function countAdminCheckInByStatus(rows) {
   return o;
 }
 
+function workSummaryItemHtml(label, value, tone) {
+  const cls = tone ? ' ' + String(tone) : '';
+  return `<div class="work-summary-item${cls}">
+    <div class="label">${escapeHtml(label)}</div>
+    <div class="value">${escapeHtml(String(value == null ? '' : value))}</div>
+  </div>`;
+}
+
+function workMetricHtml(label, value, hint, tone) {
+  const cls = tone ? ' ' + String(tone) : '';
+  return `<div class="work-metric${cls}">
+    <span class="k">${escapeHtml(label)}</span>
+    <span class="v">${escapeHtml(String(value == null ? '' : value))}</span>
+    <span class="hint">${escapeHtml(hint || '')}</span>
+  </div>`;
+}
+
 function ymKeyFromCheckInIso(iso) {
   if (!iso) return '';
   const d = new Date(iso);
@@ -13200,7 +13619,7 @@ function workCheckInPaginationBar(page, totalItems, pageSize, onPrevStr, onNextS
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const p = Math.min(Math.max(1, page), totalPages);
   if (totalItems <= pageSize) {
-    return `<div class="work-pagination work-pagination-compact"><span class="work-pagination-meta">${totalItems} b?n ghi</span></div>`;
+    return `<div class="work-pagination work-pagination-compact"><span class="work-pagination-meta">${totalItems} bản ghi</span></div>`;
   }
   const start = (p - 1) * pageSize + 1;
   const end = Math.min(totalItems, p * pageSize);
@@ -13237,7 +13656,7 @@ function buildTeacherCheckInListPagedHtml(rows, pageIn, pageSize) {
     (a, b) => new Date(b.checked_in_at).getTime() - new Date(a.checked_in_at).getTime()
   );
   const total = sorted.length;
-  if (!total) return '<div class="empty">Chua có d? li?u.</div>';
+  if (!total) return '<div class="empty">Chưa có dữ liệu.</div>';
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(Math.max(1, pageIn), totalPages);
   teacherWorkListPage = page;
@@ -13252,8 +13671,8 @@ function buildTeacherCheckInListPagedHtml(rows, pageIn, pageSize) {
       parts.push(`<div class="work-list-month-sep">${escapeHtml(formatYmKeyVi(ym))}</div>`);
     }
     const clsLine = r.class_name
-      ? `<div class="analytics-muted" style="font-size:11px;margin-top:2px">L?p: ${escapeHtml(String(r.class_name))}${r.auto_absent ? ' · t? d?ng' : ''}</div>`
-      : `<div class="analytics-muted" style="font-size:11px;margin-top:2px">${r.auto_absent ? 'T? d?ng (chua gán l?p trên b?n ghi)' : 'Không gán l?p'}</div>`;
+      ? `<div class="analytics-muted" style="font-size:11px;margin-top:2px">Lớp: ${escapeHtml(String(r.class_name))}${r.auto_absent ? ' · tự động' : ''}</div>`
+      : `<div class="analytics-muted" style="font-size:11px;margin-top:2px">${r.auto_absent ? 'Tự động (chưa gán lớp trên bản ghi)' : 'Không gán lớp'}</div>`;
     parts.push(`<div class="work-list-row">
         <div><div class="t">${formatPaymentDateTime(r.checked_in_at)}</div>${clsLine}</div>
         <div class="s">${checkinBadgeHtml(r.status)}</div>
@@ -13352,11 +13771,11 @@ function renderWorkTabPanels() {
   const tw = document.getElementById('work-teacher-wrap');
   const aw = document.getElementById('work-admin-wrap');
   if (tw) {
-    tw.style.display = isTeacher() ? 'block' : 'none';
+    tw.style.display = isTeacher() ? 'grid' : 'none';
     if (isTeacher()) renderTeacherWorkPanel();
   }
   if (aw) {
-    aw.style.display = isAdmin() ? 'block' : 'none';
+    aw.style.display = isAdmin() ? 'grid' : 'none';
     if (isAdmin()) renderAdminWorkPanel();
   }
 }
@@ -13385,9 +13804,9 @@ function renderTeacherWorkPanel() {
   const rows = workCheckIns || [];
   const last = rows[0];
   const lastLine = last
-    ? `L?n g?n nh?t: ${formatPaymentDateTime(last.checked_in_at)} — ${checkinStatusLabel(last.status)}` +
+    ? `Lần gần nhất: ${formatPaymentDateTime(last.checked_in_at)} — ${checkinStatusLabel(last.status)}` +
         (last.class_name ? ` · ${displayClassVi(last.class_name)}` : '')
-    : 'Chua có l?n di?m danh nào.';
+    : 'Chưa có lần điểm danh nào.';
   const todayYmd = localYmdFromDateObj(new Date());
   ensureUserObject();
   const uid = currentSession && currentSession.user ? String(currentSession.user.id || '') : '';
@@ -13395,6 +13814,29 @@ function renderTeacherWorkPanel() {
   const substitutionStaleNote = teacherSubstitutionsStale
     ? '<div class="field-error" style="margin:0 0 10px">Không tải được lịch dạy thay từ Supabase. Hệ thống chỉ cho điểm danh các lớp được gán trực tiếp để tránh ghi sai dữ liệu.</div>'
     : '';
+  const currentMonthKey = todayYmd.slice(0, 7);
+  const todayRows = rows.filter(r => localYmdFromIso(r && r.checked_in_at) === todayYmd);
+  const monthRows = rows.filter(r => ymKeyFromCheckInIso(r && r.checked_in_at) === currentMonthKey);
+  const monthKpi = countAdminCheckInByStatus(monthRows);
+  const payableThisMonth = monthKpi.on_time + monthKpi.late;
+  const pendingToday = todayRows.filter(r => String(r && r.status || 'pending') === 'pending').length;
+  const checkedToday = todayRows.filter(r => ['pending', 'on_time', 'late'].includes(String(r && r.status || 'pending'))).length;
+  const teacherHeroHtml = `<div class="work-console-hero">
+    <div>
+      <div class="work-console-eyebrow">Chấm công giáo viên</div>
+      <h2 class="work-console-title">Bảng làm việc hôm nay</h2>
+      <p class="work-console-sub">${escapeHtml(lastLine)}</p>
+      <div class="work-console-actions">
+        <button type="button" class="btn-sm" onclick="loadWorkCheckIns()">Làm mới</button>
+      </div>
+    </div>
+    <div class="work-metric-grid">
+      ${workMetricHtml('Lớp hôm nay', assigned.length, 'Theo phân công hiệu lực', 'info')}
+      ${workMetricHtml('Đã ghi hôm nay', checkedToday, pendingToday ? pendingToday + ' chờ duyệt' : 'Không có lượt chờ duyệt', pendingToday ? 'warn' : 'good')}
+      ${workMetricHtml('Buổi tính lương', payableThisMonth, 'Đúng giờ + muộn trong tháng', 'good')}
+      ${workMetricHtml('Vắng tháng này', monthKpi.absent, 'Bản ghi không đến', monthKpi.absent ? 'bad' : 'info')}
+    </div>
+  </div>`;
   if (teacherWorkClassFilter && !assigned.includes(teacherWorkClassFilter)) {
     teacherWorkClassFilter = '';
   }
@@ -13404,10 +13846,10 @@ function renderTeacherWorkPanel() {
   let checkinByClassHtml = '';
   if (!assigned.length) {
     checkinByClassHtml =
-      '<div class="empty" style="margin-top:8px">B?n chua du?c gán l?p. Liên h? admin d? gán l?p d?y — sau dó m?i di?m danh theo t?ng l?p.</div>';
+      '<div class="empty" style="margin-top:8px">Bạn chưa được gán lớp. Liên hệ admin để gán lớp dạy, sau đó mới điểm danh theo từng lớp.</div>';
   } else {
     const intro =
-      '<p class="analytics-muted" style="margin:0 0 12px">Ch?n dúng <strong>l?p dang d?y</strong>. M?i l?p t?i da <strong>m?t</strong> l?n di?m danh m?i ngày; nhi?u l?p trong ngày thì b?m t?ng l?p.</p>';
+      '<p class="analytics-muted" style="margin:0 0 12px">Chọn đúng <strong>lớp đang dạy</strong>. Mỗi lớp tối đa <strong>một</strong> lần điểm danh mỗi ngày; nhiều lớp trong ngày thì bấm từng lớp.</p>';
     const rowsHtml = assigned
       .map(className => {
         const locked = teacherHasActiveCheckInForClassToday(rows, className, todayYmd);
@@ -13430,12 +13872,12 @@ function renderTeacherWorkPanel() {
           );
           if (hasAbsent) {
             note =
-              '<div class="teacher-class-checkin-note"><span class="analytics-muted" style="font-size:11px">Ðã có b?n ghi v?ng hôm nay — v?n có th? di?m danh n?u b?n có m?t.</span></div>';
+              '<div class="teacher-class-checkin-note"><span class="analytics-muted" style="font-size:11px">Đã có bản ghi vắng hôm nay, vẫn có thể điểm danh nếu bạn có mặt.</span></div>';
           }
         }
         const btn = locked
-          ? '<button type="button" class="btn-sm" disabled>Ðã ch?m công</button>'
-          : `<button type="button" class="btn-checkin btn-checkin-class" data-checkin-class="${encodeURIComponent(className)}">Ch?m công</button>`;
+          ? '<button type="button" class="btn-sm" disabled>Đã chấm công</button>'
+          : `<button type="button" class="btn-checkin btn-checkin-class" data-checkin-class="${encodeURIComponent(className)}">Chấm công</button>`;
         return `<div class="teacher-class-checkin-row">
             <div class="teacher-class-checkin-meta">
               <span class="teacher-class-checkin-name">${escapeHtml(displayClassVi(className))}</span>
@@ -13478,61 +13920,73 @@ function renderTeacherWorkPanel() {
       ? adminFilterAttr(teacherWorkMonthFilter)
       : '';
   const classOptionsHtml = assigned.length
-    ? `<option value="">${escapeHtml('T?t c? l?p')}</option>${assigned
+    ? `<option value="">${escapeHtml('Tất cả lớp')}</option>${assigned
         .map(c => {
           const sel = teacherWorkClassFilter === c ? ' selected' : '';
           return `<option value="${adminFilterAttr(c)}"${sel}>${escapeHtml(displayClassVi(c))}</option>`;
         })
         .join('')}`
-    : `<option value="">${escapeHtml('T?t c? l?p')}</option>`;
+    : `<option value="">${escapeHtml('Tất cả lớp')}</option>`;
   const listFiltersHtml =
     `<div class="admin-chk-toolbar admin-chk-filters teacher-work-history-filters" role="search">
       <div class="admin-chk-filter-field">
         <label for="teacher-work-month-filter">Tháng</label>
         <div class="admin-chk-month-row">
-          <input type="month" id="teacher-work-month-filter" value="${monthFilterVal}" aria-label="L?c theo tháng" title="Ch?n tháng/nam; T?t c? tháng d? xem m?i tháng"/>
-          <button type="button" class="btn-sm" onclick="teacherWorkMonthFilter='';teacherWorkListPage=1;renderTeacherWorkPanel();">T?t c? tháng</button>
+          <input type="month" id="teacher-work-month-filter" value="${monthFilterVal}" aria-label="Lọc theo tháng" title="Chọn tháng/năm; Tất cả tháng để xem mọi tháng"/>
+          <button type="button" class="btn-sm" onclick="teacherWorkMonthFilter='';teacherWorkListPage=1;renderTeacherWorkPanel();">Tất cả tháng</button>
         </div>
       </div>
       <div class="admin-chk-filter-field">
-        <label for="teacher-work-class-filter">L?p</label>
-        <select id="teacher-work-class-filter" aria-label="L?c theo l?p du?c phân công">
+        <label for="teacher-work-class-filter">Lớp</label>
+        <select id="teacher-work-class-filter" aria-label="Lọc theo lớp được phân công">
           ${classOptionsHtml}
         </select>
       </div>
     </div>`;
   el.innerHTML = `
-    <div class="work-card">
-      <h2>Ði?m danh theo l?p</h2>
-      <p class="analytics-muted" style="margin:0 0 10px">Tr?ng thái c?p nh?t sau khi admin duy?t.</p>
-      ${substitutionStaleNote}
-      ${checkinByClassHtml}
-      <p class="analytics-muted" style="margin:12px 0 0;font-size:12px">${escapeHtml(lastLine)}</p>
-    </div>
-    <div class="work-card">
-      <h2>Lịch sử chấm công</h2>
-      <div class="work-toolbar">
-        <div class="work-subtabs">
-          <button type="button" class="${teacherWorkView === 'calendar' ? 'active' : ''}" onclick="setTeacherWorkView('calendar')">L?ch</button>
-          <button type="button" class="${teacherWorkView === 'list' ? 'active' : ''}" onclick="setTeacherWorkView('list')">Danh sách</button>
+    ${teacherHeroHtml}
+    <div class="work-card work-panel">
+      <div class="work-card-head">
+        <div>
+          <h2 class="work-card-title">Điểm danh theo lớp</h2>
+          <p class="work-card-subtitle">Trạng thái cập nhật sau khi admin duyệt.</p>
         </div>
       </div>
-      ${teacherWorkView === 'list' ? listFiltersHtml : ''}
-      ${teacherWorkView === 'list'
-        ? `<div class="work-list work-list-by-month">${listHtml}</div>`
-        : `<div class="work-cal-nav">
-            <button type="button" class="btn-sm" onclick="workCalStep(-1)">‹ Trước</button>
-            <span class="cal-title">${escapeHtml(monthTitle)}</span>
-            <button type="button" class="btn-sm" onclick="workCalStep(1)">Sau ›</button>
+      <div class="work-card-body">
+        ${substitutionStaleNote}
+        ${checkinByClassHtml}
+      </div>
+    </div>
+    <div class="work-card work-panel">
+      <div class="work-card-head">
+        <div>
+          <h2 class="work-card-title">Lịch sử chấm công</h2>
+          <p class="work-card-subtitle">Theo dõi trạng thái từng ngày và từng lớp.</p>
+        </div>
+        <div class="work-toolbar">
+          <div class="work-subtabs">
+            <button type="button" class="${teacherWorkView === 'calendar' ? 'active' : ''}" onclick="setTeacherWorkView('calendar')">Lịch</button>
+            <button type="button" class="${teacherWorkView === 'list' ? 'active' : ''}" onclick="setTeacherWorkView('list')">Danh sách</button>
           </div>
-          <div class="work-cal-grid">${calGrid}</div>
-          <p class="analytics-muted" style="margin-top:10px;font-size:11px;line-height:1.5">
-            <span class="chk-badge ok">Ðúng gi?</span>
-            <span class="chk-badge warn" style="margin-left:6px">Mu?n</span>
-            <span class="chk-badge bad" style="margin-left:6px">Không d?n</span>
-            <span class="chk-badge pend" style="margin-left:6px">Ch? duy?t</span>
-            · N?n ô: t?ng h?p ngày · Ch?m: t?ng l?p (rê chu?t xem chi ti?t)
-          </p>`}
+        </div>
+      </div>
+      <div class="work-card-body">
+        ${teacherWorkView === 'list' ? listFiltersHtml : ''}
+        ${teacherWorkView === 'list'
+          ? `<div class="work-list work-list-by-month">${listHtml}</div>`
+          : `<div class="work-cal-nav">
+              <button type="button" class="btn-sm" onclick="workCalStep(-1)">‹ Trước</button>
+              <span class="cal-title">${escapeHtml(monthTitle)}</span>
+              <button type="button" class="btn-sm" onclick="workCalStep(1)">Sau ›</button>
+            </div>
+            <div class="work-cal-grid">${calGrid}</div>
+            <p class="analytics-muted" style="margin-top:10px;font-size:11px;line-height:1.5">
+              <span class="chk-badge ok">Đúng giờ</span>
+              <span class="chk-badge warn" style="margin-left:6px">Muộn</span>
+              <span class="chk-badge bad" style="margin-left:6px">Không đến</span>
+              <span class="chk-badge pend" style="margin-left:6px">Chờ duyệt</span>
+            </p>`}
+      </div>
     </div>`;
   const monthInp = document.getElementById('teacher-work-month-filter');
   if (monthInp) {
@@ -13576,17 +14030,18 @@ function renderAdminWorkPanel() {
   }
   const kpi = countAdminCheckInByStatus(filtered);
   const hasChkFilter = !!(adminWorkTeacherFilter || adminWorkMonthFilter);
+  const kpiScope = hasChkFilter ? 'Theo bộ lọc' : 'Tất cả';
   const kpiHtml = `<div class="admin-chk-kpi" role="status">
-    <span><strong>${hasChkFilter ? 'Theo b? l?c' : 'T?t c?'}</strong> — Ðúng gi?: <strong style="color:#166534">${kpi.on_time}</strong></span>
-    <span>· Mu?n: <strong style="color:#854d0e">${kpi.late}</strong></span>
-    <span>· V?ng: <strong style="color:#991b1b">${kpi.absent}</strong></span>
-    <span>· Ch? duy?t: <strong style="color:#1e40af">${kpi.pending}</strong></span>
+    ${workSummaryItemHtml(kpiScope + ' đúng giờ', kpi.on_time, 'good')}
+    ${workSummaryItemHtml('Muộn', kpi.late, kpi.late ? 'warn' : 'info')}
+    ${workSummaryItemHtml('Vắng', kpi.absent, kpi.absent ? 'bad' : 'info')}
+    ${workSummaryItemHtml('Chờ duyệt', kpi.pending, kpi.pending ? 'warn' : 'good')}
   </div>`;
   const teacherBlock = teacherOpts.length
     ? `<div class="admin-chk-filter-field">
         <label for="admin-chk-teacher-filter">Giáo viên</label>
-        <select id="admin-chk-teacher-filter" aria-label="L?c theo giáo viên">
-          <option value="">T?t c?</option>
+        <select id="admin-chk-teacher-filter" aria-label="Lọc theo giáo viên">
+          <option value="">Tất cả</option>
           ${teacherOpts.map(([id, lab]) =>
             `<option value="${adminFilterAttr(id)}"${adminWorkTeacherFilter === id ? ' selected' : ''}>${escapeHtml(lab)}</option>`
           ).join('')}
@@ -13599,8 +14054,8 @@ function renderAdminWorkPanel() {
   const monthBlock = `<div class="admin-chk-filter-field">
         <label for="admin-chk-month-filter">Tháng</label>
         <div class="admin-chk-month-row">
-          <input type="month" id="admin-chk-month-filter" value="${monthVal}" aria-label="Ch?n tháng d? l?c" title="Ch?n tháng/nam; nút T?t c? tháng d? xem m?i tháng"/>
-          <button type="button" class="btn-sm" onclick="adminWorkMonthFilter='';adminWorkCheckInPage=1;renderAdminWorkPanel();">T?t c? tháng</button>
+          <input type="month" id="admin-chk-month-filter" value="${monthVal}" aria-label="Chọn tháng để lọc" title="Chọn tháng/năm; nút Tất cả tháng để xem mọi tháng"/>
+          <button type="button" class="btn-sm" onclick="adminWorkMonthFilter='';adminWorkCheckInPage=1;renderAdminWorkPanel();">Tất cả tháng</button>
         </div>
       </div>`;
   const filterSelect = (teacherBlock || monthBlock)
@@ -13619,7 +14074,7 @@ function renderAdminWorkPanel() {
     ? '<div class="field-error" style="margin:0 0 10px">Không tải được đơn giá giáo viên từ Supabase; lương tạm tính có thể đang dùng bản lưu cục bộ.</div>'
     : '';
   const subRowsHtml = subRows.length
-    ? `<table class="admin-chk-table"><thead><tr><th>Ngày</th><th>L?p</th><th>Ngh?</th><th>D?y thay</th><th>Ghi chú</th><th></th></tr></thead><tbody>${
+    ? `<table class="admin-chk-table"><thead><tr><th>Ngày</th><th>Lớp</th><th>Giáo viên nghỉ</th><th>Dạy thay</th><th>Ghi chú</th><th></th></tr></thead><tbody>${
         subRows.map(r => `<tr>
           <td>${escapeHtml(String(r.date || ''))}</td>
           <td>${escapeHtml(displayClassVi(String(r.class_name || '')))}</td>
@@ -13629,7 +14084,7 @@ function renderAdminWorkPanel() {
           <td><button type="button" class="btn-sm btn-del" onclick="adminDeleteSubstitution('${escapeHtml(String(r.id || ''))}')">Xóa</button></td>
         </tr>`).join('')
       }</tbody></table>`
-    : '<div class="analytics-muted">Chua có l?ch d?y thay/l?p bù.</div>';
+    : '<div class="analytics-muted">Chưa có lịch dạy thay/lớp bù.</div>';
   const payrollRows = (allSorted || []).filter(r => {
     const st = String(r && r.status || '');
     if (st !== 'on_time' && st !== 'late') return false;
@@ -13643,7 +14098,35 @@ function renderAdminWorkPanel() {
     if (!payrollByTeacher[tid]) payrollByTeacher[tid] = { sessions: 0 };
     payrollByTeacher[tid].sessions += 1;
   });
-  const payrollTableRows = Object.keys(payrollByTeacher)
+  const payrollTeacherIds = Object.keys(payrollByTeacher);
+  const payrollTotal = payrollTeacherIds.reduce((sum, tid) => {
+    const sessions = payrollByTeacher[tid].sessions;
+    const rate = Math.max(0, parseInt(String(teacherRatesByTeacher[tid] || 0), 10) || 0);
+    return sum + sessions * rate;
+  }, 0);
+  const payrollSummaryHtml = `<div class="work-summary-strip">
+    ${workSummaryItemHtml('Giáo viên có công', payrollTeacherIds.length, payrollTeacherIds.length ? 'info' : '')}
+    ${workSummaryItemHtml('Buổi đã duyệt', payrollRows.length, payrollRows.length ? 'good' : '')}
+    ${workSummaryItemHtml('Tháng tính', adminPayrollMonthFilter || 'Tất cả', 'info')}
+    ${workSummaryItemHtml('Tạm tính lương', formatVndCompact(payrollTotal), payrollTotal ? 'good' : '')}
+  </div>`;
+  const adminOverviewHtml = `<div class="work-console-hero">
+    <div>
+      <div class="work-console-eyebrow">Quản trị chấm công</div>
+      <h2 class="work-console-title">Kiểm soát chấm công và lương giáo viên</h2>
+      <p class="work-console-sub">Dữ liệu hiển thị từ các bản ghi chấm công đã tải; thao tác duyệt và dạy thay vẫn đi qua lớp RPC bảo vệ dữ liệu.</p>
+      <div class="work-console-actions">
+        <button type="button" class="btn-sm" onclick="loadWorkCheckIns()">Làm mới</button>
+      </div>
+    </div>
+    <div class="work-metric-grid">
+      ${workMetricHtml('Chờ duyệt', kpi.pending, 'Cần xử lý trước khi tính lương', kpi.pending ? 'warn' : 'good')}
+      ${workMetricHtml('Bản ghi đang xem', filtered.length, kpiScope, 'info')}
+      ${workMetricHtml('Buổi tính lương', payrollRows.length, adminPayrollMonthFilter || 'Tất cả tháng', 'good')}
+      ${workMetricHtml('Tạm tính', formatVndCompact(payrollTotal), payrollTeacherIds.length + ' giáo viên', payrollTotal ? 'good' : 'info')}
+    </div>
+  </div>`;
+  const payrollTableRows = payrollTeacherIds
     .sort((a, b) => getTeacherLabelById(a).localeCompare(getTeacherLabelById(b), 'vi'))
     .map(tid => {
       const sessions = payrollByTeacher[tid].sessions;
@@ -13652,32 +14135,48 @@ function renderAdminWorkPanel() {
       return `<tr>
         <td>${escapeHtml(getTeacherLabelById(tid))}</td>
         <td>${sessions}</td>
-        <td>${escapeHtml(formatVndCompact(rate))}d</td>
-        <td><strong>${escapeHtml(formatVndCompact(total))}d</strong></td>
+        <td>${escapeHtml(formatVnd(rate))}</td>
+        <td><strong>${escapeHtml(formatVnd(total))}</strong></td>
       </tr>`;
     }).join('');
-  const substituteHtml = `<div class="work-card" style="margin-top:10px">
-    <h2>Qu?n lý l?p bù / d?y thay</h2>
-    <div class="admin-chk-toolbar admin-chk-filters">
-      <div class="admin-chk-filter-field"><label for="admin-sub-date">Ngày áp d?ng</label><input type="date" id="admin-sub-date" value="${escapeHtml(todayYmd)}"/></div>
-      <div class="admin-chk-filter-field"><label for="admin-sub-class">L?p</label><select id="admin-sub-class">${classOpts.map(c => `<option value="${adminFilterAttr(c)}">${escapeHtml(displayClassVi(c))}</option>`).join('')}</select></div>
-      <div class="admin-chk-filter-field"><label for="admin-sub-from">Giáo viên ngh?</label><select id="admin-sub-from">${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
-      <div class="admin-chk-filter-field"><label for="admin-sub-to">Giáo viên d?y thay</label><select id="admin-sub-to">${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
-      <div class="admin-chk-filter-field" style="flex:1 1 220px"><label for="admin-sub-note">Ghi chú</label><input type="text" id="admin-sub-note" placeholder="Lý do / l?p bù"/></div>
-      <div class="admin-chk-filter-field" style="align-self:flex-end"><button type="button" class="btn-sm" onclick="adminCreateSubstitutionFromUI()">Luu d?y thay</button></div>
+  const substituteHtml = `<div class="work-card work-panel">
+    <div class="work-card-head">
+      <div>
+        <h2 class="work-card-title">Quản lý lớp bù / dạy thay</h2>
+        <p class="work-card-subtitle">${subRows.length} lịch gần nhất đang hiển thị.</p>
+      </div>
     </div>
-    ${substitutionStaleAdminNote}
-    <div style="overflow-x:auto">${subRowsHtml}</div>
+    <div class="work-card-body">
+      <div class="admin-chk-toolbar admin-chk-filters">
+        <div class="admin-chk-filter-field"><label for="admin-sub-date">Ngày áp dụng</label><input type="date" id="admin-sub-date" value="${escapeHtml(todayYmd)}"/></div>
+        <div class="admin-chk-filter-field"><label for="admin-sub-class">Lớp</label><select id="admin-sub-class">${classOpts.map(c => `<option value="${adminFilterAttr(c)}">${escapeHtml(displayClassVi(c))}</option>`).join('')}</select></div>
+        <div class="admin-chk-filter-field"><label for="admin-sub-from">Giáo viên nghỉ</label><select id="admin-sub-from">${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
+        <div class="admin-chk-filter-field"><label for="admin-sub-to">Giáo viên dạy thay</label><select id="admin-sub-to">${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
+        <div class="admin-chk-filter-field" style="flex:1 1 220px"><label for="admin-sub-note">Ghi chú</label><input type="text" id="admin-sub-note" placeholder="Lý do / lớp bù"/></div>
+        <div class="admin-chk-filter-field" style="align-self:flex-end"><button type="button" class="btn-sm" onclick="adminCreateSubstitutionFromUI()">Lưu dạy thay</button></div>
+      </div>
+      ${substitutionStaleAdminNote}
+      <div style="overflow-x:auto">${subRowsHtml}</div>
+    </div>
   </div>`;
-  const payrollHtml = `<div class="work-card" style="margin-top:10px">
-    <h2>Tính luong giáo viên theo ch?m công</h2>
-    <div class="admin-chk-toolbar admin-chk-filters">
-      <div class="admin-chk-filter-field"><label for="admin-payroll-month">Tháng tính luong</label><input type="month" id="admin-payroll-month" value="${escapeHtml(adminPayrollMonthFilter)}"/></div>
-      <div class="admin-chk-filter-field"><label for="admin-payroll-rate-teacher">Giáo viên (luu don giá)</label><select id="admin-payroll-rate-teacher"><option value="">Ch?n giáo viên</option>${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
-      <div class="admin-chk-filter-field"><label for="admin-payroll-rate">Ðon giá / bu?i (VND)</label><div class="admin-chk-month-row"><input type="number" id="admin-payroll-rate" min="0" step="1000" placeholder="VD: 200000"/><button type="button" class="btn-sm" onclick="saveTeacherRateFromUI()">Luu don giá</button></div></div>
+  const payrollHtml = `<div class="work-card work-panel">
+    <div class="work-card-head">
+      <div>
+        <h2 class="work-card-title">Tính lương giáo viên</h2>
+        <p class="work-card-subtitle">Chỉ tính các buổi đã duyệt đúng giờ hoặc muộn.</p>
+      </div>
+      <div class="work-payroll-total">${escapeHtml(formatVndCompact(payrollTotal))}</div>
     </div>
-    ${teacherRatesStaleNote}
-    <div style="overflow-x:auto"><table class="admin-chk-table"><thead><tr><th>Giáo viên</th><th>S? bu?i (dã duy?t)</th><th>Ðon giá</th><th>T?m tính luong</th></tr></thead><tbody>${payrollTableRows || '<tr><td colspan="4" class="analytics-muted">Không có d? li?u ch?m công dã duy?t trong tháng.</td></tr>'}</tbody></table></div>
+    <div class="work-card-body">
+      ${payrollSummaryHtml}
+      <div class="admin-chk-toolbar admin-chk-filters">
+        <div class="admin-chk-filter-field"><label for="admin-payroll-month">Tháng tính lương</label><input type="month" id="admin-payroll-month" value="${escapeHtml(adminPayrollMonthFilter)}"/></div>
+        <div class="admin-chk-filter-field"><label for="admin-payroll-rate-teacher">Giáo viên</label><select id="admin-payroll-rate-teacher"><option value="">Chọn giáo viên</option>${teacherOpts.map(([id, lab]) => `<option value="${adminFilterAttr(id)}">${escapeHtml(lab)}</option>`).join('')}</select></div>
+        <div class="admin-chk-filter-field"><label for="admin-payroll-rate">Đơn giá / buổi</label><div class="admin-chk-month-row"><input type="number" id="admin-payroll-rate" min="0" step="1000" placeholder="VD: 200000"/><button type="button" class="btn-sm" onclick="saveTeacherRateFromUI()">Lưu đơn giá</button></div></div>
+      </div>
+      ${teacherRatesStaleNote}
+      <div style="overflow-x:auto"><table class="admin-chk-table"><thead><tr><th>Giáo viên</th><th>Buổi đã duyệt</th><th>Đơn giá</th><th>Tạm tính</th></tr></thead><tbody>${payrollTableRows || '<tr><td colspan="4" class="analytics-muted">Không có dữ liệu chấm công đã duyệt trong tháng.</td></tr>'}</tbody></table></div>
+    </div>
   </div>`;
   const teacherAssignHtml = `<div class="work-card teacher-assign-panel" id="teacher-assign-section">
     <div class="teacher-assign-panel-head">
@@ -13693,12 +14192,17 @@ function renderAdminWorkPanel() {
   if (!allSorted.length) {
     adminWorkCheckInPage = 1;
     el.innerHTML = `
-    <div class="work-card">
-      <h2>Lịch sử chấm công</h2>
-      <div class="work-toolbar">
-        <button type="button" class="btn-sm" onclick="loadWorkCheckIns()">Làm m?i</button>
+    ${adminOverviewHtml}
+    <div class="work-card work-panel">
+      <div class="work-card-head">
+        <div>
+          <h2 class="work-card-title">Lịch sử chấm công</h2>
+          <p class="work-card-subtitle">Chưa có bản ghi trong phạm vi đang tải.</p>
+        </div>
       </div>
-      <div class="empty">Chua có b?n ghi nào.</div>
+      <div class="work-card-body">
+        <div class="empty">Chưa có bản ghi nào.</div>
+      </div>
     </div>
     ${substituteHtml}
     ${payrollHtml}
@@ -13729,16 +14233,16 @@ function renderAdminWorkPanel() {
       r.auto_absent
         ? `<div class="analytics-muted" style="font-size:11px;margin-top:2px">T? d?ng</div>`
         : '';
-    const delBtn = `<button type="button" class="btn-sm btn-del" title="Xóa b?n ghi này" onclick="adminDeleteTeacherCheckIn(${id})">Xóa</button>`;
+    const delBtn = `<button type="button" class="btn-sm btn-del" title="Xóa bản ghi này" onclick="adminDeleteTeacherCheckIn(${id})">Xóa</button>`;
     const actions = st === 'pending'
       ? `<div class="admin-chk-actions">
           <button type="button" class="btn-sm" onclick="adminReviewCheckIn(${id},'on_time')">Đúng giờ</button>
-          <button type="button" class="btn-sm" onclick="adminReviewCheckIn(${id},'late')">Mu?n</button>
-          <button type="button" class="btn-sm" onclick="adminReviewCheckIn(${id},'absent')">Không d?n</button>
+          <button type="button" class="btn-sm" onclick="adminReviewCheckIn(${id},'late')">Muộn</button>
+          <button type="button" class="btn-sm" onclick="adminReviewCheckIn(${id},'absent')">Không đến</button>
           ${delBtn}
         </div>`
       : `<div class="admin-chk-actions">
-          <span class="analytics-muted" style="font-size:11px">Ðã duy?t</span>
+          <span class="analytics-muted" style="font-size:11px">Đã duyệt</span>
           ${delBtn}
         </div>`;
     return `<tr>
@@ -13752,7 +14256,7 @@ function renderAdminWorkPanel() {
   const tbody =
     tableRows.length > 0
       ? tableRows
-      : '<tr><td colspan="5" class="analytics-muted">Không có b?n ghi kh?p b? l?c.</td></tr>';
+      : '<tr><td colspan="5" class="analytics-muted">Không có bản ghi khớp bộ lọc.</td></tr>';
   const adminPagerBar = workCheckInPaginationBar(
     adminWorkCheckInPage,
     filtered.length,
@@ -13761,20 +14265,25 @@ function renderAdminWorkPanel() {
     'adminWorkCheckInNext()'
   );
   el.innerHTML = `
-    <div class="work-card">
-      <h2>Lịch sử chấm công</h2>
-      <div class="work-toolbar">
-        <button type="button" class="btn-sm" onclick="loadWorkCheckIns()">Làm m?i</button>
+    ${adminOverviewHtml}
+    <div class="work-card work-panel">
+      <div class="work-card-head">
+        <div>
+          <h2 class="work-card-title">Lịch sử chấm công</h2>
+          <p class="work-card-subtitle">${filtered.length} / ${allSorted.length} bản ghi trong phạm vi đang xem.</p>
+        </div>
       </div>
-      ${filterSelect}
-      ${kpiHtml}
-      <div style="overflow-x:auto">
-        <table class="admin-chk-table">
-          <thead><tr><th>Th?i gian check-in</th><th>Giáo viên</th><th>L?p</th><th>Tr?ng thái</th><th>Duy?t / xóa</th></tr></thead>
-          <tbody>${tbody}</tbody>
-        </table>
+      <div class="work-card-body">
+        ${filterSelect}
+        ${kpiHtml}
+        <div style="overflow-x:auto">
+          <table class="admin-chk-table">
+            <thead><tr><th>Thời gian check-in</th><th>Giáo viên</th><th>Lớp</th><th>Trạng thái</th><th>Duyệt / xóa</th></tr></thead>
+            <tbody>${tbody}</tbody>
+          </table>
+        </div>
+        ${adminPagerBar}
       </div>
-      ${adminPagerBar}
     </div>
     ${substituteHtml}
     ${payrollHtml}
@@ -13968,10 +14477,10 @@ async function adminDeleteTeacherCheckIn(rowId) {
   const id = rowId != null ? String(rowId).trim() : '';
   if (!id) return;
   const ok = await confirmApp(
-    'Xóa vinh vi?n b?n ghi di?m danh này?\n\n' +
-      'Hành d?ng không th? hoàn tác. Giáo viên cung s? không còn th?y l?n di?m danh này trong l?ch s?.\n\n' +
-      'Ch? dùng khi giáo viên di?m danh nh?m ho?c b?n ghi sai.',
-    { title: 'Xóa b?n ghi ch?m công', okLabel: 'Xóa', cancelLabel: 'H?y' }
+    'Xóa vĩnh viễn bản ghi điểm danh này?\n\n' +
+      'Hành động không thể hoàn tác. Giáo viên cũng sẽ không còn thấy lần điểm danh này trong lịch sử.\n\n' +
+      'Chỉ dùng khi giáo viên điểm danh nhầm hoặc bản ghi sai.',
+    { title: 'Xóa bản ghi chấm công', okLabel: 'Xóa', cancelLabel: 'Hủy' }
   );
   if (!ok) return;
   try {
@@ -21284,7 +21793,7 @@ async function adminCreateSubstitutionFromUI() {
     return;
   }
   if (fromTeacher === toTeacher) {
-    showAppToast('Giáo viên ngh? và d?y thay không du?c trùng nhau.');
+    showAppToast('Giáo viên nghỉ và dạy thay không được trùng nhau.');
     return;
   }
   await loadTeacherSubstitutions();
@@ -21316,7 +21825,7 @@ async function adminCreateSubstitutionFromUI() {
       String(x.class_name || '') === className
   );
   if (!teacherSubstitutionsStale && duplicated) {
-    showAppToast('L?ch d?y thay này dã t?n t?i.');
+    showAppToast('Lịch dạy thay này đã tồn tại.');
     return;
   }
   const payload = {
@@ -21350,7 +21859,7 @@ async function adminCreateSubstitutionFromUI() {
     }
     await loadTeacherSubstitutions();
     renderAdminWorkPanel();
-    showAppToast('Ðã luu l?ch d?y thay/l?p bù lên Supabase.');
+    showAppToast('Đã lưu lịch dạy thay/lớp bù lên Supabase.');
   } catch (e) {
     console.warn('adminCreateSubstitutionFromUI', e);
     showAppToast(teacherWorkMutationMessage(e, 'Không lưu được lịch dạy thay.'));
@@ -21393,7 +21902,7 @@ async function saveTeacherRateFromUI() {
   const tid = String(teacherEl && teacherEl.value || '').trim();
   const rate = Math.max(0, parseInt(String(rateEl && rateEl.value || '0'), 10) || 0);
   if (!tid) {
-    showAppToast('Ch?n giáo viên d? luu don giá.');
+    showAppToast('Chọn giáo viên để lưu đơn giá.');
     return;
   }
   const r = await fetch(SUPABASE_URL + '/rest/v1/teacher_pay_rates', {
@@ -21408,12 +21917,12 @@ async function saveTeacherRateFromUI() {
   if (!(r.ok || r.status === 201 || r.status === 204)) {
     let msg = '';
     try { msg = await r.text(); } catch (e) {}
-    showAppToast('Không luu du?c don giá. ' + msg);
+    showAppToast('Không lưu được đơn giá. ' + msg);
     return;
   }
   await loadTeacherRates();
   renderAdminWorkPanel();
-  showAppToast('Ðã luu don giá theo bu?i lên Supabase.');
+  showAppToast('Đã lưu đơn giá theo buổi lên Supabase.');
 }
 
 async function loadChargedSessions() {
