@@ -16642,8 +16642,6 @@ function studentExamCard(row, compact) {
   const locked = !canAccess;
   const tier = studentExamAccessTier(row);
   const lockedText = studentExamLockedMessage(row);
-  const groupLabel = portalFreeGroupLabel(studentExamProgramGroup(row));
-  const isPreferredGroup = studentExamPreferredGroupPriority(row) === 0;
   return `
     <article class="student-exam-card ${locked ? 'is-locked' : ''}" data-exam-id="${id}">
       <div class="student-exam-card-top">
@@ -16651,9 +16649,7 @@ function studentExamCard(row, compact) {
           <h3>${title}</h3>
           <div class="student-exam-badges">
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
-            <span class="student-exam-badge program">${escapeHtml(groupLabel)}</span>
             <span class="student-exam-badge ${tier === 'premium' ? 'exam-tier-premium' : 'exam-tier-free'}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
-            ${tier === 'free' && isPreferredGroup ? '<span class="student-exam-badge priority">Ưu tiên</span>' : ''}
             ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
           </div>
         </div>
