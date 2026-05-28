@@ -2,27 +2,26 @@
   "name": "MV Klass",
   "short_name": "MV Klass",
   "description": "MV Klass",
-  "id": "/app",
-  "start_url": "/app",
-  "scope": "/",
+  "start_url": "./attendance-app.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0f1f3d",
   "icons": [
     {
-      "src": "/assets/icons/app-icon-192.png",
+      "src": "./assets/brand/Center-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/icons/app-icon-512.png",
+      "src": "./assets/brand/Center-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/icons/app-icon-maskable-512.png",
+      "src": "./assets/brand/Center-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
