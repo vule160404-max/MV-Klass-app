@@ -5744,6 +5744,34 @@
     .student-exam-data-tier.free{background:#ecfdf5;color:#047857;border-color:rgba(16,185,129,.22)}
     .student-exam-data-tier.premium{background:#fff8e8;color:#8a5208;border-color:rgba(244,167,29,.30)}
     @media (max-width:699px){.student-exam-data-overview{padding:17px;border-radius:22px}.student-exam-data-line{grid-template-columns:1fr;gap:12px;margin-bottom:14px}.student-exam-data-title{font-size:15px}.student-exam-data-count{font-size:34px}.student-exam-data-label{font-size:15px}.student-exam-data-mini{justify-content:flex-start;min-width:0}.student-exam-data-tier{min-height:36px;padding:7px 11px}.student-exam-data-tier strong{font-size:18px}}
+    .student-exam-filters{margin-top:18px;padding:16px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,255,.96));border:1px solid rgba(26,52,96,.12);box-shadow:0 18px 44px rgba(18,33,61,.10)}
+    .student-exam-filter-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .student-exam-filter-kicker{color:#66748d;font-size:11px;line-height:1;font-weight:950;text-transform:uppercase;letter-spacing:.06em}
+    .student-exam-filter-head h2{margin:4px 0 0;color:#12213d;font-size:20px;line-height:1.18;font-weight:950;letter-spacing:0}
+    .student-exam-filter-reset{min-height:38px;border-radius:999px;border:1px solid rgba(26,52,96,.12);background:#fff;color:#1a3460;padding:0 14px;font-size:12px;font-weight:950;cursor:pointer;box-shadow:0 8px 18px rgba(18,33,61,.06)}
+    .student-exam-filter-reset:hover{background:#f8fbff;border-color:rgba(79,142,247,.28)}
+    .student-exam-search-wrap,.student-exam-filter-field{position:relative;display:grid;gap:7px;min-width:0}
+    .student-exam-search-wrap span,.student-exam-filter-field span{color:#42526c;font-size:11px;line-height:1;font-weight:950;text-transform:uppercase;letter-spacing:.045em}
+    .student-exam-search-wrap::before{content:"";position:absolute;left:16px;bottom:15px;width:13px;height:13px;border:2px solid #7b8aa5;border-radius:999px;pointer-events:none}
+    .student-exam-search-wrap::after{content:"";position:absolute;left:28px;bottom:13px;width:8px;height:2px;border-radius:999px;background:#7b8aa5;transform:rotate(45deg);pointer-events:none}
+    .student-exam-search{min-height:52px;border-radius:17px;padding:0 16px 0 44px;background:#fff;border:1px solid rgba(26,52,96,.13);color:#12213d;font-size:14px;font-weight:800;box-shadow:0 8px 20px rgba(18,33,61,.05)}
+    .student-exam-search:focus{border-color:rgba(79,142,247,.62);box-shadow:0 0 0 4px rgba(79,142,247,.13),0 10px 24px rgba(18,33,61,.07);background:#fff}
+    .student-exam-filter-grid{margin-top:12px;gap:12px}
+    .student-exam-filter-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end}
+    .student-exam-filter-field::after{content:"";position:absolute;right:15px;bottom:18px;width:8px;height:8px;border-right:2px solid #70809a;border-bottom:2px solid #70809a;transform:rotate(45deg);pointer-events:none}
+    .student-exam-filter-field select{width:100%;min-width:0;min-height:48px;appearance:none;border-radius:16px;border:1px solid rgba(26,52,96,.12);background:#fff;color:#172a49;padding:0 42px 0 13px;font-size:13px;font-weight:850;outline:none;cursor:pointer;box-shadow:0 8px 18px rgba(18,33,61,.05)}
+    .student-exam-filter-field.is-primary select{border-color:rgba(79,142,247,.22);background:linear-gradient(180deg,#fff,#f8fbff)}
+    .student-exam-filter-field select:focus{border-color:rgba(79,142,247,.62);box-shadow:0 0 0 4px rgba(79,142,247,.13)}
+    .student-exam-filter-toggle{align-self:end;min-height:48px;border-radius:16px;border:1px solid #0f1f3d;background:#0f1f3d;color:#fff;padding:0 16px;font-size:13px;font-weight:950;cursor:pointer;white-space:nowrap;box-shadow:0 12px 24px rgba(15,31,61,.14)}
+    .student-exam-filter-toggle::after{content:"+";display:inline-grid;place-items:center;width:20px;height:20px;margin-left:8px;border-radius:999px;background:rgba(255,255,255,.14);font-size:14px;line-height:1}
+    .student-exam-filter-toggle[aria-expanded="true"]{background:linear-gradient(180deg,#ffd66f,#f4a71d);color:#14213d;border-color:rgba(244,167,29,.55);box-shadow:0 12px 24px rgba(244,167,29,.20)}
+    .student-exam-filter-toggle[aria-expanded="true"]::after{content:"-";background:rgba(20,33,61,.10)}
+    .student-exam-filter-advanced{display:none;margin-top:12px;padding:13px;border-radius:18px;background:#f8fbff;border:1px solid rgba(79,142,247,.14);grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+    .student-exam-filter-advanced.open{display:grid}
+    .student-exam-filter-group-title{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 2px;color:#12213d;font-size:13px;font-weight:950}
+    .student-exam-filter-group-title small{color:#66748d;font-size:11px;font-weight:800;text-align:right}
+    @media (max-width:699px){.student-exam-filters{padding:14px;border-radius:22px}.student-exam-filter-head{align-items:flex-start}.student-exam-filter-head h2{font-size:18px}.student-exam-filter-reset{min-height:36px;padding:0 12px}.student-exam-filter-main{grid-template-columns:1fr}.student-exam-filter-toggle{width:100%;justify-content:center}.student-exam-filter-advanced{grid-template-columns:1fr;padding:12px}.student-exam-filter-group-title{display:grid;gap:3px}.student-exam-filter-group-title small{text-align:left}.student-exam-search{min-height:50px}.student-exam-filter-field select{min-height:46px}}
+    @media (min-width:700px) and (max-width:960px){.student-exam-filter-main{grid-template-columns:1fr 1fr}.student-exam-filter-toggle{grid-column:1/-1;width:max-content;justify-self:end}.student-exam-filter-advanced{grid-template-columns:repeat(2,minmax(0,1fr))}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -11483,41 +11511,76 @@ a:focus-visible,
     </section>
 
     <section class="student-exam-filters" aria-label="Tìm kiếm và lọc đề thi">
-      <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
+      <div class="student-exam-filter-head">
+        <div>
+          <div class="student-exam-filter-kicker">Tìm kiếm & lọc</div>
+          <h2>Bộ lọc đề thi</h2>
+        </div>
+        <button type="button" class="student-exam-filter-reset" id="student-exam-filter-reset">Xóa lọc</button>
+      </div>
+      <label class="student-exam-search-wrap" for="student-exam-search">
+        <span>Tìm nhanh</span>
+        <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Mã đề, tên đề, tỉnh/thành, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
+      </label>
       <div class="student-exam-filter-grid">
         <div class="student-exam-filter-main">
-          <select id="student-exam-level" aria-label="Lọc cấp học">
-            <option value="all">Tất cả cấp học</option>
-            <option value="entrance_10">Thi vào 10</option>
-            <option value="university">THPT QG</option>
-            <option value="ielts">IELTS</option>
-          </select>
-          <select id="student-exam-type" aria-label="Lọc đề chính thức hoặc đề minh họa">
-            <option value="all">Tất cả dạng đề</option>
-            <option value="official">Đề chính thức</option>
-            <option value="mock">Đề minh họa</option>
-          </select>
-          <button type="button" class="student-exam-filter-toggle" id="student-exam-filter-toggle" aria-expanded="false" aria-controls="student-exam-advanced-filters">Bộ lọc</button>
+          <label class="student-exam-filter-field is-primary" for="student-exam-level">
+            <span>Chương trình</span>
+            <select id="student-exam-level" aria-label="Lọc cấp học">
+              <option value="all">Tất cả cấp học</option>
+              <option value="entrance_10">Thi vào 10</option>
+              <option value="university">THPT QG</option>
+              <option value="ielts">IELTS</option>
+            </select>
+          </label>
+          <label class="student-exam-filter-field is-primary" for="student-exam-type">
+            <span>Dạng đề</span>
+            <select id="student-exam-type" aria-label="Lọc đề chính thức hoặc đề minh họa">
+              <option value="all">Tất cả dạng đề</option>
+              <option value="official">Đề chính thức</option>
+              <option value="mock">Đề minh họa</option>
+            </select>
+          </label>
+          <button type="button" class="student-exam-filter-toggle" id="student-exam-filter-toggle" aria-expanded="false" aria-controls="student-exam-advanced-filters">Lọc chi tiết</button>
         </div>
         <div class="student-exam-filter-advanced" id="student-exam-advanced-filters">
-          <select id="student-exam-saved-filter" aria-label="Lọc tài liệu đã lưu">
-            <option value="all">Tất cả tài liệu</option>
-            <option value="saved">Đã lưu</option>
-          </select>
-          <select id="student-exam-year" aria-label="Lọc năm">
-            <option value="all">Tất cả năm</option>
-          </select>
-          <select id="student-exam-province" aria-label="Lọc tỉnh thành">
-            <option value="all">Tất cả tỉnh/thành</option>
-          </select>
-          <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
-            <option value="all">Tất cả nguồn/bộ đề</option>
-          </select>
-          <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
-            <option value="code">Theo năm, mã đề</option>
-            <option value="newest">Mới upload</option>
-            <option value="popular">Tải nhiều</option>
-          </select>
+          <div class="student-exam-filter-group-title">
+            <span>Lọc chi tiết</span>
+            <small>Năm, tỉnh/thành, nguồn và thứ tự hiển thị</small>
+          </div>
+          <label class="student-exam-filter-field" for="student-exam-saved-filter">
+            <span>Đã lưu</span>
+            <select id="student-exam-saved-filter" aria-label="Lọc tài liệu đã lưu">
+              <option value="all">Tất cả tài liệu</option>
+              <option value="saved">Đã lưu</option>
+            </select>
+          </label>
+          <label class="student-exam-filter-field" for="student-exam-year">
+            <span>Năm</span>
+            <select id="student-exam-year" aria-label="Lọc năm">
+              <option value="all">Tất cả năm</option>
+            </select>
+          </label>
+          <label class="student-exam-filter-field" for="student-exam-province">
+            <span>Tỉnh/thành</span>
+            <select id="student-exam-province" aria-label="Lọc tỉnh thành">
+              <option value="all">Tất cả tỉnh/thành</option>
+            </select>
+          </label>
+          <label class="student-exam-filter-field" for="student-exam-source">
+            <span>Nguồn/bộ đề</span>
+            <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
+              <option value="all">Tất cả nguồn/bộ đề</option>
+            </select>
+          </label>
+          <label class="student-exam-filter-field" for="student-exam-sort">
+            <span>Sắp xếp</span>
+            <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
+              <option value="code">Theo năm, mã đề</option>
+              <option value="newest">Mới upload</option>
+              <option value="popular">Tải nhiều</option>
+            </select>
+          </label>
         </div>
       </div>
     </section>
@@ -17333,13 +17396,33 @@ function syncStudentExamAdvancedFilters() {
   if (wrap) wrap.classList.toggle('open', studentExamAdvancedFiltersOpen);
   if (btn) {
     btn.setAttribute('aria-expanded', studentExamAdvancedFiltersOpen ? 'true' : 'false');
-    btn.textContent = studentExamAdvancedFiltersOpen ? 'Thu gọn' : 'Bộ lọc';
+    btn.textContent = studentExamAdvancedFiltersOpen ? 'Thu gọn' : 'Lọc chi tiết';
   }
 }
 
 function toggleStudentExamAdvancedFilters() {
   studentExamAdvancedFiltersOpen = !studentExamAdvancedFiltersOpen;
   syncStudentExamAdvancedFilters();
+}
+
+function resetStudentExamFilters() {
+  const defaults = {
+    'student-exam-search': '',
+    'student-exam-level': 'all',
+    'student-exam-type': 'all',
+    'student-exam-saved-filter': 'all',
+    'student-exam-year': 'all',
+    'student-exam-province': 'all',
+    'student-exam-source': 'all',
+    'student-exam-sort': 'code'
+  };
+  Object.entries(defaults).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  });
+  studentExamAdvancedFiltersOpen = false;
+  syncStudentExamAdvancedFilters();
+  applyStudentExamFilters();
 }
 
 async function loadStudentExamFiles() {
@@ -17409,6 +17492,11 @@ function bindStudentExamPortalEvents() {
   if (filterToggle && filterToggle.dataset.bound !== '1') {
     filterToggle.dataset.bound = '1';
     filterToggle.addEventListener('click', toggleStudentExamAdvancedFilters);
+  }
+  const filterReset = document.getElementById('student-exam-filter-reset');
+  if (filterReset && filterReset.dataset.bound !== '1') {
+    filterReset.dataset.bound = '1';
+    filterReset.addEventListener('click', resetStudentExamFilters);
   }
   syncStudentExamAdvancedFilters();
   const portal = document.getElementById('student-exam-portal');
