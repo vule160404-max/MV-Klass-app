@@ -4,8 +4,17 @@
 [functions.parent-payment]
 verify_jwt = false
 
+[functions.bank-webhook]
+verify_jwt = false
+
 [functions.exam-download-url]
 verify_jwt = false
 
 [functions.exam-sync-r2]
+verify_jwt = false
+
+[functions.exam-r2-upload-url]
+verify_jwt = false
+
+[functions.exam-admin-files]
 verify_jwt = false

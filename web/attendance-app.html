@@ -3691,14 +3691,54 @@
     .portal-r2-upload-btn{ min-height:74px; border-radius:16px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; padding-left:16px; padding-right:16px; }
     .portal-r2-upload-btn:disabled{ opacity:.58; cursor:wait; }
     .portal-r2-upload-status{ color:#718096; font-size:11px; font-weight:850; line-height:1.35; }
-    .portal-r2-upload-list{ display:grid; gap:7px; }
+    .portal-r2-upload-list{ position:relative; display:grid; gap:7px; }
+    .portal-r2-upload-list.with-dismiss{ padding-top:36px; }
+    .portal-r2-upload-dismiss{ position:absolute; top:0; right:0; width:30px; height:30px; display:grid; place-items:center; border-radius:10px; border:1px solid rgba(99,138,218,.16); background:#fff; color:#64748b; font-size:18px; font-weight:900; line-height:1; cursor:pointer; box-shadow:0 8px 18px rgba(15,31,61,.08); transition:color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+    .portal-r2-upload-dismiss:hover{ transform:translateY(-1px); color:#0f1f3d; border-color:rgba(15,31,61,.25); box-shadow:0 12px 24px rgba(15,31,61,.12); }
     .portal-r2-upload-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:9px 10px; border-radius:13px; border:1px solid rgba(99,138,218,.12); background:#fff; }
     .portal-r2-upload-name{ color:#162743; font-size:12px; font-weight:950; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .portal-r2-upload-meta{ margin-top:2px; color:#718096; font-size:10.5px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .portal-r2-upload-state{ min-width:82px; min-height:25px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:4px 8px; background:#eef3f9; color:#475569; font-size:10.5px; font-weight:950; }
-    .portal-r2-upload-state.ok{ background:#e8f8ef; color:#14532d; }
+    .portal-r2-upload-state{ width:30px; height:30px; min-width:30px; display:grid; place-items:center; border-radius:999px; padding:0; background:#f4f7fb; color:#64748b; }
+    .portal-r2-upload-state.ok{ background:#e9f9ef; color:#15803d; }
     .portal-r2-upload-state.error{ background:#fee2e2; color:#991b1b; }
-    .portal-r2-upload-state.busy{ background:#fff4d6; color:#8a5208; }
+    .portal-r2-upload-state.busy{ background:#eef5ff; color:#1d4ed8; }
+    .portal-r2-upload-spinner{ width:18px; height:18px; border-radius:999px; border:2px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .72s linear infinite; }
+    .portal-r2-upload-check{ width:24px; height:24px; display:grid; place-items:center; border-radius:999px; background:#16a34a; color:#fff; box-shadow:0 8px 18px rgba(22,163,74,.24); animation:portalR2CheckPop .42s cubic-bezier(.2,.9,.25,1.28) both; }
+    .portal-r2-upload-check svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:22; stroke-dashoffset:22; animation:portalR2CheckDraw .36s ease forwards .14s; }
+    .portal-r2-upload-error-dot{ width:22px; height:22px; display:grid; place-items:center; border-radius:999px; background:#ef4444; color:#fff; font-size:14px; font-weight:950; line-height:1; }
+    @keyframes portalR2Spin{ to{ transform:rotate(360deg); } }
+    @keyframes portalR2CheckPop{ 0%{ opacity:0; transform:scale(.55); } 68%{ opacity:1; transform:scale(1.08); } 100%{ opacity:1; transform:scale(1); } }
+    @keyframes portalR2CheckDraw{ to{ stroke-dashoffset:0; } }
+    .portal-exam-manager-open{ min-height:34px; white-space:nowrap; background:#fff; }
+    .portal-exam-manager{ position:fixed; inset:0; z-index:1260; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,31,61,.46); backdrop-filter:blur(6px); }
+    .portal-exam-manager.show{ display:flex; }
+    .portal-exam-manager-card{ width:min(980px,100%); max-height:min(740px,calc(100vh - 44px)); display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; border-radius:12px; border:1px solid rgba(99,138,218,.22); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.28); }
+    .portal-exam-manager-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start; padding:16px 18px 13px; border-bottom:1px solid rgba(99,138,218,.12); background:linear-gradient(180deg,#fbfdff,#f5f8ff); }
+    .portal-exam-manager-title{ color:#102858; font-size:16px; line-height:1.2; font-weight:950; }
+    .portal-exam-manager-sub{ margin-top:4px; color:#72809b; font-size:11.5px; font-weight:760; line-height:1.4; }
+    .portal-exam-manager-close{ width:34px; height:34px; min-height:34px; padding:0; border-radius:8px; display:grid; place-items:center; font-size:20px; line-height:1; font-weight:900; color:#64748b; background:#fff; }
+    .portal-exam-manager-close:hover{ color:#0f1f3d; border-color:rgba(15,31,61,.24); }
+    .portal-exam-manager-toolbar{ display:grid; grid-template-columns:minmax(260px,1fr) 150px 140px 150px auto; gap:8px; padding:12px 18px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-exam-manager-toolbar input,.portal-exam-manager-toolbar select{ min-width:0; width:100%; min-height:36px; border-radius:8px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
+    .portal-exam-manager-toolbar .btn-sm{ min-height:36px; white-space:nowrap; }
+    .portal-exam-manager-list{ min-height:220px; overflow:auto; display:grid; align-content:start; gap:9px; padding:14px 18px 18px; background:#fbfdff; }
+    .portal-exam-manager-row{ display:grid; grid-template-columns:44px minmax(0,1fr) auto; gap:12px; align-items:start; padding:12px; border:1px solid rgba(99,138,218,.14); border-radius:10px; background:#fff; box-shadow:0 8px 20px rgba(15,31,61,.05); }
+    .portal-exam-manager-row:hover{ border-color:rgba(79,142,247,.28); box-shadow:0 12px 26px rgba(15,31,61,.08); }
+    .portal-exam-manager-mark{ width:44px; height:44px; border-radius:10px; display:grid; place-items:center; color:#0f3f91; background:#eef6ff; border:1px solid rgba(79,142,247,.20); font-size:11px; font-weight:950; text-transform:uppercase; }
+    .portal-exam-manager-info{ min-width:0; display:grid; gap:7px; }
+    .portal-exam-manager-name{ color:#102033; font-size:13px; line-height:1.35; font-weight:950; overflow-wrap:anywhere; }
+    .portal-exam-manager-meta{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; color:#64748b; font-size:11px; font-weight:780; line-height:1.25; }
+    .portal-exam-manager-pill{ display:inline-flex; align-items:center; max-width:100%; min-height:24px; padding:4px 8px; border-radius:999px; border:1px solid rgba(99,138,218,.16); background:#f8fbff; color:#42526c; font-size:10.5px; font-weight:900; line-height:1.1; }
+    .portal-exam-manager-pill.r2{ color:#7c3aed; background:#f5f3ff; border-color:rgba(124,58,237,.16); }
+    .portal-exam-manager-pill.supabase{ color:#047857; background:#ecfdf5; border-color:rgba(4,120,87,.16); }
+    .portal-exam-manager-pill.hidden{ color:#9a3412; background:#fff7ed; border-color:rgba(249,115,22,.20); }
+    .portal-exam-manager-path{ color:#7a879b; font-size:10.5px; line-height:1.35; font-weight:720; overflow-wrap:anywhere; }
+    .portal-exam-manager-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; max-width:230px; }
+    .portal-exam-manager-actions .btn-sm{ min-height:31px; height:31px; padding:6px 9px; border-radius:8px; font-size:11px; }
+    .portal-exam-manager-actions .danger{ color:#b91c1c; background:#fff1f2; border-color:rgba(239,68,68,.28); }
+    .portal-exam-manager-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
+    .portal-exam-manager-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
+    .portal-exam-manager-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
     .portal-picker{ position:fixed; inset:0; z-index:1200; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,31,61,.42); backdrop-filter:blur(5px); }
     .portal-picker.show{ display:flex; }
     .portal-picker-card{ width:min(760px, 100%); max-height:min(680px, calc(100vh - 44px)); display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; border-radius:18px; border:1px solid rgba(99,138,218,.20); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.26); }
@@ -3712,7 +3752,7 @@
     .portal-picker-item:hover{ background:#f8fbff; border-color:rgba(79,142,247,.26); }
     .portal-picker-item.is-picked{ background:#f3f7ff; border-color:rgba(29,78,216,.22); }
     .portal-picker-item .btn-sm{ min-height:30px; height:30px; padding:6px 10px; font-size:11px; }
-    @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:flex-end; } .portal-picker-card{ max-height:88vh; border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
+    @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-slots{ grid-template-columns:1fr; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker,.portal-exam-manager{ padding:12px; align-items:flex-end; } .portal-picker-card,.portal-exam-manager-card{ max-height:88vh; border-radius:12px; } .portal-picker-head,.portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-picker-filters,.portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-row{ grid-template-columns:38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
     @media (max-width:900px){ .portal-user-tools{ grid-template-columns:1fr; } .portal-user-table-wrap{ max-height:none; overflow:visible; } .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ max-width:unset; } }
     .portal-audit-list{ display:grid; gap:8px; max-height:280px; overflow:auto; }
     .portal-audit-item{ padding:10px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.12); }
@@ -5853,6 +5893,496 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 .c-row:hover { background: rgba(61,126,248,0.03) !important; }
 .rev-row { transition: background var(--fast) !important; }
 .rev-row:hover { background: rgba(61,126,248,0.03) !important; }
+
+/* -- STUDENT ADMIN WORKSPACE ------------------------------ */
+#tab-students{
+  gap: 14px !important;
+}
+.students-admin-hero{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid rgba(61,126,248,0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.98), rgba(245,248,255,0.98) 58%, rgba(232,241,255,0.96));
+  box-shadow: var(--s-sm);
+}
+.students-admin-title{
+  min-width: 0;
+}
+.students-eyebrow{
+  margin-bottom: 5px;
+  color: #2560D0;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.students-admin-title h2{
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.students-admin-title p{
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.students-insights{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+.students-kpi{
+  min-width: 0;
+  min-height: 108px;
+  padding: 13px 14px;
+  border: 1px solid rgba(99,138,218,0.16);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--s-xs);
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+}
+.students-kpi.topline{
+  background: linear-gradient(180deg, #102447, #17386E);
+  border-color: rgba(15,31,61,0.24);
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(15,31,61,0.18);
+}
+.students-kpi.warn{
+  background: linear-gradient(180deg, #fff8ed, #fffdf8);
+  border-color: rgba(245,158,11,0.24);
+}
+.students-kpi.danger{
+  background: linear-gradient(180deg, #fff5f5, #fff);
+  border-color: rgba(220,38,38,0.20);
+}
+.students-kpi.good{
+  background: linear-gradient(180deg, #f0fdf4, #fff);
+  border-color: rgba(22,163,74,0.20);
+}
+.students-kpi .k{
+  color: rgba(71,85,105,0.86);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.students-kpi.topline .k{
+  color: rgba(255,255,255,0.72);
+}
+.students-kpi .v{
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.students-kpi.topline .v{
+  color: #fff;
+}
+.students-kpi .hint{
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.students-kpi.topline .hint{
+  color: rgba(255,255,255,0.72);
+}
+.students-ops-grid{
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+  gap: 12px;
+}
+.students-ops-panel,
+.students-directory{
+  border: 1px solid rgba(99,138,218,0.16);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--s-sm);
+}
+.students-ops-panel{
+  min-width: 0;
+  padding: 14px;
+}
+.students-panel-head{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.students-panel-title{
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.students-panel-meta{
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.students-class-bars{
+  display: grid;
+  gap: 8px;
+}
+.students-class-bar{
+  display: grid;
+  grid-template-columns: minmax(120px, .7fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 30px;
+}
+.students-class-name{
+  min-width: 0;
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.students-class-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(226,232,240,0.92);
+  overflow: hidden;
+}
+.students-class-fill{
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3D7EF8, #16a34a);
+}
+.students-class-count{
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.students-health-list{
+  display: grid;
+  gap: 11px;
+}
+.students-health-row{
+  display: grid;
+  gap: 6px;
+}
+.students-health-top{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 800;
+}
+.students-health-top span:last-child{
+  color: var(--muted);
+  font-weight: 850;
+}
+.students-health-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(226,232,240,0.92);
+  overflow: hidden;
+}
+.students-health-fill{
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #16a34a, #84cc16);
+}
+.students-health-fill.warn{
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+}
+.students-health-fill.danger{
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+.students-directory{
+  padding: 14px;
+}
+.students-directory-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.students-directory .students-block-label{
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+.students-directory-sub{
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+.students-clear-filter{
+  min-height: 36px !important;
+  padding: 7px 12px !important;
+  white-space: nowrap;
+}
+#tab-students .mgr-toolbar{
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) repeat(3, minmax(150px, 190px));
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid rgba(99,138,218,0.13);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(248,250,252,0.96), rgba(241,246,255,0.84));
+}
+#tab-students .mgr-toolbar-filter{
+  min-width: 0;
+  width: 100%;
+}
+#tab-students .mgr-toolbar-filter label{
+  color: #526179;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+#tab-students .mgr-toolbar-filter select,
+#tab-students .mgr-toolbar-search{
+  min-width: 0;
+  width: 100%;
+}
+.students-active-filters{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 0;
+  margin: 0 0 12px;
+}
+.students-filter-chip{
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  max-width: 100%;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(99,138,218,0.16);
+  background: #fff;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+#tab-students #mgr-list{
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr)) !important;
+  gap: 14px !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+#tab-students #mgr-list .c-row{
+  position: relative;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(74px, 1fr) auto;
+  gap: 12px !important;
+  min-height: 202px;
+  padding: 15px 15px 14px !important;
+  border: 1px solid rgba(99,138,218,0.18) !important;
+  border-right: 1px solid rgba(99,138,218,0.16) !important;
+  border-radius: 8px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.94)),
+    radial-gradient(circle at top right, rgba(61,126,248,0.08), transparent 42%) !important;
+  box-shadow: 0 10px 24px rgba(15,31,61,0.06), inset 0 1px 0 rgba(255,255,255,0.88) !important;
+  overflow: hidden !important;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+#tab-students #mgr-list .c-row::before{
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #3D7EF8, #16A34A);
+  opacity: .82;
+}
+#tab-students #mgr-list .c-row:hover{
+  transform: translateY(-2px);
+  background: #fff !important;
+  border-color: rgba(61,126,248,0.34) !important;
+  box-shadow: 0 16px 34px rgba(15,31,61,0.11) !important;
+}
+.student-card-head{
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+#tab-students .c-row-name{
+  color: var(--ink);
+  font-size: 15.5px;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.22;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.student-card-idline{
+  color: #536680;
+  font-size: 12.5px;
+  font-weight: 760;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.student-card-idline .warn-missing{
+  color: #dc2626;
+  font-weight: 950;
+}
+#tab-students .c-row-actions{
+  align-self: end;
+  justify-self: end;
+  padding-top: 0;
+  flex-wrap: nowrap;
+  gap: 7px;
+}
+#tab-students .c-row-actions .btn-edit.mgr-edit,
+#tab-students .c-row-actions .btn-del.mgr-remove{
+  min-height: 34px !important;
+  padding: 7px 12px !important;
+  border-radius: 8px !important;
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+}
+#tab-students button.mgr-note-caption{
+  margin-top: 0;
+  min-height: 76px;
+  border-radius: 8px;
+  padding: 11px 12px;
+  border-color: rgba(99,138,218,0.24);
+  background: rgba(255,251,235,0.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.88);
+}
+#tab-students button.mgr-note-caption:hover{
+  border-color: rgba(61,126,248,0.34);
+  background: rgba(255,251,235,0.96);
+}
+#tab-students button.mgr-note-caption.empty{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  border-color: rgba(99,138,218,0.30);
+  background: rgba(248,250,252,0.74);
+}
+#tab-students button.mgr-note-caption .mgr-note-label{
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(180,83,9,0.10);
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 950;
+  margin-right: 6px;
+}
+#tab-students button.mgr-note-caption .mgr-note-text{
+  color: #334155;
+  font-size: 12px;
+  font-weight: 650;
+}
+#tab-students button.mgr-note-caption.empty .mgr-note-placeholder{
+  color: #8291a9;
+  font-size: 12.5px;
+  font-weight: 720;
+}
+#tab-students .pager{
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  border: 1px solid rgba(99,138,218,0.14);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+}
+#tab-students #mgr-list > .empty{
+  grid-column: 1 / -1;
+  border: 1px dashed rgba(99,138,218,0.22);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.96);
+}
+@media (max-width: 1220px){
+  .students-insights{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .students-ops-grid{
+    grid-template-columns: 1fr;
+  }
+  #tab-students .mgr-toolbar{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #tab-students .mgr-toolbar-search{
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 760px){
+  .students-admin-hero,
+  .students-directory-head{
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .students-admin-hero .student-add-open-btn,
+  .students-clear-filter{
+    width: 100%;
+  }
+  .students-insights{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #tab-students .mgr-toolbar{
+    grid-template-columns: 1fr;
+  }
+  #tab-students #mgr-list{
+    grid-template-columns: 1fr !important;
+  }
+  #tab-students .c-row-actions{
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: stretch;
+  }
+  #tab-students .c-row-actions > button{
+    flex: 1 1 0;
+  }
+  .students-class-bar{
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .students-class-track{
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 480px){
+  .students-insights{
+    grid-template-columns: 1fr;
+  }
+  .students-admin-hero,
+  .students-directory,
+  .students-ops-panel{
+    padding: 12px;
+  }
+}
 
 /* -- WORK CALENDAR ---------------------------------------- */
 .work-cal-cell {
@@ -8287,6 +8817,25 @@ a:focus-visible,
 }
 
 /* Student exam tier badges: keep them visually distinct from header plan badges. */
+.student-exam-downloads{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  min-height:28px !important;
+  padding:5px 9px !important;
+  border-radius:999px !important;
+  background:#eef4ff !important;
+  color:#2854bd !important;
+  border:1px solid rgba(79,125,243,.18) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72) !important;
+  font-size:11px !important;
+  font-weight:850 !important;
+  line-height:1 !important;
+}
+.student-exam-downloads strong{
+  color:#0f1f3d !important;
+  font-weight:950 !important;
+}
 .student-exam-card .student-exam-badges .student-exam-badge.exam-tier-premium{
   background:#f5efe5 !important;
   color:#80623c !important;
@@ -8623,7 +9172,7 @@ a:focus-visible,
       <div class="analytics-muted" style="font-size:12px;margin-top:6px">Bắt buộc chọn 1 lớp cụ thể trước khi chấm điểm danh.</div>
     </div>
     <div class="controls">
-      <input type="search" id="search" name="mvk_attendance_search" placeholder="Tìm theo tên, SĐT, lớp…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+      <input type="search" id="search" name="mvk_attendance_search" placeholder="Tìm theo tên, SĐT, lớp…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
       <button class="btn-sm" onclick="markAll('present')">Tất cả có mặt</button>
       <button class="btn-sm" onclick="markAll('absent')">Tất cả vắng</button>
     </div>
@@ -8654,30 +9203,64 @@ a:focus-visible,
   </div>
 
   <div id="tab-students" style="display:none">
-    <div id="students-add-section" class="card students-add-compact">
-      <div class="students-block-label">Thêm học viên mới</div>
-      <button type="button" class="btn-save student-add-open-btn" onclick="openAddStudentModal()">+ Thêm học viên</button>
-    </div>
+    <section class="students-admin-hero">
+      <div class="students-admin-title">
+        <div class="students-eyebrow">Quản trị học viên</div>
+        <h2>Hồ sơ học viên</h2>
+        <p id="mgr-hero-subtitle">Đang tải dữ liệu học viên.</p>
+      </div>
+      <button type="button" class="btn-save student-add-open-btn" onclick="openAddStudentModal()">
+        <span aria-hidden="true">+</span> Thêm học viên
+      </button>
+    </section>
 
-    <div class="students-block-label">Danh sách học viên</div>
-    <div class="mgr-toolbar">
-      <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm theo tên, SĐT phụ huynh, lớp…" class="mgr-toolbar-search" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
-      <div class="mgr-toolbar-filter">
-        <label for="mgr-class-filter">Lớp</label>
-        <select id="mgr-class-filter" aria-label="Lọc theo lớp">
-          <option value="All">Tất cả lớp</option>
-        </select>
+    <section class="students-insights" id="mgr-insights" aria-live="polite"></section>
+
+    <section class="students-ops-grid">
+      <div class="students-ops-panel" id="mgr-class-breakdown"></div>
+      <div class="students-ops-panel" id="mgr-data-health"></div>
+    </section>
+
+    <section class="students-directory">
+      <div class="students-directory-head">
+        <div>
+          <div class="students-block-label">Danh sách học viên</div>
+          <div class="students-directory-sub" id="mgr-result-summary">Đang tải danh sách.</div>
+        </div>
+        <button type="button" class="btn-sm students-clear-filter" onclick="clearMgrFilters()">Xóa lọc</button>
       </div>
-      <div class="mgr-toolbar-filter">
-        <label for="mgr-note-filter">Nhận xét</label>
-        <select id="mgr-note-filter" aria-label="Lọc theo nhận xét học lực">
-          <option value="all">Tất cả</option>
-          <option value="with">Có nhận xét</option>
-          <option value="without">Chưa có nhận xét</option>
-        </select>
+      <div class="mgr-toolbar">
+        <input type="search" id="mgr-search" name="mvk_student_manager_search" placeholder="Tìm tên, SĐT, phụ huynh, lớp, nhận xét…" class="mgr-toolbar-search" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
+        <div class="mgr-toolbar-filter">
+          <label for="mgr-class-filter">Lớp</label>
+          <select id="mgr-class-filter" aria-label="Lọc theo lớp">
+            <option value="All">Tất cả lớp</option>
+          </select>
+        </div>
+        <div class="mgr-toolbar-filter">
+          <label for="mgr-status-filter">Trạng thái</label>
+          <select id="mgr-status-filter" aria-label="Lọc theo trạng thái hồ sơ">
+            <option value="all">Tất cả</option>
+            <option value="missing_phone">Thiếu SĐT</option>
+            <option value="missing_parent">Thiếu phụ huynh</option>
+            <option value="missing_birth_year">Thiếu năm sinh</option>
+            <option value="absence_risk">Vắng 3 buổi</option>
+            <option value="multi_class">Học nhiều lớp</option>
+            <option value="no_class">Chưa có lớp</option>
+          </select>
+        </div>
+        <div class="mgr-toolbar-filter">
+          <label for="mgr-note-filter">Nhận xét</label>
+          <select id="mgr-note-filter" aria-label="Lọc theo nhận xét học lực">
+            <option value="all">Tất cả</option>
+            <option value="with">Có nhận xét</option>
+            <option value="without">Chưa có nhận xét</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="card" id="mgr-list"></div>
+      <div class="students-active-filters" id="mgr-active-filters"></div>
+      <div id="mgr-list" class="students-directory-grid"></div>
+    </section>
   </div>
 
   <div id="tab-tuition" style="display:none">
@@ -8818,9 +9401,10 @@ a:focus-visible,
         <div class="portal-panel">
           <div class="portal-panel-head">
             <div>
-              <div class="portal-panel-title">Upload kho đề R2</div>
+              <div class="portal-panel-title">Upload kho tài liệu</div>
               <div class="portal-panel-sub">Chọn nhiều file PDF; hệ thống tự phân vào 10, thpt hoặc ielts theo tên file.</div>
             </div>
+            <button type="button" class="btn-sm portal-exam-manager-open" onclick="openPortalExamManager()">Quản lý tài liệu</button>
           </div>
           <div class="portal-panel-body">
             <div class="portal-r2-upload">
@@ -8828,16 +9412,49 @@ a:focus-visible,
                 <label class="portal-r2-dropzone" id="portal-r2-dropzone" for="portal-r2-upload-files" ondragenter="onPortalR2DragEnter(event)" ondragover="onPortalR2DragOver(event)" ondragleave="onPortalR2DragLeave(event)" ondrop="onPortalR2Drop(event)">
                   <span class="portal-r2-dropzone-mark">PDF</span>
                   <span class="portal-r2-dropzone-main">
-                    <span class="portal-r2-dropzone-title" id="portal-r2-upload-file-title">Chọn file đề để upload</span>
+                    <span class="portal-r2-dropzone-title" id="portal-r2-upload-file-title">Chọn tài liệu để upload</span>
                     <span class="portal-r2-dropzone-sub" id="portal-r2-upload-file-hint">Có thể chọn nhiều file PDF cùng lúc.</span>
                   </span>
                 </label>
                 <input id="portal-r2-upload-files" class="portal-r2-upload-file-native" type="file" multiple accept="application/pdf,.pdf" onchange="onPortalR2UploadFilesChange()"/>
-                <button type="button" class="btn-sm portal-r2-upload-btn" id="portal-r2-upload-btn" onclick="uploadPortalR2ExamFiles()">Upload lên R2</button>
+                <button type="button" class="btn-sm portal-r2-upload-btn" id="portal-r2-upload-btn" onclick="uploadPortalR2ExamFiles()">Upload</button>
               </div>
               <div class="portal-r2-upload-status" id="portal-r2-upload-status">Chưa chọn file.</div>
               <div class="portal-r2-upload-list" id="portal-r2-upload-list"></div>
             </div>
+          </div>
+        </div>
+        <div class="portal-exam-manager" id="portal-exam-manager" onclick="onPortalExamManagerBackdrop(event)">
+          <div class="portal-exam-manager-card" role="dialog" aria-modal="true" aria-labelledby="portal-exam-manager-title">
+            <div class="portal-exam-manager-head">
+              <div>
+                <div class="portal-exam-manager-title" id="portal-exam-manager-title">Quản lý kho tài liệu</div>
+                <div class="portal-exam-manager-sub" id="portal-exam-manager-summary">Xem, mở nhanh và xóa tài liệu đã upload lên Supabase hoặc R2.</div>
+              </div>
+              <button type="button" class="btn-sm portal-exam-manager-close" onclick="closePortalExamManager()" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="portal-exam-manager-toolbar">
+              <input type="search" id="portal-exam-manager-search" name="mvk_portal_exam_manager_search" placeholder="Tìm theo tên, mã đề, tỉnh/thành, đường dẫn..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="onPortalExamManagerSearch(this.value)"/>
+              <select id="portal-exam-manager-provider" onchange="onPortalExamManagerProvider(this.value)">
+                <option value="all">Mọi nguồn</option>
+                <option value="r2">R2</option>
+                <option value="supabase">Supabase</option>
+                <option value="url">URL cũ</option>
+              </select>
+              <select id="portal-exam-manager-status" onchange="onPortalExamManagerStatus(this.value)">
+                <option value="all">Mọi trạng thái</option>
+                <option value="published">Đang hiện</option>
+                <option value="hidden">Đang ẩn</option>
+              </select>
+              <select id="portal-exam-manager-level" onchange="onPortalExamManagerLevel(this.value)">
+                <option value="all">Mọi chương trình</option>
+                <option value="entrance_10">Thi vào 10</option>
+                <option value="university">THPT QG</option>
+                <option value="ielts">IELTS</option>
+              </select>
+              <button type="button" class="btn-sm" onclick="loadPortalExamManager(true)">Làm mới</button>
+            </div>
+            <div class="portal-exam-manager-list" id="portal-exam-manager-list"></div>
           </div>
         </div>
         <div class="portal-analytics-grid">
@@ -8900,7 +9517,7 @@ a:focus-visible,
         <div class="leaderboard-manage">
           <div class="leaderboard-manage-title">Cập nhật nhanh thành tích · cống hiến · minigame</div>
           <div class="leaderboard-manage-grid">
-            <input type="search" id="leaderboard-manage-search" name="mvk_leaderboard_student_search" placeholder="Tìm học sinh..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" oninput="renderLeaderboardManageStudents()"/>
+            <input type="search" id="leaderboard-manage-search" name="mvk_leaderboard_student_search" placeholder="Tìm học sinh..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="renderLeaderboardManageStudents()"/>
             <input type="number" id="leaderboard-manage-performance" placeholder="+ điểm thành tích" step="1"/>
             <input type="number" id="leaderboard-manage-contribution" placeholder="+ lượt giới thiệu" step="1"/>
             <input type="number" id="leaderboard-manage-minigame" placeholder="+ điểm minigame" step="1"/>
@@ -9706,7 +10323,7 @@ a:focus-visible,
           <option value="closed">Hoàn tất</option>
           <option value="archived">Lưu trữ</option>
         </select>
-        <input type="search" id="consult-search" name="mvk_consult_search" placeholder="Tìm theo tên, SĐT, lớp, chương trình…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" oninput="onConsultSearchInput(this.value)" style="flex:1;min-width:160px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);font-family:var(--font);font-size:13px"/>
+        <input type="search" id="consult-search" name="mvk_consult_search" placeholder="Tìm theo tên, SĐT, lớp, chương trình…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="onConsultSearchInput(this.value)" style="flex:1;min-width:160px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);font-family:var(--font);font-size:13px"/>
       </div>
       <div class="bank-summary" id="consult-summary"></div>
       <div id="consult-list" class="bank-table">
@@ -9777,7 +10394,7 @@ a:focus-visible,
             <option value="transfer">Chuyển khoản</option>
             <option value="cash">Tiền mặt</option>
           </select>
-          <input type="search" id="bank-search" name="mvk_bank_transaction_search" placeholder="Tìm nội dung CK, học viên, SĐT, mã…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+          <input type="search" id="bank-search" name="mvk_bank_transaction_search" placeholder="Tìm nội dung CK, học viên, SĐT, mã…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
           <select id="bank-status-filter" onchange="setBankTxStatusFilter(this.value)">
             <option value="all">Tất cả trạng thái</option>
             <option value="success">Thành công</option>
@@ -10051,7 +10668,7 @@ a:focus-visible,
     </section>
 
     <section class="student-exam-filters" aria-label="Tìm kiếm và lọc đề thi">
-      <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+      <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Tìm theo tên đề, tỉnh/thành, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
       <div class="student-exam-filter-grid">
         <div class="student-exam-filter-main">
           <select id="student-exam-level" aria-label="Lọc cấp học">
@@ -10187,10 +10804,12 @@ a:focus-visible,
         name="mvk_bank_receive_student_search"
         class="bank-tx-receive-picker-search"
         placeholder="Ví dụ: Minh, hoặc 0912…"
-        autocomplete="off"
+        autocomplete="new-password"
         autocorrect="off"
         autocapitalize="none"
         spellcheck="false"
+        data-lpignore="true"
+        data-1p-ignore="true"
         data-no-autofill-search="1"
       />
       <div id="bank-tx-receive-picker-hint" class="analytics-muted" style="font-size:12px;margin-top:6px;min-height:1.2em"></div>
@@ -15128,10 +15747,11 @@ async function trackStudentExamPortalEvent(examId, eventName) {
 function studentExamCard(row, compact) {
   const id = escapeHtml(String(row.id || ''));
   const title = escapeHtml(studentExamDisplayTitle(row));
-  const level = studentExamLevelLabel(row.level);
   const examType = studentExamTypeLabel(row);
   const year = row.year ? String(row.year) : 'Chưa rõ năm';
   const province = studentExamDisplayProvince(row.province) || 'Nguồn tổng hợp';
+  const provinceBadgeKey = normalizeText(province).replace(/\s+/g, ' ').trim().toLowerCase();
+  const showProvinceBadge = provinceBadgeKey !== 'uu tien';
   const code = String(row.exam_code || '').trim();
   const showCode = code && !studentExamIsOfficial(row);
   const downloads = Math.max(0, parseInt(String(row.download_count || 0), 10) || 0);
@@ -15151,18 +15771,17 @@ function studentExamCard(row, compact) {
           <h3>${title}</h3>
           ${compact ? '' : `<p class="student-exam-desc">${escapeHtml(desc)}</p>`}
           <div class="student-exam-badges">
-            <span class="student-exam-badge gold">${escapeHtml(level)}</span>
             <span class="student-exam-badge">${escapeHtml(examType)}</span>
             <span class="student-exam-badge ${tier === 'premium' ? 'exam-tier-premium' : 'exam-tier-free'}">${tier === 'premium' ? 'Premium' : 'Free'}</span>
             ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
             ${showCode ? `<span class="student-exam-badge">Mã ${escapeHtml(code)}</span>` : ''}
             <span class="student-exam-badge">${escapeHtml(year)}</span>
-            <span class="student-exam-badge">${escapeHtml(province)}</span>
+            ${showProvinceBadge ? `<span class="student-exam-badge">${escapeHtml(province)}</span>` : ''}
           </div>
         </div>
         <div class="student-exam-card-tools">
           <div>
-            <div class="student-exam-downloads">${downloads} lượt tải</div>
+            <div class="student-exam-downloads" title="Số lượt tải" aria-label="${downloads} lượt tải">Lượt tải: <strong>${downloads}</strong></div>
           </div>
           <button type="button" class="student-exam-save" data-exam-save="${id}" aria-pressed="${isSaved ? 'true' : 'false'}" aria-label="${isSaved ? 'Bỏ lưu tài liệu' : 'Lưu tài liệu'}" title="${isSaved ? 'Bỏ lưu' : 'Lưu tài liệu'}" ${locked ? 'disabled' : ''}>${studentExamSavedIcon()}</button>
         </div>
@@ -15972,7 +16591,7 @@ async function signUpStudentAccount() {
       body: JSON.stringify({
         email,
         password,
-        data: { role: 'student', display_name: name, full_name: name, ...classMeta }
+        data: { display_name: name, full_name: name, ...classMeta }
       })
     });
   } catch (networkError) {
@@ -16039,6 +16658,8 @@ async function signOutUser() {
   teacherWorkListPage = 1;
   bankTxRowsCache = [];
   bankCashRowsCache = [];
+  tuitionRowsCache = [];
+  tuitionAttendancePresentCache = [];
   bankTxSearch = '';
   bankTxStatusFilter = 'all';
   bankSourceFilter = 'all';
@@ -16268,7 +16889,17 @@ let portalFreeCurationGroup = 'entrance_10';
 let portalR2SyncRunning = false;
 let portalR2UploadRunning = false;
 let portalR2UploadRows = [];
+let portalR2UploadComplete = false;
 let portalR2DragDepth = 0;
+let portalExamManagerRows = [];
+let portalExamManagerLoadedAt = 0;
+let portalExamManagerLoading = false;
+let portalExamManagerError = '';
+let portalExamManagerDeletingId = '';
+let portalExamManagerQuery = '';
+let portalExamManagerProvider = 'all';
+let portalExamManagerStatus = 'all';
+let portalExamManagerLevel = 'all';
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -17195,7 +17826,7 @@ function setPortalR2UploadStatus(message, busy) {
   if (status) status.textContent = message || 'Chưa chọn file.';
   if (btn) {
     btn.disabled = !!busy;
-    btn.textContent = busy ? 'Đang upload...' : 'Upload lên R2';
+    btn.textContent = 'Upload';
   }
   if (input) input.disabled = !!busy;
 }
@@ -17209,33 +17840,65 @@ function portalR2FileSizeLabel(size) {
   return Math.round(n) + ' B';
 }
 
-function portalR2StateLabel(state) {
-  if (state === 'queued') return 'Chờ';
-  if (state === 'signing') return 'Ký URL';
-  if (state === 'uploading') return 'Đang tải';
-  if (state === 'uploaded') return 'Đã lên R2';
-  if (state === 'synced') return 'Đã đồng bộ';
-  if (state === 'error') return 'Lỗi';
-  return 'Sẵn sàng';
+function portalR2UploadStateHtml(state) {
+  if (state === 'error') {
+    return '<div class="portal-r2-upload-state error" title="Lỗi" aria-label="Lỗi">' +
+      '<span class="portal-r2-upload-error-dot" aria-hidden="true">!</span>' +
+      '</div>';
+  }
+  if (state === 'uploaded' || state === 'synced') {
+    return '<div class="portal-r2-upload-state ok" title="Hoàn tất" aria-label="Hoàn tất">' +
+      '<span class="portal-r2-upload-check" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.4 4.2L19 7.5"/></svg>' +
+      '</span>' +
+      '</div>';
+  }
+  return '<div class="portal-r2-upload-state busy" title="Đang xử lý" aria-label="Đang xử lý">' +
+    '<span class="portal-r2-upload-spinner" aria-hidden="true"></span>' +
+    '</div>';
+}
+
+function dismissPortalR2UploadList() {
+  const input = document.getElementById('portal-r2-upload-files');
+  const title = document.getElementById('portal-r2-upload-file-title');
+  const hint = document.getElementById('portal-r2-upload-file-hint');
+  portalR2UploadRows = [];
+  portalR2UploadComplete = false;
+  if (input) input.value = '';
+  if (title) title.textContent = 'Chọn tài liệu để upload';
+  if (hint) hint.textContent = 'Có thể chọn nhiều file PDF cùng lúc.';
+  renderPortalR2UploadList();
+  setPortalR2UploadStatus('Chưa chọn file.', false);
 }
 
 function renderPortalR2UploadList() {
   const list = document.getElementById('portal-r2-upload-list');
   if (!list) return;
   if (!portalR2UploadRows.length) {
+    list.classList.remove('with-dismiss');
     list.innerHTML = '';
     return;
   }
-  list.innerHTML = portalR2UploadRows.map((row, idx) => {
+  const canDismiss = portalR2UploadComplete && portalR2UploadRows.every(row => {
+    const state = String(row.state || '');
+    return state === 'uploaded' || state === 'synced';
+  });
+  list.classList.toggle('with-dismiss', !!canDismiss);
+  const dismissHtml = canDismiss
+    ? '<button type="button" class="portal-r2-upload-dismiss" onclick="dismissPortalR2UploadList()" aria-label="Ẩn danh sách vừa upload" title="Ẩn danh sách vừa upload">&times;</button>'
+    : '';
+  const rowHtml = portalR2UploadRows.map((row, idx) => {
     const state = String(row.state || 'queued');
-    const stateClass = state === 'error' ? 'error' : (state === 'uploaded' || state === 'synced' ? 'ok' : (state === 'uploading' || state === 'signing' ? 'busy' : ''));
-    const meta = [portalR2FileSizeLabel(row.file && row.file.size), row.objectKey || row.error || ''].filter(Boolean).join(' · ');
+    const metaParts = [portalR2FileSizeLabel(row.file && row.file.size)];
+    if (row.error && state !== 'uploaded' && state !== 'synced') metaParts.push(row.error);
+    const meta = metaParts.filter(Boolean).join(' · ');
     return '<div class="portal-r2-upload-row" data-idx="' + idx + '">' +
       '<div><div class="portal-r2-upload-name">' + escapeHtml(row.file && row.file.name || 'file') + '</div>' +
       '<div class="portal-r2-upload-meta">' + escapeHtml(meta) + '</div></div>' +
-      '<div class="portal-r2-upload-state ' + stateClass + '">' + escapeHtml(portalR2StateLabel(state)) + '</div>' +
+      portalR2UploadStateHtml(state) +
       '</div>';
   }).join('');
+  list.innerHTML = dismissHtml + rowHtml;
 }
 
 function portalR2SetDropState(state) {
@@ -17310,7 +17973,7 @@ function onPortalR2DragLeave(e) {
   const files = input && input.files ? Array.from(input.files) : [];
   const title = document.getElementById('portal-r2-upload-file-title');
   const hint = document.getElementById('portal-r2-upload-file-hint');
-  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn file đề để upload';
+  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn tài liệu để upload';
   if (hint) hint.textContent = files.length ? files.map(f => f.name).slice(0, 2).join(', ') + (files.length > 2 ? ` và ${files.length - 2} file khác` : '') : 'Có thể chọn nhiều file PDF cùng lúc.';
 }
 
@@ -17326,10 +17989,11 @@ function onPortalR2Drop(e) {
     const hint = document.getElementById('portal-r2-upload-file-hint');
     if (title) title.textContent = 'Chọn lại file PDF';
     if (hint) hint.textContent = 'Chỉ được thả file PDF vào đây.';
+    portalR2UploadComplete = false;
     portalR2UploadRows = files.map(file => ({ file, state: portalR2IsPdfFile(file) ? 'queued' : 'error', objectKey: '', error: portalR2IsPdfFile(file) ? '' : 'Chỉ nhận PDF' }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
-    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
     setTimeout(() => portalR2SetDropState(''), 900);
     return;
   }
@@ -17350,18 +18014,20 @@ function onPortalR2UploadFilesChange() {
   const invalid = files.filter(file => !portalR2IsPdfFile(file));
   if (invalid.length) {
     if (input) input.value = '';
+    portalR2UploadComplete = false;
     portalR2UploadRows = invalid.map(file => ({ file, state: 'error', objectKey: '', error: 'Chỉ nhận PDF' }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
-    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
     if (title) title.textContent = 'Chọn lại file PDF';
     if (hint) hint.textContent = invalid.length + ' file không đúng định dạng.';
     return;
   }
+  portalR2UploadComplete = false;
   portalR2UploadRows = files.map(file => ({ file, state: 'queued', objectKey: '' }));
   renderPortalR2UploadList();
   setPortalR2UploadStatus(files.length ? `Đã chọn ${files.length} file.` : 'Chưa chọn file.', false);
-  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn file đề để upload';
+  if (title) title.textContent = files.length ? `Đã chọn ${files.length} file PDF` : 'Chọn tài liệu để upload';
   if (hint) hint.textContent = files.length ? files.map(f => f.name).slice(0, 2).join(', ') + (files.length > 2 ? ` và ${files.length - 2} file khác` : '') : 'Có thể chọn nhiều file PDF cùng lúc.';
 }
 
@@ -17374,7 +18040,7 @@ function portalR2IsPdfFile(file) {
 async function syncPortalR2ExamFiles() {
   if (portalR2SyncRunning) return;
   portalR2SyncRunning = true;
-  setPortalR2UploadStatus('Đang cập nhật danh sách đề...', true);
+  setPortalR2UploadStatus('Đang cập nhật kho tài liệu...', true);
   try {
     const r = await fetch(SUPABASE_URL + '/functions/v1/exam-sync-r2', {
       method: 'POST',
@@ -17388,7 +18054,7 @@ async function syncPortalR2ExamFiles() {
     const synced = Number(data.synced || 0) || 0;
     const objects = Number(data.object_count || 0) || 0;
     const unpublished = Number(data.unpublished || 0) || 0;
-    setPortalR2UploadStatus(`Đã cập nhật ${synced} đề từ ${objects} file; ẩn ${unpublished} đề đã xóa.`, false);
+    setPortalR2UploadStatus(`Đã cập nhật ${synced} tài liệu từ ${objects} file; ẩn ${unpublished} tài liệu đã xóa.`, false);
     invalidatePortalAnalyticsCache();
     await loadPortalAnalyticsIfNeeded(true);
     if (document.getElementById('student-exam-portal')?.style.display !== 'none') {
@@ -17398,8 +18064,8 @@ async function syncPortalR2ExamFiles() {
   } catch (e) {
     console.warn('syncPortalR2ExamFiles', e);
     const msg = String(e && e.message || e || 'sync_failed');
-    setPortalR2UploadStatus('Đã upload, nhưng chưa cập nhật được danh sách đề.', false);
-    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được cập nhật kho đề.' : 'Chưa cập nhật được danh sách đề R2.', 'error');
+    setPortalR2UploadStatus('Đã upload, nhưng chưa cập nhật được kho tài liệu.', false);
+    showAppToast(/Admin required|403/i.test(msg) ? 'Chỉ admin được cập nhật kho tài liệu.' : 'Chưa cập nhật được kho tài liệu.', 'error');
     throw e;
   } finally {
     portalR2SyncRunning = false;
@@ -17430,8 +18096,8 @@ async function proxyUploadPortalR2File(file) {
 async function uploadPortalR2ExamFiles() {
   if (portalR2UploadRunning) return;
   if (!isAdmin()) {
-    setPortalR2UploadStatus('Chỉ admin được upload kho đề.', false);
-    showAppToast('Chỉ admin được upload kho đề.', 'error');
+    setPortalR2UploadStatus('Chỉ admin được upload kho tài liệu.', false);
+    showAppToast('Chỉ admin được upload kho tài liệu.', 'error');
     return;
   }
   const sessionOk = await ensureSessionFresh();
@@ -17449,6 +18115,7 @@ async function uploadPortalR2ExamFiles() {
   }
   const invalid = files.filter(file => !portalR2IsPdfFile(file));
   if (invalid.length) {
+    portalR2UploadComplete = false;
     portalR2UploadRows = files.map(file => ({
       file,
       state: portalR2IsPdfFile(file) ? 'queued' : 'error',
@@ -17457,13 +18124,14 @@ async function uploadPortalR2ExamFiles() {
     }));
     renderPortalR2UploadList();
     setPortalR2UploadStatus('Chỉ được upload file PDF.', false);
-    showAppToast('Kho đề R2 chỉ nhận file PDF.', 'error');
+    showAppToast('Kho tài liệu chỉ nhận file PDF.', 'error');
     return;
   }
   portalR2UploadRunning = true;
+  portalR2UploadComplete = false;
   portalR2UploadRows = files.map(file => ({ file, state: 'signing', objectKey: '' }));
   renderPortalR2UploadList();
-  setPortalR2UploadStatus(`Đang tạo link upload cho ${files.length} file...`, true);
+  setPortalR2UploadStatus(`Đang chuẩn bị upload ${files.length} file...`, true);
   try {
     const signResp = await fetch(SUPABASE_URL + '/functions/v1/exam-r2-upload-url', {
       method: 'POST',
@@ -17540,23 +18208,338 @@ async function uploadPortalR2ExamFiles() {
     if (uploadErrors.length) {
       throw new Error(uploadErrors[0]);
     }
-    setPortalR2UploadStatus(`Đã upload ${okCount}/${files.length} file. Đang cập nhật kho đề...`, true);
+    setPortalR2UploadStatus(`Đã upload ${okCount}/${files.length} file. Đang cập nhật kho tài liệu...`, true);
     await syncPortalR2ExamFiles();
     portalR2UploadRows = portalR2UploadRows.map(row => ({ ...row, state: row.state === 'uploaded' ? 'synced' : row.state }));
+    portalR2UploadComplete = true;
     renderPortalR2UploadList();
     setPortalR2UploadStatus(`Hoàn tất: ${okCount} file đã upload và đồng bộ.`, false);
-    showAppToast(`Đã upload ${okCount} file lên R2 và cập nhật kho đề.`, 'ok');
+    showAppToast(`Đã upload ${okCount} file và cập nhật kho tài liệu.`, 'ok');
   } catch (e) {
     console.warn('uploadPortalR2ExamFiles', e);
     const msg = String(e && e.message || e || 'upload_failed');
     const corsHint = /Failed to fetch|NetworkError|Load failed/i.test(msg)
       ? ' Kiểm tra CORS của R2 bucket.'
       : '';
+    portalR2UploadComplete = false;
     setPortalR2UploadStatus('Upload lỗi: ' + msg + corsHint, false);
-    showAppToast(/Admin required|ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được upload kho đề.' : 'Chưa upload được file lên R2: ' + msg.slice(0, 90), 'error');
+    showAppToast(/Admin required|ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được upload kho tài liệu.' : 'Chưa upload được tài liệu: ' + msg.slice(0, 90), 'error');
   } finally {
     portalR2UploadRunning = false;
     setPortalR2UploadStatus(document.getElementById('portal-r2-upload-status')?.textContent || 'Chưa chọn file.', false);
+  }
+}
+
+async function callPortalExamManager(action, payload = {}) {
+  const sessionOk = await ensureSessionFresh();
+  if (!sessionOk || !currentSession?.access_token) throw new Error('missing_admin_session');
+  const r = await fetch(SUPABASE_URL + '/functions/v1/exam-admin-files', {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ ...payload, action }),
+    cache: 'no-store'
+  });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok || data.ok === false) throw new Error(data.error || ('exam_admin_files_' + r.status));
+  return data;
+}
+
+function openPortalExamManager() {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được quản lý kho tài liệu.', 'warn');
+    return;
+  }
+  const modal = document.getElementById('portal-exam-manager');
+  if (modal) modal.classList.add('show');
+  document.addEventListener('keydown', onPortalExamManagerKeydown);
+  loadPortalExamManager(false).catch(e => console.warn('loadPortalExamManager', e));
+  setTimeout(() => {
+    const input = document.getElementById('portal-exam-manager-search');
+    if (input) input.focus();
+  }, 0);
+}
+
+function closePortalExamManager() {
+  const modal = document.getElementById('portal-exam-manager');
+  if (modal) modal.classList.remove('show');
+  document.removeEventListener('keydown', onPortalExamManagerKeydown);
+}
+
+function onPortalExamManagerBackdrop(e) {
+  if (e && e.target && e.target.id === 'portal-exam-manager') closePortalExamManager();
+}
+
+function onPortalExamManagerKeydown(e) {
+  if (e && e.key === 'Escape') {
+    e.preventDefault();
+    closePortalExamManager();
+  }
+}
+
+async function loadPortalExamManager(force = false) {
+  if (!isAdmin()) {
+    portalExamManagerError = 'Chỉ admin được xem kho tài liệu.';
+    renderPortalExamManager();
+    return;
+  }
+  if (!force && !portalExamManagerError && portalExamManagerRows.length && portalExamManagerLoadedAt) {
+    renderPortalExamManager();
+    return;
+  }
+  portalExamManagerLoading = true;
+  portalExamManagerError = '';
+  renderPortalExamManager();
+  try {
+    const data = await callPortalExamManager('list');
+    portalExamManagerRows = Array.isArray(data.rows) ? data.rows : [];
+    portalExamManagerLoadedAt = Date.now();
+  } catch (e) {
+    console.warn('loadPortalExamManager', e);
+    portalExamManagerError = /ROLE_NOT_ADMIN|Admin required|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(String(e && e.message || e))
+      ? 'Tài khoản hiện tại chưa có quyền admin để xem kho tài liệu.'
+      : 'Chưa tải được danh sách tài liệu. Kiểm tra Edge Function exam-admin-files.';
+  } finally {
+    portalExamManagerLoading = false;
+    renderPortalExamManager();
+  }
+}
+
+function onPortalExamManagerSearch(value) {
+  portalExamManagerQuery = String(value || '');
+  renderPortalExamManager();
+}
+
+function onPortalExamManagerProvider(value) {
+  portalExamManagerProvider = ['all', 'r2', 'supabase', 'url'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalExamManager();
+}
+
+function onPortalExamManagerStatus(value) {
+  portalExamManagerStatus = ['all', 'published', 'hidden'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalExamManager();
+}
+
+function onPortalExamManagerLevel(value) {
+  portalExamManagerLevel = ['all', 'entrance_10', 'university', 'ielts'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalExamManager();
+}
+
+function portalExamManagerProviderKey(row) {
+  const provider = String(row && row.storage_provider || '').trim().toLowerCase();
+  if (provider === 'r2' || row?.object_key || row?.answer_object_key || row?.audio_object_key) return 'r2';
+  if (row?.storage_path || row?.answer_path || row?.audio_path) return 'supabase';
+  const urls = [row?.file_url, row?.answer_url, row?.audio_url].map(x => String(x || '').trim()).filter(Boolean);
+  if (urls.some(url => /\/storage\/v1\/object\//i.test(url) || /supabase/i.test(url))) return 'supabase';
+  return urls.length ? 'url' : 'supabase';
+}
+
+function portalExamManagerProviderLabel(row) {
+  const key = portalExamManagerProviderKey(row);
+  if (key === 'r2') return 'R2';
+  if (key === 'url') return 'URL cũ';
+  return 'Supabase';
+}
+
+function portalExamManagerStatusLabel(row) {
+  return row && row.is_published === false ? 'Đang ẩn' : 'Đang hiện';
+}
+
+function portalExamManagerFileRefs(row) {
+  const refs = [];
+  if (row?.object_key || row?.storage_path || row?.file_url) {
+    refs.push({ kind: 'file', label: 'Mở đề', ref: row.object_key || row.storage_path || row.file_url });
+  }
+  if (row?.answer_object_key || row?.answer_path || row?.answer_url) {
+    refs.push({ kind: 'answer', label: 'Đáp án', ref: row.answer_object_key || row.answer_path || row.answer_url });
+  }
+  if (row?.audio_object_key || row?.audio_path || row?.audio_url) {
+    refs.push({ kind: 'audio', label: 'Audio', ref: row.audio_object_key || row.audio_path || row.audio_url });
+  }
+  return refs;
+}
+
+function portalExamManagerPathText(row) {
+  return portalExamManagerFileRefs(row)
+    .map(item => `${item.label}: ${item.ref}`)
+    .join(' · ');
+}
+
+function portalExamManagerMatchesLevel(row) {
+  if (portalExamManagerLevel === 'all') return true;
+  return portalExamGroupKey(row) === portalExamManagerLevel;
+}
+
+function portalExamManagerFilteredRows() {
+  const q = normalizeText(portalExamManagerQuery).toLowerCase().trim();
+  const rows = Array.isArray(portalExamManagerRows) ? portalExamManagerRows.slice() : [];
+  return rows
+    .filter(row => portalExamManagerProvider === 'all' || portalExamManagerProviderKey(row) === portalExamManagerProvider)
+    .filter(row => portalExamManagerStatus === 'all' || (portalExamManagerStatus === 'published' ? row?.is_published !== false : row?.is_published === false))
+    .filter(row => portalExamManagerMatchesLevel(row))
+    .filter(row => {
+      if (!q) return true;
+      const hay = [
+        portalExamTitle(row),
+        row?.title,
+        row?.exam_code,
+        row?.province,
+        studentExamDisplayProvince(row?.province),
+        row?.year,
+        row?.description,
+        row?.object_key,
+        row?.answer_object_key,
+        row?.audio_object_key,
+        row?.storage_path,
+        row?.answer_path,
+        row?.audio_path,
+        row?.file_url,
+        row?.answer_url,
+        row?.audio_url,
+      ].map(x => normalizeText(String(x || '')).toLowerCase()).join(' ');
+      return hay.includes(q);
+    })
+    .sort((a, b) => {
+      const pub = Number(b?.is_published !== false) - Number(a?.is_published !== false);
+      if (pub) return pub;
+      const at = Date.parse(a?.created_at || '') || 0;
+      const bt = Date.parse(b?.created_at || '') || 0;
+      return bt - at || portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi');
+    });
+}
+
+function renderPortalExamManagerError(message) {
+  const list = document.getElementById('portal-exam-manager-list');
+  const summary = document.getElementById('portal-exam-manager-summary');
+  if (summary) summary.textContent = 'Không tải được danh sách tài liệu.';
+  if (list) list.innerHTML = `<div class="portal-exam-manager-empty">${escapeHtml(message || 'Chưa tải được dữ liệu.')}</div>`;
+}
+
+function renderPortalExamManager() {
+  const list = document.getElementById('portal-exam-manager-list');
+  const summary = document.getElementById('portal-exam-manager-summary');
+  if (!list) return;
+  if (portalExamManagerLoading) {
+    list.innerHTML = '<div class="portal-exam-manager-loading"><span>Đang tải kho tài liệu...</span></div>';
+    if (summary) summary.textContent = 'Đang đồng bộ danh sách từ Supabase và R2.';
+    return;
+  }
+  if (portalExamManagerError) {
+    renderPortalExamManagerError(portalExamManagerError);
+    return;
+  }
+  const rows = portalExamManagerFilteredRows();
+  const total = portalExamManagerRows.length;
+  const r2Count = portalExamManagerRows.filter(row => portalExamManagerProviderKey(row) === 'r2').length;
+  const hiddenCount = portalExamManagerRows.filter(row => row?.is_published === false).length;
+  if (summary) {
+    const syncedAt = portalExamManagerLoadedAt ? new Date(portalExamManagerLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'chưa tải';
+    summary.textContent = `${rows.length}/${total} tài liệu phù hợp bộ lọc · ${r2Count} R2 · ${hiddenCount} đang ẩn · cập nhật ${syncedAt}.`;
+  }
+  if (!total) {
+    list.innerHTML = '<div class="portal-exam-manager-empty">Chưa có tài liệu nào trong kho.</div>';
+    return;
+  }
+  if (!rows.length) {
+    list.innerHTML = '<div class="portal-exam-manager-empty">Không có tài liệu khớp bộ lọc hiện tại.</div>';
+    return;
+  }
+  list.innerHTML = rows.slice(0, 300).map(row => renderPortalExamManagerRow(row)).join('');
+}
+
+function renderPortalExamManagerRow(row) {
+  const id = String(row && row.id || '');
+  const providerKey = portalExamManagerProviderKey(row);
+  const providerLabel = portalExamManagerProviderLabel(row);
+  const statusHidden = row && row.is_published === false;
+  const groupLabel = portalFreeGroupLabel(portalExamGroupKey(row));
+  const province = studentExamDisplayProvince(row && row.province);
+  const year = row && row.year ? String(row.year) : '';
+  const accessTier = String(row && row.access_tier || 'free') === 'premium' ? 'Premium' : 'Free';
+  const downloads = Math.max(0, Number(row && row.download_count || 0));
+  const createdAt = row && row.created_at ? portalActivityTimeLabel(row.created_at) : '';
+  const refs = portalExamManagerFileRefs(row);
+  const fileButtons = refs.map(ref =>
+    `<button type="button" class="btn-sm" onclick="openPortalExamManagerFile('${escapeHtml(id)}','${escapeHtml(ref.kind)}')">${escapeHtml(ref.label)}</button>`
+  ).join('');
+  const deleting = portalExamManagerDeletingId && portalExamManagerDeletingId === id;
+  const mark = providerKey === 'r2' ? 'R2' : 'PDF';
+  return `<div class="portal-exam-manager-row">
+    <div class="portal-exam-manager-mark">${escapeHtml(mark)}</div>
+    <div class="portal-exam-manager-info">
+      <div class="portal-exam-manager-name">${escapeHtml(portalExamTitle(row))}</div>
+      <div class="portal-exam-manager-meta">
+        <span class="portal-exam-manager-pill ${escapeHtml(providerKey)}">${escapeHtml(providerLabel)}</span>
+        <span class="portal-exam-manager-pill ${statusHidden ? 'hidden' : ''}">${escapeHtml(portalExamManagerStatusLabel(row))}</span>
+        <span class="portal-exam-manager-pill">${escapeHtml(groupLabel)}</span>
+        ${province || year ? `<span class="portal-exam-manager-pill">${escapeHtml([province, year].filter(Boolean).join(' · '))}</span>` : ''}
+        <span class="portal-exam-manager-pill">${escapeHtml(accessTier)}</span>
+        <span class="portal-exam-manager-pill">${downloads} lượt tải</span>
+      </div>
+      <div class="portal-exam-manager-path">${escapeHtml([row && row.exam_code ? 'Mã ' + row.exam_code : '', createdAt ? 'Tạo ' + createdAt : '', portalExamManagerPathText(row)].filter(Boolean).join(' · '))}</div>
+    </div>
+    <div class="portal-exam-manager-actions">
+      ${fileButtons || '<button type="button" class="btn-sm" disabled>Không có file</button>'}
+      <button type="button" class="btn-sm danger" onclick="deletePortalExamFile('${escapeHtml(id)}')" ${deleting ? 'disabled' : ''}>${deleting ? 'Đang xóa' : 'Xóa'}</button>
+    </div>
+  </div>`;
+}
+
+async function openPortalExamManagerFile(examId, kind) {
+  const id = String(examId || '').trim();
+  const fileKind = ['file', 'answer', 'audio'].includes(String(kind || '')) ? String(kind) : 'file';
+  if (!id) return;
+  let popup = null;
+  try { popup = window.open('', '_blank'); } catch (e) {}
+  try {
+    const data = await callPortalExamManager('sign', { id, kind: fileKind });
+    if (!data.url) throw new Error('missing_signed_url');
+    if (popup) {
+      popup.location.href = String(data.url);
+    } else {
+      window.open(String(data.url), '_blank', 'noopener');
+    }
+  } catch (e) {
+    if (popup) try { popup.close(); } catch (_) {}
+    console.warn('openPortalExamManagerFile', e);
+    showAppToast('Chưa mở được tài liệu này.', 'warn');
+  }
+}
+
+async function deletePortalExamFile(examId) {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được xóa tài liệu.', 'warn');
+    return;
+  }
+  const id = String(examId || '').trim();
+  const row = portalExamManagerRows.find(item => String(item && item.id || '') === id);
+  if (!id || !row) return;
+  const title = portalExamTitle(row);
+  const ok = await confirmApp(
+    `Xóa "${title}" khỏi kho tài liệu? Thao tác này xóa object liên quan trên R2/Supabase nếu có và gỡ tài liệu khỏi portal.`,
+    { title: 'Xóa tài liệu', okLabel: 'Xóa', cancelLabel: 'Hủy' }
+  );
+  if (!ok) return;
+  portalExamManagerDeletingId = id;
+  renderPortalExamManager();
+  try {
+    await callPortalExamManager('delete', { id });
+    portalExamManagerRows = portalExamManagerRows.filter(item => String(item && item.id || '') !== id);
+    portalExamManagerLoadedAt = Date.now();
+    portalExamManagerDeletingId = '';
+    renderPortalExamManager();
+    invalidatePortalAnalyticsCache();
+    await loadPortalAnalyticsIfNeeded(true).catch(e => console.warn('refresh portal analytics after delete', e));
+    if (typeof loadStudentExamFiles === 'function' && document.getElementById('student-exam-portal')?.style.display !== 'none') {
+      await loadStudentExamFiles().catch(e => console.warn('refresh student exams after delete', e));
+    }
+    showAppToast('Đã xóa tài liệu khỏi kho.', 'success');
+  } catch (e) {
+    portalExamManagerDeletingId = '';
+    renderPortalExamManager();
+    console.warn('deletePortalExamFile', e);
+    const msg = String(e && e.message || e || '');
+    showAppToast(/ROLE_NOT_ADMIN|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN/i.test(msg) ? 'Chỉ admin được xóa tài liệu.' : 'Chưa xóa được tài liệu: ' + msg.slice(0, 90), 'error');
   }
 }
 
@@ -17800,7 +18783,7 @@ function renderPortalStudentUsers(rows) {
   }</tbody></table></div>` : '<div class="empty" style="padding:16px">Không có học sinh khớp bộ lọc.</div>';
   el.innerHTML = `<div class="portal-user-shell">
     <div class="portal-user-tools">
-      <input class="portal-user-search" id="portal-student-search" type="search" name="mvk_portal_student_search" placeholder="Tìm tên, email, mã tài khoản..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
+      <input class="portal-user-search" id="portal-student-search" type="search" name="mvk_portal_student_search" placeholder="Tìm tên, email, mã tài khoản..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
       <select class="portal-user-select" id="portal-student-sort" onchange="onPortalStudentSortChange(this.value)">
         <option value="priority">Ưu tiên xử lý</option>
         <option value="last">Hoạt động mới nhất</option>
@@ -18016,7 +18999,7 @@ function renderPortalFreeCuration(exams) {
           <button type="button" class="btn-sm" onclick="closePortalFreePicker()">Đóng</button>
         </div>
         <div class="portal-picker-filters">
-          <input class="portal-picker-search" id="portal-free-picker-search" type="search" name="mvk_portal_free_exam_search" placeholder="Tìm theo tên đề, mã đề, tỉnh/thành, nguồn..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
+          <input class="portal-picker-search" id="portal-free-picker-search" type="search" name="mvk_portal_free_exam_search" placeholder="Tìm theo tên đề, mã đề, tỉnh/thành, nguồn..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" value="${escapeHtml(portalFreePickerQuery)}" oninput="onPortalFreePickerSearch(this.value)"/>
           <select class="portal-picker-select" id="portal-free-picker-level" onchange="onPortalFreePickerLevel(this.value)">
             ${portalFreeGroups().map(g => `<option value="${escapeHtml(g.key)}" ${String(portalFreePickerLevel || '') !== 'all' && portalNormalizeFreeGroup(portalFreePickerLevel || group) === g.key ? 'selected' : ''}>${escapeHtml(g.label)}</option>`).join('')}
             <option value="all" ${String(portalFreePickerLevel || '') === 'all' ? 'selected' : ''}>Tất cả nhóm</option>
@@ -21207,12 +22190,12 @@ function formatPaymentDateTime(iso) {
 /** Hi?n th? tên l?p (giá tr? n?i b? v?n có th? là null / "No class"). */
 function displayClassVi(c) {
   const v = c == null || c === '' ? 'No class' : c;
-  if (v === 'No class') return 'Chua có l?p';
+  if (v === 'No class') return 'Chưa có lớp';
   return compactClassLabel(String(v), 28);
 }
 
 function uiClassOrFilter(s) {
-  if (s === 'All') return 'T?t c?';
+  if (s === 'All') return 'Tất cả';
   return displayClassVi(s);
 }
 
@@ -22459,7 +23442,7 @@ function syncMgrClassFilterSelect() {
   const prev = String(sel.value || 'All');
   const classes = getMgrClassFilterOptionValues();
   sel.innerHTML =
-    '<option value="All">T?t c? l?p</option>' +
+    '<option value="All">Tất cả lớp</option>' +
     classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(displayClassVi(c))}</option>`).join('');
   let next = 'All';
   if (prev !== 'All') {
@@ -22474,12 +23457,201 @@ function syncMgrClassFilterSelect() {
   sel.value = next;
 }
 
+function getMgrStats(list) {
+  const rows = Array.isArray(list) ? list : [];
+  const nowYear = new Date().getFullYear();
+  const out = {
+    total: rows.length,
+    withPhone: 0,
+    missingPhone: 0,
+    withParent: 0,
+    missingParent: 0,
+    withBirthYear: 0,
+    missingBirthYear: 0,
+    withNote: 0,
+    withoutNote: 0,
+    withClass: 0,
+    noClass: 0,
+    multiClass: 0,
+    absenceRisk: 0,
+    ageKnown: 0,
+    ageTotal: 0
+  };
+  rows.forEach(st => {
+    const classes = getStudentClasses(st).filter(Boolean);
+    const phone = String(st && st.phone || '').trim();
+    const parent = String(st && st.parent_name || '').trim();
+    const note = String(st && st.learning_note || '').trim();
+    const birthYear = st && st.birth_year != null ? parseInt(String(st.birth_year), 10) : 0;
+    if (phone) out.withPhone += 1; else out.missingPhone += 1;
+    if (parent) out.withParent += 1; else out.missingParent += 1;
+    if (Number.isFinite(birthYear) && birthYear > 1900) {
+      out.withBirthYear += 1;
+      out.ageKnown += 1;
+      out.ageTotal += Math.max(0, nowYear - birthYear);
+    } else {
+      out.missingBirthYear += 1;
+    }
+    if (note) out.withNote += 1; else out.withoutNote += 1;
+    if (classes.length) out.withClass += 1; else out.noClass += 1;
+    if (classes.length > 1) out.multiClass += 1;
+    if (absentStreak3ByStudent[String(st && st.id != null ? st.id : '')]) out.absenceRisk += 1;
+  });
+  out.avgAge = out.ageKnown ? Math.round(out.ageTotal / out.ageKnown) : 0;
+  return out;
+}
+
+function mgrPct(value, total) {
+  const t = Math.max(0, Number(total || 0));
+  if (!t) return 0;
+  return Math.max(0, Math.min(100, Math.round((Number(value || 0) / t) * 100)));
+}
+
+function formatMgrMoneyCompact(v) {
+  if (typeof formatVndCompact === 'function') return formatVndCompact(v);
+  return Number(v || 0).toLocaleString('vi-VN') + 'đ';
+}
+
+function getMgrClassDistribution() {
+  const map = new Map();
+  (students || []).forEach(st => {
+    const classes = getStudentClasses(st).filter(Boolean);
+    if (!classes.length) {
+      map.set('No class', (map.get('No class') || 0) + 1);
+      return;
+    }
+    classes.forEach(c => {
+      const key = String(c || '').trim() || 'No class';
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+  });
+  return Array.from(map.entries())
+    .map(([className, count]) => ({ className, count }))
+    .sort((a, b) => b.count - a.count || displayClassVi(a.className).localeCompare(displayClassVi(b.className), 'vi'));
+}
+
+function renderMgrInsights(filtered) {
+  const all = students || [];
+  const stats = getMgrStats(all);
+  const filteredStats = getMgrStats(filtered || []);
+  const hero = document.getElementById('mgr-hero-subtitle');
+  const insights = document.getElementById('mgr-insights');
+  const classPanel = document.getElementById('mgr-class-breakdown');
+  const healthPanel = document.getElementById('mgr-data-health');
+  const resultSummary = document.getElementById('mgr-result-summary');
+  const activeFilters = document.getElementById('mgr-active-filters');
+
+  if (hero) {
+    const parts = [
+      `${stats.total} học viên`,
+      `${getMgrClassDistribution().filter(x => x.className !== 'No class').length} lớp`,
+      `${stats.missingPhone} thiếu SĐT`,
+      `${stats.missingParent} thiếu phụ huynh`
+    ];
+    hero.textContent = parts.join(' · ');
+  }
+
+  if (insights) {
+    const totalClassCount = getMgrClassDistribution().filter(x => x.className !== 'No class').length;
+    const classHintParts = [];
+    if (stats.multiClass > 0) classHintParts.push(`${stats.multiClass} học sinh học nhiều lớp`);
+    if (stats.noClass > 0) classHintParts.push(`${stats.noClass} chưa lớp`);
+    const classHint = classHintParts.length ? classHintParts.join(' · ') : 'Tất cả học viên đã có lớp';
+    insights.innerHTML = `
+      <div class="students-kpi topline"><div class="k">Tổng học viên</div><div class="v">${stats.total}</div><div class="hint">${filteredStats.total} đang hiển thị</div></div>
+      <div class="students-kpi"><div class="k">Tổng số lớp</div><div class="v">${totalClassCount}</div><div class="hint">${escapeHtml(classHint)}</div></div>
+      <div class="students-kpi good"><div class="k">Có nhận xét</div><div class="v">${stats.withNote}</div><div class="hint">${mgrPct(stats.withNote, stats.total)}% hồ sơ có ghi chú học lực</div></div>
+      <div class="students-kpi danger"><div class="k">Thiếu SĐT</div><div class="v">${stats.missingPhone}</div><div class="hint">${stats.withPhone} hồ sơ đã có số liên hệ</div></div>
+      <div class="students-kpi warn"><div class="k">Thiếu phụ huynh</div><div class="v">${stats.missingParent}</div><div class="hint">${stats.withParent} hồ sơ đã có tên phụ huynh</div></div>
+      <div class="students-kpi danger"><div class="k">Cảnh báo vắng</div><div class="v">${stats.absenceRisk}</div><div class="hint">Vắng trong 3 lần điểm danh gần nhất</div></div>
+    `;
+  }
+
+  if (classPanel) {
+    const dist = getMgrClassDistribution();
+    const maxCount = dist.reduce((m, x) => Math.max(m, x.count), 0);
+    const top = dist.slice(0, 8);
+    const rows = top.length
+      ? top.map(x => {
+        const pct = mgrPct(x.count, maxCount || 1);
+        return `<div class="students-class-bar">
+          <div class="students-class-name" title="${escapeHtml(displayClassVi(x.className))}">${escapeHtml(displayClassVi(x.className))}</div>
+          <div class="students-class-track"><div class="students-class-fill" style="width:${pct}%"></div></div>
+          <div class="students-class-count">${x.count}</div>
+        </div>`;
+      }).join('')
+      : '<div class="empty">Chưa có lớp nào.</div>';
+    classPanel.innerHTML = `
+      <div class="students-panel-head">
+        <div class="students-panel-title">Sĩ số theo lớp</div>
+        <div class="students-panel-meta">${dist.length} nhóm lớp</div>
+      </div>
+      <div class="students-class-bars">${rows}</div>
+    `;
+  }
+
+  if (healthPanel) {
+    const healthRows = [
+      { label: 'SĐT phụ huynh', done: stats.withPhone, total: stats.total },
+      { label: 'Tên phụ huynh', done: stats.withParent, total: stats.total },
+      { label: 'Năm sinh', done: stats.withBirthYear, total: stats.total },
+      { label: 'Nhận xét học lực', done: stats.withNote, total: stats.total }
+    ].map(item => {
+      const pct = mgrPct(item.done, item.total);
+      const tone = pct < 60 ? 'danger' : (pct < 85 ? 'warn' : '');
+      return `<div class="students-health-row">
+        <div class="students-health-top"><span>${escapeHtml(item.label)}</span><span>${item.done}/${item.total} · ${pct}%</span></div>
+        <div class="students-health-track"><div class="students-health-fill ${tone}" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+    healthPanel.innerHTML = `
+      <div class="students-panel-head">
+        <div class="students-panel-title">Chất lượng hồ sơ</div>
+        <div class="students-panel-meta">${stats.avgAge ? `Tuổi TB ${stats.avgAge}` : 'Chưa đủ năm sinh'}</div>
+      </div>
+      <div class="students-health-list">${healthRows}</div>
+    `;
+  }
+
+  if (resultSummary) {
+    resultSummary.textContent = `${filteredStats.total}/${stats.total} học viên phù hợp bộ lọc.`;
+  }
+
+  if (activeFilters) {
+    const chips = [];
+    const q = String(document.getElementById('mgr-search')?.value || '').trim();
+    const cf = document.getElementById('mgr-class-filter');
+    const sf = document.getElementById('mgr-status-filter');
+    const nf = document.getElementById('mgr-note-filter');
+    if (q) chips.push(`Tìm: ${q}`);
+    if (cf && cf.value && cf.value !== 'All') chips.push(`Lớp: ${displayClassVi(cf.value)}`);
+    if (sf && sf.value && sf.value !== 'all') chips.push(`Trạng thái: ${sf.options[sf.selectedIndex]?.text || sf.value}`);
+    if (nf && nf.value && nf.value !== 'all') chips.push(`Nhận xét: ${nf.options[nf.selectedIndex]?.text || nf.value}`);
+    activeFilters.innerHTML = chips.map(x => `<span class="students-filter-chip">${escapeHtml(x)}</span>`).join('');
+  }
+}
+
 function getMgrFiltered() {
   let list = students.slice();
   const cf = document.getElementById('mgr-class-filter');
   const classPick = cf && cf.value && cf.value !== 'All' ? String(cf.value).trim() : '';
   if (classPick) {
     list = list.filter(s => isStudentAssignedToClass(s, classPick));
+  }
+  const sf = document.getElementById('mgr-status-filter');
+  const statusMode = sf && sf.value ? sf.value : 'all';
+  if (statusMode === 'missing_phone') {
+    list = list.filter(s => !String(s.phone || '').trim());
+  } else if (statusMode === 'missing_parent') {
+    list = list.filter(s => !String(s.parent_name || '').trim());
+  } else if (statusMode === 'missing_birth_year') {
+    list = list.filter(s => s.birth_year == null || !String(s.birth_year).trim());
+  } else if (statusMode === 'absence_risk') {
+    list = list.filter(s => absentStreak3ByStudent[String(s.id)] === true);
+  } else if (statusMode === 'multi_class') {
+    list = list.filter(s => getStudentClasses(s).filter(Boolean).length > 1);
+  } else if (statusMode === 'no_class') {
+    list = list.filter(s => getStudentClasses(s).filter(Boolean).length < 1);
   }
   const nf = document.getElementById('mgr-note-filter');
   const mode = nf && nf.value ? nf.value : 'all';
@@ -22500,14 +23672,54 @@ function getMgrFiltered() {
   );
 }
 
+function renderMgrStudentCard(s, actionButtons) {
+  const sid = String(s.id);
+  const phone = String(s.phone || '').trim();
+  const parentName = String(s.parent_name || '').trim();
+  const birthYear = s.birth_year != null ? String(s.birth_year) : '';
+  const noteRaw = String(s.learning_note || '').trim();
+  const notePreview = noteRaw ? escapeHtml(truncateMgrNotePreview(noteRaw, 168)) : '';
+  const noteBtnClass = noteRaw ? 'mgr-note-caption mgr-note' : 'mgr-note-caption mgr-note empty';
+  const noteBtnInner = noteRaw
+    ? `<span class="mgr-note-label">Nhận xét</span><span class="mgr-note-text">${notePreview}</span>`
+    : `<span class="mgr-note-placeholder">Chưa có nhận xét - bấm để thêm.</span>`;
+  const parentNameText = parentName ? `PH: ${parentName}` : '';
+  const birthYearText = birthYear ? `NS: ${birthYear}` : 'NS: —';
+  const detailText = [formatStudentClassDisplay(s), phone, parentNameText, birthYearText].filter(Boolean).join(' · ');
+  const detailHtml = escapeHtml(detailText) + (!phone ? ` · <span class="warn-missing">Chưa có SĐT</span>` : '');
+  return `<div class="c-row">
+    <div class="student-card-head">
+      <div class="c-row-name">${escapeHtml(s.name || 'Học viên')}</div>
+      <div class="student-card-idline">${detailHtml}</div>
+    </div>
+    <button type="button" class="${noteBtnClass}" data-student-id="${escapeHtml(sid)}">${noteBtnInner}</button>
+    ${actionButtons.replaceAll('__SID__', escapeHtml(sid))}
+  </div>`;
+}
+
+function clearMgrFilters() {
+  const search = document.getElementById('mgr-search');
+  const cls = document.getElementById('mgr-class-filter');
+  const status = document.getElementById('mgr-status-filter');
+  const note = document.getElementById('mgr-note-filter');
+  if (search) search.value = '';
+  if (cls) cls.value = 'All';
+  if (status) status.value = 'all';
+  if (note) note.value = 'all';
+  mgrPage = 1;
+  renderMgr();
+}
+
 function renderMgr() {
   const el = document.getElementById('mgr-list');
+  if (!el) return;
   syncMgrClassFilterSelect();
+  const filtered = getMgrFiltered();
+  renderMgrInsights(filtered);
   if (!students.length) {
-    el.innerHTML = '<div class="empty">Chua có h?c viên nào.</div>';
+    el.innerHTML = '<div class="empty">Chưa có học viên nào.</div>';
     return;
   }
-  const filtered = getMgrFiltered();
   const total = filtered.length;
   const pages = Math.max(1, Math.ceil(total / MGR_PAGE_SIZE));
   if (mgrPage > pages) mgrPage = pages;
@@ -22516,36 +23728,16 @@ function renderMgr() {
   const actionButtons = isTeacher()
     ? ''
     : `<div class="c-row-actions">
-      <button type="button" class="btn-edit mgr-edit" data-student-id="__SID__">S?a thông tin</button>
-      <button type="button" class="btn-del mgr-remove" data-student-id="__SID__" title="Xóa h?c viên">Xóa</button>
+      <button type="button" class="btn-edit mgr-edit" data-student-id="__SID__">Sửa</button>
+      <button type="button" class="btn-del mgr-remove" data-student-id="__SID__" title="Xóa học viên">Xóa</button>
     </div>`;
   const emptyFiltered =
     total === 0
-      ? '<div class="empty" style="padding:16px 14px;border-bottom:1px solid var(--border);margin:0">Không có học viên khớp bộ lọc hoặc từ khóa tìm kiếm.</div>'
+      ? '<div class="empty">Không có học viên khớp bộ lọc hoặc từ khóa tìm kiếm.</div>'
       : '';
   el.innerHTML =
     emptyFiltered +
-    slice.map(s => {
-    const sid = String(s.id);
-    const birthYearText = s.birth_year != null ? `NS: ${s.birth_year}` : 'NS: —';
-    const parentNameText = String(s.parent_name || '').trim() ? `PH: ${String(s.parent_name || '').trim()}` : '';
-    const noteRaw = String(s.learning_note || '').trim();
-    const notePreview = noteRaw ? escapeHtml(truncateMgrNotePreview(noteRaw, 168)) : '';
-    const noteBtnClass = noteRaw ? 'mgr-note-caption mgr-note' : 'mgr-note-caption mgr-note empty';
-    const noteBtnInner = noteRaw
-      ? `<span class="mgr-note-label">Nh?n xét</span><span class="mgr-note-text">${notePreview}</span>`
-      : `<span class="mgr-note-placeholder">Chua có nh?n xét — b?m d? thêm.</span>`;
-    return `<div class="c-row">
-      <div class="c-row-body">
-        <div class="c-row-info">
-          <div class="c-row-name">${escapeHtml(s.name)}</div>
-          <div class="c-row-sub">${escapeHtml([formatStudentClassDisplay(s), s.phone, parentNameText, birthYearText].filter(Boolean).join(' · '))}${!s.phone ? ` · <span class="warn-missing">Chưa có SĐT</span>` : ''}</div>
-        </div>
-        <button type="button" class="${noteBtnClass}" data-student-id="${escapeHtml(sid)}">${noteBtnInner}</button>
-      </div>
-      ${actionButtons.replaceAll('__SID__', escapeHtml(sid))}
-    </div>`;
-  }).join('') +
+    slice.map(s => renderMgrStudentCard(s, actionButtons)).join('') +
     `<div class="pager">
     <span>${total ? start + 1 : 0}–${start + slice.length} / ${total}</span>
     <div>
@@ -23079,7 +24271,7 @@ async function loadRevenue() {
 
   el.innerHTML = `
     <div class="rev-toolbar">
-      <input type="search" id="tuition-search-input" name="mvk_tuition_search" placeholder="Tìm theo tên học viên, SĐT, lớp…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1" value="${escapeHtml(tuitionQuery)}" oncompositionstart="onTuitionSearchCompositionStart()" oncompositionend="onTuitionSearchCompositionEnd()" oninput="setTuitionQuery(this.value)"/>
+      <input type="search" id="tuition-search-input" name="mvk_tuition_search" placeholder="Tìm theo tên học viên, SĐT, lớp…" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" value="${escapeHtml(tuitionQuery)}" oncompositionstart="onTuitionSearchCompositionStart()" oncompositionend="onTuitionSearchCompositionEnd()" oninput="setTuitionQuery(this.value)"/>
       <select onchange="setTuitionClassFilter(this.value)">${optionsClass}</select>
       <select onchange="setTuitionStatusFilter(this.value)">
         <option value="all" ${tuitionStatusFilter==='all'?'selected':''}>Mọi trạng thái</option>
@@ -24367,10 +25559,10 @@ function renderParentPhoneLookupForm(token, mode = 'class', className = '') {
     <div class="parent-pay-shell">
       <div class="parent-pay-card">
         <div class="parent-pay-title">Tra c?u thanh toán h?c phí</div>
-        <div class="analytics-muted">Link ${escapeHtml(mode === 'center' ? 'toàn trung tâm' : 'theo lớp')} ${className ? '· ' + escapeHtml(className) : ''}. Nhập SĐT phụ huynh (từ 9 số) hoặc tên học sinh (từ 2 ký tự).</div>
+        <div class="analytics-muted">Link ${escapeHtml(mode === 'center' ? 'toàn trung tâm' : 'theo lớp')} ${className ? '· ' + escapeHtml(className) : ''}. Nhập SĐT phụ huynh từ 9 số để tra cứu.</div>
         <div class="modal-row">
-          <label for="parent-phone-lookup">Số điện thoại hoặc tên học sinh</label>
-          <input type="search" id="parent-phone-lookup" name="mvk_parent_phone_lookup" placeholder="Ví dụ: 0905123456 hoặc Nguyễn Văn A" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-no-autofill-search="1"/>
+          <label for="parent-phone-lookup">Số điện thoại phụ huynh</label>
+          <input type="search" id="parent-phone-lookup" name="mvk_parent_phone_lookup" inputmode="tel" placeholder="Ví dụ: 0905123456" autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
         </div>
         <div id="parent-phone-candidates" class="analytics-muted" style="margin:8px 0"></div>
         <div class="modal-actions">
@@ -24416,12 +25608,12 @@ async function submitParentPhoneLookup(token, mode, studentId = '', phoneOverrid
   const inp = document.getElementById('parent-phone-lookup');
   const raw = String(phoneOverride || '').trim() || String(inp && inp.value ? inp.value : '').trim();
   if (!raw) {
-    showAppToast('Vui lòng nh?p s? di?n tho?i ho?c tên h?c sinh.');
+    showAppToast('Vui lòng nhập số điện thoại phụ huynh.');
     return;
   }
   const digits = raw.replace(/\D/g, '');
-  if (digits.length < 9 && raw.length < 2) {
-    showAppToast('Nhập ít nhất 9 chữ số (SĐT) hoặc 2 ký tự (tên).');
+  if (digits.length < 9) {
+    showAppToast('Nhập ít nhất 9 chữ số SĐT phụ huynh.');
     return;
   }
   if (phoneOverride && inp) inp.value = phoneOverride;
@@ -27228,6 +28420,11 @@ syncSidebarEdgeHoverAvailability();
 function getAuthEmailForSearchAutofillGuard() {
   const sessionEmail = String(currentSession?.user?.email || '').trim();
   if (sessionEmail && sessionEmail.includes('@')) return sessionEmail.toLowerCase();
+  try {
+    const stored = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || 'null');
+    const storedEmail = String(stored?.user?.email || '').trim();
+    if (storedEmail && storedEmail.includes('@')) return storedEmail.toLowerCase();
+  } catch (e) {}
   const loginEmail = String(document.getElementById('login-email')?.value || '').trim();
   return loginEmail && loginEmail.includes('@') ? loginEmail.toLowerCase() : '';
 }
@@ -27240,14 +28437,16 @@ function scrubNoAutofillSearchInputs(root) {
     : Array.from(scope.querySelectorAll('[data-no-autofill-search="1"]'));
   nodes.forEach(el => {
     if (!el || el.disabled || el.readOnly) return;
-    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocomplete', 'new-password');
     el.setAttribute('autocorrect', 'off');
     el.setAttribute('autocapitalize', 'none');
     el.setAttribute('spellcheck', 'false');
+    el.setAttribute('data-lpignore', 'true');
+    el.setAttribute('data-1p-ignore', 'true');
     const value = String(el.value || '').trim().toLowerCase();
-    const defaultValue = String(el.defaultValue || '').trim();
-    if (value && value === authEmail && !defaultValue) {
+    if (value && value === authEmail) {
       el.value = '';
+      el.defaultValue = '';
       el.dispatchEvent(new Event('input', { bubbles: true }));
     }
   });
@@ -27290,6 +28489,13 @@ new MutationObserver(records => {
   const mgrNoteFilter = document.getElementById('mgr-note-filter');
   if (mgrNoteFilter) {
     mgrNoteFilter.addEventListener('change', () => {
+      mgrPage = 1;
+      renderMgr();
+    });
+  }
+  const mgrStatusFilter = document.getElementById('mgr-status-filter');
+  if (mgrStatusFilter) {
+    mgrStatusFilter.addEventListener('change', () => {
       mgrPage = 1;
       renderMgr();
     });

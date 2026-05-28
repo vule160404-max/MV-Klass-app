@@ -33,6 +33,34 @@ function parseIsoOrNow(raw: string): string {
   return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
 }
 
+function timingSafeEqual(a: string, b: string): boolean {
+  const enc = new TextEncoder();
+  const aa = enc.encode(String(a || ""));
+  const bb = enc.encode(String(b || ""));
+  const len = Math.max(aa.length, bb.length);
+  let diff = aa.length ^ bb.length;
+  for (let i = 0; i < len; i += 1) diff |= (aa[i] || 0) ^ (bb[i] || 0);
+  return diff === 0;
+}
+
+function collectSafeHeaders(req: Request): AnyObj {
+  const allow = new Set([
+    "content-type",
+    "user-agent",
+    "x-provider",
+    "x-forwarded-for",
+    "x-real-ip",
+    "cf-connecting-ip",
+  ]);
+  const out: AnyObj = {};
+  req.headers.forEach((v, k) => {
+    const key = String(k || "").toLowerCase();
+    if (!allow.has(key)) return;
+    out[key] = String(v || "").slice(0, 500);
+  });
+  return out;
+}
+
 function isIncomingTransfer(body: AnyObj, data: AnyObj): boolean {
   const direction = pickString(
     body.transferType,
@@ -61,19 +89,19 @@ Deno.serve(async (req) => {
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
     return new Response("Missing Supabase env", { status: 500 });
   }
+  if (!WEBHOOK_SECRET) {
+    return new Response("Webhook secret is not configured", { status: 500 });
+  }
 
-  if (WEBHOOK_SECRET) {
-    const auth = req.headers.get("authorization") || "";
-    const bearer = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
-    const headerToken = pickString(
-      req.headers.get("x-sepay-token"),
-      req.headers.get("x-webhook-token")
-    );
-    const qsToken = pickString(new URL(req.url).searchParams.get("token"));
-    const token = bearer || headerToken || qsToken;
-    if (!token || token !== WEBHOOK_SECRET) {
-      return new Response("Unauthorized", { status: 401 });
-    }
+  const auth = req.headers.get("authorization") || "";
+  const bearer = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
+  const headerToken = pickString(
+    req.headers.get("x-sepay-token"),
+    req.headers.get("x-webhook-token")
+  );
+  const token = bearer || headerToken;
+  if (!token || !timingSafeEqual(token, WEBHOOK_SECRET)) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   let payload: AnyObj = {};
@@ -187,10 +215,7 @@ Deno.serve(async (req) => {
   );
   const occurredAt = parseIsoOrNow(occurredAtRaw);
 
-  const headersObj: AnyObj = {};
-  req.headers.forEach((v, k) => {
-    headersObj[k] = v;
-  });
+  const headersObj = collectSafeHeaders(req);
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
