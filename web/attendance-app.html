@@ -16424,6 +16424,7 @@ function studentExamSourceTextFromName(value) {
     if (norm === 'thuc' && prev === 'chinh') return false;
     if (norm === 'lieu' && prev === 'tai') return false;
     if (/^\d{1,4}$/.test(norm)) return false;
+    if (/^[a-z]{2,10}\d{1,4}$/.test(norm) && index <= 4) return false;
     if (/^[a-z]{2,10}$/.test(norm) && /^\d{1,4}$/.test(next) && index <= 2) return false;
     return true;
   });
