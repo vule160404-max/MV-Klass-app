@@ -4125,6 +4125,29 @@
     .portal-exam-manager-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
     .portal-exam-manager-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
     .portal-exam-manager-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
+    .portal-exam-preview{ position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; z-index:1285; display:none; align-items:center; justify-content:center; padding:clamp(12px,2.3vh,22px); background:rgba(10,22,43,.58); backdrop-filter:blur(7px); box-sizing:border-box; }
+    .portal-exam-preview.show{ display:flex; }
+    .portal-exam-preview-card{ width:min(1080px,calc(100vw - 44px)); height:min(780px,calc(100dvh - 44px)); display:grid; grid-template-rows:auto minmax(0,1fr) auto; overflow:hidden; border-radius:12px; border:1px solid rgba(180,199,232,.26); background:#fff; box-shadow:0 34px 90px rgba(8,18,38,.38); }
+    .portal-exam-preview-head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(99,138,218,.14); background:linear-gradient(180deg,#f9fbff,#f3f7ff); }
+    .portal-exam-preview-kicker{ display:inline-flex; width:max-content; align-items:center; min-height:22px; padding:3px 8px; border-radius:999px; border:1px solid rgba(37,99,235,.16); background:#eef5ff; color:#1d4ed8; font-size:10px; line-height:1; font-weight:950; text-transform:uppercase; }
+    .portal-exam-preview-title{ margin-top:6px; color:#102033; font-size:15px; line-height:1.25; font-weight:950; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-exam-preview-sub{ margin-top:3px; color:#718096; font-size:11px; font-weight:780; line-height:1.35; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-exam-preview-close{ width:34px; height:34px; min-height:34px; padding:0; display:grid; place-items:center; border-radius:8px; background:#fff; color:#64748b; font-size:20px; line-height:1; font-weight:900; }
+    .portal-exam-preview-close:hover{ color:#0f1f3d; border-color:rgba(15,31,61,.24); }
+    .portal-exam-preview-body{ min-height:0; overflow:auto; background:#eef3f8; }
+    .portal-exam-preview-frame{ display:block; width:100%; height:100%; min-height:520px; border:0; background:#fff; }
+    .portal-exam-preview-image-wrap,.portal-exam-preview-audio-wrap,.portal-exam-preview-state{ min-height:100%; display:grid; place-items:center; padding:22px; box-sizing:border-box; }
+    .portal-exam-preview-image{ max-width:100%; max-height:100%; border-radius:10px; background:#fff; box-shadow:0 16px 36px rgba(15,31,61,.14); }
+    .portal-exam-preview-audio{ width:min(560px,100%); padding:22px; border-radius:12px; border:1px solid rgba(99,138,218,.14); background:#fff; box-shadow:0 14px 32px rgba(15,31,61,.10); }
+    .portal-exam-preview-audio audio{ width:100%; }
+    .portal-exam-preview-state{ color:#61708a; font-size:12px; font-weight:850; text-align:center; line-height:1.5; }
+    .portal-exam-preview-state.busy::before{ content:""; width:30px; height:30px; margin-bottom:10px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
+    .portal-exam-preview-state.error{ color:#991b1b; background:#fff7f7; }
+    .portal-exam-preview-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 14px; border-top:1px solid rgba(99,138,218,.14); background:#fff; }
+    .portal-exam-preview-note{ min-width:0; color:#718096; font-size:11px; line-height:1.35; font-weight:760; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .portal-exam-preview-actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+    .portal-exam-preview-actions .btn-sm{ min-height:34px; padding:7px 12px; border-radius:8px; font-size:11px; }
+    .portal-exam-preview-actions .primary{ background:#0f1f3d; color:#fff; border-color:#0f1f3d; }
     .portal-picker{ position:fixed; inset:0; width:100vw; height:100dvh; max-width:100vw; box-sizing:border-box; z-index:1200; display:none; align-items:center; justify-content:center; padding:18px; overflow:hidden; background:rgba(15,31,61,.42); backdrop-filter:blur(5px); }
     .portal-picker.show{ display:flex; }
     .portal-picker-card{ width:min(820px, calc(100vw - 36px)); max-height:min(700px, calc(100dvh - 36px)); display:grid; grid-template-rows:auto auto auto minmax(0,1fr); overflow:hidden; border-radius:18px; border:1px solid rgba(99,138,218,.20); background:#fff; box-shadow:0 26px 70px rgba(15,31,61,.26); }
@@ -4147,7 +4170,7 @@
     .portal-picker-item.is-picked::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:3px; border-radius:999px; background:#1d4ed8; }
     .portal-picker-item .btn-sm{ min-height:30px; height:30px; padding:6px 10px; font-size:11px; }
     @media (max-width:900px){ .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); } .portal-free-toolbar{ align-items:stretch; flex-direction:column; } .portal-free-add-btn{ width:100%; } .portal-free-list{ max-height:300px; } .portal-free-slot{ grid-template-columns:30px minmax(0,1fr); } .portal-free-actions{ grid-column:1/-1; justify-content:flex-start; } .portal-picker{ padding:12px; align-items:center; } .portal-picker-card{ width:min(760px, calc(100vw - 24px)); max-height:calc(100dvh - 24px); border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-picker-actionbar{ align-items:stretch; flex-direction:column; } .portal-picker-actions{ display:grid; grid-template-columns:1fr; } .portal-picker-bulk{ width:100%; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
-    @media (max-width:900px){ .portal-exam-manager{ padding:12px; align-items:center; } .portal-exam-manager-card{ width:calc(100vw - 24px); max-height:calc(100dvh - 24px); border-radius:12px; } .portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-row{ grid-template-columns:38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } }
+    @media (max-width:900px){ .portal-exam-manager{ padding:12px; align-items:center; } .portal-exam-manager-card{ width:calc(100vw - 24px); max-height:calc(100dvh - 24px); border-radius:12px; } .portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-row{ grid-template-columns:38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } .portal-exam-preview{ padding:10px; } .portal-exam-preview-card{ width:calc(100vw - 20px); height:calc(100dvh - 20px); border-radius:12px; } .portal-exam-preview-title,.portal-exam-preview-sub{ white-space:normal; } .portal-exam-preview-frame{ min-height:420px; } .portal-exam-preview-foot{ align-items:stretch; flex-direction:column; } .portal-exam-preview-actions{ display:grid; grid-template-columns:1fr 1fr; width:100%; } .portal-exam-preview-actions .btn-sm{ width:100%; } }
     @media (max-width:900px){
       .portal-user-tools{ grid-template-columns:1fr; }
       .portal-user-table-wrap{ max-height:none; overflow:visible; border:0; border-radius:0; }
@@ -10063,6 +10086,26 @@ a:focus-visible,
               <button type="button" class="btn-sm" onclick="loadPortalExamManager(true)">Làm mới</button>
             </div>
             <div class="portal-exam-manager-list" id="portal-exam-manager-list"></div>
+          </div>
+        </div>
+        <div class="portal-exam-preview" id="portal-exam-preview" onclick="onPortalExamPreviewBackdrop(event)" aria-hidden="true">
+          <div class="portal-exam-preview-card" role="dialog" aria-modal="true" aria-labelledby="portal-exam-preview-title">
+            <div class="portal-exam-preview-head">
+              <div>
+                <div class="portal-exam-preview-kicker" id="portal-exam-preview-kind">Bản xem trước</div>
+                <div class="portal-exam-preview-title" id="portal-exam-preview-title">Tài liệu</div>
+                <div class="portal-exam-preview-sub" id="portal-exam-preview-sub">Đang chuẩn bị bản xem trước.</div>
+              </div>
+              <button type="button" class="btn-sm portal-exam-preview-close" onclick="closePortalExamPreview()" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="portal-exam-preview-body" id="portal-exam-preview-body"></div>
+            <div class="portal-exam-preview-foot">
+              <div class="portal-exam-preview-note" id="portal-exam-preview-note">Bản xem trước dùng URL ký tạm thời, không làm thay đổi dữ liệu.</div>
+              <div class="portal-exam-preview-actions">
+                <button type="button" class="btn-sm" onclick="closePortalExamPreview()">Đóng</button>
+                <button type="button" class="btn-sm primary" id="portal-exam-preview-open-new" onclick="openPortalExamPreviewInNewTab()" disabled>Mở tab mới</button>
+              </div>
+            </div>
           </div>
         </div>
         <div class="portal-analytics-grid">
@@ -17889,6 +17932,9 @@ let portalExamManagerQuery = '';
 let portalExamManagerProvider = 'all';
 let portalExamManagerStatus = 'all';
 let portalExamManagerLevel = 'all';
+let portalExamPreviewUrl = '';
+let portalExamPreviewLabel = '';
+let portalExamPreviewToken = 0;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -19288,6 +19334,7 @@ function openPortalExamManager() {
 }
 
 function closePortalExamManager() {
+  closePortalExamPreview();
   const modal = getPortalExamManagerModal();
   if (modal) modal.classList.remove('show');
   setPortalExamManagerScrollLock(false);
@@ -19299,10 +19346,150 @@ function onPortalExamManagerBackdrop(e) {
 }
 
 function onPortalExamManagerKeydown(e) {
+  if (isPortalExamPreviewOpen()) return;
   if (e && e.key === 'Escape') {
     e.preventDefault();
     closePortalExamManager();
   }
+}
+
+function getPortalExamPreviewModal() {
+  const modal = document.getElementById('portal-exam-preview');
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+  return modal;
+}
+
+function isPortalExamPreviewOpen() {
+  const modal = document.getElementById('portal-exam-preview');
+  return !!(modal && modal.classList.contains('show'));
+}
+
+function portalExamManagerKindLabel(kind) {
+  if (kind === 'answer') return 'Xem đáp án';
+  if (kind === 'audio') return 'Nghe audio';
+  return 'Xem đề';
+}
+
+function portalExamManagerFindRow(id) {
+  return (portalExamManagerRows || []).find(row => String(row && row.id || '') === String(id || '')) || null;
+}
+
+function portalExamPreviewFileName(row, kind) {
+  const refs = portalExamManagerFileRefs(row);
+  const ref = refs.find(item => item.kind === kind) || refs[0] || {};
+  const raw = String(ref.ref || row?.title || 'tai-lieu').trim();
+  try {
+    const url = new URL(raw, window.location.href);
+    return decodeURIComponent(url.pathname.split('/').pop() || raw);
+  } catch (e) {
+    return raw.split(/[\\/]/).pop() || raw;
+  }
+}
+
+function setPortalExamPreviewHeader(row, kind, note) {
+  const kindEl = document.getElementById('portal-exam-preview-kind');
+  const titleEl = document.getElementById('portal-exam-preview-title');
+  const subEl = document.getElementById('portal-exam-preview-sub');
+  const noteEl = document.getElementById('portal-exam-preview-note');
+  const label = portalExamManagerKindLabel(kind);
+  portalExamPreviewLabel = label;
+  if (kindEl) kindEl.textContent = label;
+  if (titleEl) titleEl.textContent = portalExamTitle(row);
+  if (subEl) {
+    const parts = [
+      row && row.exam_code ? 'Mã ' + row.exam_code : '',
+      studentExamDisplayProvince(row && row.province),
+      row && row.year,
+      portalExamPreviewFileName(row, kind)
+    ].filter(Boolean);
+    subEl.textContent = parts.join(' · ');
+  }
+  if (noteEl) noteEl.textContent = note || 'Bản xem trước dùng URL ký tạm thời, không làm thay đổi dữ liệu.';
+}
+
+function renderPortalExamPreviewState(message, type) {
+  const body = document.getElementById('portal-exam-preview-body');
+  if (!body) return;
+  const cls = type === 'error' ? ' error' : (type === 'busy' ? ' busy' : '');
+  body.innerHTML = `<div class="portal-exam-preview-state${cls}">${escapeHtml(message || '')}</div>`;
+}
+
+function portalExamPreviewLooksLikePdf(url, row, kind) {
+  const source = [
+    url,
+    portalExamPreviewFileName(row, kind),
+    row && row.object_key,
+    row && row.answer_object_key,
+    row && row.audio_object_key,
+    row && row.storage_path,
+    row && row.answer_path,
+    row && row.audio_path,
+    row && row.title,
+    kind
+  ].map(x => String(x || '')).join(' ');
+  return /\.pdf(\s|$|\?|#)/i.test(source) || /pdf/i.test(source);
+}
+
+function portalExamPreviewPdfUrl(url) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  return raw + (raw.includes('#') ? '&' : '#') + 'toolbar=1&navpanes=0&scrollbar=1&view=FitH';
+}
+
+function renderPortalExamPreviewContent(url, row, kind) {
+  const body = document.getElementById('portal-exam-preview-body');
+  if (!body) return;
+  const safe = escapeHtml(String(url || '').trim());
+  if (kind === 'audio') {
+    body.innerHTML = `<div class="portal-exam-preview-audio-wrap"><div class="portal-exam-preview-audio"><audio controls preload="metadata" src="${safe}"></audio></div></div>`;
+    return;
+  }
+  if (/\.(png|jpe?g|webp|gif)(\?|#|$)/i.test(String(url || ''))) {
+    body.innerHTML = `<div class="portal-exam-preview-image-wrap"><img class="portal-exam-preview-image" src="${safe}" alt=""/></div>`;
+    return;
+  }
+  if (portalExamPreviewLooksLikePdf(url, row, kind)) {
+    const viewerUrl = escapeHtml(portalExamPreviewPdfUrl(url));
+    body.innerHTML = `<iframe class="portal-exam-preview-frame" src="${viewerUrl}" title="${escapeHtml(portalExamPreviewLabel || 'Bản xem trước')}"></iframe>`;
+    return;
+  }
+  renderPortalExamPreviewState('Định dạng này chưa hỗ trợ xem trước trực tiếp. Thầy/cô có thể mở bằng nút "Mở tab mới".', 'idle');
+}
+
+function closePortalExamPreview() {
+  portalExamPreviewToken += 1;
+  portalExamPreviewUrl = '';
+  const modal = getPortalExamPreviewModal();
+  if (modal) {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  const body = document.getElementById('portal-exam-preview-body');
+  if (body) body.replaceChildren();
+  const openBtn = document.getElementById('portal-exam-preview-open-new');
+  if (openBtn) openBtn.disabled = true;
+  document.removeEventListener('keydown', onPortalExamPreviewKeydown);
+}
+
+function onPortalExamPreviewBackdrop(e) {
+  if (e && e.target && e.target.id === 'portal-exam-preview') closePortalExamPreview();
+}
+
+function onPortalExamPreviewKeydown(e) {
+  if (e && e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();
+    closePortalExamPreview();
+  }
+}
+
+function openPortalExamPreviewInNewTab() {
+  const url = String(portalExamPreviewUrl || '').trim();
+  if (!url) return;
+  const opened = window.open(url, '_blank', 'noopener');
+  if (!opened) window.location.assign(url);
 }
 
 async function loadPortalExamManager(force = false) {
@@ -19376,10 +19563,10 @@ function portalExamManagerStatusLabel(row) {
 function portalExamManagerFileRefs(row) {
   const refs = [];
   if (row?.object_key || row?.storage_path || row?.file_url) {
-    refs.push({ kind: 'file', label: 'Mở đề', ref: row.object_key || row.storage_path || row.file_url });
+    refs.push({ kind: 'file', label: 'Xem đề', ref: row.object_key || row.storage_path || row.file_url });
   }
   if (row?.answer_object_key || row?.answer_path || row?.answer_url) {
-    refs.push({ kind: 'answer', label: 'Đáp án', ref: row.answer_object_key || row.answer_path || row.answer_url });
+    refs.push({ kind: 'answer', label: 'Xem đáp án', ref: row.answer_object_key || row.answer_path || row.answer_url });
   }
   if (row?.audio_object_key || row?.audio_path || row?.audio_url) {
     refs.push({ kind: 'audio', label: 'Audio', ref: row.audio_object_key || row.audio_path || row.audio_url });
@@ -19517,25 +19704,35 @@ async function openPortalExamManagerFile(examId, kind) {
   const id = String(examId || '').trim();
   const fileKind = ['file', 'answer', 'audio'].includes(String(kind || '')) ? String(kind) : 'file';
   if (!id) return;
-  let popup = null;
-  try {
-    popup = window.open('about:blank', '_blank');
-    if (popup) popup.opener = null;
-  } catch (e) {}
+  const row = portalExamManagerFindRow(id);
+  if (!row) return;
+  const modal = getPortalExamPreviewModal();
+  const openBtn = document.getElementById('portal-exam-preview-open-new');
+  const token = portalExamPreviewToken + 1;
+  portalExamPreviewToken = token;
+  portalExamPreviewUrl = '';
+  setPortalExamPreviewHeader(row, fileKind, 'Đang ký URL và chuẩn bị bản xem trước.');
+  renderPortalExamPreviewState('Đang mở bản xem trước...', 'busy');
+  if (openBtn) openBtn.disabled = true;
+  if (modal) {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  document.addEventListener('keydown', onPortalExamPreviewKeydown);
   try {
     const data = await callPortalExamManager('sign', { id, kind: fileKind });
+    if (portalExamPreviewToken !== token) return;
     const url = String(data.url || '').trim();
     if (!url) throw new Error('missing_signed_url');
-    if (popup && !popup.closed) {
-      popup.location.href = String(data.url);
-    } else {
-      const opened = window.open(url, '_blank', 'noopener');
-      if (!opened) window.location.assign(url);
-    }
+    portalExamPreviewUrl = url;
+    if (openBtn) openBtn.disabled = false;
+    setPortalExamPreviewHeader(row, fileKind, 'URL xem trước đã được ký tạm thời. Có thể mở tab mới nếu trình duyệt không render PDF.');
+    renderPortalExamPreviewContent(url, row, fileKind);
   } catch (e) {
-    if (popup) try { popup.close(); } catch (_) {}
     console.warn('openPortalExamManagerFile', e);
+    if (portalExamPreviewToken !== token) return;
     const msg = String(e && e.message || e || '').trim();
+    renderPortalExamPreviewState('Chưa mở được bản xem trước' + (msg ? ': ' + msg.slice(0, 120) : '.'), 'error');
     showAppToast('Chưa mở được tài liệu này' + (msg ? ': ' + msg.slice(0, 90) : '.'), 'warn');
   }
 }
