@@ -21,21 +21,39 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function buildSepayQrUrl(amount: number, transferContent: string) {
+function normalizeQrBankCode(bank: string) {
+  const code = String(bank || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const aliases: Record<string, string> = {
+    MBB: "MB",
+    MBBANK: "MB",
+  };
+  return aliases[code] || code;
+}
+
+function paymentQrConfig() {
   const acc =
     (Deno.env.get("SEPAY_QR_ACC") ||
       Deno.env.get("SEPAY_QR_ACCOUNT") ||
       Deno.env.get("SEPAY_QR_ACCOUNT_NO") ||
-      "").trim();
-  const bank =
-    (Deno.env.get("SEPAY_QR_BANK") ||
-      Deno.env.get("SEPAY_QR_BANK_CODE") ||
-      "").trim();
-  if (!acc || !bank) return "";
+      "").trim().replace(/\s+/g, "");
+  const bank = normalizeQrBankCode(
+    Deno.env.get("SEPAY_QR_BANK") || Deno.env.get("SEPAY_QR_BANK_CODE") || "",
+  );
+  return { acc, bank };
+}
+
+function buildPaymentQrUrls(amount: number, transferContent: string) {
+  const { acc, bank } = paymentQrConfig();
+  if (!acc || !bank) return { primary: "", backup: "" };
   const safeAmount = Math.max(0, parseInt(String(amount || 0), 10) || 0);
-  return `https://qr.sepay.vn/img?acc=${encodeURIComponent(acc)}&bank=${encodeURIComponent(
+  const description = encodeURIComponent(String(transferContent || ""));
+  const sepayUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(acc)}&bank=${encodeURIComponent(
     bank,
-  )}&amount=${safeAmount}&des=${encodeURIComponent(String(transferContent || ""))}`;
+  )}&amount=${safeAmount}&des=${description}`;
+  const vietQrUrl = `https://img.vietqr.io/image/${encodeURIComponent(bank)}-${encodeURIComponent(
+    acc,
+  )}-compact2.png?amount=${safeAmount}&addInfo=${description}`;
+  return { primary: vietQrUrl, backup: sepayUrl };
 }
 
 function authHeader(req: Request) {
@@ -46,11 +64,12 @@ function authHeader(req: Request) {
 function withQr(order: any) {
   const amount = Math.max(0, parseInt(String(order?.amount_vnd || 0), 10) || 0);
   const transferContent = String(order?.transfer_content || "");
-  const qrUrl = buildSepayQrUrl(amount, transferContent);
+  const qrUrls = buildPaymentQrUrls(amount, transferContent);
   return {
     ...order,
-    qr_url: qrUrl,
-    qr_configured: !!qrUrl,
+    qr_url: qrUrls?.primary || "",
+    qr_backup_url: qrUrls?.backup || "",
+    qr_configured: !!qrUrls?.primary,
   };
 }
 
