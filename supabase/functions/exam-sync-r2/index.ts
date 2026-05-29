@@ -279,9 +279,8 @@ function matchKey(key: string) {
     .trim();
 }
 
-function accessTier(key: string, category: string) {
-  const n = normalizeText(key);
-  return n.includes("free") && category !== "topic" ? "free" : "premium";
+function accessTier(_key: string, _category: string) {
+  return "premium";
 }
 
 function description(level: string) {

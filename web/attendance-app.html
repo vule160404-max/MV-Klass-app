@@ -16903,13 +16903,9 @@ function studentExamSortForView(rows, sortMode) {
 function studentExamAccessTier(row) {
   const raw = String(row && row.access_tier || '').trim().toLowerCase();
   if (raw !== 'free') return 'premium';
-  const provider = String(row && row.storage_provider || '').trim().toLowerCase();
-  const isR2 = provider === 'r2' || !!String(row && row.object_key || '').trim();
-  if (!isR2) return 'free';
-  const hasFreeRank = Number(row && (row.group_free_rank || row.free_rank) || 0) > 0;
-  const key = normalizeText(String(row && (row.object_key || row.storage_path || row.title) || ''));
-  const explicitlyFreeKey = /\bfree\b/.test(key);
-  return hasFreeRank || explicitlyFreeKey ? 'free' : 'premium';
+  const group = portalNormalizeFreeGroup(row && row.free_group);
+  const hasCuratedRank = !!row && String(row.free_group || '').trim() && Number(row.group_free_rank || 0) > 0;
+  return hasCuratedRank && ['entrance_10', 'university', 'ielts'].includes(group) ? 'free' : 'premium';
 }
 
 function applyStudentExamAccessState(rows) {
@@ -20227,7 +20223,7 @@ function renderPortalExamManagerRow(row) {
   const groupLabel = portalFreeGroupLabel(portalExamGroupKey(row));
   const province = studentExamDisplayProvince(row && row.province);
   const year = row && row.year ? String(row.year) : '';
-  const accessTier = String(row && row.access_tier || 'free') === 'premium' ? 'Premium' : 'Free';
+  const accessTier = studentExamAccessTier(row) === 'premium' ? 'Premium' : 'Free';
   const downloads = Math.max(0, Number(row && row.download_count || 0));
   const refs = portalExamManagerFileRefs(row);
   const fileButtons = refs.map(ref => {
@@ -21117,6 +21113,8 @@ async function updatePortalFreePickerSelection() {
       const id = String(exam && exam.id || '').trim();
       if (!id) continue;
       await requestSetExamFreeRank(id, null, group);
+      exam.access_tier = 'premium';
+      exam.free_rank = null;
       exam.free_group = null;
       exam.group_free_rank = null;
     }
@@ -21126,6 +21124,7 @@ async function updatePortalFreePickerSelection() {
       const nextRank = portalNextFreeRank(_portalAnalyticsExamRows || [], group);
       await requestSetExamFreeRank(id, nextRank, group);
       exam.access_tier = 'free';
+      exam.free_rank = null;
       exam.free_group = group;
       exam.group_free_rank = nextRank;
     }
@@ -21194,6 +21193,7 @@ async function setExamFreeRank(examId, rank) {
     const row = Array.isArray(_portalAnalyticsExamRows) ? _portalAnalyticsExamRows.find(e => String(e.id || '') === id) : null;
     if (row) {
       row.access_tier = nextRank ? 'free' : 'premium';
+      row.free_rank = null;
       row.free_group = nextRank ? group : null;
       row.group_free_rank = nextRank;
     }

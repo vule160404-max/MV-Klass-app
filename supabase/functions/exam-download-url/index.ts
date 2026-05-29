@@ -63,11 +63,9 @@ function isOpenFreeExamRow(row: any) {
   if (String(row.access_tier || "").trim().toLowerCase() !== "free") return false;
   if (String(row.subject || "").trim().toLowerCase() !== "english") return false;
   if (String(row.category || "").trim().toLowerCase() === "answer") return false;
-  const provider = String(row.storage_provider || "").trim().toLowerCase();
-  if (provider !== "r2" && !String(row.object_key || "").trim()) return true;
-  const rank = Number(row.group_free_rank || row.free_rank || 0) || 0;
-  const key = String(row.object_key || row.storage_path || row.title || "").trim().toLowerCase();
-  return rank >= 1 || key.includes("free");
+  const group = String(row.free_group || "").trim().toLowerCase();
+  if (!["entrance_10", "university", "ielts"].includes(group)) return false;
+  return (Number(row.group_free_rank || 0) || 0) >= 1;
 }
 
 function encodeRfc3986(value: string) {
