@@ -28,8 +28,15 @@ function flattenBody(body: AnyObj) {
 }
 
 function parseIsoOrNow(raw: string): string {
-  if (!raw) return new Date().toISOString();
-  const d = new Date(raw);
+  const value = String(raw || "").trim();
+  if (!value) return new Date().toISOString();
+  const localBankTime = value.match(
+    /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/,
+  );
+  const normalized = localBankTime
+    ? `${localBankTime[1]}-${localBankTime[2].padStart(2, "0")}-${localBankTime[3].padStart(2, "0")}T${localBankTime[4].padStart(2, "0")}:${localBankTime[5].padStart(2, "0")}:${(localBankTime[6] || "0").padStart(2, "0")}+07:00`
+    : value;
+  const d = new Date(normalized);
   return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
 }
 
