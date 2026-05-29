@@ -16446,6 +16446,7 @@ function showStudentExamPortalUI() {
     if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
     renderStudentExamPlanState();
     studentExamSetView(studentExamView || 'library');
+    loadPortalPremiumData(true).catch(e => console.warn('loadPortalPremiumData', e));
   });
 }
 
@@ -16463,7 +16464,7 @@ function renderStudentExamPlanState() {
     .filter(Boolean);
   const badge = document.getElementById('student-exam-plan-badge');
   if (badge) {
-    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (plan === 'premium' ? (hasPackagePremium && currentPortalPlan !== 'premium' && !isAdmin() && !isTeacher() ? 'Premium gói' : 'Premium') : 'Free'));
+    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (plan === 'premium' ? 'Premium' : 'Free'));
     badge.classList.toggle('premium', plan === 'premium');
     badge.classList.toggle('pending', status === 'pending');
     badge.classList.toggle('blocked', status === 'blocked');
