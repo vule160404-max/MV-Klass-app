@@ -43,6 +43,14 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
+function authTokenFromHeader(auth: string): string {
+  const raw = String(auth || "").trim();
+  if (!raw) return "";
+  const m = raw.match(/^(bearer|apikey)\s+(.+)$/i);
+  if (m) return String(m[2] || "").trim();
+  return raw;
+}
+
 function collectSafeHeaders(req: Request): AnyObj {
   const allow = new Set([
     "content-type",
@@ -93,13 +101,14 @@ Deno.serve(async (req) => {
     return new Response("Webhook secret is not configured", { status: 500 });
   }
 
-  const auth = req.headers.get("authorization") || "";
-  const bearer = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
+  const authorizationToken = authTokenFromHeader(req.headers.get("authorization") || "");
   const headerToken = pickString(
+    req.headers.get("x-secret-key"),
     req.headers.get("x-sepay-token"),
-    req.headers.get("x-webhook-token")
+    req.headers.get("x-webhook-token"),
+    req.headers.get("x-api-key")
   );
-  const token = bearer || headerToken;
+  const token = authorizationToken || headerToken;
   if (!token || !timingSafeEqual(token, WEBHOOK_SECRET)) {
     return new Response("Unauthorized", { status: 401 });
   }

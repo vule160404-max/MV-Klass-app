@@ -133,6 +133,7 @@ Deno.serve(async (req) => {
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId)) {
       return json({ ok: false, error: "ORDER_ID_REQUIRED" }, 400);
     }
+    await supabase.rpc("recheck_portal_premium_order", { p_order_id: orderId }).catch(() => null);
     const { data, error } = await supabase.rpc("get_my_portal_premium_orders");
     if (error) return json({ ok: false, error: error.message }, 500);
     const order = (Array.isArray(data) ? data : []).find((x: any) => String(x?.id || "") === orderId);
