@@ -16451,11 +16451,19 @@ function showStudentExamPortalUI() {
 
 function renderStudentExamPlanState() {
   const status = currentPortalStatus || 'active';
-  const plan = currentPortalPlan === 'premium' || isAdmin() || isTeacher() ? 'premium' : 'free';
+  const ownedPremiumKeys = portalPremiumOwnedProductKeys();
+  const hasPackagePremium = ownedPremiumKeys && ownedPremiumKeys.size > 0;
+  const plan = currentPortalPlan === 'premium' || isAdmin() || isTeacher() || hasPackagePremium ? 'premium' : 'free';
   const groupLabel = portalFreeGroupLabel(currentPortalFreeGroup);
+  const ownedLabels = Array.from(ownedPremiumKeys || [])
+    .map(key => {
+      const p = portalPremiumProductByKey(key);
+      return p ? String(p.title || key) : '';
+    })
+    .filter(Boolean);
   const badge = document.getElementById('student-exam-plan-badge');
   if (badge) {
-    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (plan === 'premium' ? 'Premium' : 'Free'));
+    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (plan === 'premium' ? (hasPackagePremium && currentPortalPlan !== 'premium' && !isAdmin() && !isTeacher() ? 'Premium gói' : 'Premium') : 'Free'));
     badge.classList.toggle('premium', plan === 'premium');
     badge.classList.toggle('pending', status === 'pending');
     badge.classList.toggle('blocked', status === 'blocked');
@@ -16466,8 +16474,10 @@ function renderStudentExamPlanState() {
       ? 'Kho tài liệu sẽ mở sau khi tài khoản được duyệt.'
       : status === 'blocked'
       ? 'Tài khoản hiện đang bị khóa quyền truy cập kho tài liệu. Em liên hệ thầy/cô để được hỗ trợ.'
-      : plan === 'premium'
+      : currentPortalPlan === 'premium' || isAdmin() || isTeacher()
       ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
+      : hasPackagePremium
+      ? `Tài khoản đã mở ${ownedLabels.length ? ownedLabels.join(', ') : 'gói Premium đã mua'}. Các nhóm đề khác vẫn cần mua đúng gói.`
       : `Bạn đang có quyền truy cập đề miễn phí nhóm ${groupLabel}. Để mở thêm bộ đề, bấm Đăng ký Premium và thanh toán qua QR.`;
   }
   const approvalNote = document.getElementById('student-exam-approval-note');
@@ -16585,10 +16595,12 @@ async function loadPortalPremiumData(force) {
     portalPremiumOrders = Array.isArray(ordersData.orders) ? ordersData.orders : [];
     portalPremiumLoading = false;
     renderStudentPremiumView();
+    renderStudentExamPlanState();
   } catch (e) {
     portalPremiumLoading = false;
     portalPremiumError = portalPremiumErrorLabel(e?.data?.error || e?.message);
     renderStudentPremiumView();
+    renderStudentExamPlanState();
   }
 }
 
