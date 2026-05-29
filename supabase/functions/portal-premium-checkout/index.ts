@@ -42,18 +42,14 @@ function paymentQrConfig() {
   return { acc, bank };
 }
 
-function buildPaymentQrUrls(amount: number, transferContent: string) {
+function buildSepayQrUrl(amount: number, transferContent: string) {
   const { acc, bank } = paymentQrConfig();
-  if (!acc || !bank) return { primary: "", backup: "" };
+  if (!acc || !bank) return "";
   const safeAmount = Math.max(0, parseInt(String(amount || 0), 10) || 0);
   const description = encodeURIComponent(String(transferContent || ""));
-  const sepayUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(acc)}&bank=${encodeURIComponent(
+  return `https://qr.sepay.vn/img?acc=${encodeURIComponent(acc)}&bank=${encodeURIComponent(
     bank,
   )}&amount=${safeAmount}&des=${description}`;
-  const vietQrUrl = `https://img.vietqr.io/image/${encodeURIComponent(bank)}-${encodeURIComponent(
-    acc,
-  )}-compact2.png?amount=${safeAmount}&addInfo=${description}`;
-  return { primary: vietQrUrl, backup: sepayUrl };
 }
 
 function authHeader(req: Request) {
@@ -64,12 +60,11 @@ function authHeader(req: Request) {
 function withQr(order: any) {
   const amount = Math.max(0, parseInt(String(order?.amount_vnd || 0), 10) || 0);
   const transferContent = String(order?.transfer_content || "");
-  const qrUrls = buildPaymentQrUrls(amount, transferContent);
+  const qrUrl = buildSepayQrUrl(amount, transferContent);
   return {
     ...order,
-    qr_url: qrUrls?.primary || "",
-    qr_backup_url: qrUrls?.backup || "",
-    qr_configured: !!qrUrls?.primary,
+    qr_url: qrUrl,
+    qr_configured: !!qrUrl,
   };
 }
 

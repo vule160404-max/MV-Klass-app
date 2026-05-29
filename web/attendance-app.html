@@ -13555,6 +13555,8 @@ let portalPremiumLoading = false;
 let portalPremiumError = '';
 let portalPremiumCheckout = null;
 let portalPremiumPollingTimer = null;
+let portalPremiumProductsHtmlKey = '';
+let portalPremiumCheckoutHtmlKey = '';
 let studentExamRows = [];
 let studentExamFilteredRows = [];
 let studentExamActivityById = {};
@@ -16593,7 +16595,27 @@ async function loadPortalPremiumData(force) {
 function renderStudentPremiumView() {
   const productsEl = document.getElementById('student-premium-products');
   const checkoutEl = document.getElementById('student-premium-checkout');
-  if (productsEl) {
+  const productsKey = JSON.stringify({
+    loading: portalPremiumLoading,
+    error: portalPremiumError,
+    status: currentPortalStatus,
+    plan: currentPortalPlan,
+    products: (portalPremiumProducts || []).map(p => [
+      p.product_key,
+      p.title,
+      p.description,
+      p.portal_free_group,
+      p.exam_count,
+      p.price_vnd,
+      p.is_active
+    ]),
+    paid: (portalPremiumOrders || [])
+      .filter(o => String(o.status || '') === 'paid')
+      .map(o => String(o.product_key || ''))
+      .sort()
+  });
+  if (productsEl && portalPremiumProductsHtmlKey !== productsKey) {
+    portalPremiumProductsHtmlKey = productsKey;
     if (portalPremiumLoading) {
       productsEl.innerHTML = studentExamState('Đang tải gói Premium...');
     } else if (portalPremiumError) {
@@ -16635,7 +16657,19 @@ function renderStudentPremiumView() {
       }).join('');
     }
   }
-  if (checkoutEl) {
+  const checkoutKey = portalPremiumCheckout ? JSON.stringify({
+    id: portalPremiumCheckout.id,
+    status: portalPremiumCheckout.status,
+    product_key: portalPremiumCheckout.product_key,
+    amount_vnd: portalPremiumCheckout.amount_vnd,
+    transfer_content: portalPremiumCheckout.transfer_content,
+    ref_code: portalPremiumCheckout.ref_code,
+    expires_at: portalPremiumCheckout.expires_at,
+    qr_url: portalPremiumCheckout.qr_url,
+    qr_configured: portalPremiumCheckout.qr_configured
+  }) : '';
+  if (checkoutEl && portalPremiumCheckoutHtmlKey !== checkoutKey) {
+    portalPremiumCheckoutHtmlKey = checkoutKey;
     checkoutEl.innerHTML = portalPremiumCheckout ? studentPremiumCheckoutHtml(portalPremiumCheckout) : '';
     wireStudentPremiumQrFallbacks(checkoutEl);
   }
@@ -16643,22 +16677,14 @@ function renderStudentPremiumView() {
 
 function studentPremiumQrHtml(order) {
   const qr = String(order?.qr_url || '');
-  const backup = String(order?.qr_backup_url || '');
   if (!qr) return '<span>Chưa cấu hình QR. Vui lòng chuyển khoản theo thông tin bên cạnh.</span>';
-  const backupAttr = backup ? ` data-premium-qr-backup="${escapeHtml(backup)}"` : '';
-  return `<img src="${escapeHtml(qr)}"${backupAttr} alt="QR thanh toán Premium" decoding="async" referrerpolicy="no-referrer"/>`;
+  return `<img src="${escapeHtml(qr)}" alt="QR thanh toán Premium" decoding="async" referrerpolicy="no-referrer"/>`;
 }
 
 function wireStudentPremiumQrFallbacks(root) {
   if (!root || typeof root.querySelectorAll !== 'function') return;
   root.querySelectorAll('.student-premium-qr img').forEach(img => {
     img.addEventListener('error', () => {
-      const backup = img.getAttribute('data-premium-qr-backup') || '';
-      if (backup && img.getAttribute('src') !== backup) {
-        img.removeAttribute('data-premium-qr-backup');
-        img.setAttribute('src', backup);
-        return;
-      }
       const fallback = document.createElement('span');
       fallback.textContent = 'QR đang không tải được. Vui lòng chuyển khoản đúng số tiền và nội dung bên cạnh.';
       img.replaceWith(fallback);
