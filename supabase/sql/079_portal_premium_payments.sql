@@ -2,7 +2,8 @@
 -- 079 - Portal Premium checkout, package entitlements, and bank auto activation
 -- =============================================================================
 
-create extension if not exists pgcrypto;
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists public.portal_premium_products (
   product_key text primary key,
@@ -300,7 +301,7 @@ declare
 begin
   loop
     i := i + 1;
-    v_ref := 'PM' || upper(encode(gen_random_bytes(5), 'hex'));
+    v_ref := 'PM' || upper(encode(extensions.gen_random_bytes(5), 'hex'));
     exit when not exists (
       select 1 from public.portal_premium_orders o where o.ref_code = v_ref
     );
