@@ -12081,6 +12081,10 @@ const APP_CONFIG = {
     url: 'https://vfabemdqfydjaookbzvm.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmYWJlbWRxZnlkamFvb2tienZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0ODYxMTUsImV4cCI6MjA5MTA2MjExNX0.3aB7LClNZvfV2UB8vckperCs8jDbKpRsLmdwUyIoX-s'
   },
+  auth: {
+    appBaseUrl: 'https://mv-klass-app.vercel.app',
+    callbackPath: '/app'
+  },
   storage: {
     authKey: 'sb-auth'
   },
@@ -12121,6 +12125,7 @@ const APP = _override
           anonKey: k || APP_CONFIG.supabase.anonKey
         };
       })(),
+      auth: { ...APP_CONFIG.auth, ...(_override.auth || {}) },
       storage: { ...APP_CONFIG.storage, ...(_override.storage || {}) },
       payments: { ...APP_CONFIG.payments, ...(_override.payments || {}) },
       limits: { ...APP_CONFIG.limits, ...(_override.limits || {}) }
@@ -15696,11 +15701,54 @@ function isRpcMissingError(e) {
 const AUTH_STORAGE_KEY = APP.storage.authKey || 'sb-auth';
 const AUTH_REMEMBER_KEY = (APP.storage && APP.storage.authRememberKey) || 'mvk-auth-remember';
 const SIGNUP_LOGIN_NOTICE_KEY = 'mvk-student-signup-login-notice';
+const AUTH_APP_BASE_URL = String((APP.auth && APP.auth.appBaseUrl) || 'https://mv-klass-app.vercel.app').trim();
+const AUTH_CALLBACK_PATH = String((APP.auth && APP.auth.callbackPath) || '/app').trim() || '/app';
 const TAB_STORAGE_KEY = (APP.storage && APP.storage.tabKey) || 'mvk-last-tab';
 const WORKSPACE_MODULE_STORAGE_KEY = 'mvk-last-workspace-module';
 const TAB_IDS = ['dashboard', 'attendance', 'work', 'classes', 'students', 'tuition', 'bank', 'schedule', 'analytics', 'portal-admin', 'leaderboard', 'consult'];
 const WORKSPACE_MODULE_IDS = ['admin', 'portal'];
 let authRememberMe = false;
+
+function buildAuthCallbackUrl() {
+  const fallbackBase = AUTH_APP_BASE_URL || 'https://mv-klass-app.vercel.app';
+  const callbackPath = AUTH_CALLBACK_PATH.startsWith('/') ? AUTH_CALLBACK_PATH : '/' + AUTH_CALLBACK_PATH;
+  try {
+    const host = String(window.location.hostname || '').toLowerCase();
+    const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
+    const origin = (!isLocalHost && /^https?:\/\//i.test(window.location.origin || ''))
+      ? window.location.origin
+      : fallbackBase;
+    return new URL(callbackPath, origin).toString();
+  } catch (e) {
+    return String(fallbackBase).replace(/\/+$/, '') + callbackPath;
+  }
+}
+
+function readSupabaseAuthCallbackSession() {
+  try {
+    const rawHash = String(window.location.hash || '').replace(/^#/, '');
+    if (!rawHash || !/(^|&)access_token=/.test(rawHash)) return null;
+    const params = new URLSearchParams(rawHash);
+    const accessToken = String(params.get('access_token') || '').trim();
+    const refreshToken = String(params.get('refresh_token') || '').trim();
+    if (!accessToken || !refreshToken) return null;
+    const expiresIn = Math.max(1, parseInt(String(params.get('expires_in') || '3600'), 10) || 3600);
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: String(params.get('token_type') || 'bearer'),
+      expires_at: Date.now() + expiresIn * 1000
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearSupabaseAuthCallbackHash() {
+  try {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  } catch (e) {}
+}
 
 function setAuthRememberChoice(remember) {
   authRememberMe = !!remember;
@@ -18893,7 +18941,7 @@ async function signUpStudentAccount() {
         if (reason === 'staff_email') {
           if (errEl) errEl.textContent = 'Email này đang là tài khoản giáo viên/quản trị. Thầy/cô hãy chuyển sang tab Đăng nhập.';
         } else {
-          if (errEl) errEl.textContent = 'Email này đã có tài khoản. Em chuyển sang tab Đăng nhập hoặc dùng email khác.';
+          if (errEl) errEl.textContent = 'Email này đã có tài khoản. Vui lòng chọn email khác';
         }
         return;
       }
@@ -18903,7 +18951,8 @@ async function signUpStudentAccount() {
   }
   let r;
   try {
-    r = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+    const signupUrl = SUPABASE_URL + '/auth/v1/signup?redirect_to=' + encodeURIComponent(buildAuthCallbackUrl());
+    r = await fetch(signupUrl, {
       method: 'POST',
       headers: { apikey: KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -18923,7 +18972,7 @@ async function signUpStudentAccount() {
     setLoginSubmitBusy(false);
     const rawMsg = data.error_description || data.msg || data.message || data.error || '';
     if (errEl) errEl.textContent = /already|registered|exists/i.test(rawMsg)
-      ? 'Email này đã có tài khoản. Em chuyển sang tab Đăng nhập.'
+      ? 'Email này đã có tài khoản. Vui lòng chọn email khác'
       : (rawMsg || 'Đăng ký thất bại.');
     return;
   }
@@ -19054,11 +19103,19 @@ async function initAuth() {
   await loadPaymentConfigFromSupabase();
   authRememberMe = getAuthRememberChoice();
   let raw = null;
-  try { raw = localStorage.getItem(AUTH_STORAGE_KEY); } catch (e) {}
-  if (raw) authRememberMe = true;
-  if (!raw) {
-    raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
-    if (raw) authRememberMe = false;
+  const callbackSession = readSupabaseAuthCallbackSession();
+  if (callbackSession) {
+    authRememberMe = false;
+    raw = JSON.stringify(callbackSession);
+    saveAuthSession(callbackSession, false);
+    clearSupabaseAuthCallbackHash();
+  } else {
+    try { raw = localStorage.getItem(AUTH_STORAGE_KEY); } catch (e) {}
+    if (raw) authRememberMe = true;
+    if (!raw) {
+      raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
+      if (raw) authRememberMe = false;
+    }
   }
   if (raw) {
     try {
