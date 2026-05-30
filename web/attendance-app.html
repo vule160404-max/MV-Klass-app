@@ -5716,6 +5716,7 @@
     .student-exam-logout,.student-exam-btn{min-height:38px;border:0;border-radius:999px;padding:9px 13px;font-weight:900;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}.student-exam-logout{background:#fff;color:#12213d;border:1px solid rgba(18,33,61,.12);box-shadow:0 6px 16px rgba(18,33,61,.07)}
     .student-exam-admin-link{background:#fff8e8;color:#7a4a06;border-color:rgba(244,167,29,.34);box-shadow:0 8px 18px rgba(122,74,6,.08);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.student-exam-admin-link:hover{transform:translateY(-1px);background:#fff3d6;border-color:rgba(244,167,29,.58);box-shadow:0 12px 24px rgba(122,74,6,.12)}.student-exam-admin-link svg{width:14px;height:14px;display:block;flex:0 0 auto}.student-exam-sync-btn{background:#0f1f3d;color:#fff;border-color:#0f1f3d;box-shadow:0 8px 18px rgba(15,31,61,.14)}.student-exam-sync-btn:hover{background:#1a3460;border-color:#1a3460;box-shadow:0 12px 24px rgba(15,31,61,.18)}.student-exam-sync-btn:disabled{opacity:.62;cursor:wait}
     .student-exam-plan{display:inline-flex;align-items:center;min-height:30px;border-radius:999px;padding:6px 10px;background:#fff4d6;color:#8a5208;border:1px solid rgba(244,167,29,.38);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-plan.premium{position:relative;gap:6px;background:linear-gradient(135deg,#0f1f3d,#1a3460 64%,#243f72);color:#ffe7a6;border-color:rgba(244,167,29,.56);box-shadow:0 10px 24px rgba(15,31,61,.18),inset 0 1px 0 rgba(255,255,255,.12)}.student-exam-plan.premium::before{content:"";width:7px;height:7px;border-radius:999px;background:#f4a71d;box-shadow:0 0 0 3px rgba(244,167,29,.18)}
+    .student-exam-plan.loading{background:#eef3f9;color:#475569;border-color:rgba(71,85,105,.18)}
     .student-exam-plan.pending{background:#eef3f9;color:#475569;border-color:rgba(71,85,105,.18)}.student-exam-plan.blocked{background:#fee2e2;color:#991b1b;border-color:rgba(239,68,68,.24)}
     .student-exam-approval-note{display:none;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:#fff8e8;border:1px solid rgba(244,167,29,.42);color:#7a4a06;font-size:13px;font-weight:850;line-height:1.45;box-shadow:0 10px 24px rgba(122,74,6,.08)}.student-exam-approval-note.show{display:flex;align-items:center;gap:10px}.student-exam-approval-note:before{content:"!";width:24px;height:24px;border-radius:999px;background:#f4a71d;color:#fff;display:grid;place-items:center;flex:0 0 auto;font-size:14px;font-weight:950}
     .student-premium-entry{display:flex;justify-content:flex-end;margin:0 0 14px}.student-premium-entry-btn{position:relative;overflow:hidden;min-height:48px;border:1px solid rgba(15,31,61,.16);border-radius:999px;padding:0 18px 0 16px;background:linear-gradient(135deg,#0f1f3d 0%,#173a6f 70%,#2f6fb2 100%);color:#fff;font-size:13px;font-weight:950;letter-spacing:0;box-shadow:0 14px 28px rgba(15,31,61,.18);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px}.student-premium-entry-btn::before{content:"";width:17px;height:12px;border:2px solid #f4a71d;border-radius:4px;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.04));box-shadow:inset 0 -4px 0 rgba(244,167,29,.22);flex:0 0 auto}.student-premium-entry-btn::after{content:"";width:8px;height:8px;border-right:2px solid rgba(255,255,255,.82);border-bottom:2px solid rgba(255,255,255,.82);transform:rotate(-45deg);flex:0 0 auto}.student-premium-entry-btn:hover{transform:translateY(-1px);box-shadow:0 18px 34px rgba(15,31,61,.22)}.student-premium-entry-btn[aria-expanded="true"]{background:linear-gradient(135deg,#12345f 0%,#0f766e 100%);border-color:rgba(15,118,110,.22)}
@@ -13592,6 +13593,7 @@ let studentExamView = 'library';
 let portalPremiumProducts = [];
 let portalPremiumOrders = [];
 let portalPremiumLoading = false;
+let portalPremiumLoaded = false;
 let portalPremiumError = '';
 let portalPremiumCheckout = null;
 let portalPremiumPollingTimer = null;
@@ -13609,6 +13611,22 @@ let studentExamPublicStats = { users: null, exams: null };
 const STUDENT_EXAM_PAGE_SIZE = 20;
 let studentExamVisibleCount = STUDENT_EXAM_PAGE_SIZE;
 let studentExamAdvancedFiltersOpen = false;
+
+function resetPortalPremiumState() {
+  if (portalPremiumPollingTimer) clearInterval(portalPremiumPollingTimer);
+  if (portalPremiumReloadTimer) clearTimeout(portalPremiumReloadTimer);
+  portalPremiumProducts = [];
+  portalPremiumOrders = [];
+  portalPremiumLoading = false;
+  portalPremiumLoaded = false;
+  portalPremiumError = '';
+  portalPremiumCheckout = null;
+  portalPremiumPollingTimer = null;
+  portalPremiumReloadTimer = null;
+  portalPremiumSuccessOrderId = '';
+  portalPremiumProductsHtmlKey = '';
+  portalPremiumCheckoutHtmlKey = '';
+}
 /** Ch? tên hi?n th? trong profiles (currentProfileDisplayName / display_name) — không dùng email hay user_metadata. */
 function getAiChatUserDisplayName() {
   return String(currentProfileDisplayName || '').trim();
@@ -16496,7 +16514,6 @@ function showStudentExamPortalUI() {
     if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
     renderStudentExamPlanState();
     studentExamSetView(studentExamView || 'library');
-    loadPortalPremiumData(true).catch(e => console.warn('loadPortalPremiumData', e));
   });
 }
 
@@ -16505,6 +16522,7 @@ function renderStudentExamPlanState() {
   const ownedPremiumKeys = portalPremiumOwnedProductKeys();
   const hasPackagePremium = ownedPremiumKeys && ownedPremiumKeys.size > 0;
   const plan = currentPortalPlan === 'premium' || isAdmin() || isTeacher() || hasPackagePremium ? 'premium' : 'free';
+  const premiumPending = status === 'active' && currentPortalPlan !== 'premium' && !isAdmin() && !isTeacher() && !portalPremiumLoaded;
   const groupLabel = portalFreeGroupLabel(currentPortalFreeGroup);
   const ownedLabels = Array.from(ownedPremiumKeys || [])
     .map(key => {
@@ -16514,8 +16532,9 @@ function renderStudentExamPlanState() {
     .filter(Boolean);
   const badge = document.getElementById('student-exam-plan-badge');
   if (badge) {
-    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (plan === 'premium' ? 'Premium' : 'Free'));
+    badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (premiumPending ? 'Đang tải' : (plan === 'premium' ? 'Premium' : 'Free')));
     badge.classList.toggle('premium', plan === 'premium');
+    badge.classList.toggle('loading', premiumPending);
     badge.classList.toggle('pending', status === 'pending');
     badge.classList.toggle('blocked', status === 'blocked');
   }
@@ -16525,6 +16544,8 @@ function renderStudentExamPlanState() {
       ? 'Kho tài liệu sẽ mở sau khi tài khoản được duyệt.'
       : status === 'blocked'
       ? 'Tài khoản hiện đang bị khóa quyền truy cập kho tài liệu. Em liên hệ thầy/cô để được hỗ trợ.'
+      : premiumPending
+      ? 'Đang kiểm tra gói Premium đã đăng ký cho tài khoản này.'
       : currentPortalPlan === 'premium' || isAdmin() || isTeacher()
       ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
       : hasPackagePremium
@@ -16630,12 +16651,14 @@ async function callPortalPremiumCheckout(action, payload) {
 
 async function loadPortalPremiumData(force) {
   if (portalPremiumLoading) return;
-  if (!force && portalPremiumProducts.length && portalPremiumOrders.length) {
+  if (!force && portalPremiumLoaded) {
     renderStudentPremiumView();
+    renderStudentExamPlanState();
     return;
   }
   portalPremiumLoading = true;
   portalPremiumError = '';
+  renderStudentExamPlanState();
   renderStudentPremiumView();
   try {
     const [productsData, ordersData] = await Promise.all([
@@ -16645,10 +16668,12 @@ async function loadPortalPremiumData(force) {
     portalPremiumProducts = Array.isArray(productsData.products) ? productsData.products : [];
     portalPremiumOrders = Array.isArray(ordersData.orders) ? ordersData.orders : [];
     portalPremiumLoading = false;
+    portalPremiumLoaded = true;
     renderStudentPremiumView();
     renderStudentExamPlanState();
   } catch (e) {
     portalPremiumLoading = false;
+    portalPremiumLoaded = true;
     portalPremiumError = portalPremiumErrorLabel(e?.data?.error || e?.message);
     renderStudentPremiumView();
     renderStudentExamPlanState();
@@ -18258,8 +18283,10 @@ function studentExamScrollToAll() {
 
 async function bootStudentExamPortal() {
   bindStudentExamPortalEvents();
+  const filesPromise = loadStudentExamFiles().catch(e => console.warn('loadStudentExamFiles', e));
+  await loadPortalPremiumData(true).catch(e => console.warn('loadPortalPremiumData', e));
   showStudentExamPortalUI();
-  await loadStudentExamFiles();
+  await filesPromise;
 }
 
 function showModuleChoiceUI() {
@@ -18350,6 +18377,7 @@ async function signInWithPassword() {
     expires_at: Date.now() + (data.expires_in || 3600) * 1000,
     user: data.user
   };
+  resetPortalPremiumState();
   const emailConfirmed = await ensureCurrentSessionEmailConfirmed();
   if (!emailConfirmed) {
     setLoginSubmitBusy(false);
@@ -18369,6 +18397,7 @@ async function signInWithPassword() {
     currentPortalPlan = 'free';
     currentPortalStatus = 'active';
     currentPortalFreeGroup = 'entrance_10';
+    resetPortalPremiumState();
     clearAuthSessionStorage();
     return;
   }
@@ -18459,6 +18488,7 @@ async function rejectUnconfirmedEmailLogin(errEl, accessToken) {
   currentPortalPlan = 'free';
   currentPortalStatus = 'active';
   currentPortalFreeGroup = 'entrance_10';
+  resetPortalPremiumState();
   clearAuthSessionStorage();
   if (errEl) errEl.textContent = 'Email chưa được xác nhận. Em mở email Supabase gửi và bấm xác nhận trước khi đăng nhập.';
 }
@@ -18632,6 +18662,7 @@ async function signOutUser() {
   currentPortalPlan = 'free';
   currentPortalStatus = 'active';
   currentPortalFreeGroup = 'entrance_10';
+  resetPortalPremiumState();
   adminShellBooted = false;
   studentExamRows = [];
   studentExamFilteredRows = [];
@@ -18751,6 +18782,7 @@ async function initAuth() {
           currentPortalPlan = 'free';
           currentPortalStatus = 'active';
           currentPortalFreeGroup = 'entrance_10';
+          resetPortalPremiumState();
           clearAuthSessionStorage();
           showLoginUI();
           return;
@@ -18793,6 +18825,7 @@ async function initAuth() {
   currentPortalPlan = 'free';
   currentPortalStatus = 'active';
   currentPortalFreeGroup = 'entrance_10';
+  resetPortalPremiumState();
   adminShellBooted = false;
   teacherClasses = [];
   clearAuthSessionStorage();
@@ -18878,6 +18911,7 @@ let _portalAnalyticsProfiles = null;
 let _portalAnalyticsAuditRows = null;
 let _portalPremiumProducts = null;
 let _portalPremiumOrders = null;
+let _portalPremiumEntitlements = null;
 let _portalAnalyticsLoadedAt = 0;
 let lastPortalAccessChange = null;
 let portalFreePickerRank = null;
@@ -19806,6 +19840,7 @@ function invalidatePortalAnalyticsCache() {
   _portalAnalyticsAuditRows = null;
   _portalPremiumProducts = null;
   _portalPremiumOrders = null;
+  _portalPremiumEntitlements = null;
   _portalAnalyticsLoadedAt = 0;
 }
 
@@ -19817,7 +19852,8 @@ async function fetchPortalAnalyticsData() {
   const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label&limit=5000';
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const premiumOrdersPath = 'portal_premium_orders?select=id,user_id,product_key,amount_vnd,status,paid_at,created_at,expires_at,ref_code&order=created_at.desc&limit=200';
-  const [activityRows, examRows, profileRows, auditRows, premiumProductsRows, premiumOrderRows] = await Promise.all([
+  const premiumEntitlementsPath = 'portal_premium_entitlements?select=user_id,product_key,portal_free_group,status,activated_at,expires_at&status=eq.active&limit=5000';
+  const [activityRows, examRows, profileRows, auditRows, premiumProductsRows, premiumOrderRows, premiumEntitlementRows] = await Promise.all([
     api('GET', activityPath),
     api('GET', examPath),
     api('GET', profilePath).catch(() => []),
@@ -19832,7 +19868,8 @@ async function fetchPortalAnalyticsData() {
       const text = await r.text();
       return text.trim() ? JSON.parse(text) : [];
     }).catch(() => []),
-    api('GET', premiumOrdersPath).catch(() => [])
+    api('GET', premiumOrdersPath).catch(() => []),
+    api('GET', premiumEntitlementsPath).catch(() => [])
   ]);
   _portalAnalyticsRows = Array.isArray(activityRows) ? activityRows : [];
   _portalAnalyticsExamRows = Array.isArray(examRows) ? examRows : [];
@@ -19840,6 +19877,7 @@ async function fetchPortalAnalyticsData() {
   _portalAnalyticsAuditRows = Array.isArray(auditRows) ? auditRows : [];
   _portalPremiumProducts = Array.isArray(premiumProductsRows) ? premiumProductsRows : [];
   _portalPremiumOrders = Array.isArray(premiumOrderRows) ? premiumOrderRows : [];
+  _portalPremiumEntitlements = Array.isArray(premiumEntitlementRows) ? premiumEntitlementRows : [];
   _portalAnalyticsLoadedAt = Date.now();
 }
 
@@ -21021,6 +21059,35 @@ function portalPlanLabel(plan) {
   return String(plan || 'free') === 'premium' ? 'Premium' : 'Free';
 }
 
+function portalPremiumProductTitle(key) {
+  const wanted = String(key || '').trim();
+  const product = (Array.isArray(_portalPremiumProducts) ? _portalPremiumProducts : [])
+    .find(p => String(p.product_key || '') === wanted);
+  return String(product?.title || wanted || '').trim();
+}
+
+function portalActivePremiumKeysForUser(userId) {
+  const uid = String(userId || '').trim();
+  if (!uid) return [];
+  const keys = new Set();
+  const now = Date.now();
+  (Array.isArray(_portalPremiumEntitlements) ? _portalPremiumEntitlements : []).forEach(e => {
+    if (String(e.user_id || '') !== uid) return;
+    if (String(e.status || '') !== 'active') return;
+    const expiresAt = e.expires_at ? Date.parse(e.expires_at) : 0;
+    if (expiresAt && expiresAt <= now) return;
+    const key = String(e.product_key || '').trim();
+    if (key) keys.add(key);
+  });
+  (Array.isArray(_portalPremiumOrders) ? _portalPremiumOrders : []).forEach(o => {
+    if (String(o.user_id || '') !== uid) return;
+    if (String(o.status || '') !== 'paid') return;
+    const key = String(o.product_key || '').trim();
+    if (key) keys.add(key);
+  });
+  return Array.from(keys);
+}
+
 function portalStatusLabel(status) {
   const s = String(status || 'active');
   if (s === 'pending') return 'Chờ duyệt';
@@ -21240,9 +21307,12 @@ function renderPortalStudentUsers(rows) {
     .map(p => {
       const uid = String(p.id || '').trim();
       const a = summary[uid] || { opens: 0, downloads: 0, saves: 0, docs: new Set(), lastAt: '' };
-      const plan = String(p.portal_plan || 'free') === 'premium' ? 'premium' : 'free';
+      const rawPlan = String(p.portal_plan || 'free') === 'premium' ? 'premium' : 'free';
+      const premiumKeys = portalActivePremiumKeysForUser(uid);
+      const plan = rawPlan === 'premium' || premiumKeys.length ? 'premium' : 'free';
       const status = String(p.portal_status || 'active');
-      return { ...p, uid, plan, status, opens: a.opens, downloads: a.downloads, saves: a.saves, docs: a.docs.size, lastAt: a.lastAt, score: a.opens + a.downloads * 2 + a.saves };
+      const premiumLabels = premiumKeys.map(portalPremiumProductTitle).filter(Boolean);
+      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, opens: a.opens, downloads: a.downloads, saves: a.saves, docs: a.docs.size, lastAt: a.lastAt, score: a.opens + a.downloads * 2 + a.saves };
     });
   const counts = {
     total: allProfiles.length,
@@ -21256,7 +21326,7 @@ function renderPortalStudentUsers(rows) {
     .filter(p => filter === 'all' || p.plan === filter || p.status === filter)
     .filter(p => {
       if (!q) return true;
-      const hay = [portalUserLabel(p.uid), p.email, p.display_name, p.uid, p.plan, p.status]
+      const hay = [portalUserLabel(p.uid), p.email, p.display_name, p.uid, p.plan, p.rawPlan, p.status, ...(p.premiumLabels || [])]
         .map(x => normalizeText(String(x || '')).toLowerCase())
         .join(' ');
       return hay.includes(q);
@@ -21271,20 +21341,21 @@ function renderPortalStudentUsers(rows) {
   const to = Math.min(total, start + portalStudentPageSize);
   const table = pageRows.length ? `<div class="portal-user-table-wrap"><table class="portal-table"><thead><tr><th>Học sinh</th><th>Nhóm</th><th>Gói</th><th>Trạng thái</th><th class="num">TL</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th>Gần nhất</th><th></th></tr></thead><tbody>${
     pageRows.map(p => {
-      const next = p.plan === 'premium' ? 'free' : 'premium';
-      const label = p.plan === 'premium' ? 'Tắt premium' : 'Bật premium';
+      const next = p.rawPlan === 'premium' ? 'free' : 'premium';
+      const label = p.rawPlan === 'premium' ? 'Tắt premium' : (p.premiumKeys && p.premiumKeys.length ? 'Bật toàn bộ' : 'Bật premium');
       const initials = portalUserLabel(p.uid).split(/\s+/).filter(Boolean).slice(-2).map(x => x[0]).join('').toUpperCase().slice(0, 2) || 'HS';
+      const planTitle = p.premiumLabels && p.premiumLabels.length ? p.premiumLabels.join(', ') : portalPlanLabel(p.plan);
       return `<tr>
         <td class="portal-user-primary-cell"><div class="portal-user-name"><div class="portal-user-avatar">${escapeHtml(initials)}</div><div class="portal-user-text"><div class="portal-table-title">${escapeHtml(portalUserLabel(p.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(p.uid))}</div></div></div></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity quiet">${escapeHtml(p.portal_class_label || portalFreeGroupLabel(p.portal_free_group))}</span></td>
-        <td class="portal-user-meta-cell"><span class="portal-intensity ${p.plan === 'premium' ? 'hot' : 'quiet'}">${escapeHtml(portalPlanLabel(p.plan))}</span></td>
+        <td class="portal-user-meta-cell"><span class="portal-intensity ${p.plan === 'premium' ? 'hot' : 'quiet'}" title="${escapeHtml(planTitle)}">${escapeHtml(portalPlanLabel(p.plan))}</span></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity ${portalStatusClass(p.status)}">${escapeHtml(portalStatusLabel(p.status))}</span></td>
         <td class="num portal-user-stat-cell" data-label="Tài liệu">${p.docs}</td><td class="num portal-user-stat-cell" data-label="Mở">${p.opens}</td><td class="num portal-user-stat-cell" data-label="Tải">${p.downloads}</td><td class="num portal-user-stat-cell" data-label="Lưu">${p.saves}</td>
         <td class="portal-user-stat-cell" data-label="Gần nhất">${escapeHtml(portalActivityTimeLabel(p.lastAt))}</td>
         <td class="portal-user-actions-cell"><div class="portal-row-actions">
           ${p.status !== 'active' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','free','active')">Duyệt</button>` : ''}
           <button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${next}','active')">${label}</button>
-          ${p.status !== 'blocked' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${p.plan}','blocked')">Khóa</button>` : ''}
+          ${p.status !== 'blocked' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${p.rawPlan}','blocked')">Khóa</button>` : ''}
         </div></td>
       </tr>`;
     }).join('')
