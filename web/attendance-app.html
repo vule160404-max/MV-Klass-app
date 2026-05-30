@@ -17069,7 +17069,7 @@ function studentExamState(message) {
 }
 
 function studentExamDisplayProvince(value) {
-  const raw = String(value || '').trim();
+  const raw = repairMojibakeText(value).trim();
   const key = normalizeText(raw.replace(/[đĐ]/g, 'd')).replace(/\s+/g, ' ').trim().toLowerCase();
   const map = {
     'ha noi': 'Hà Nội',
@@ -17166,7 +17166,7 @@ function studentExamSourceKeyFromLabel(label) {
 }
 
 function studentExamFormatSourceLabel(value) {
-  const raw = String(value || '').replace(/\s+/g, ' ').trim();
+  const raw = repairMojibakeText(value).replace(/\s+/g, ' ').trim();
   const key = studentExamSourceKeyFromLabel(raw);
   const aliases = {
     'nguon tong hop': 'Tổng hợp',
@@ -17187,7 +17187,7 @@ function studentExamFormatSourceLabel(value) {
 }
 
 function studentExamSourceTextFromName(value) {
-  const raw = String(value || '')
+  const raw = repairMojibakeText(value)
     .split(/[\\/]/)
     .pop()
     .replace(/\.[a-z0-9]+$/i, '')
@@ -17245,7 +17245,7 @@ function studentExamFileNameForDisplay(row) {
     row?.title
   ];
   for (const item of candidates) {
-    const last = String(item || '').split('/').pop().trim();
+    const last = repairMojibakeText(item).split('/').pop().trim();
     if (last) return last.replace(/\.[a-z0-9]+$/i, '');
   }
   return '';
@@ -17326,7 +17326,7 @@ function studentExamDisplayTitle(row) {
   const parsed = studentExamParsedTitleParts(row);
   const code = parsed.code;
   if (!code) {
-    const title = String(row?.title || '').trim();
+    const title = repairMojibakeText(row?.title).trim();
     const fileLabel = studentExamCleanFileLabel(row);
     if (fileLabel && (!title || studentExamTitleIsTooGeneric(title, row))) return fileLabel;
     return title || fileLabel || 'Đề thi Tiếng Anh';
@@ -22656,11 +22656,23 @@ function initials(name) {
   return tail.map(w => w[0]).join('').toUpperCase() || '?';
 }
 
+function repairMojibakeText(v) {
+  const raw = String(v == null ? '' : v);
+  if (!/[ÃÂÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝÞß]/.test(raw)) return raw;
+  try {
+    const bytes = Uint8Array.from(Array.from(raw).map(ch => ch.charCodeAt(0) & 0xff));
+    const decoded = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+    return decoded && decoded !== raw ? decoded : raw;
+  } catch (e) {
+    return raw;
+  }
+}
+
 function normalizeText(v) {
-  return String(v == null ? '' : v)
+  return repairMojibakeText(v)
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[dÐ]/g, 'd')
+    .replace(/[đĐ]/g, 'd')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()

@@ -149,14 +149,26 @@ async function listR2Keys(prefix = "") {
 }
 
 function normalizeText(value: string) {
-  return String(value || "")
+  return repairMojibake(String(value || ""))
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/Ä‘/g, "d")
+    .replace(/đ/g, "d")
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function repairMojibake(value: string) {
+  const raw = String(value || "");
+  if (!/[ÃÂÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝÞß]/.test(raw)) return raw;
+  try {
+    const bytes = Uint8Array.from(Array.from(raw).map((ch) => ch.charCodeAt(0) & 0xff));
+    const decoded = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+    return decoded && decoded !== raw ? decoded : raw;
+  } catch {
+    return raw;
+  }
 }
 
 function stem(key: string) {
@@ -203,26 +215,26 @@ function guessSortOrder(key: string) {
 function displayProvince(value: string) {
   const key = normalizeText(value);
   const map: Record<string, string> = {
-    "ha noi": "HÃ  Ná»™i",
+    "ha noi": "Hà Nội",
     "tp hcm": "TP HCM",
     "ho chi minh": "TP HCM",
-    "thanh hoa": "Thanh HÃ³a",
-    "nghe an": "Nghá»‡ An",
-    "ha tinh": "HÃ  TÄ©nh",
-    "da nang": "ÄÃ  Náºµng",
-    "hai phong": "Háº£i PhÃ²ng",
-    "quang ninh": "Quáº£ng Ninh",
-    "bac ninh": "Báº¯c Ninh",
-    "bac giang": "Báº¯c Giang",
-    "nam dinh": "Nam Äá»‹nh",
-    "thai binh": "ThÃ¡i BÃ¬nh",
-    "ninh binh": "Ninh BÃ¬nh",
-    "hai duong": "Háº£i DÆ°Æ¡ng",
-    "hung yen": "HÆ°ng YÃªn",
-    "vinh phuc": "VÄ©nh PhÃºc",
-    "phu tho": "PhÃº Thá»",
-    "nguon tong hop": "Nguá»“n tá»•ng há»£p",
-    "tong hop": "Nguá»“n tá»•ng há»£p",
+    "thanh hoa": "Thanh Hóa",
+    "nghe an": "Nghệ An",
+    "ha tinh": "Hà Tĩnh",
+    "da nang": "Đà Nẵng",
+    "hai phong": "Hải Phòng",
+    "quang ninh": "Quảng Ninh",
+    "bac ninh": "Bắc Ninh",
+    "bac giang": "Bắc Giang",
+    "nam dinh": "Nam Định",
+    "thai binh": "Thái Bình",
+    "ninh binh": "Ninh Bình",
+    "hai duong": "Hải Dương",
+    "hung yen": "Hưng Yên",
+    "vinh phuc": "Vĩnh Phúc",
+    "phu tho": "Phú Thọ",
+    "nguon tong hop": "Nguồn tổng hợp",
+    "tong hop": "Nguồn tổng hợp",
   };
   return map[key] || "";
 }
@@ -239,18 +251,19 @@ function guessProvince(key: string) {
 
 function prettyTitle(key: string) {
   const category = guessCategory(key);
-  const prefix = category === "answer" ? "ÄÃ¡p Ã¡n Ä‘á»" : category === "audio" ? "Audio Ä‘á»" : "Äá»";
+  const prefix = category === "answer" ? "Đáp án đề" : category === "audio" ? "Audio đề" : "Đề";
   const code = guessCode(key);
-  const level = guessLevel(key) === "university" ? "THPT" : "VÃ o 10";
+  const level = guessLevel(key) === "university" ? "THPT" : "Vào 10";
   const province = guessProvince(key);
   const year = guessYear(key);
   const parts = [prefix, code, level, province, year].filter(Boolean);
-  return parts.length > 2 ? parts.join(" ") : stem(key) || "TÃ i liá»‡u Tiáº¿ng Anh";
+  return parts.length > 2 ? parts.join(" ") : stem(key) || "Tài liệu Tiếng Anh";
 }
 
 function guessSource(key: string) {
   const n = normalizeText(stem(key));
-  if (/\b(vu mai phuong|vmp)\b/.test(n)) return "VÅ© Mai PhÆ°Æ¡ng";
+  if (/\b(vu mai phuong|vmp)\b/.test(n)) return "Vũ Mai Phương";
+  if (/\b(loi giai hay|lgh)\b/.test(n)) return "Lời Giải Hay";
   return null;
 }
 
@@ -262,14 +275,14 @@ function titleCode(code: string | null) {
 
 function prettyTitleClean(key: string) {
   const category = guessCategory(key);
-  const prefix = category === "answer" ? "ÄÃ¡p Ã¡n Ä‘á»" : category === "audio" ? "Audio Ä‘á»" : "Äá»";
+  const prefix = category === "answer" ? "Đáp án đề" : category === "audio" ? "Audio đề" : "Đề";
   const code = guessCode(key);
   const levelKey = guessLevel(key);
-  const level = levelKey === "university" ? "THPT" : (levelKey === "ielts" ? "IELTS" : "VÃ o 10");
+  const level = levelKey === "university" ? "THPT" : (levelKey === "ielts" ? "IELTS" : "Vào 10");
   const source = guessProvince(key) || guessSource(key);
   const year = guessYear(key);
   const parts = [prefix, titleCode(code), level, source, year].filter(Boolean);
-  return parts.length > 2 ? parts.join(" ") : stem(key) || "TÃ i liá»‡u Tiáº¿ng Anh";
+  return parts.length > 2 ? parts.join(" ") : stem(key) || "Tài liệu Tiếng Anh";
 }
 
 function matchKey(key: string) {
