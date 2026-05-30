@@ -5640,7 +5640,11 @@
       max-width: 840px;
       padding: 26px 28px;
       background:
-        linear-gradient(130deg, rgba(255,255,255,.98) 0%, rgba(247,250,255,.98) 58%, rgba(239,246,255,.96) 100%);
+        linear-gradient(135deg, rgba(252,254,255,.98) 0%, rgba(244,249,255,.97) 52%, rgba(238,248,245,.96) 100%);
+      border-color: rgba(218,228,242,.88);
+    }
+    .login-only-entry .login-screen .login-card.card::before{
+      background: linear-gradient(90deg, #d7e8ff 0%, #cceadf 52%, #e7ddff 100%);
     }
     .login-only-entry .login-card-layout{
       grid-template-columns: minmax(380px, 420px) minmax(220px, 250px);
@@ -5669,13 +5673,18 @@
       border-color: rgba(79,142,247,.15);
     }
     .login-only-entry .login-screen .login-card .btn-save{
-      background: linear-gradient(180deg, #1f4fa3 0%, #12336d 100%);
-      color: #fff;
-      box-shadow: 0 16px 34px rgba(18,51,109,.28), 0 2px 0 rgba(255,255,255,.18) inset;
+      background: linear-gradient(180deg, #6aa8f7 0%, #2f6fce 100%) !important;
+      color: #fff !important;
+      box-shadow: 0 16px 34px rgba(47,111,206,.24), 0 2px 0 rgba(255,255,255,.22) inset !important;
     }
     .login-only-entry .login-screen .login-card .btn-save:hover{
-      background: linear-gradient(180deg, #2a66c8 0%, #17427f 100%);
-      box-shadow: 0 18px 38px rgba(18,51,109,.34), 0 2px 0 rgba(255,255,255,.22) inset;
+      background: linear-gradient(180deg, #78b4ff 0%, #387cdf 100%) !important;
+      box-shadow: 0 18px 38px rgba(47,111,206,.30), 0 2px 0 rgba(255,255,255,.26) inset !important;
+    }
+    .login-only-entry .login-screen .login-card input[type=email]:focus,
+    .login-only-entry .login-screen .login-card input[type=password]:focus{
+      border-color: rgba(79,142,247,.54) !important;
+      box-shadow: 0 0 0 4px rgba(79,142,247,.14), 0 12px 28px rgba(15,31,61,0.08) !important;
     }
     .login-only-entry .login-brand{
       gap: 16px;
@@ -5716,10 +5725,11 @@
       width: 38px;
       height: 30px;
       border-radius: 10px;
-      background: #f4a71d;
-      color: #0f1f3d;
+      background: rgba(219,234,254,.94);
+      color: #1d4ed8;
       font-size: 11px;
       font-weight: 950;
+      box-shadow: 0 1px 0 rgba(255,255,255,.42) inset;
     }
     .login-portal-preview-list{
       display: grid;
@@ -5741,10 +5751,31 @@
       display: grid;
       place-items: center;
       border-radius: 12px;
-      background: rgba(255,255,255,.12);
-      color: #fdd87a;
-      font-size: 13px;
-      font-weight: 950;
+      background: rgba(255,255,255,.13);
+      color: #dbeafe;
+      box-shadow: 0 1px 0 rgba(255,255,255,.12) inset;
+    }
+    .login-portal-preview-icon svg{
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .login-portal-preview-row:nth-child(1) .login-portal-preview-icon{
+      color: #bfdbfe;
+      background: rgba(191,219,254,.16);
+    }
+    .login-portal-preview-row:nth-child(2) .login-portal-preview-icon{
+      color: #bbf7d0;
+      background: rgba(187,247,208,.14);
+    }
+    .login-portal-preview-row:nth-child(3) .login-portal-preview-icon{
+      color: #fde68a;
+      background: rgba(253,230,138,.14);
     }
     .login-portal-preview-text{
       min-width: 0;
@@ -10102,15 +10133,35 @@ a:focus-visible,
             </div>
             <div class="login-portal-preview-list">
               <div class="login-portal-preview-row">
-                <span class="login-portal-preview-icon">Đề</span>
+                <span class="login-portal-preview-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 3h8l4 4v14H6z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9 13h6"></path>
+                    <path d="M9 17h4"></path>
+                  </svg>
+                </span>
                 <span class="login-portal-preview-text"><strong>Đề thi chọn lọc</strong><span>Vào 10, THPT QG, IELTS</span></span>
               </div>
               <div class="login-portal-preview-row">
-                <span class="login-portal-preview-icon">ĐA</span>
+                <span class="login-portal-preview-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 4h14v16H5z"></path>
+                    <path d="m8 12 2 2 4-5"></path>
+                    <path d="M8 17h8"></path>
+                  </svg>
+                </span>
                 <span class="login-portal-preview-text"><strong>Đáp án & lời giải</strong><span>Theo từng tài liệu luyện tập</span></span>
               </div>
               <div class="login-portal-preview-row">
-                <span class="login-portal-preview-icon">A</span>
+                <span class="login-portal-preview-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 13a8 8 0 0 1 16 0"></path>
+                    <path d="M5 13h3v6H5z"></path>
+                    <path d="M16 13h3v6h-3z"></path>
+                    <path d="M9 20h4"></path>
+                  </svg>
+                </span>
                 <span class="login-portal-preview-text"><strong>Audio luyện nghe</strong><span>Mở cùng đề có file nghe</span></span>
               </div>
             </div>
