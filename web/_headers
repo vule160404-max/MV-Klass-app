@@ -13,6 +13,14 @@
   Cache-Control: no-cache, no-store, must-revalidate, max-age=0
 
 # Khi đổi VAPID / firebase-config, tránh .js bị cache dài hạn (Netlify mặc định tối ưu mạnh).
+/portal
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+  X-Robots-Tag: noindex, nofollow
+
+/portal.html
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+  X-Robots-Tag: noindex, nofollow
+
 /firebase-config.js
   Cache-Control: no-cache, must-revalidate
 

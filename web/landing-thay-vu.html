@@ -11,6 +11,29 @@
   <link rel="icon" type="image/png" href="./assets/brand/Center-logo.png" />
   <link rel="apple-touch-icon" href="./assets/brand/Center-logo.png" />
   <title>Lớp tiếng Anh thầy Vũ</title>
+  <script>
+    (function () {
+      const LOGIN_ONLY_KEY = 'mvk-login-only';
+
+      function hasLoginOnlyMarker() {
+        try {
+          if (localStorage.getItem(LOGIN_ONLY_KEY) === '1') return true;
+        } catch (e) {}
+
+        try {
+          return document.cookie
+            .split(';')
+            .some(function (part) { return part.trim() === LOGIN_ONLY_KEY + '=1'; });
+        } catch (e) {
+          return false;
+        }
+      }
+
+      if (hasLoginOnlyMarker()) {
+        window.location.replace('./attendance-app.html');
+      }
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">

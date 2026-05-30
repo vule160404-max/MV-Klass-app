@@ -16,6 +16,29 @@
   <link rel="icon" type="image/png" href="./assets/brand/Center-logo.png" id="pwa-favicon"/>
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/brand/Center-logo.png" id="pwa-apple-touch"/>
   <title>MV Klass</title>
+  <script>
+    (function () {
+      const LOGIN_ONLY_KEY = 'mvk-login-only';
+
+      function hasLoginOnlyMarker() {
+        try {
+          if (localStorage.getItem(LOGIN_ONLY_KEY) === '1') return true;
+        } catch (e) {}
+
+        try {
+          return document.cookie
+            .split(';')
+            .some(function (part) { return part.trim() === LOGIN_ONLY_KEY + '=1'; });
+        } catch (e) {
+          return false;
+        }
+      }
+
+      if (hasLoginOnlyMarker()) {
+        document.documentElement.classList.add('login-only-entry');
+      }
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -5545,6 +5568,9 @@
       margin: 18px 0 0;
       text-align: center;
       animation: loginFadeIn 680ms ease 120ms both;
+    }
+    .login-only-entry .login-back-landing{
+      display: none !important;
     }
     .login-back-landing a{
       font-family: 'Be Vietnam Pro', var(--font);
