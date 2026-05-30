@@ -2,7 +2,7 @@
   "rewrites": [
     { "source": "/", "destination": "/landing-thay-vu.html" },
     { "source": "/landing", "destination": "/landing-thay-vu.html" },
-    { "source": "/portal", "destination": "/portal.html" },
+    { "source": "/portal", "destination": "/attendance-app.html" },
     { "source": "/app", "destination": "/attendance-app.html" }
   ],
   "headers": [

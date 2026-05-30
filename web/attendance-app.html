@@ -19,6 +19,7 @@
   <script>
     (function () {
       const LOGIN_ONLY_KEY = 'mvk-login-only';
+      const TWO_YEARS = 60 * 60 * 24 * 730;
 
       function hasLoginOnlyMarker() {
         try {
@@ -32,6 +33,25 @@
         } catch (e) {
           return false;
         }
+      }
+
+      function isPortalEntryPath() {
+        return /^\/portal\/?$/i.test(window.location.pathname || '');
+      }
+
+      function setLoginOnlyMarker() {
+        try {
+          localStorage.setItem(LOGIN_ONLY_KEY, '1');
+        } catch (e) {}
+
+        try {
+          const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+          document.cookie = LOGIN_ONLY_KEY + '=1; Path=/; Max-Age=' + TWO_YEARS + '; SameSite=Lax' + secure;
+        } catch (e) {}
+      }
+
+      if (isPortalEntryPath()) {
+        setLoginOnlyMarker();
       }
 
       if (hasLoginOnlyMarker()) {
