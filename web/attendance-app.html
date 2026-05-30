@@ -24302,6 +24302,56 @@ function compactClassListLabel(rawText) {
   return Array.from(new Set(parts)).join(', ');
 }
 
+function bankTransferPremiumRef(rawText) {
+  const m = String(rawText || '').toUpperCase().match(/\bPM[A-Z0-9]{8,14}\b/);
+  return m ? m[0] : '';
+}
+
+function isBankPremiumTransaction(row) {
+  const haystack = [
+    row && row.paymentKind,
+    row && row.portalPremiumOrderId,
+    row && row.matchMethod,
+    row && row.matchedClassName,
+    row && row.reconcileNote,
+    row && row.transferContent
+  ].map(x => String(x || '')).join(' ').toLowerCase();
+  return /\bpremium\b|portal_premium|premium_ref|entrance_10|university|vào\s*10|vao\s*10|thpt/.test(haystack);
+}
+
+function bankPremiumPackageLabel(row) {
+  const raw = String(row && row.matchedClassName || '').trim();
+  const haystack = [
+    raw,
+    row && row.reconcileNote,
+    row && row.transferContent,
+    row && row.matchMethod
+  ].map(x => String(x || '')).join(' ').toLowerCase();
+  if (/entrance_10|vào\s*10|vao\s*10/.test(haystack)) return 'gói Premium Vào 10 Tiếng Anh';
+  if (/university|thpt|qg|quốc gia|quoc gia/.test(haystack)) return 'gói Premium THPT QG Tiếng Anh';
+  if (/^gói\s+premium/i.test(raw)) return raw;
+  if (/^gói\s+/i.test(raw)) return raw.replace(/^gói\s+/i, 'gói Premium ');
+  return raw ? `gói Premium ${raw}` : 'gói Premium';
+}
+
+function bankPremiumFriendlyNote(row) {
+  const label = bankPremiumPackageLabel(row);
+  const ref = bankTransferPremiumRef(
+    [row && row.reconcileNote, row && row.transferContent].map(x => String(x || '')).join(' ')
+  );
+  return `Đăng ký ${label}${ref ? ` · Mã đơn ${ref}` : ''}`;
+}
+
+function renderBankPremiumCell(row) {
+  const label = bankPremiumPackageLabel(row);
+  return (
+    '<div class="bank-student-cell">' +
+    '<div class="bank-student-name">Đăng ký Premium</div>' +
+    '<div class="bank-student-meta"><span>' + escapeHtml(label) + '</span></div>' +
+    '</div>'
+  );
+}
+
 function updateAttV5SaveChip() {
   const bar = document.getElementById('save-bar');
   const saveBtn = document.getElementById('save-btn');
@@ -28649,6 +28699,7 @@ function bankMatchMethodLabel(method) {
   if (m === 'student_name') return 'Tên học sinh';
   if (m === 'parent_name') return 'Phụ huynh';
   if (m === 'mixed') return 'Nhiều dấu hiệu';
+  if (m === 'premium_ref') return 'Mã đơn Premium';
   return '';
 }
 
@@ -28806,6 +28857,29 @@ function openBankTransactionInspectModal(row) {
   }
   if (titleEl) titleEl.textContent = 'Chi tiết giao dịch #' + row.id;
   const inspectStatusLower = String(row.status || '').toLowerCase();
+  if (isBankPremiumTransaction(row)) {
+    const label = bankPremiumPackageLabel(row);
+    const ref = bankTransferPremiumRef(
+      [row.reconcileNote, row.transferContent].map(x => String(x || '')).join(' ')
+    );
+    const premiumNote =
+      '<div class="bank-tx-inspect-manual" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(15,23,42,.1)">' +
+      '<div class="analytics-muted" style="font-size:12px;line-height:1.45">Giao dịch Premium đã được xử lý theo mã đơn đăng ký. Giao dịch này không ghi nhận học phí, lớp học hoặc số buổi.</div>' +
+      '</div>';
+    bodyEl.innerHTML =
+      rowKV('Thời gian', formatPaymentDateTime(row.occurredAt || row.createdAt)) +
+      rowKV('Loại giao dịch', 'Đăng ký Premium') +
+      rowKV('Trạng thái', bankTxStatusLabel(row.status)) +
+      rowKV('Số tiền', formatVnd(row.amountVnd || 0)) +
+      rowKV('Gói đăng ký', label) +
+      rowKV('Mã đơn Premium', ref || '—') +
+      rowKV('Khớp theo', row.matchMethodLabel || 'Mã đơn Premium') +
+      rowKV('Nội dung chuyển khoản', String(row.transferContent || '—'), true) +
+      rowKV('Ghi chú đối soát', bankPremiumFriendlyNote(row)) +
+      premiumNote;
+    backdrop.classList.add('show');
+    return;
+  }
   let manual = '';
   if (inspectStatusLower === 'applied') {
     manual =
@@ -29753,21 +29827,30 @@ function renderBankTransactions() {
       const methodText = r.matchedByContent && r.matchMethodLabel
         ? `Khớp theo: ${r.matchMethodLabel}`
         : '';
-      const studentLabel = renderBankStudentCell(
-        r.studentName,
-        parent,
-        r.studentClass,
-        [r.matchedByContent ? 'Khớp CK' : '', confText, methodText]
-      );
+      const isPremiumTx = isBankPremiumTransaction(r);
+      const studentLabel = isPremiumTx
+        ? renderBankPremiumCell(r)
+        : renderBankStudentCell(
+            r.studentName,
+            parent,
+            r.studentClass,
+            [r.matchedByContent ? 'Khớp CK' : '', confText, methodText]
+          );
       const stLower = String(r.status || '').toLowerCase();
       const isCollectedTx = stLower === 'applied' || stLower === 'manual_received';
       const errorNoteText = isCollectedTx ? '' : formatBankInfoNote(r.errorNote);
       const extra = errorNoteText ? `<div class="sub" title="${escapeHtml(errorNoteText)}">${escapeHtml(errorNoteText)}</div>` : '';
       const classAppliedText = r.matchedClassName ? compactClassListLabel(r.matchedClassName) : '';
-      const reconNoteText = formatBankInfoNote(r.reconcileNote);
+      const reconNoteText = isPremiumTx ? bankPremiumFriendlyNote(r) : formatBankInfoNote(r.reconcileNote);
       const reconNote = reconNoteText ? `<div class="sub">${escapeHtml(reconNoteText)}</div>` : '';
       const appliedExtra =
-        r.status === 'applied'
+        isPremiumTx && r.status === 'applied'
+          ? `<div class="sub">Đã kích hoạt ${escapeHtml(bankPremiumPackageLabel(r))} · ${escapeHtml(formatVnd(r.appliedAmountVnd || r.amountVnd || 0))}</div>`
+          : isPremiumTx && r.status === 'manual_received'
+            ? `<div class="sub">Đã xác nhận giao dịch ${escapeHtml(bankPremiumPackageLabel(r))}.</div>`
+          : isPremiumTx && r.status === 'manual_not_received'
+            ? `<div class="sub">Đã đánh dấu chưa nhận tiền cho đơn Premium này.</div>`
+          : r.status === 'applied'
           ? `<div class="sub">Đã ghi nhận học phí${classAppliedText ? `: lớp ${escapeHtml(classAppliedText)}, ` : ': '}${escapeHtml(String(r.appliedSessions || 0))} buổi · ${escapeHtml(formatVnd(r.appliedAmountVnd || r.amountVnd || 0))}</div>`
           : r.status === 'manual_received'
             ? `<div class="sub">Đối soát tay${classAppliedText ? `: lớp ${escapeHtml(classAppliedText)} ` : ': '}đã nhận tiền.</div>`
@@ -29790,7 +29873,9 @@ function renderBankTransactions() {
         stLower === 'applied' || stLower === 'manual_received' || stLower === 'manual_not_received'
           ? 'Đối soát lại'
           : 'Đối soát';
-      const actionManual = `<button type="button" class="btn-save btn-sm" data-bank-reconcile="${r.id}">${actionManualLabel}</button>`;
+      const actionManual = isPremiumTx && stLower === 'applied'
+        ? ''
+        : `<button type="button" class="btn-save btn-sm" data-bank-reconcile="${r.id}">${actionManualLabel}</button>`;
       const actionInspect = `<button type="button" class="btn-sm" data-bank-inspect="transfer:${r.id}">Chi tiết</button>`;
       const hiddenContent = r.transferContent ? `•••••••• (${String(r.transferContent).length} ký tự)` : '—';
       const fullCk = `<div class="bank-tx-ck-full">${r.transferContent ? escapeHtml(String(r.transferContent)) : '—'}</div>`;
@@ -29868,12 +29953,12 @@ async function loadBankTransactions(force = false) {
   }
   let rows = await api(
     'GET',
-    'bank_transactions?select=id,provider,provider_txn_id,occurred_at,created_at,amount_vnd,transfer_content,status,error_note,reconcile_note,matched_student_id,matched_class_name,match_confidence,match_score,match_method,match_candidates,applied_sessions,applied_amount_vnd&order=created_at.desc&limit=1000'
+    'bank_transactions?select=id,provider,provider_txn_id,occurred_at,created_at,amount_vnd,transfer_content,status,error_note,reconcile_note,payment_kind,portal_premium_order_id,matched_student_id,matched_class_name,match_confidence,match_score,match_method,match_candidates,applied_sessions,applied_amount_vnd&order=created_at.desc&limit=1000'
   );
   if (Array.isArray(rows) && rows.length === 0) {
     rows = await api(
       'GET',
-      'bank_transactions?select=id,provider,provider_txn_id,occurred_at,created_at,amount_vnd,transfer_content,status,error_note,reconcile_note,matched_student_id,matched_class_name,applied_sessions,applied_amount_vnd&order=created_at.desc&limit=1000'
+      'bank_transactions?select=id,provider,provider_txn_id,occurred_at,created_at,amount_vnd,transfer_content,status,error_note,reconcile_note,payment_kind,portal_premium_order_id,matched_student_id,matched_class_name,applied_sessions,applied_amount_vnd&order=created_at.desc&limit=1000'
     );
   }
   if (!Array.isArray(rows)) {
@@ -29909,6 +29994,8 @@ async function loadBankTransactions(force = false) {
       status: r.status || 'pending',
       errorNote: r.error_note || '',
       reconcileNote: r.reconcile_note || '',
+      paymentKind: r.payment_kind || 'tuition',
+      portalPremiumOrderId: r.portal_premium_order_id || '',
       studentId: sid || '',
       studentName: linked && linked.name ? linked.name : (topCandidate ? topCandidate.studentName : ''),
       parentName: linked && linked.parent_name ? linked.parent_name : (topCandidate ? topCandidate.parentName : ''),
@@ -29941,6 +30028,10 @@ async function loadBankTransactions(force = false) {
       const prevStatus = String(prevById.get(String(row.id)) || '').toLowerCase();
       const wasCollected = prevStatus === 'applied' || prevStatus === 'manual_received';
       if (wasCollected) return;
+      if (isBankPremiumTransaction(row)) {
+        showAppToast(`Đã kích hoạt ${bankPremiumPackageLabel(row)}.`, 'success');
+        return;
+      }
       const amountVnd = Math.max(0, Number((row.appliedAmountVnd || row.amountVnd) || 0) || 0);
       const sessionsPaid = Math.max(0, Number(row.appliedSessions || 0) || 0);
       showBalanceChangePopupInApp({
