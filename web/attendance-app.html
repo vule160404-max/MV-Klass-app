@@ -10355,10 +10355,6 @@ a:focus-visible,
             </div>
             <div class="portal-panel-body" id="portal-free-curation"></div>
           </div>
-          <div class="portal-panel">
-            <div class="portal-panel-head"><div><div class="portal-panel-title">Lịch sử quyền portal</div><div class="portal-panel-sub">Audit bật/tắt Premium, duyệt hoặc khóa tài khoản.</div></div></div>
-            <div class="portal-panel-body" id="portal-access-audit"></div>
-          </div>
         </div>
         <div class="portal-analytics-grid">
           <div class="portal-panel">
@@ -21079,7 +21075,7 @@ function portalStatusClass(status) {
 }
 
 function renderPortalAnalyticsError(e) {
-  ['portal-student-users', 'portal-premium-products-admin', 'portal-free-curation', 'portal-access-audit', 'portal-activity-bars', 'portal-activity-feed', 'portal-top-exams', 'portal-top-users'].forEach(id => {
+  ['portal-student-users', 'portal-premium-products-admin', 'portal-free-curation', 'portal-activity-bars', 'portal-activity-feed', 'portal-top-exams', 'portal-top-users'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '<div class="empty" style="padding:16px">Chưa tải được dữ liệu student portal. Kiểm tra migration 065 và quyền đọc student_exam_activity.</div>';
   });
@@ -21112,7 +21108,6 @@ function renderPortalAnalytics() {
   renderPortalStudentUsers(rows);
   renderPortalPremiumAdmin();
   renderPortalFreeCuration(exams);
-  renderPortalAccessAudit();
   renderPortalTopExams(rows, exams, examById);
   renderPortalTopUsers(rows, examById);
 }
