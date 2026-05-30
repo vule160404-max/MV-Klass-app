@@ -17041,7 +17041,7 @@ function studentExamLockedMessage(row) {
   const reason = String(row?.locked_reason || '').trim();
   if (reason === 'pending_approval') return 'Tài khoản đang chờ duyệt.';
   if (reason === 'account_blocked') return 'Tài khoản đang bị khóa quyền truy cập kho tài liệu.';
-  if (reason === 'premium_required') return 'Tài liệu này cần gói Premium đúng nhóm. Em bấm Đăng ký Premium để mua gói tài liệu phù hợp.';
+  if (reason === 'premium_required') return 'Tài liệu này cần đăng ký gói Premium để sử dụng.';
   if (reason === 'free_limit') return 'Tài liệu này nằm ngoài danh sách miễn phí. Em bấm Đăng ký Premium để mua và mở khóa nhóm đề tương ứng.';
   return 'Tài liệu này hiện chưa mở cho tài khoản của em.';
 }
@@ -17539,7 +17539,7 @@ async function toggleStudentExamFavorite(id) {
   const row = studentExamFind(id);
   if (!row) return;
   if (!studentExamCanAccess(row)) {
-    showAppToast('Tài liệu này cần tài khoản Premium.', 'warn');
+    showAppToast('Tài liệu này cần đăng ký gói Premium để sử dụng.', 'warn');
     return;
   }
   const examId = String(row.id || '').trim();
@@ -18174,7 +18174,7 @@ async function openStudentExamPreview(id, kind) {
     return;
   }
   if (!studentExamCanAccess(row)) {
-    showAppToast('Tài liệu này cần tài khoản Premium.', 'warn');
+    showAppToast('Tài liệu này cần đăng ký gói Premium để sử dụng.', 'warn');
     return;
   }
   const modal = document.getElementById('student-exam-preview-modal');
@@ -18251,7 +18251,7 @@ async function downloadStudentExamFile(id, kind) {
     return;
   }
   if (!studentExamCanAccess(row)) {
-    showAppToast('Tài liệu này cần tài khoản Premium.', 'warn');
+    showAppToast('Tài liệu này cần đăng ký gói Premium để sử dụng.', 'warn');
     return;
   }
   let url = '';
