@@ -28884,16 +28884,16 @@ function openBankTransactionInspectModal(row) {
   if (inspectStatusLower === 'applied') {
     manual =
       '<div class="bank-tx-inspect-manual" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(15,23,42,.1)">' +
-      '<div class="analytics-muted" style="font-size:12px;margin-bottom:8px;line-height:1.45">Giao dịch đã được auto đối soát. Nếu match sai, chọn <strong>Chưa nhận tiền / hoàn tác</strong> để gỡ phần học phí đã ghi, sau đó đối soát lại đúng học viên.</div>' +
+      '<div class="analytics-muted" style="font-size:12px;margin-bottom:8px;line-height:1.45">Giao dịch đã được tự động đối soát. Nếu thực tế chưa nhận tiền hoặc match sai, hãy đánh dấu chưa nhận để hoàn tác phần học phí đã ghi.</div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">' +
       '<button type="button" class="btn-sm" data-bank-inspect-confirm-not="' +
       escapeHtml(String(row.id)) +
-      '">Chưa nhận tiền / hoàn tác</button>' +
+      '">Đánh dấu chưa nhận</button>' +
       '</div></div>';
   } else {
     manual =
       '<div class="bank-tx-inspect-manual" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(15,23,42,.1)">' +
-      '<div class="analytics-muted" style="font-size:12px;margin-bottom:8px;line-height:1.45">Đối chiếu sổ ngân hàng: <strong>Đã nhận tiền</strong> sẽ mở bước tìm/chọn học viên và cập nhật học phí liên quan. <strong>Chưa nhận tiền</strong> chỉ ghi nhận trạng thái.</div>' +
+      '<div class="analytics-muted" style="font-size:12px;margin-bottom:8px;line-height:1.45">Đối chiếu sổ ngân hàng: <strong>Đã nhận tiền</strong> sẽ mở bước tìm/chọn học viên và cập nhật học phí. <strong>Chưa nhận tiền</strong> chỉ đổi trạng thái giao dịch, không ghi học phí.</div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">' +
       '<button type="button" class="btn-save btn-sm" data-bank-inspect-confirm-received="' +
       escapeHtml(String(row.id)) +
@@ -29607,13 +29607,17 @@ async function manualConfirmBankTransaction(txId, received) {
   closeBankTransactionInspectModal();
   const row = (bankTxRowsCache || []).find(x => Number(x.id) === id);
   const hadPayment = row && row.appliedSessions && row.appliedSessions > 0 && row.studentName;
+  const studentName = row && row.studentName ? String(row.studentName) : 'học sinh';
+  const appliedSummary = row
+    ? `${row.appliedSessions || 0} buổi · ${formatVnd(row.appliedAmountVnd || row.amountVnd || 0)}`
+    : '';
   const confirmMsg = hadPayment
-    ? `Xác nh?n chua nh?n du?c ti?n t? giao d?ch #${id}?\n\nLuu ý: h?c phí dã ghi cho "${row.studentName}" (${row.appliedSessions} bu?i · ${formatVnd(row.appliedAmountVnd || row.amountVnd || 0)}) s? b? hoàn tác.`
-    : `Xác nh?n chua nh?n du?c ti?n t? giao d?ch #${id}?`;
+    ? `Giao dịch #${id} sẽ được chuyển sang trạng thái Chưa nhận tiền.\n\nHệ thống sẽ hoàn tác học phí đã ghi cho ${studentName}: ${appliedSummary}.`
+    : `Giao dịch #${id} sẽ được chuyển sang trạng thái Chưa nhận tiền.\n\nHệ thống sẽ không ghi học phí cho giao dịch này.`;
   const ok = await confirmApp(confirmMsg, {
-    title: 'Chua nh?n ti?n',
-    okLabel: 'Xác nh?n',
-    cancelLabel: 'H?y'
+    title: 'Đánh dấu chưa nhận tiền',
+    okLabel: 'Đánh dấu',
+    cancelLabel: 'Hủy'
   });
   if (!ok) return;
   const rowStatus = String((row && row.status) || '').toLowerCase();
@@ -29649,12 +29653,12 @@ async function manualConfirmBankTransaction(txId, received) {
     let detail = '';
     if (j && typeof j === 'object') detail = String(j.reason || j.error || j.message || '').trim();
     if (!detail) detail = String(text || '').trim().slice(0, 220);
-    showAppToast('Không luu du?c xác nh?n.' + (detail ? ' (' + detail + ')' : ''));
+    showAppToast('Không lưu được xác nhận.' + (detail ? ' (' + detail + ')' : ''));
     return;
   }
   showAppToast(hadPayment
-    ? `Ðã ghi nh?n chua nh?n ti?n. H?c phí c?a "${row.studentName}" dã du?c hoàn tác.`
-    : 'Ðã ghi nh?n: chua nh?n ti?n.');
+    ? `Đã đánh dấu chưa nhận tiền. Học phí của "${row.studentName}" đã được hoàn tác.`
+    : 'Đã đánh dấu giao dịch là chưa nhận tiền.');
   await Promise.all([
     loadBankTransactions(true),
     loadRevenue()
