@@ -18112,6 +18112,12 @@ function studentExamOverviewSourceList(item) {
   });
 }
 
+function studentExamOverviewSourceDisplayLabel(label) {
+  const raw = String(label || '').trim();
+  if (!raw) return 'Tổng hợp';
+  return studentExamIsKnownProvince(raw) ? 'Sở ' + studentExamDisplayProvince(raw) : raw;
+}
+
 function buildStudentExamDataOverview(rows) {
   const groups = portalFreeGroups().map(emptyStudentExamOverviewRow);
   const byGroup = new Map(groups.map(g => [g.key, g]));
@@ -18149,7 +18155,7 @@ function renderStudentExamDataOverview() {
   const columns = overview.groups.map(group => {
     const columnLabel = group.key === 'entrance_10' ? 'Vào 10' : group.label;
     const sourceRows = studentExamOverviewSourceList(group).map(source => `<div class="student-exam-data-source-row">
-      <span class="student-exam-data-source-name"><b>Nguồn:</b> ${escapeHtml(source.label)}</span>
+      <span class="student-exam-data-source-name"><b>Nguồn:</b> ${escapeHtml(studentExamOverviewSourceDisplayLabel(source.label))}</span>
       <span class="student-exam-data-source-count">${formatStudentExamStat(source.total)} đề</span>
     </div>`).join('') || '<div class="student-exam-data-empty">Chưa có dữ liệu nguồn</div>';
     return `<div class="student-exam-data-column">
