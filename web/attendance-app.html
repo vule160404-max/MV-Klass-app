@@ -5493,6 +5493,22 @@
       position: relative;
       z-index: 1;
     }
+    .login-portal-eyebrow{
+      display: none;
+      align-items: center;
+      width: fit-content;
+      min-height: 30px;
+      padding: 5px 10px;
+      margin: 0 0 12px;
+      border-radius: 999px;
+      background: rgba(29, 78, 216, 0.10);
+      border: 1px solid rgba(29, 78, 216, 0.16);
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
     .login-mode-tabs{
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -5584,6 +5600,9 @@
       text-align: center;
       line-height: 1.35;
     }
+    .login-portal-preview{
+      display: none;
+    }
     .login-back-landing{
       margin: 18px 0 0;
       text-align: center;
@@ -5604,6 +5623,136 @@
     .login-back-landing a:hover{
       color: #fdd87a;
       border-bottom-color: rgba(253, 216, 122, 0.75);
+    }
+    .login-only-entry .login-screen::before{
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 100%),
+        radial-gradient(ellipse 62% 44% at 80% 18%, rgba(22,163,74,0.20) 0%, transparent 58%),
+        radial-gradient(ellipse 54% 62% at 12% 88%, rgba(79,142,247,0.30) 0%, transparent 64%),
+        linear-gradient(145deg, #07172f 0%, #102c57 48%, #111827 100%);
+      background-size: 32px 32px, auto, auto, auto;
+    }
+    .login-only-entry .login-page{
+      max-width: min(920px, calc(100vw - 40px));
+    }
+    .login-only-entry .login-screen .login-card.card{
+      width: 100%;
+      max-width: 920px;
+      padding: 28px;
+      background:
+        linear-gradient(130deg, rgba(255,255,255,.98) 0%, rgba(247,250,255,.98) 58%, rgba(239,246,255,.96) 100%);
+    }
+    .login-only-entry .login-card-layout{
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 290px);
+      gap: 28px;
+    }
+    .login-only-entry .login-portal-eyebrow{
+      display: inline-flex;
+    }
+    .login-only-entry .login-card-title{
+      max-width: 520px;
+      font-size: clamp(34px, 4.8vw, 50px);
+    }
+    .login-only-entry .login-card-lead{
+      max-width: 520px;
+      margin-bottom: 20px;
+      color: #52637f;
+    }
+    .login-only-entry .login-mode-tabs{
+      background: rgba(15,31,61,.055);
+      border-color: rgba(79,142,247,.15);
+    }
+    .login-only-entry .login-screen .login-card .btn-save{
+      background: linear-gradient(180deg, #1f4fa3 0%, #12336d 100%);
+      color: #fff;
+      box-shadow: 0 16px 34px rgba(18,51,109,.28), 0 2px 0 rgba(255,255,255,.18) inset;
+    }
+    .login-only-entry .login-screen .login-card .btn-save:hover{
+      background: linear-gradient(180deg, #2a66c8 0%, #17427f 100%);
+      box-shadow: 0 18px 38px rgba(18,51,109,.34), 0 2px 0 rgba(255,255,255,.22) inset;
+    }
+    .login-only-entry .login-brand{
+      gap: 16px;
+      min-width: 0;
+      align-self: stretch;
+    }
+    .login-only-entry .login-brand-logo{
+      width: 122px;
+      height: 122px;
+      border-radius: 22px;
+      box-shadow: 0 18px 38px rgba(15,31,61,.14), 0 0 0 8px rgba(79,142,247,.08);
+    }
+    .login-only-entry .login-portal-preview{
+      width: 100%;
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #0f1f3d, #142b56);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 22px 42px rgba(15,31,61,.18);
+      color: #fff;
+    }
+    .login-portal-preview-head{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(255,255,255,.86);
+    }
+    .login-portal-preview-mark{
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 30px;
+      border-radius: 10px;
+      background: #f4a71d;
+      color: #0f1f3d;
+      font-size: 11px;
+      font-weight: 950;
+    }
+    .login-portal-preview-list{
+      display: grid;
+      gap: 8px;
+    }
+    .login-portal-preview-row{
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      padding: 9px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .login-portal-preview-icon{
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,.12);
+      color: #fdd87a;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .login-portal-preview-text{
+      min-width: 0;
+    }
+    .login-portal-preview-text strong{
+      display: block;
+      color: #fff;
+      font-size: 12.5px;
+      line-height: 1.25;
+    }
+    .login-portal-preview-text span{
+      display: block;
+      margin-top: 2px;
+      color: rgba(255,255,255,.66);
+      font-size: 11px;
+      line-height: 1.25;
     }
     @keyframes loginPageRise{
       from{ opacity: 0; transform: translateY(18px) scale(.985); }
@@ -5637,6 +5786,17 @@
       .login-card-lead{ text-align: center; margin-left: auto; margin-right: auto; }
       .login-card-main form{ max-width: none; }
       .login-screen .login-card .btn-save{ width: 100%; }
+      .login-only-entry .login-screen .login-card.card{ width: 100%; max-width: 100%; padding: 20px 16px 22px; }
+      .login-only-entry .login-card-layout{ grid-template-columns: 1fr; gap: 16px; }
+      .login-only-entry .login-portal-eyebrow{ margin-left: auto; margin-right: auto; }
+      .login-only-entry .login-brand{ order: -1; gap: 10px; }
+      .login-only-entry .login-brand-logo{ width: 96px; height: 96px; border-radius: 18px; }
+      .login-only-entry .login-card-title{ max-width: 100%; font-size: clamp(28px, 9vw, 34px); text-align: center; }
+      .login-only-entry .login-card-lead{ max-width: 100%; text-align: center; }
+      .login-only-entry .login-portal-preview{ padding: 10px; border-radius: 18px; }
+      .login-only-entry .login-portal-preview-list{ grid-template-columns: 1fr; gap: 6px; }
+      .login-portal-preview-row{ grid-template-columns: 30px minmax(0, 1fr); padding: 7px; }
+      .login-portal-preview-icon{ width: 30px; height: 30px; border-radius: 10px; font-size: 11px; }
     }
     .module-choice-screen{
       min-height: 100vh;
@@ -9875,6 +10035,7 @@ a:focus-visible,
     <div class="login-card card">
       <div class="login-card-layout">
         <div class="login-card-main">
+          <div class="login-portal-eyebrow">Kho tài liệu học sinh</div>
           <h1 class="login-card-title" id="login-app-title">Đăng nhập</h1>
           <p class="login-card-lead">Phần mềm quản lí trung tâm thông minh.</p>
           <div class="login-mode-tabs" role="tablist" aria-label="Chọn chế độ đăng nhập">
@@ -9925,6 +10086,26 @@ a:focus-visible,
           <div class="login-brand-logo">
             <img id="login-brand-img" src="./assets/brand/Center-logo.png" alt="Logo trung tâm" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"/>
             <div id="login-brand-fallback" class="brand-logo-fallback" style="display:none">LOGO<br/>TRUNG TÂM</div>
+          </div>
+          <div class="login-portal-preview" aria-hidden="true">
+            <div class="login-portal-preview-head">
+              <span>Thư viện học tập</span>
+              <span class="login-portal-preview-mark">PDF</span>
+            </div>
+            <div class="login-portal-preview-list">
+              <div class="login-portal-preview-row">
+                <span class="login-portal-preview-icon">Đề</span>
+                <span class="login-portal-preview-text"><strong>Đề thi chọn lọc</strong><span>Vào 10, THPT QG, IELTS</span></span>
+              </div>
+              <div class="login-portal-preview-row">
+                <span class="login-portal-preview-icon">ĐA</span>
+                <span class="login-portal-preview-text"><strong>Đáp án & lời giải</strong><span>Theo từng tài liệu luyện tập</span></span>
+              </div>
+              <div class="login-portal-preview-row">
+                <span class="login-portal-preview-icon">A</span>
+                <span class="login-portal-preview-text"><strong>Audio luyện nghe</strong><span>Mở cùng đề có file nghe</span></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -15365,6 +15546,31 @@ function syncDocumentIconsWithTenantLogo() {
   }
 }
 
+function updatePortalLoginCopy(mode) {
+  if (!document.documentElement.classList.contains('login-only-entry')) return false;
+  const next = mode === 'register' ? 'register' : 'login';
+  const title = document.getElementById('login-app-title');
+  const lead = document.querySelector('.login-card-lead');
+  const loginTab = document.getElementById('login-mode-login');
+  const registerTab = document.getElementById('login-mode-register');
+  const submit = document.querySelector('#login-form button[type="submit"]');
+  const registerNote = document.querySelector('#login-form .login-register-fields .analytics-muted');
+
+  if (title) title.textContent = next === 'register' ? 'Tạo tài khoản tài liệu' : 'Kho tài liệu MV Klass';
+  if (lead) {
+    lead.textContent = next === 'register'
+      ? 'Chọn chương trình học để hệ thống mở đúng nhóm đề thi, đáp án và audio luyện tập.'
+      : 'Đăng nhập để mở đề thi, đáp án, audio và tài liệu luyện tập theo chương trình của em.';
+  }
+  if (loginTab) loginTab.textContent = 'Đăng nhập';
+  if (registerTab) registerTab.textContent = 'Tạo tài khoản';
+  if (submit) submit.textContent = next === 'register' ? 'Tạo tài khoản' : 'Vào kho tài liệu';
+  if (registerNote) {
+    registerNote.textContent = 'Sau khi xác nhận email, em có thể vào kho tài liệu miễn phí theo chương trình đã chọn.';
+  }
+  return true;
+}
+
 function applyTenantConfig() {
   document.title = tenantDisplay.appName || document.title;
   const loginTitle = document.getElementById('login-app-title');
@@ -15398,6 +15604,7 @@ function applyTenantConfig() {
     authLoadingLogo.src = url;
   }
   syncDocumentIconsWithTenantLogo();
+  updatePortalLoginCopy(document.getElementById('login-screen')?.dataset.authMode || 'login');
 }
 
 async function loadSupabaseConfig() {
@@ -18506,10 +18713,12 @@ function setLoginAuthMode(mode) {
   const registerTab = document.getElementById('login-mode-register');
   if (loginTab) loginTab.classList.toggle('active', next === 'login');
   if (registerTab) registerTab.classList.toggle('active', next === 'register');
-  const title = document.getElementById('login-app-title');
-  if (title) title.textContent = next === 'register' ? 'Đăng ký học sinh' : 'Đăng nhập';
-  const submit = document.querySelector('#login-form button[type="submit"]');
-  if (submit) submit.textContent = next === 'register' ? 'Tạo tài khoản học sinh' : 'Đăng nhập';
+  if (!updatePortalLoginCopy(next)) {
+    const title = document.getElementById('login-app-title');
+    if (title) title.textContent = next === 'register' ? 'Đăng ký học sinh' : 'Đăng nhập';
+    const submit = document.querySelector('#login-form button[type="submit"]');
+    if (submit) submit.textContent = next === 'register' ? 'Tạo tài khoản học sinh' : 'Đăng nhập';
+  }
   const password = document.getElementById('login-password');
   if (password) password.autocomplete = next === 'register' ? 'new-password' : 'current-password';
   const errEl = document.getElementById('login-error');
