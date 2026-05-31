@@ -4139,21 +4139,21 @@
     .portal-premium-compact .portal-premium-summary .portal-user-chip{ min-height:28px; justify-content:space-between; border-radius:10px; padding:4px 8px; }
     .portal-premium-compact .portal-premium-summary .portal-user-chip:last-child{ grid-column:auto; }
     .portal-premium-compact .portal-premium-grid{ grid-template-columns:1fr; gap:9px; }
-    .portal-premium-compact .portal-premium-product{ display:grid; grid-template-columns:minmax(150px,.86fr) minmax(0,1.14fr); gap:8px 10px; align-items:end; padding:10px 11px 11px; border-radius:15px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 20px rgba(17,42,100,.055); }
+    .portal-premium-compact .portal-premium-product{ display:grid; grid-template-columns:minmax(0,1fr) minmax(136px,160px); gap:8px 10px; align-items:end; padding:10px 11px 11px; border-radius:15px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 20px rgba(17,42,100,.055); }
     .portal-premium-compact .portal-premium-product-head{ grid-column:1/-1; align-items:center; padding-bottom:6px; border-bottom:1px solid rgba(99,138,218,.10); }
     .portal-premium-compact .portal-premium-product-title{ font-size:12.5px; }
     .portal-premium-compact .portal-premium-product-sub{ margin-top:1px; font-size:10.5px; }
     .portal-premium-compact .portal-intensity{ min-width:auto; min-height:24px; padding:4px 8px; font-size:10.5px; }
     .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(1){ grid-column:1; }
     .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(2){ grid-column:2; }
+    .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(3){ grid-column:1/-1; }
     .portal-premium-compact .portal-premium-title-input,
     .portal-premium-compact .portal-premium-price-input{ min-height:34px; border-radius:9px; font-size:12px; }
     .portal-premium-compact .portal-premium-desc-input{ min-height:42px; max-height:48px; resize:none; overflow:auto; border-radius:9px; font-size:11.5px; line-height:1.32; padding:7px 9px; }
-    .portal-premium-compact .portal-premium-form{ grid-column:1/-1; grid-template-columns:minmax(136px,160px) minmax(126px,136px) minmax(72px,82px); justify-content:end; align-items:end; gap:8px; padding-top:4px; }
+    .portal-premium-compact .portal-premium-form{ grid-column:1/-1; grid-template-columns:minmax(126px,136px) minmax(72px,82px); justify-content:end; align-items:end; gap:8px; padding-top:4px; }
     .portal-premium-compact .portal-premium-controls{ display:contents; }
-    .portal-premium-compact .portal-premium-controls .portal-premium-field{ grid-column:1; }
-    .portal-premium-compact .portal-premium-switch{ grid-column:2; justify-self:stretch; min-width:0; width:100%; }
-    .portal-premium-compact .portal-premium-save{ grid-column:3; width:100%; }
+    .portal-premium-compact .portal-premium-switch{ grid-column:1; justify-self:stretch; min-width:0; width:100%; }
+    .portal-premium-compact .portal-premium-save{ grid-column:2; width:100%; }
     .portal-premium-compact .portal-premium-switch,
     .portal-premium-compact .portal-premium-save{ min-height:34px; border-radius:10px; }
     .portal-premium-compact .portal-premium-save{ min-width:68px; padding-left:10px; padding-right:10px; }
@@ -22347,15 +22347,15 @@ function renderPortalPremiumAdmin() {
           <input id="portal-premium-title-${escapeHtml(safe)}" class="portal-premium-title-input" type="text" value="${escapeHtml(p.title || key)}" aria-label="Tên gói ${escapeHtml(p.title || key)}"/>
         </label>
         <label class="portal-premium-field">
+          <span class="portal-premium-field-label">Giá bán</span>
+          <input id="portal-premium-price-${escapeHtml(safe)}" class="portal-premium-price-input" type="number" min="0" step="1000" value="${price}" aria-label="Giá ${escapeHtml(p.title || key)}"/>
+        </label>
+        <label class="portal-premium-field">
           <span class="portal-premium-field-label">Mô tả</span>
           <textarea id="portal-premium-desc-${escapeHtml(safe)}" class="portal-premium-desc-input" aria-label="Mô tả ${escapeHtml(p.title || key)}">${escapeHtml(p.description || '')}</textarea>
         </label>
         <div class="portal-premium-form">
           <div class="portal-premium-controls">
-            <label class="portal-premium-field">
-              <span class="portal-premium-field-label">Giá bán</span>
-              <input id="portal-premium-price-${escapeHtml(safe)}" class="portal-premium-price-input" type="number" min="0" step="1000" value="${price}" aria-label="Giá ${escapeHtml(p.title || key)}"/>
-            </label>
             <label class="portal-premium-switch">
               <input id="portal-premium-active-${escapeHtml(safe)}" type="checkbox" ${p.is_active ? 'checked' : ''}/>
               <span class="portal-premium-switch-track" aria-hidden="true"></span>
