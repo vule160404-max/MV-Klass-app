@@ -4207,7 +4207,7 @@
     .portal-exam-manager-sub{ margin-top:4px; color:#72809b; font-size:11.5px; font-weight:760; line-height:1.4; }
     .portal-exam-manager-close{ width:34px; height:34px; min-height:34px; padding:0; border-radius:8px; display:grid; place-items:center; font-size:20px; line-height:1; font-weight:900; color:#64748b; background:#fff; }
     .portal-exam-manager-close:hover{ color:#0f1f3d; border-color:rgba(15,31,61,.24); }
-    .portal-exam-manager-toolbar{ display:grid; grid-template-columns:minmax(260px,1fr) 150px 140px 150px auto; gap:8px; padding:12px 18px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
+    .portal-exam-manager-toolbar{ display:grid; grid-template-columns:minmax(260px,1fr) 180px 150px auto; gap:8px; padding:12px 18px; border-bottom:1px solid rgba(99,138,218,.10); background:#fff; }
     .portal-exam-manager-toolbar input,.portal-exam-manager-toolbar select{ min-width:0; width:100%; min-height:36px; border-radius:8px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
     .portal-exam-manager-toolbar .btn-sm{ min-height:36px; white-space:nowrap; }
     .portal-exam-manager-bulk{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 18px; border-bottom:1px solid rgba(99,138,218,.10); background:#f8fbff; }
@@ -10827,16 +10827,8 @@ button[data-bank-inspect-confirm-not]:hover,
             </div>
             <div class="portal-exam-manager-toolbar">
               <input type="search" id="portal-exam-manager-search" name="mvk_portal_exam_manager_search" placeholder="Tìm theo tên, mã đề, tỉnh/thành, đường dẫn..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" oninput="onPortalExamManagerSearch(this.value)"/>
-              <select id="portal-exam-manager-provider" onchange="onPortalExamManagerProvider(this.value)">
-                <option value="all">Mọi nguồn</option>
-                <option value="r2">R2</option>
-                <option value="supabase">Supabase</option>
-                <option value="url">URL cũ</option>
-              </select>
-              <select id="portal-exam-manager-status" onchange="onPortalExamManagerStatus(this.value)">
-                <option value="all">Mọi trạng thái</option>
-                <option value="published">Đang hiện</option>
-                <option value="hidden">Đang ẩn</option>
+              <select id="portal-exam-manager-source" onchange="onPortalExamManagerSource(this.value)">
+                <option value="all">Mọi nguồn đề</option>
               </select>
               <select id="portal-exam-manager-level" onchange="onPortalExamManagerLevel(this.value)">
                 <option value="all">Mọi chương trình</option>
@@ -19730,8 +19722,7 @@ let portalExamManagerSelectedIds = new Set();
 let portalExamManagerBulkDeleting = false;
 let portalExamManagerBulkProgress = { done: 0, total: 0 };
 let portalExamManagerQuery = '';
-let portalExamManagerProvider = 'all';
-let portalExamManagerStatus = 'all';
+let portalExamManagerSource = 'all';
 let portalExamManagerLevel = 'all';
 let portalExamPreviewUrl = '';
 let portalExamPreviewLabel = '';
@@ -21440,13 +21431,8 @@ function onPortalExamManagerSearch(value) {
   renderPortalExamManager();
 }
 
-function onPortalExamManagerProvider(value) {
-  portalExamManagerProvider = ['all', 'r2', 'supabase', 'url'].includes(String(value || '')) ? String(value) : 'all';
-  renderPortalExamManager();
-}
-
-function onPortalExamManagerStatus(value) {
-  portalExamManagerStatus = ['all', 'published', 'hidden'].includes(String(value || '')) ? String(value) : 'all';
+function onPortalExamManagerSource(value) {
+  portalExamManagerSource = String(value || 'all') || 'all';
   renderPortalExamManager();
 }
 
@@ -21494,12 +21480,37 @@ function portalExamManagerMatchesLevel(row) {
   return portalExamGroupKey(row) === portalExamManagerLevel;
 }
 
+function renderPortalExamManagerSourceOptions() {
+  const el = document.getElementById('portal-exam-manager-source');
+  if (!el) return;
+  const sources = Array.from(new Map(portalExamManagerExamRows(portalExamManagerRows)
+    .map(row => {
+      const label = studentExamSourceLabel(row);
+      const key = studentExamSourceKey(row);
+      return label && key ? [key, label] : null;
+    })
+    .filter(Boolean))
+    .entries())
+    .sort((a, b) => {
+      const ar = studentExamProvinceSourceSortRank(a[1]);
+      const br = studentExamProvinceSourceSortRank(b[1]);
+      const ap = Number.isFinite(ar);
+      const bp = Number.isFinite(br);
+      if (ap !== bp) return ap ? -1 : 1;
+      if (ap && ar !== br) return ar - br;
+      return a[1].localeCompare(b[1], 'vi', { sensitivity: 'base', numeric: true });
+    });
+  const current = portalExamManagerSource || 'all';
+  el.innerHTML = '<option value="all">Mọi nguồn đề</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
+  portalExamManagerSource = sources.some(([key]) => key === current) ? current : 'all';
+  el.value = portalExamManagerSource;
+}
+
 function portalExamManagerFilteredRows() {
   const q = normalizeText(portalExamManagerQuery).toLowerCase().trim();
   const rows = portalExamManagerExamRows(portalExamManagerRows);
   return rows
-    .filter(row => portalExamManagerProvider === 'all' || portalExamManagerProviderKey(row) === portalExamManagerProvider)
-    .filter(row => portalExamManagerStatus === 'all' || (portalExamManagerStatus === 'published' ? row?.is_published !== false : row?.is_published === false))
+    .filter(row => portalExamManagerSource === 'all' || studentExamSourceKey(row) === portalExamManagerSource)
     .filter(row => portalExamManagerMatchesLevel(row))
     .filter(row => {
       if (!q) return true;
@@ -21542,6 +21553,7 @@ function renderPortalExamManager() {
   const list = document.getElementById('portal-exam-manager-list');
   const summary = document.getElementById('portal-exam-manager-summary');
   if (!list) return;
+  renderPortalExamManagerSourceOptions();
   if (portalExamManagerLoading) {
     renderPortalExamManagerBulk([]);
     list.innerHTML = '<div class="portal-exam-manager-loading"><span>Đang tải kho tài liệu...</span></div>';
