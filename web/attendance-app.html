@@ -21214,6 +21214,10 @@ function portalExamManagerSelectableRows(rows) {
   return (Array.isArray(rows) ? rows : []).filter(row => !portalExamManagerIsAnswerRow(row));
 }
 
+function portalExamManagerExamRows(rows) {
+  return (Array.isArray(rows) ? rows : []).filter(row => !portalExamManagerIsAnswerRow(row));
+}
+
 function portalExamManagerPruneSelection() {
   const validIds = new Set(portalExamManagerSelectableRows(portalExamManagerRows).map(portalExamManagerRowId).filter(Boolean));
   portalExamManagerSelectedIds.forEach(id => {
@@ -21492,7 +21496,7 @@ function portalExamManagerMatchesLevel(row) {
 
 function portalExamManagerFilteredRows() {
   const q = normalizeText(portalExamManagerQuery).toLowerCase().trim();
-  const rows = Array.isArray(portalExamManagerRows) ? portalExamManagerRows.slice() : [];
+  const rows = portalExamManagerExamRows(portalExamManagerRows);
   return rows
     .filter(row => portalExamManagerProvider === 'all' || portalExamManagerProviderKey(row) === portalExamManagerProvider)
     .filter(row => portalExamManagerStatus === 'all' || (portalExamManagerStatus === 'published' ? row?.is_published !== false : row?.is_published === false))
@@ -21520,11 +21524,9 @@ function portalExamManagerFilteredRows() {
       return hay.includes(q);
     })
     .sort((a, b) => {
-      const pub = Number(b?.is_published !== false) - Number(a?.is_published !== false);
-      if (pub) return pub;
-      const at = Date.parse(a?.created_at || '') || 0;
-      const bt = Date.parse(b?.created_at || '') || 0;
-      return bt - at || portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi');
+      const code = studentExamCompareByYearCode(a, b);
+      if (code) return code;
+      return portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi', { numeric: true });
     });
 }
 
@@ -21551,12 +21553,10 @@ function renderPortalExamManager() {
     return;
   }
   const rows = portalExamManagerFilteredRows();
-  const total = portalExamManagerRows.length;
-  const r2Count = portalExamManagerRows.filter(row => portalExamManagerProviderKey(row) === 'r2').length;
-  const hiddenCount = portalExamManagerRows.filter(row => row?.is_published === false).length;
+  const total = portalExamManagerExamRows(portalExamManagerRows).length;
   if (summary) {
     const syncedAt = portalExamManagerLoadedAt ? new Date(portalExamManagerLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'chưa tải';
-    summary.textContent = `${rows.length}/${total} tài liệu phù hợp bộ lọc · ${r2Count} R2 · ${hiddenCount} đang ẩn · cập nhật ${syncedAt}.`;
+    summary.textContent = `${rows.length}/${total} đề phù hợp bộ lọc · cập nhật ${syncedAt}.`;
   }
   if (!total) {
     renderPortalExamManagerBulk([]);
