@@ -6137,7 +6137,7 @@
     .student-exam-filter-toggle::after{content:"+";display:inline-grid;place-items:center;width:20px;height:20px;margin-left:8px;border-radius:999px;background:rgba(255,255,255,.14);font-size:14px;line-height:1}
     .student-exam-filter-toggle[aria-expanded="true"]{background:linear-gradient(180deg,#ffd66f,#f4a71d);color:#14213d;border-color:rgba(244,167,29,.55);box-shadow:0 12px 24px rgba(244,167,29,.20)}
     .student-exam-filter-toggle[aria-expanded="true"]::after{content:"-";background:rgba(20,33,61,.10)}
-    .student-exam-filter-advanced{display:none;margin-top:12px;padding:13px;border-radius:18px;background:#f8fbff;border:1px solid rgba(79,142,247,.14);grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+    .student-exam-filter-advanced{display:none;margin-top:12px;padding:13px;border-radius:18px;background:#f8fbff;border:1px solid rgba(79,142,247,.14);grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
     .student-exam-filter-advanced.open{display:grid}
     .student-exam-filter-group-title{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 2px;color:#12213d;font-size:13px;font-weight:950}
     .student-exam-filter-group-title small{color:#66748d;font-size:11px;font-weight:800;text-align:right}
@@ -12089,7 +12089,7 @@ button[data-bank-inspect-confirm-not]:hover,
       </div>
       <label class="student-exam-search-wrap" for="student-exam-search">
         <span>Tìm nhanh</span>
-        <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Mã đề, tên đề, tỉnh/thành, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
+        <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Mã đề, tên đề, nguồn, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
       </label>
       <div class="student-exam-filter-grid">
         <div class="student-exam-filter-main">
@@ -12115,7 +12115,7 @@ button[data-bank-inspect-confirm-not]:hover,
         <div class="student-exam-filter-advanced" id="student-exam-advanced-filters">
           <div class="student-exam-filter-group-title">
             <span>Lọc chi tiết</span>
-            <small>Năm, tỉnh/thành, nguồn và thứ tự hiển thị</small>
+            <small>Năm, nguồn và thứ tự hiển thị</small>
           </div>
           <label class="student-exam-filter-field" for="student-exam-saved-filter">
             <span>Đã lưu</span>
@@ -12128,12 +12128,6 @@ button[data-bank-inspect-confirm-not]:hover,
             <span>Năm</span>
             <select id="student-exam-year" aria-label="Lọc năm">
               <option value="all">Tất cả năm</option>
-            </select>
-          </label>
-          <label class="student-exam-filter-field" for="student-exam-province">
-            <span>Tỉnh/thành</span>
-            <select id="student-exam-province" aria-label="Lọc tỉnh thành">
-              <option value="all">Tất cả tỉnh/thành</option>
             </select>
           </label>
           <label class="student-exam-filter-field" for="student-exam-source">
@@ -18234,7 +18228,6 @@ function studentExamCard(row, compact) {
 
 function renderStudentExamSelectOptions() {
   const years = Array.from(new Set(studentExamRows.map(r => r.year).filter(Boolean))).sort((a, b) => Number(b) - Number(a));
-  const provinces = Array.from(new Set(studentExamRows.map(r => String(r.province || '').trim()).filter(p => p && studentExamIsKnownProvince(p)))).sort((a, b) => a.localeCompare(b, 'vi'));
   const sources = Array.from(new Map(studentExamRows
     .map(row => {
       const label = studentExamSourceLabel(row);
@@ -18245,17 +18238,11 @@ function renderStudentExamSelectOptions() {
     .entries())
     .sort((a, b) => a[1].localeCompare(b[1], 'vi'));
   const yearEl = document.getElementById('student-exam-year');
-  const provinceEl = document.getElementById('student-exam-province');
   const sourceEl = document.getElementById('student-exam-source');
   if (yearEl) {
     const cur = yearEl.value || 'all';
     yearEl.innerHTML = '<option value="all">Tất cả năm</option>' + years.map(y => `<option value="${escapeHtml(String(y))}">${escapeHtml(String(y))}</option>`).join('');
     yearEl.value = years.map(String).includes(cur) ? cur : 'all';
-  }
-  if (provinceEl) {
-    const cur = provinceEl.value || 'all';
-    provinceEl.innerHTML = '<option value="all">Tất cả tỉnh/thành</option>' + provinces.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(studentExamDisplayProvince(p))}</option>`).join('');
-    provinceEl.value = provinces.includes(cur) ? cur : 'all';
   }
   if (sourceEl) {
     const cur = sourceEl.value || 'all';
@@ -18271,7 +18258,6 @@ function getStudentExamFilters() {
     type: String(document.getElementById('student-exam-type')?.value || 'all'),
     saved: String(document.getElementById('student-exam-saved-filter')?.value || 'all'),
     year: String(document.getElementById('student-exam-year')?.value || 'all'),
-    province: String(document.getElementById('student-exam-province')?.value || 'all'),
     source: String(document.getElementById('student-exam-source')?.value || 'all'),
     sort: String(document.getElementById('student-exam-sort')?.value || 'code')
   };
@@ -18288,7 +18274,6 @@ function applyStudentExamFilters(options) {
     if (f.type === 'mock' && studentExamIsOfficial(row)) return false;
     if (f.saved === 'saved' && !studentExamIsFavorite(row)) return false;
     if (f.year !== 'all' && String(row.year || '') !== f.year) return false;
-    if (f.province !== 'all' && String(row.province || '') !== f.province) return false;
     if (f.source !== 'all' && studentExamSourceKey(row) !== f.source) return false;
     if (f.q) {
       const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, studentExamSourceLabel(row), row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category), studentExamTypeLabel(row)]
@@ -18528,7 +18513,6 @@ function resetStudentExamFilters() {
     'student-exam-type': 'all',
     'student-exam-saved-filter': 'all',
     'student-exam-year': 'all',
-    'student-exam-province': 'all',
     'student-exam-source': 'all',
     'student-exam-sort': 'code'
   };
@@ -18597,7 +18581,7 @@ async function loadStudentExamFiles() {
 }
 
 function bindStudentExamPortalEvents() {
-  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-saved-filter', 'student-exam-year', 'student-exam-province', 'student-exam-source', 'student-exam-sort'];
+  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-saved-filter', 'student-exam-year', 'student-exam-source', 'student-exam-sort'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.dataset.bound === '1') return;
