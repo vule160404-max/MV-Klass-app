@@ -17984,6 +17984,21 @@ function studentExamSourceKey(row) {
   return studentExamSourceKeyFromLabel(studentExamSourceLabel(row));
 }
 
+function studentExamCompareSourceOrder(a, b) {
+  const la = studentExamSourceLabel(a);
+  const lb = studentExamSourceLabel(b);
+  const ka = studentExamSourceKeyFromLabel(la);
+  const kb = studentExamSourceKeyFromLabel(lb);
+  if (ka === kb) return 0;
+  const ra = studentExamProvinceSourceSortRank(la);
+  const rb = studentExamProvinceSourceSortRank(lb);
+  const ap = Number.isFinite(ra);
+  const bp = Number.isFinite(rb);
+  if (ap !== bp) return ap ? -1 : 1;
+  if (ap && ra !== rb) return ra - rb;
+  return String(la || '').localeCompare(String(lb || ''), 'vi', { sensitivity: 'base', numeric: true });
+}
+
 function studentExamIsProvinceSourceLabel(label) {
   const raw = String(label || '').replace(/^sở\s+/i, '').trim();
   return Number.isFinite(studentExamProvinceSourceSortRank(raw));
@@ -18153,6 +18168,9 @@ function studentExamCodeSortValue(row) {
 }
 
 function studentExamCompareByYearCode(a, b) {
+  const sc = studentExamCompareSourceOrder(a, b);
+  if (sc) return sc;
+
   const sa = studentExamCodeSortValue(a);
   const sb = studentExamCodeSortValue(b);
   if (sa !== sb) return sa - sb;
