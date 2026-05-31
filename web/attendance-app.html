@@ -4071,6 +4071,22 @@
     .portal-intensity.bad{ background:#fee2e2; color:#991b1b; }
     .portal-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
     .portal-row-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
+    #portal-premium-access-modal{ z-index:2004; }
+    #portal-premium-access-modal .modal{ max-width:680px; }
+    .portal-premium-access-head{ display:grid; gap:5px; margin-bottom:12px; }
+    .portal-premium-access-title{ color:#102858; font-size:17px; font-weight:950; line-height:1.2; }
+    .portal-premium-access-sub{ color:#72809b; font-size:12px; font-weight:750; line-height:1.45; }
+    .portal-premium-access-current{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+    .portal-premium-access-note{ margin:0 0 12px; padding:10px 12px; border-radius:12px; border:1px solid rgba(245,158,11,.32); background:#fff7ed; color:#92400e; font-size:12px; font-weight:800; line-height:1.45; }
+    .portal-premium-access-list{ display:grid; gap:8px; max-height:360px; overflow:auto; padding:3px; }
+    .portal-premium-access-card{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:12px; border-radius:14px; border:1px solid rgba(99,138,218,.14); background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 18px rgba(17,42,100,.055); }
+    .portal-premium-access-name{ color:#162743; font-size:13px; font-weight:950; line-height:1.25; }
+    .portal-premium-access-meta{ margin-top:3px; color:#718096; font-size:11px; font-weight:800; line-height:1.35; }
+    .portal-premium-access-actions{ display:flex; gap:7px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+    .portal-premium-access-actions .btn-sm{ min-height:34px; height:auto; }
+    .portal-premium-access-card.is-owned{ border-color:rgba(34,197,94,.26); background:linear-gradient(180deg,#fbfffd,#f0fdf4); }
+    .portal-premium-access-foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .portal-premium-access-error{ min-height:16px; color:#b91c1c; font-size:12px; font-weight:800; }
     .portal-user-shell{ display:grid; gap:10px; }
     .portal-user-tools{ display:grid; grid-template-columns:minmax(220px,1fr) repeat(2,minmax(140px,180px)); gap:8px; align-items:center; }
     .portal-user-search,.portal-user-select{ min-height:38px; border-radius:12px; border:1px solid rgba(99,138,218,.16); background:#fff; color:#263852; padding:0 11px; font-size:12px; font-weight:850; outline:none; }
@@ -12191,6 +12207,25 @@ button[data-bank-inspect-confirm-not]:hover,
   </div>
 </div>
 
+<div class="modal-backdrop" id="portal-premium-access-modal" onclick="if(event.target===this) closePortalPremiumAccessPicker()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="portal-premium-access-title">
+    <div class="portal-premium-access-head">
+      <div class="portal-premium-access-title" id="portal-premium-access-title">Chọn gói Premium</div>
+      <div class="portal-premium-access-sub" id="portal-premium-access-sub"></div>
+    </div>
+    <div class="portal-premium-access-current" id="portal-premium-access-current"></div>
+    <div id="portal-premium-access-note"></div>
+    <div class="portal-premium-access-list" id="portal-premium-access-list"></div>
+    <div class="portal-premium-access-foot">
+      <div class="portal-premium-access-error" id="portal-premium-access-error"></div>
+      <div class="portal-premium-access-actions">
+        <button type="button" class="btn-sm action-danger" id="portal-premium-access-clear" onclick="clearPortalPremiumForUser()">Tắt toàn bộ Premium</button>
+        <button type="button" class="btn-sm" onclick="closePortalPremiumAccessPicker()">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="bank-tx-inspect-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bank-tx-inspect-title">
     <div class="modal-title" id="bank-tx-inspect-title">Chi tiết giao dịch</div>
@@ -14051,6 +14086,7 @@ let adminShellBooted = false;
 let studentExamView = 'library';
 let portalPremiumProducts = [];
 let portalPremiumOrders = [];
+let portalPremiumEntitlements = [];
 let portalPremiumLoading = false;
 let portalPremiumLoaded = false;
 let portalPremiumError = '';
@@ -14076,6 +14112,7 @@ function resetPortalPremiumState() {
   if (portalPremiumReloadTimer) clearTimeout(portalPremiumReloadTimer);
   portalPremiumProducts = [];
   portalPremiumOrders = [];
+  portalPremiumEntitlements = [];
   portalPremiumLoading = false;
   portalPremiumLoaded = false;
   portalPremiumError = '';
@@ -17134,11 +17171,16 @@ function portalPremiumOwnedProductKeys() {
   if (currentPortalPlan === 'premium' || isAdmin() || isTeacher()) {
     return new Set((portalPremiumProducts || []).map(p => String(p.product_key || '')).filter(Boolean));
   }
-  const paid = (portalPremiumOrders || [])
-    .filter(o => String(o.status || '') === 'paid')
-    .map(o => String(o.product_key || ''))
+  const now = Date.now();
+  const entitled = (portalPremiumEntitlements || [])
+    .filter(e => String(e.status || '') === 'active')
+    .filter(e => {
+      const expiresAt = e.expires_at ? Date.parse(e.expires_at) : 0;
+      return !expiresAt || expiresAt > now;
+    })
+    .map(e => String(e.product_key || ''))
     .filter(Boolean);
-  return new Set(paid);
+  return new Set(entitled);
 }
 
 function portalPremiumStatusLabel(status) {
@@ -17189,12 +17231,18 @@ async function loadPortalPremiumData(force) {
   renderStudentExamPlanState();
   renderStudentPremiumView();
   try {
-    const [productsData, ordersData] = await Promise.all([
+    const uid = studentExamUserId();
+    const entitlementsPath = uid
+      ? 'portal_premium_entitlements?select=product_key,status,expires_at&user_id=eq.' + encodeURIComponent(uid) + '&status=eq.active'
+      : '';
+    const [productsData, ordersData, entitlementRows] = await Promise.all([
       callPortalPremiumCheckout('products'),
-      callPortalPremiumCheckout('orders')
+      callPortalPremiumCheckout('orders'),
+      entitlementsPath ? api('GET', entitlementsPath).catch(() => []) : Promise.resolve([])
     ]);
     portalPremiumProducts = Array.isArray(productsData.products) ? productsData.products : [];
     portalPremiumOrders = Array.isArray(ordersData.orders) ? ordersData.orders : [];
+    portalPremiumEntitlements = Array.isArray(entitlementRows) ? entitlementRows : [];
     portalPremiumLoading = false;
     portalPremiumLoaded = true;
     renderStudentPremiumView();
@@ -17228,6 +17276,10 @@ function renderStudentPremiumView() {
     paid: (portalPremiumOrders || [])
       .filter(o => String(o.status || '') === 'paid')
       .map(o => String(o.product_key || ''))
+      .sort(),
+    entitled: (portalPremiumEntitlements || [])
+      .filter(e => String(e.status || '') === 'active')
+      .map(e => String(e.product_key || ''))
       .sort()
   });
   if (productsEl && portalPremiumProductsHtmlKey !== productsKey) {
@@ -19459,6 +19511,7 @@ let _portalPremiumOrders = null;
 let _portalPremiumEntitlements = null;
 let _portalAnalyticsLoadedAt = 0;
 let lastPortalAccessChange = null;
+let portalPremiumAccessUserId = '';
 let portalFreePickerRank = null;
 let portalFreePickerQuery = '';
 let portalFreePickerLevel = '';
@@ -21624,13 +21677,207 @@ function portalActivePremiumKeysForUser(userId) {
     const key = String(e.product_key || '').trim();
     if (key) keys.add(key);
   });
-  (Array.isArray(_portalPremiumOrders) ? _portalPremiumOrders : []).forEach(o => {
-    if (String(o.user_id || '') !== uid) return;
-    if (String(o.status || '') !== 'paid') return;
-    const key = String(o.product_key || '').trim();
-    if (key) keys.add(key);
-  });
   return Array.from(keys);
+}
+
+function portalPremiumAccessArg(value) {
+  return encodeURIComponent(String(value || '')).replace(/'/g, '%27');
+}
+
+function portalPremiumAccessProducts() {
+  return (Array.isArray(_portalPremiumProducts) ? _portalPremiumProducts : [])
+    .slice()
+    .sort((a, b) => {
+      const sa = Number(a.sort_order || 0);
+      const sb = Number(b.sort_order || 0);
+      if (sa !== sb) return sa - sb;
+      return String(a.title || a.product_key || '').localeCompare(String(b.title || b.product_key || ''), 'vi', { sensitivity: 'base' });
+    });
+}
+
+function renderPortalPremiumAccessPicker() {
+  const uid = String(portalPremiumAccessUserId || '').trim();
+  const titleEl = document.getElementById('portal-premium-access-title');
+  const subEl = document.getElementById('portal-premium-access-sub');
+  const currentEl = document.getElementById('portal-premium-access-current');
+  const noteEl = document.getElementById('portal-premium-access-note');
+  const listEl = document.getElementById('portal-premium-access-list');
+  const clearBtn = document.getElementById('portal-premium-access-clear');
+  const errEl = document.getElementById('portal-premium-access-error');
+  if (!uid || !titleEl || !subEl || !currentEl || !noteEl || !listEl || !clearBtn) return;
+
+  const profile = portalProfileByUserId(uid) || {};
+  const rawPlan = String(profile.portal_plan || 'free') === 'premium' ? 'premium' : 'free';
+  const status = String(profile.portal_status || 'active');
+  const activeKeys = new Set(portalActivePremiumKeysForUser(uid));
+  const activeLabels = Array.from(activeKeys).map(portalPremiumProductTitle).filter(Boolean);
+  const products = portalPremiumAccessProducts();
+  const uidArg = portalPremiumAccessArg(uid);
+
+  titleEl.textContent = 'Chọn gói Premium';
+  subEl.textContent = portalUserLabel(uid) + ' · ' + portalUserSubLabel(uid);
+  currentEl.innerHTML = [
+    `<span class="portal-user-chip">Trạng thái <strong>${escapeHtml(portalStatusLabel(status))}</strong></span>`,
+    rawPlan === 'premium'
+      ? '<span class="portal-user-chip">Quyền hiện tại <strong>Premium toàn bộ</strong></span>'
+      : activeLabels.length
+        ? `<span class="portal-user-chip">Đang mở <strong>${escapeHtml(activeLabels.join(', '))}</strong></span>`
+        : '<span class="portal-user-chip">Đang mở <strong>Free</strong></span>'
+  ].join('');
+  noteEl.innerHTML = rawPlan === 'premium'
+    ? '<div class="portal-premium-access-note">Tài khoản này đang dùng quyền Premium toàn bộ kiểu cũ. Khi bật một gói cụ thể, hệ thống sẽ chuyển về quyền theo gói và không mở khóa toàn bộ các gói còn lại.</div>'
+    : '';
+  clearBtn.style.display = rawPlan === 'premium' || activeKeys.size ? 'inline-flex' : 'none';
+  if (errEl) errEl.textContent = '';
+
+  if (!products.length) {
+    listEl.innerHTML = '<div class="empty" style="padding:14px">Chưa có gói Premium để chọn. Kiểm tra migration 079.</div>';
+    return;
+  }
+
+  listEl.innerHTML = products.map(p => {
+    const key = String(p.product_key || '').trim();
+    const keyArg = portalPremiumAccessArg(key);
+    const title = String(p.title || key || 'Gói Premium');
+    const groupLabel = portalFreeGroupLabel(p.portal_free_group);
+    const count = Math.max(0, Number(p.exam_count || 0) || 0);
+    const price = Math.max(0, Number(p.price_vnd || 0) || 0);
+    const owned = activeKeys.has(key);
+    const active = p.is_active !== false;
+    const actionLabel = owned ? 'Tắt gói' : (rawPlan === 'premium' ? 'Chỉ bật gói này' : 'Bật gói');
+    const actionClass = owned ? 'action-danger' : 'action-premium';
+    const disabled = !owned && !active;
+    return `<div class="portal-premium-access-card ${owned ? 'is-owned' : ''}">
+      <div>
+        <div class="portal-premium-access-name">${escapeHtml(title)}</div>
+        <div class="portal-premium-access-meta">${escapeHtml(groupLabel)} · ${count} đề · ${escapeHtml(formatVnd(price))}${active ? '' : ' · Đang tắt bán'}</div>
+      </div>
+      <div class="portal-premium-access-actions">
+        <span class="portal-intensity ${owned ? 'good' : 'quiet'}">${owned ? 'Đang mở' : 'Chưa mở'}</span>
+        <button type="button" class="btn-sm ${actionClass}" onclick="setPortalPremiumPackageForUser('${uidArg}','${keyArg}',${owned ? 'false' : 'true'})" ${disabled ? 'disabled title="Gói đang tắt bán"' : ''}>${actionLabel}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openPortalPremiumAccessPicker(encodedUserId) {
+  const uid = decodeURIComponent(String(encodedUserId || '')).trim();
+  if (!uid) return;
+  portalPremiumAccessUserId = uid;
+  renderPortalPremiumAccessPicker();
+  const modal = document.getElementById('portal-premium-access-modal');
+  if (modal) modal.classList.add('show');
+  document.addEventListener('keydown', onPortalPremiumAccessKeydown);
+}
+
+function closePortalPremiumAccessPicker() {
+  const modal = document.getElementById('portal-premium-access-modal');
+  if (modal) modal.classList.remove('show');
+  portalPremiumAccessUserId = '';
+  document.removeEventListener('keydown', onPortalPremiumAccessKeydown);
+}
+
+function onPortalPremiumAccessKeydown(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closePortalPremiumAccessPicker();
+  }
+}
+
+async function refreshPortalPremiumAccessUi(userId) {
+  invalidatePortalAnalyticsCache();
+  await loadPortalAnalyticsIfNeeded(true);
+  if (portalPremiumAccessUserId && String(portalPremiumAccessUserId) === String(userId || '')) {
+    renderPortalPremiumAccessPicker();
+  }
+}
+
+async function callAdminPortalPremiumEntitlement(userId, productKey, enabled, note) {
+  return callSupabaseRpc('admin_set_portal_premium_entitlement', {
+    p_user_id: String(userId || ''),
+    p_product_key: String(productKey || ''),
+    p_enabled: !!enabled,
+    p_note: note || 'admin_portal_package_ui'
+  });
+}
+
+async function setPortalPremiumPackageForUser(encodedUserId, encodedProductKey, enabled) {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được bật gói Premium.', 'warn');
+    return;
+  }
+  const uid = decodeURIComponent(String(encodedUserId || portalPremiumAccessUserId || '')).trim();
+  const productKey = decodeURIComponent(String(encodedProductKey || '')).trim();
+  if (!uid || !productKey) return;
+  const productTitle = portalPremiumProductTitle(productKey) || productKey;
+  const label = portalUserLabel(uid);
+  const profile = portalProfileByUserId(uid) || {};
+  const oldPlan = String(profile.portal_plan || 'free') === 'premium' ? 'premium' : 'free';
+  const oldStatus = String(profile.portal_status || 'active');
+  const oldKeys = new Set(portalActivePremiumKeysForUser(uid));
+  const oldEnabled = oldKeys.has(productKey);
+  const text = enabled
+    ? `Bật gói "${productTitle}" cho ${label}?${oldPlan === 'premium' ? '\n\nQuyền Premium toàn bộ cũ sẽ được tắt và thay bằng quyền theo gói.' : ''}`
+    : `Tắt gói "${productTitle}" của ${label}?`;
+  const ok = await confirmApp(text, {
+    title: enabled ? 'Bật gói Premium' : 'Tắt gói Premium',
+    okLabel: enabled ? 'Bật gói' : 'Tắt gói',
+    cancelLabel: 'Hủy'
+  });
+  if (!ok) return;
+  const errEl = document.getElementById('portal-premium-access-error');
+  if (errEl) errEl.textContent = 'Đang cập nhật...';
+  try {
+    await callAdminPortalPremiumEntitlement(uid, productKey, !!enabled, 'admin_portal_package_ui');
+    lastPortalAccessChange = { type: 'premium_entitlement', uid, label, productKey, productTitle, oldEnabled, oldPlan, oldStatus };
+    await refreshPortalPremiumAccessUi(uid);
+    showAppToast(enabled ? 'Đã bật gói Premium đã chọn.' : 'Đã tắt gói Premium đã chọn.', 'success');
+  } catch (e) {
+    const msg = isRpcMissingError(e)
+      ? 'Cần chạy migration 084 để bật/tắt Premium theo từng gói.'
+      : 'Chưa cập nhật được gói Premium.';
+    if (errEl) errEl.textContent = msg;
+    showAppToast(msg, 'warn');
+    throw e;
+  }
+}
+
+async function clearPortalPremiumForUser() {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được tắt Premium.', 'warn');
+    return;
+  }
+  const uid = String(portalPremiumAccessUserId || '').trim();
+  if (!uid) return;
+  const label = portalUserLabel(uid);
+  const profile = portalProfileByUserId(uid) || {};
+  const oldPlan = String(profile.portal_plan || 'free') === 'premium' ? 'premium' : 'free';
+  const oldStatus = String(profile.portal_status || 'active');
+  const oldKeys = portalActivePremiumKeysForUser(uid);
+  const ok = await confirmApp(`Tắt toàn bộ quyền Premium của ${label}?`, {
+    title: 'Tắt toàn bộ Premium',
+    okLabel: 'Tắt toàn bộ',
+    cancelLabel: 'Hủy'
+  });
+  if (!ok) return;
+  const errEl = document.getElementById('portal-premium-access-error');
+  if (errEl) errEl.textContent = 'Đang cập nhật...';
+  try {
+    await callSupabaseRpc('admin_clear_portal_premium_access', {
+      p_user_id: uid,
+      p_note: 'admin_portal_package_ui'
+    });
+    lastPortalAccessChange = { type: 'premium_clear', uid, label, oldKeys, oldPlan, oldStatus };
+    await refreshPortalPremiumAccessUi(uid);
+    showAppToast('Đã tắt toàn bộ Premium của tài khoản.', 'success');
+  } catch (e) {
+    const msg = isRpcMissingError(e)
+      ? 'Cần chạy migration 084 để tắt Premium theo từng gói.'
+      : 'Chưa tắt được Premium.';
+    if (errEl) errEl.textContent = msg;
+    showAppToast(msg, 'warn');
+    throw e;
+  }
 }
 
 function portalStatusLabel(status) {
@@ -21886,10 +22133,12 @@ function renderPortalStudentUsers(rows) {
   const to = Math.min(total, start + portalStudentPageSize);
   const table = pageRows.length ? `<div class="portal-user-table-wrap"><table class="portal-table"><thead><tr><th>Học sinh</th><th>Nhóm</th><th>Gói</th><th>Trạng thái</th><th class="num">TL</th><th class="num">Mở</th><th class="num">Tải</th><th class="num">Lưu</th><th>Gần nhất</th><th></th></tr></thead><tbody>${
     pageRows.map(p => {
-      const next = p.rawPlan === 'premium' ? 'free' : 'premium';
-      const label = p.rawPlan === 'premium' ? 'Tắt premium' : (p.premiumKeys && p.premiumKeys.length ? 'Bật toàn bộ' : 'Bật premium');
+      const premiumButtonLabel = p.plan === 'premium' ? 'Gói premium' : 'Bật premium';
       const initials = portalUserLabel(p.uid).split(/\s+/).filter(Boolean).slice(-2).map(x => x[0]).join('').toUpperCase().slice(0, 2) || 'HS';
-      const planTitle = p.premiumLabels && p.premiumLabels.length ? p.premiumLabels.join(', ') : portalPlanLabel(p.plan);
+      const planTitle = p.rawPlan === 'premium'
+        ? 'Premium toàn bộ'
+        : (p.premiumLabels && p.premiumLabels.length ? p.premiumLabels.join(', ') : portalPlanLabel(p.plan));
+      const uidArg = portalPremiumAccessArg(p.uid);
       return `<tr>
         <td class="portal-user-primary-cell"><div class="portal-user-name"><div class="portal-user-avatar">${escapeHtml(initials)}</div><div class="portal-user-text"><div class="portal-table-title">${escapeHtml(portalUserLabel(p.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(p.uid))}</div></div></div></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity quiet">${escapeHtml(p.portal_class_label || portalFreeGroupLabel(p.portal_free_group))}</span></td>
@@ -21899,7 +22148,7 @@ function renderPortalStudentUsers(rows) {
         <td class="portal-user-stat-cell" data-label="Gần nhất">${escapeHtml(portalActivityTimeLabel(p.lastAt))}</td>
         <td class="portal-user-actions-cell"><div class="portal-row-actions">
           ${p.status !== 'active' ? `<button type="button" class="btn-sm action-success" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','free','active')">Duyệt</button>` : ''}
-          <button type="button" class="btn-sm action-premium" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${next}','active')">${label}</button>
+          <button type="button" class="btn-sm action-premium" onclick="openPortalPremiumAccessPicker('${uidArg}')">${premiumButtonLabel}</button>
           ${p.status !== 'blocked' ? `<button type="button" class="btn-sm action-danger" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${p.rawPlan}','blocked')">Khóa</button>` : ''}
         </div></td>
       </tr>`;
@@ -22033,7 +22282,7 @@ async function updatePortalStudentAccess(userId, plan, status, options) {
     });
     if (!r.ok) throw new Error('portal_access_update_' + r.status);
     if (p) {
-      if (!opts.suppressUndo) lastPortalAccessChange = { uid, oldPlan, oldStatus, label };
+      if (!opts.suppressUndo) lastPortalAccessChange = { type: 'portal_access', uid, oldPlan, oldStatus, label };
       p.portal_plan = next;
       p.portal_status = nextStatus;
     }
@@ -22052,11 +22301,39 @@ async function undoLastPortalAccessChange() {
     return;
   }
   const ch = lastPortalAccessChange;
-  const ok = window.confirm(`Hoàn tác quyền portal cho ${ch.label}: về ${portalPlanLabel(ch.oldPlan)} / ${portalStatusLabel(ch.oldStatus)}?`);
+  const undoText = ch.type === 'premium_entitlement'
+    ? `Hoàn tác thay đổi gói "${ch.productTitle}" cho ${ch.label}?`
+    : ch.type === 'premium_clear'
+      ? `Hoàn tác tắt Premium cho ${ch.label}?`
+      : `Hoàn tác quyền portal cho ${ch.label}: về ${portalPlanLabel(ch.oldPlan)} / ${portalStatusLabel(ch.oldStatus)}?`;
+  const ok = await confirmApp(undoText, { title: 'Hoàn tác', okLabel: 'Hoàn tác', cancelLabel: 'Hủy' });
   if (!ok) return;
   const prev = lastPortalAccessChange;
   lastPortalAccessChange = null;
   try {
+    if (ch.type === 'premium_entitlement') {
+      await callAdminPortalPremiumEntitlement(ch.uid, ch.productKey, !!ch.oldEnabled, 'admin_portal_undo');
+      if (ch.oldPlan === 'premium' || ch.oldStatus !== 'active') {
+        await updatePortalStudentAccess(ch.uid, ch.oldPlan, ch.oldStatus, { skipConfirm: true, note: 'admin_portal_undo', suppressUndo: true });
+      } else {
+        await refreshPortalPremiumAccessUi(ch.uid);
+      }
+      showAppToast('Đã hoàn tác thay đổi gói Premium.', 'success');
+      return;
+    }
+    if (ch.type === 'premium_clear') {
+      const keys = Array.isArray(ch.oldKeys) ? ch.oldKeys : [];
+      for (const key of keys) {
+        await callAdminPortalPremiumEntitlement(ch.uid, key, true, 'admin_portal_undo');
+      }
+      if (ch.oldPlan === 'premium' || ch.oldStatus !== 'active') {
+        await updatePortalStudentAccess(ch.uid, ch.oldPlan, ch.oldStatus, { skipConfirm: true, note: 'admin_portal_undo', suppressUndo: true });
+      } else {
+        await refreshPortalPremiumAccessUi(ch.uid);
+      }
+      showAppToast('Đã hoàn tác tắt Premium.', 'success');
+      return;
+    }
     await updatePortalStudentAccess(ch.uid, ch.oldPlan, ch.oldStatus, { skipConfirm: true, note: 'admin_portal_undo', suppressUndo: true });
   } catch (e) {
     lastPortalAccessChange = prev;
