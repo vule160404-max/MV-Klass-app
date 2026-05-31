@@ -58,6 +58,13 @@ function canUseFreePortalAccess(profile: any) {
   return status !== "pending" && status !== "blocked";
 }
 
+function dailyDownloadLimitForProfile(profile: any) {
+  const role = String(profile?.role || "").trim().toLowerCase();
+  if (role === "admin" || role === "teacher") return null;
+  const plan = String(profile?.portal_plan || "").trim().toLowerCase();
+  return plan === "premium" ? 10 : 5;
+}
+
 function isOpenFreeExamRow(row: any) {
   if (!row || row.is_published !== true) return false;
   if (String(row.access_tier || "").trim().toLowerCase() !== "free") return false;
@@ -298,6 +305,17 @@ Deno.serve(async (req) => {
   const serviceClient = createClient(supabaseUrl, serviceRole, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+  const { data: userData, error: userErr } = await userClient.auth.getUser();
+  const uid = String(userData?.user?.id || "").trim();
+  if (userErr || !uid) {
+    return json({ ok: false, error: "Unauthorized" }, 401);
+  }
+  const { data: profile } = await serviceClient
+    .from("profiles")
+    .select("role,portal_status,portal_plan")
+    .eq("id", uid)
+    .maybeSingle();
+
   const { data: row, error: rowErr } = await serviceClient
     .from("exam_files")
     .select(
@@ -316,16 +334,7 @@ Deno.serve(async (req) => {
   }
   let allowed = canAccess === true;
   if (!allowed && isOpenFreeExamRow(row)) {
-    const { data: userData, error: userErr } = await userClient.auth.getUser();
-    const uid = String(userData?.user?.id || "").trim();
-    if (!userErr && uid) {
-      const { data: profile } = await serviceClient
-        .from("profiles")
-        .select("role,portal_status")
-        .eq("id", uid)
-        .maybeSingle();
-      allowed = canUseFreePortalAccess(profile);
-    }
+    allowed = canUseFreePortalAccess(profile);
   }
   if (!allowed) return json({ ok: false, error: "Forbidden" }, 403);
 
@@ -372,6 +381,27 @@ Deno.serve(async (req) => {
   }
 
   if (!url) return json({ ok: false, error: "File not found" }, 404);
+  let quota: any = null;
+  if (disposition === "attachment") {
+    const dailyLimit = dailyDownloadLimitForProfile(profile);
+    const { data: claim, error: claimErr } = await serviceClient.rpc("claim_exam_download_credit", {
+      p_user_id: uid,
+      p_exam_id: examId,
+      p_daily_limit: dailyLimit,
+    });
+    if (claimErr) {
+      return json({ ok: false, error: "Download quota check failed" }, 500);
+    }
+    quota = claim || null;
+    if (claim && claim.allowed === false) {
+      return json({
+        ok: false,
+        error: "Daily download limit reached",
+        code: "daily_download_limit_reached",
+        quota,
+      }, 429);
+    }
+  }
   const fileName = (objectKey || storagePath || String(row.title || "tai-lieu")).split("/").pop() || "tai-lieu";
   return json({
     ok: true,
@@ -379,5 +409,6 @@ Deno.serve(async (req) => {
     source,
     expires_in: SIGNED_URL_TTL_SECONDS,
     file_name: fileName,
+    quota,
   });
 });
