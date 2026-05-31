@@ -17632,9 +17632,83 @@ function studentExamState(message) {
   return '<div class="student-exam-state">' + escapeHtml(message) + '</div>';
 }
 
+function studentExamProvinceKey(value) {
+  return normalizeText(String(value || '').replace(/[đĐ]/g, 'd')).replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+// Add new province aliases here; display labels and source-filter ordering share this registry.
+const STUDENT_EXAM_PROVINCE_ALIASES = [
+  ['ha noi', 'Hà Nội'],
+  ['tp hcm', 'TP HCM'],
+  ['ho chi minh', 'TP HCM'],
+  ['thanh hoa', 'Thanh Hóa'],
+  ['nghe an', 'Nghệ An'],
+  ['ha tinh', 'Hà Tĩnh'],
+  ['da nang', 'Đà Nẵng'],
+  ['hai phong', 'Hải Phòng'],
+  ['quang ninh', 'Quảng Ninh'],
+  ['bac ninh', 'Bắc Ninh'],
+  ['bac giang', 'Bắc Giang'],
+  ['nam dinh', 'Nam Định'],
+  ['thai binh', 'Thái Bình'],
+  ['ninh binh', 'Ninh Bình'],
+  ['hai duong', 'Hải Dương'],
+  ['hung yen', 'Hưng Yên'],
+  ['vinh phuc', 'Vĩnh Phúc'],
+  ['phu tho', 'Phú Thọ'],
+  ['thai nguyen', 'Thái Nguyên'],
+  ['tuyen quang', 'Tuyên Quang'],
+  ['lao cai', 'Lào Cai'],
+  ['yen bai', 'Yên Bái'],
+  ['son la', 'Sơn La'],
+  ['hoa binh', 'Hòa Bình'],
+  ['quang binh', 'Quảng Bình'],
+  ['quang tri', 'Quảng Trị'],
+  ['thua thien hue', 'Thừa Thiên Huế'],
+  ['quang nam', 'Quảng Nam'],
+  ['quang ngai', 'Quảng Ngãi'],
+  ['binh dinh', 'Bình Định'],
+  ['phu yen', 'Phú Yên'],
+  ['khanh hoa', 'Khánh Hòa'],
+  ['ninh thuan', 'Ninh Thuận'],
+  ['binh thuan', 'Bình Thuận'],
+  ['kon tum', 'Kon Tum'],
+  ['gia lai', 'Gia Lai'],
+  ['dak lak', 'Đắk Lắk'],
+  ['dak nong', 'Đắk Nông'],
+  ['lam dong', 'Lâm Đồng'],
+  ['binh phuoc', 'Bình Phước'],
+  ['binh duong', 'Bình Dương'],
+  ['dong nai', 'Đồng Nai'],
+  ['ba ria vung tau', 'Bà Rịa - Vũng Tàu'],
+  ['tay ninh', 'Tây Ninh'],
+  ['long an', 'Long An'],
+  ['tien giang', 'Tiền Giang'],
+  ['ben tre', 'Bến Tre'],
+  ['tra vinh', 'Trà Vinh'],
+  ['vinh long', 'Vĩnh Long'],
+  ['dong thap', 'Đồng Tháp'],
+  ['an giang', 'An Giang'],
+  ['kien giang', 'Kiên Giang'],
+  ['can tho', 'Cần Thơ'],
+  ['hau giang', 'Hậu Giang'],
+  ['soc trang', 'Sóc Trăng'],
+  ['bac lieu', 'Bạc Liêu'],
+  ['ca mau', 'Cà Mau']
+];
+const STUDENT_EXAM_PROVINCE_LABEL_BY_KEY = new Map(STUDENT_EXAM_PROVINCE_ALIASES);
+const STUDENT_EXAM_PROVINCE_ORDER_BY_KEY = new Map();
+STUDENT_EXAM_PROVINCE_ALIASES.forEach(([key, label]) => {
+  const labelKey = studentExamProvinceKey(label);
+  if (!STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.has(labelKey)) {
+    STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.set(labelKey, STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.size);
+  }
+  STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.set(key, STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.get(labelKey));
+});
+
 function studentExamDisplayProvince(value) {
   const raw = repairMojibakeText(value).trim();
-  const key = normalizeText(raw.replace(/[đĐ]/g, 'd')).replace(/\s+/g, ' ').trim().toLowerCase();
+  const key = studentExamProvinceKey(raw);
   const map = {
     'ha noi': 'Hà Nội',
     'tp hcm': 'TP HCM',
@@ -17698,7 +17772,7 @@ function studentExamDisplayProvince(value) {
     'nguon tong hop': 'Nguồn tổng hợp',
     'tong hop': 'Nguồn tổng hợp'
   };
-  return map[key] || raw;
+  return STUDENT_EXAM_PROVINCE_LABEL_BY_KEY.get(key) || map[key] || raw;
 }
 
 function studentExamIsGenericSource(value) {
@@ -17707,22 +17781,8 @@ function studentExamIsGenericSource(value) {
 }
 
 function studentExamIsKnownProvince(value) {
-  const key = normalizeText(String(value || '').replace(/[đĐ]/g, 'd')).replace(/\s+/g, ' ').trim().toLowerCase();
-  if (!key) return false;
-  const known = new Set([
-    'ha noi', 'tp hcm', 'ho chi minh', 'thanh hoa', 'nghe an', 'ha tinh',
-    'da nang', 'hai phong', 'quang ninh', 'bac ninh', 'bac giang',
-    'nam dinh', 'thai binh', 'ninh binh', 'hai duong', 'hung yen',
-    'vinh phuc', 'phu tho', 'thai nguyen', 'tuyen quang', 'lao cai',
-    'yen bai', 'son la', 'hoa binh', 'quang binh', 'quang tri',
-    'thua thien hue', 'quang nam', 'quang ngai', 'binh dinh', 'phu yen',
-    'khanh hoa', 'ninh thuan', 'binh thuan', 'kon tum', 'gia lai',
-    'dak lak', 'dak nong', 'lam dong', 'binh phuoc', 'binh duong',
-    'dong nai', 'ba ria vung tau', 'tay ninh', 'long an', 'tien giang',
-    'ben tre', 'tra vinh', 'vinh long', 'dong thap', 'an giang',
-    'kien giang', 'can tho', 'hau giang', 'soc trang', 'bac lieu', 'ca mau'
-  ]);
-  return known.has(key);
+  const key = studentExamProvinceKey(value);
+  return Boolean(key) && STUDENT_EXAM_PROVINCE_LABEL_BY_KEY.has(key);
 }
 
 function studentExamSourceKeyFromLabel(label) {
@@ -17804,7 +17864,15 @@ function studentExamSourceKey(row) {
 
 function studentExamIsProvinceSourceLabel(label) {
   const raw = String(label || '').replace(/^sở\s+/i, '').trim();
-  return studentExamIsKnownProvince(raw);
+  return Number.isFinite(studentExamProvinceSourceSortRank(raw));
+}
+
+function studentExamProvinceSourceSortRank(label) {
+  const raw = String(label || '').replace(/^sở\s+/i, '').trim();
+  const key = studentExamProvinceKey(raw);
+  return STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.has(key)
+    ? STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.get(key)
+    : Number.POSITIVE_INFINITY;
 }
 
 function studentExamFileNameForDisplay(row) {
@@ -18285,9 +18353,12 @@ function renderStudentExamSelectOptions() {
     .filter(Boolean))
     .entries())
     .sort((a, b) => {
-      const ap = studentExamIsProvinceSourceLabel(a[1]);
-      const bp = studentExamIsProvinceSourceLabel(b[1]);
+      const ar = studentExamProvinceSourceSortRank(a[1]);
+      const br = studentExamProvinceSourceSortRank(b[1]);
+      const ap = Number.isFinite(ar);
+      const bp = Number.isFinite(br);
       if (ap !== bp) return ap ? -1 : 1;
+      if (ap && ar !== br) return ar - br;
       return a[1].localeCompare(b[1], 'vi', { sensitivity: 'base' });
     });
   const yearEl = document.getElementById('student-exam-year');
