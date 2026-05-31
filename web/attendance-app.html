@@ -12139,7 +12139,7 @@ button[data-bank-inspect-confirm-not]:hover,
           <label class="student-exam-filter-field" for="student-exam-sort">
             <span>Sắp xếp</span>
             <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
-              <option value="code">Theo năm, mã đề</option>
+              <option value="code">Theo số đề tăng dần</option>
               <option value="newest">Mới upload</option>
               <option value="popular">Tải nhiều</option>
             </select>
@@ -17910,19 +17910,54 @@ function studentExamSortRows(rows) {
   });
 }
 
+function studentExamExtractCodeNumber(value) {
+  const text = normalizeText(value);
+  if (!text) return Number.MAX_SAFE_INTEGER;
+
+  const genericPrefixes = new Set(['vao', 'thi', 'thpt', 'qg', 'ielts', 'nam', 'lop']);
+  const parseNumber = raw => {
+    const n = Number(String(raw || '').replace(/^0+/, '') || '0');
+    return Number.isFinite(n) && n >= 0 && n < 2000 ? n : Number.MAX_SAFE_INTEGER;
+  };
+  const exact = text.match(/^([a-z]{1,12})?\s*0*([0-9]{1,4})$/);
+  if (exact && !genericPrefixes.has(String(exact[1] || ''))) return parseNumber(exact[2]);
+
+  const deMatch = text.match(/\bde\s*([a-z]{1,12})?\s*0*([0-9]{1,4})\b/);
+  if (deMatch && !genericPrefixes.has(String(deMatch[1] || ''))) return parseNumber(deMatch[2]);
+
+  const prefixed = Array.from(text.matchAll(/\b([a-z]{1,12})\s*0*([0-9]{1,4})\b/g));
+  for (const match of prefixed) {
+    if (genericPrefixes.has(String(match[1] || ''))) continue;
+    const n = parseNumber(match[2]);
+    if (n !== Number.MAX_SAFE_INTEGER) return n;
+  }
+
+  return Number.MAX_SAFE_INTEGER;
+}
+
 function studentExamCodeSortValue(row) {
-  const n = Number(row?.exam_sort_order);
-  if (Number.isFinite(n) && n >= 0) return n;
-  const code = String(row?.exam_code || '').trim();
-  if (/^\d+$/.test(code)) return Number(code);
+  const rawOrder = row?.exam_sort_order;
+  if (rawOrder !== null && rawOrder !== undefined && String(rawOrder).trim() !== '') {
+    const n = Number(rawOrder);
+    if (Number.isFinite(n) && n >= 0) return n;
+  }
+
+  const candidates = [
+    row?.exam_code,
+    row?.title,
+    studentExamFileNameForDisplay(row),
+    row?.object_key,
+    row?.storage_path
+  ];
+  for (const item of candidates) {
+    const n = studentExamExtractCodeNumber(item);
+    if (n !== Number.MAX_SAFE_INTEGER) return n;
+  }
+
   return Number.MAX_SAFE_INTEGER;
 }
 
 function studentExamCompareByYearCode(a, b) {
-  const ya = Number(a?.year || 0) || 0;
-  const yb = Number(b?.year || 0) || 0;
-  if (ya !== yb) return yb - ya;
-
   const sa = studentExamCodeSortValue(a);
   const sb = studentExamCodeSortValue(b);
   if (sa !== sb) return sa - sb;
@@ -17940,6 +17975,10 @@ function studentExamCompareByYearCode(a, b) {
   const pb = studentExamDisplayProvince(b?.province);
   const pc = pa.localeCompare(pb, 'vi');
   if (pc) return pc;
+
+  const ya = Number(a?.year || 0) || 0;
+  const yb = Number(b?.year || 0) || 0;
+  if (ya !== yb) return yb - ya;
 
   return new Date(b?.created_at || 0) - new Date(a?.created_at || 0);
 }
@@ -17985,7 +18024,11 @@ function studentExamSortForView(rows, sortMode) {
     }));
   }
   if (mode === 'code') {
-    return list.sort(withAccessFirst(studentExamCompareByYearCode));
+    return list.sort((a, b) => {
+      const gp = studentExamComparePreferredGroup(a, b);
+      if (gp) return gp;
+      return studentExamCompareByYearCode(a, b);
+    });
   }
   return list.sort(withAccessFirst((a, b) => {
     const dc = new Date(b.created_at || 0) - new Date(a.created_at || 0);
