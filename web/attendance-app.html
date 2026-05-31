@@ -17203,6 +17203,7 @@ function renderStudentExamPlanState() {
       : '';
     approvalNote.classList.toggle('show', status === 'pending');
   }
+  updateStudentExamDownloadQuota();
 }
 
 function studentExamActivatedPremiumNotice(keys) {
@@ -17718,15 +17719,11 @@ function updateStudentExamDownloadQuota(quota) {
   const owned = portalPremiumOwnedProductKeys();
   const hasPremiumPackage = currentPortalPlan === 'premium' || !!(owned && owned.size > 0);
   const q = studentExamDownloadQuota || {};
-  const limit = Number(q.limit || (hasPremiumPackage ? 10 : 5));
-  const remainingRaw = q.remaining;
-  const usedRaw = q.used;
-  if (remainingRaw == null || !Number.isFinite(Number(remainingRaw))) {
-    el.textContent = `Tải: 0/${limit} hôm nay`;
-    return;
-  }
-  const remaining = Math.max(0, Number(remainingRaw) || 0);
-  const used = Math.max(0, Number(usedRaw) || 0);
+  const baseLimit = hasPremiumPackage ? 10 : 5;
+  const quotaLimit = Number(q.limit || 0) || 0;
+  const limit = Math.max(baseLimit, quotaLimit);
+  const used = Math.max(0, Number(q.used || 0) || 0);
+  const remaining = Math.max(0, limit - used);
   el.textContent = `Tải: ${used}/${limit} hôm nay`;
   if (remaining === 0) el.classList.add('is-empty');
   else if (remaining <= 1 || used >= limit - 1) el.classList.add('is-low');
