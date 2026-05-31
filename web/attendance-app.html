@@ -17700,8 +17700,10 @@ function updateStudentExamDownloadQuota(quota) {
     el.textContent = 'Tải: không giới hạn';
     return;
   }
+  const owned = portalPremiumOwnedProductKeys();
+  const hasPremiumPackage = currentPortalPlan === 'premium' || !!(owned && owned.size > 0);
   const q = studentExamDownloadQuota || {};
-  const limit = Number(q.limit || (currentPortalPlan === 'premium' ? 10 : 5));
+  const limit = Number(q.limit || (hasPremiumPackage ? 10 : 5));
   const remainingRaw = q.remaining;
   const usedRaw = q.used;
   if (remainingRaw == null || !Number.isFinite(Number(remainingRaw))) {

@@ -58,11 +58,26 @@ function canUseFreePortalAccess(profile: any) {
   return status !== "pending" && status !== "blocked";
 }
 
-function dailyDownloadLimitForProfile(profile: any) {
+function dailyDownloadLimitForProfile(profile: any, hasPremiumEntitlement = false) {
   const role = String(profile?.role || "").trim().toLowerCase();
   if (role === "admin" || role === "teacher") return null;
   const plan = String(profile?.portal_plan || "").trim().toLowerCase();
-  return plan === "premium" ? 10 : 5;
+  return plan === "premium" || hasPremiumEntitlement ? 10 : 5;
+}
+
+async function hasActivePremiumEntitlement(serviceClient: any, uid: string) {
+  const { data, error } = await serviceClient
+    .from("portal_premium_entitlements")
+    .select("expires_at")
+    .eq("user_id", uid)
+    .eq("status", "active")
+    .limit(20);
+  if (error) return false;
+  const now = Date.now();
+  return (Array.isArray(data) ? data : []).some((row) => {
+    const expires = String(row?.expires_at || "").trim();
+    return !expires || Date.parse(expires) > now;
+  });
 }
 
 function isOpenFreeExamRow(row: any) {
@@ -315,6 +330,7 @@ Deno.serve(async (req) => {
     .select("role,portal_status,portal_plan")
     .eq("id", uid)
     .maybeSingle();
+  const activePremiumEntitlement = await hasActivePremiumEntitlement(serviceClient, uid);
 
   const { data: row, error: rowErr } = await serviceClient
     .from("exam_files")
@@ -383,23 +399,25 @@ Deno.serve(async (req) => {
   if (!url) return json({ ok: false, error: "File not found" }, 404);
   let quota: any = null;
   if (disposition === "attachment") {
-    const dailyLimit = dailyDownloadLimitForProfile(profile);
-    const { data: claim, error: claimErr } = await serviceClient.rpc("claim_exam_download_credit", {
-      p_user_id: uid,
-      p_exam_id: examId,
-      p_daily_limit: dailyLimit,
-    });
-    if (claimErr) {
-      return json({ ok: false, error: "Download quota check failed" }, 500);
-    }
-    quota = claim || null;
-    if (claim && claim.allowed === false) {
-      return json({
-        ok: false,
-        error: "Daily download limit reached",
-        code: "daily_download_limit_reached",
-        quota,
-      }, 429);
+    const dailyLimit = dailyDownloadLimitForProfile(profile, activePremiumEntitlement);
+    if (dailyLimit !== null) {
+      const { data: claim, error: claimErr } = await serviceClient.rpc("claim_exam_download_credit", {
+        p_user_id: uid,
+        p_exam_id: examId,
+        p_daily_limit: dailyLimit,
+      });
+      if (claimErr) {
+        return json({ ok: false, error: "Download quota check failed" }, 500);
+      }
+      quota = claim || null;
+      if (claim && claim.allowed === false) {
+        return json({
+          ok: false,
+          error: "Daily download limit reached",
+          code: "daily_download_limit_reached",
+          quota,
+        }, 429);
+      }
     }
   }
   const fileName = (objectKey || storagePath || String(row.title || "tai-lieu")).split("/").pop() || "tai-lieu";
