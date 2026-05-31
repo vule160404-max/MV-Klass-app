@@ -1529,7 +1529,7 @@
       background: #fff;
     }
 
-    .btn-sm, .btn-save, .btn-del, .btn-edit, .btn-detail, .btn-pay, .btn-history, .btn-cash{
+    .btn-sm, .btn-save, .btn-del, .btn-edit, .btn-detail, .btn-pay, .btn-history, .btn-cash, .btn-zalo{
       font-family: var(--font);
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
@@ -1607,6 +1607,17 @@
       color: #166534;
     }
     .btn-cash:hover{ background: rgba(187,247,208,0.95); border-color: rgba(22,101,52,0.42); transform: translateY(-1px); }
+    .btn-zalo{
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      border-color: rgba(0,104,255,0.30);
+      background: rgba(219,234,254,0.86);
+      color: #0759c8;
+      box-shadow: 0 6px 14px rgba(37,99,235,0.10);
+    }
+    .btn-zalo:hover{ background: rgba(191,219,254,0.96); border-color: rgba(0,104,255,0.44); transform: translateY(-1px); }
+    .btn-zalo:disabled{ opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .controls, .date-controls{
       display:flex;
@@ -3862,7 +3873,7 @@
       }
     }
     @media (pointer: coarse){
-      .btn-edit, .btn-del, .btn-detail, .btn-pay, .btn-history, .btn-cash{
+      .btn-edit, .btn-del, .btn-detail, .btn-pay, .btn-history, .btn-cash, .btn-zalo{
         min-height: 44px;
         padding: 10px 12px;
         font-size: 13px;
@@ -27987,15 +27998,7 @@ async function loadRevenue() {
   const start = (tuitionPage - 1) * TUITION_PAGE_SIZE;
   const pageRows = filtered.slice(start, start + TUITION_PAGE_SIZE);
 
-  const owedOfRow = (r) => {
-    const byClassTotal = (Array.isArray(r && r.classBreakdown) ? r.classBreakdown : []).reduce((sum, x) => {
-      const val = Math.max(0, parseInt(String(x && x.owed != null ? x.owed : 0), 10) || 0);
-      return sum + val;
-    }, 0);
-    if (byClassTotal > 0) return byClassTotal;
-    return Math.max(0, parseInt(String(r && r.owed != null ? r.owed : 0), 10) || 0);
-  };
-  const totalOwed = filtered.reduce((sum, r) => sum + owedOfRow(r), 0);
+  const totalOwed = filtered.reduce((sum, r) => sum + tuitionOwedVndForRow(r), 0);
   const optionsClass = filteredClasses.map(c => {
     const label = c === 'All' ? uiClassOrFilter(c) : (classNameShortForTransfer(c) || uiClassOrFilter(c));
     return `<option value="${escapeHtml(c)}" ${c===tuitionClassFilter?'selected':''}>${escapeHtml(label)}</option>`;
@@ -28018,7 +28021,7 @@ async function loadRevenue() {
         return `${escapeHtml(cName)}: nợ <strong>${x.pending}</strong> buổi · <strong>${formatVnd(x.owed)}</strong>${prepSeg}`;
       })
       .join('<br/>');
-    const owedDisplay = owedOfRow(r);
+    const owedDisplay = tuitionOwedVndForRow(r);
     const prepStatusCell =
       prepTotal > 0
         ? `<div class="rev-col-prepaid" title="Học phí đã nộp dư, trừ dần khi điểm danh">${formatVnd(prepTotal)}</div>`
@@ -28029,6 +28032,8 @@ async function loadRevenue() {
     const clearDebtBtn = r.pending > 0
       ? `<button type="button" class="btn-del" onclick="clearStudentDebtWithPassword('${r.id}')">Xóa nợ</button>`
       : '';
+    const phoneOk = !!normalizePhoneForZalo(r.phone);
+    const zaloBtn = `<button type="button" class="btn-zalo" onclick="openTuitionParentZalo('${r.id}')" ${phoneOk ? '' : 'disabled title="Học viên chưa có SĐT"'}>Zalo PH</button>`;
     return `
       <div class="rev-row rev-row--tuition" role="button" tabindex="0" title="Chạm hàng để ${expanded ? 'ẩn' : 'mở'} chi tiết và lịch sử thanh toán" onclick="toggleTuitionRow('${r.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTuitionRow('${r.id}');}">
         <div class="rev-col-name">${escapeHtml(r.name)}</div>
@@ -28042,6 +28047,7 @@ async function loadRevenue() {
           <button type="button" class="btn-detail" onclick="toggleTuitionRow('${r.id}')">Ẩn chi tiết</button>
           <button type="button" class="btn-history" onclick="openPaymentHistoryModal('${r.id}')">Lịch sử</button>
           ${cashBtn}
+          ${zaloBtn}
           ${clearDebtBtn}
         </div>
         <strong>${escapeHtml(r.name)}</strong> · ${escapeHtml(clsDisp)}<br/>
@@ -29954,6 +29960,59 @@ function totalPrepaidVndForStudent(studentId) {
     if (k.startsWith(prefix)) sum += Math.max(0, parseInt(String(prepaidByStudentClass[k]), 10) || 0);
   }
   return sum;
+}
+
+function tuitionOwedVndForRow(row) {
+  const byClassTotal = (Array.isArray(row && row.classBreakdown) ? row.classBreakdown : []).reduce((sum, x) => {
+    const val = Math.max(0, parseInt(String(x && x.owed != null ? x.owed : 0), 10) || 0);
+    return sum + val;
+  }, 0);
+  if (byClassTotal > 0) return byClassTotal;
+  return Math.max(0, parseInt(String(row && row.owed != null ? row.owed : 0), 10) || 0);
+}
+
+function buildTuitionZaloMessage(row) {
+  const r = row || {};
+  const name = String(r.name || 'học sinh').trim();
+  const owed = tuitionOwedVndForRow(r);
+  const pending = Math.max(0, parseInt(String(r.pending || 0), 10) || 0);
+  const detailLines = (Array.isArray(r.classBreakdown) ? r.classBreakdown : [])
+    .filter(x => Math.max(0, parseInt(String(x && x.pending || 0), 10) || 0) > 0)
+    .map(x => {
+      const cName = classNameShortForTransfer(x.className) || displayClassVi(x.className);
+      const p = Math.max(0, parseInt(String(x.pending || 0), 10) || 0);
+      const o = Math.max(0, parseInt(String(x.owed || 0), 10) || 0);
+      return `${cName}: ${p} buổi - ${formatVnd(o)}`;
+    });
+  const lines = [
+    `Phụ huynh em ${name} cho thầy/cô nhắc học phí:`,
+    detailLines.length
+      ? detailLines.join('; ')
+      : `${pending} buổi - ${formatVnd(owed)}`,
+    `Tổng còn nợ: ${formatVnd(owed)}.`,
+    'Phụ huynh kiểm tra và phản hồi giúp thầy/cô nhé.'
+  ];
+  return lines.filter(Boolean).join('\n');
+}
+
+function tuitionZaloLinkForPhone(phoneRaw) {
+  const digits = String(phoneRaw || '').replace(/\D/g, '');
+  return digits ? 'https://zalo.me/' + digits : '';
+}
+
+function openTuitionParentZalo(studentId) {
+  const sid = String(studentId || '').trim();
+  const row = (Array.isArray(tuitionRowsCache) ? tuitionRowsCache : []).find(r => String(r && r.id || '') === sid);
+  if (!row) {
+    showAppToast('Không tìm thấy học viên trong danh sách học phí.');
+    return;
+  }
+  const phone = String(row.phone || '').trim();
+  if (!normalizePhoneForZalo(phone)) {
+    showAppToast('Học viên này chưa có SĐT để mở Zalo.');
+    return;
+  }
+  void openZaloSmart(phone, tuitionZaloLinkForPhone(phone), buildTuitionZaloMessage(row));
 }
 
 /** UUID h?c viên g?i RPC: luôn kh?p b?n ghi trong `students` (tránh id l?ch / thi?u). */
