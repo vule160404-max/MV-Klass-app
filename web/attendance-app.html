@@ -17193,7 +17193,7 @@ function renderStudentExamPlanState() {
       : currentPortalPlan === 'premium' || isAdmin() || isTeacher()
       ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
       : hasPackagePremium
-      ? `Tài khoản đã kích hoạt ${studentExamActivatedPremiumLabel(ownedPremiumKeys)}. Giới hạn lượt tải mỗi ngày là 10 đề (Lượt tải sẽ được reset mỗi ngày). Mọi vấn đề xin vui lòng liên hệ Zalo 0334438325.`
+      ? studentExamActivatedPremiumNotice(ownedPremiumKeys)
       : `Bạn đang có quyền truy cập đề miễn phí nhóm ${groupLabel}. Để mở thêm bộ đề, bấm Đăng ký Premium và thanh toán qua QR.`;
   }
   const approvalNote = document.getElementById('student-exam-approval-note');
@@ -17205,14 +17205,18 @@ function renderStudentExamPlanState() {
   }
 }
 
-function studentExamActivatedPremiumLabel(keys) {
+function studentExamActivatedPremiumNotice(keys) {
   const labels = Array.from(keys || [])
     .map(key => {
       const product = portalPremiumProductByKey(key);
       return studentExamPremiumGroupNoticeLabel(product?.portal_free_group || key);
     })
     .filter(Boolean);
-  return Array.from(new Set(labels)).join(', ') || 'gói Premium đã mua';
+  const uniqueLabels = Array.from(new Set(labels));
+  const base = uniqueLabels.length
+    ? uniqueLabels.map(label => `Tài khoản đã kích hoạt ${label}.`).join(' ')
+    : 'Tài khoản đã kích hoạt gói Premium đã mua.';
+  return `${base} Giới hạn lượt tải mỗi ngày là 10 đề (Lượt tải sẽ được reset mỗi ngày). Mọi vấn đề xin vui lòng liên hệ Zalo 0334438325.`;
 }
 
 function studentExamPremiumGroupNoticeLabel(group) {
