@@ -4047,7 +4047,9 @@
     .portal-kpi-card .value{ margin-top:7px; color:#0f1f3d; font-family:"DM Serif Display", Georgia, serif; font-size:32px; line-height:1; font-weight:800; }
     .portal-kpi-card .hint{ margin-top:6px; color:#718096; font-size:12px; font-weight:700; line-height:1.35; }
     .portal-analytics-grid{ display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:14px; }
-    .portal-curation-premium-grid{ align-items:start; grid-template-columns:minmax(0,1.04fr) minmax(500px,.96fr); gap:12px; }
+    .portal-curation-premium-grid{ align-items:stretch; grid-template-columns:minmax(0,1.04fr) minmax(500px,.96fr); gap:12px; }
+    .portal-curation-premium-grid > .portal-panel{ height:100%; display:flex; flex-direction:column; }
+    .portal-curation-premium-grid > .portal-panel > .portal-panel-body{ flex:1 1 auto; }
     .portal-panel{ min-width:0; border-radius:20px; background:#fff; border:1px solid rgba(99,138,218,.16); box-shadow:0 12px 28px rgba(17,42,100,.08); overflow:hidden; }
     .portal-panel-head{ padding:14px 16px 10px; border-bottom:1px solid rgba(99,138,218,.12); display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
     .portal-panel-title{ color:#102858; font-size:14px; font-weight:900; line-height:1.25; }
@@ -4121,7 +4123,7 @@
     .portal-free-toolbar-note{ min-width:0; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; }
     .portal-free-add-btn{ min-height:34px; background:#0f1f3d; color:#fff; border-color:#0f1f3d; white-space:nowrap; }
     .portal-free-add-btn:disabled{ opacity:.55; cursor:not-allowed; }
-    .portal-free-list{ display:grid; gap:6px; max-height:260px; overflow:auto; padding:6px; border-radius:14px; border:1px solid rgba(99,138,218,.12); background:#fbfdff; }
+    .portal-free-list{ display:grid; align-content:start; gap:6px; min-height:320px; max-height:360px; overflow:auto; padding:6px; border-radius:14px; border:1px solid rgba(99,138,218,.12); background:#fbfdff; }
     .portal-free-list-empty{ padding:14px; border-radius:12px; border:1px dashed rgba(99,138,218,.20); background:#fff; color:#718096; font-size:12px; font-weight:800; text-align:center; }
     .portal-free-slot{ min-width:0; display:grid; grid-template-columns:32px minmax(0,1fr) auto; gap:8px; align-items:center; padding:8px 9px; border-radius:12px; border:1px solid rgba(99,138,218,.12); background:#fff; }
     .portal-free-slot-num{ width:32px; height:28px; border-radius:10px; display:grid; place-items:center; background:#0f1f3d; color:#fff; font-size:11px; font-weight:950; font-variant-numeric:tabular-nums; }
@@ -4147,10 +4149,10 @@
     .portal-premium-compact .portal-premium-title-input,
     .portal-premium-compact .portal-premium-price-input{ min-height:34px; border-radius:9px; font-size:12px; }
     .portal-premium-compact .portal-premium-desc-input{ min-height:42px; max-height:48px; resize:none; overflow:auto; border-radius:9px; font-size:11.5px; line-height:1.32; padding:7px 9px; }
-    .portal-premium-compact .portal-premium-form{ grid-column:1/-1; grid-template-columns:minmax(120px,150px) auto minmax(68px,78px); justify-content:end; gap:8px; padding-top:2px; }
+    .portal-premium-compact .portal-premium-form{ grid-column:1/-1; grid-template-columns:minmax(136px,160px) minmax(126px,136px) minmax(72px,82px); justify-content:end; align-items:end; gap:8px; padding-top:4px; }
     .portal-premium-compact .portal-premium-controls{ display:contents; }
     .portal-premium-compact .portal-premium-controls .portal-premium-field{ grid-column:1; }
-    .portal-premium-compact .portal-premium-switch{ grid-column:2; justify-self:start; min-width:128px; }
+    .portal-premium-compact .portal-premium-switch{ grid-column:2; justify-self:stretch; min-width:0; width:100%; }
     .portal-premium-compact .portal-premium-save{ grid-column:3; width:100%; }
     .portal-premium-compact .portal-premium-switch,
     .portal-premium-compact .portal-premium-save{ min-height:34px; border-radius:10px; }
@@ -10886,7 +10888,7 @@ button[data-bank-inspect-confirm-not]:hover,
         <div class="portal-analytics-grid portal-curation-premium-grid">
           <div class="portal-panel">
             <div class="portal-panel-head">
-              <div><div class="portal-panel-title">Tài liệu miễn phí theo chương trình</div><div class="portal-panel-sub">Chọn không giới hạn đề miễn phí cho Thi vào 10, THPT QG và IELTS. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div>
+              <div><div class="portal-panel-title">Cấu hình đề miễn phí</div><div class="portal-panel-sub">Chọn không giới hạn đề miễn phí cho Thi vào 10, THPT QG và IELTS. Nếu chưa chọn, hệ thống dùng 5 đề mới nhất cùng chương trình.</div></div>
             </div>
             <div class="portal-panel-body" id="portal-free-curation"></div>
           </div>
