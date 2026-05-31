@@ -12079,7 +12079,7 @@ button[data-bank-inspect-confirm-not]:hover,
           </span>
           <span>
             <strong>Lịch sử tải đề</strong>
-            <small>5 đề mới tải gần nhất</small>
+            <small>10 đề gần nhất</small>
           </span>
           <span class="student-exam-history-btn-count" id="student-exam-saved-count">0 đề</span>
         </button>
@@ -12138,7 +12138,7 @@ button[data-bank-inspect-confirm-not]:hover,
         <div class="student-exam-history-head">
           <div>
             <div class="student-exam-history-kicker">Kho tài liệu</div>
-            <h2 id="student-exam-download-history-title">Lịch sử tải đề</h2>
+            <h2 id="student-exam-download-history-title">Lịch sử tải đề (10 đề gần nhất)</h2>
           </div>
           <button type="button" class="student-exam-history-close" onclick="closeStudentExamDownloadHistory()" aria-label="Đóng lịch sử tải đề">×</button>
         </div>
@@ -18562,7 +18562,7 @@ function renderStudentExamPersonalSections() {
       const bb = studentExamActivityFor(b);
       return new Date(bb?.last_downloaded_at || 0) - new Date(aa?.last_downloaded_at || 0);
     })
-    .slice(0, 5);
+    .slice(0, 10);
   setStudentExamRecentDownloadList('student-exam-saved-list', downloaded, studentExamActivityError || 'Các đề em đã tải sẽ hiện ở đây để mở lại nhanh.');
   const setCount = (id, n) => {
     const el = document.getElementById(id);
