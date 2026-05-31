@@ -17802,6 +17802,11 @@ function studentExamSourceKey(row) {
   return studentExamSourceKeyFromLabel(studentExamSourceLabel(row));
 }
 
+function studentExamIsProvinceSourceLabel(label) {
+  const raw = String(label || '').replace(/^sở\s+/i, '').trim();
+  return studentExamIsKnownProvince(raw);
+}
+
 function studentExamFileNameForDisplay(row) {
   const candidates = [
     studentExamObjectKeyFor(row, 'file'),
@@ -18279,7 +18284,12 @@ function renderStudentExamSelectOptions() {
     })
     .filter(Boolean))
     .entries())
-    .sort((a, b) => a[1].localeCompare(b[1], 'vi'));
+    .sort((a, b) => {
+      const ap = studentExamIsProvinceSourceLabel(a[1]);
+      const bp = studentExamIsProvinceSourceLabel(b[1]);
+      if (ap !== bp) return ap ? -1 : 1;
+      return a[1].localeCompare(b[1], 'vi', { sensitivity: 'base' });
+    });
   const yearEl = document.getElementById('student-exam-year');
   const sourceEl = document.getElementById('student-exam-source');
   if (yearEl) {
