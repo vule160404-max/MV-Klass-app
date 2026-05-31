@@ -10008,6 +10008,124 @@ a:focus-visible,
     grid-template-columns:1fr !important;
   }
 }
+
+/* Action button color system */
+.btn-sm.action-attendance,
+.class-mgr-actions .btn-sm.action-attendance{
+  background:linear-gradient(180deg,#eef6ff,#dbeafe) !important;
+  border:1px solid rgba(37,99,235,.34) !important;
+  color:#1d4ed8 !important;
+  box-shadow:0 7px 16px rgba(37,99,235,.13), inset 0 1px 0 rgba(255,255,255,.82) !important;
+}
+.btn-sm.action-info,
+.class-mgr-actions .btn-sm.action-info,
+button[data-bank-inspect],
+.portal-exam-manager-open,
+.portal-exam-manager-actions .btn-sm:not(.danger),
+.portal-exam-preview-actions .btn-sm{
+  background:linear-gradient(180deg,#f0f9ff,#e0f2fe) !important;
+  border:1px solid rgba(14,116,144,.26) !important;
+  color:#075985 !important;
+  box-shadow:0 7px 16px rgba(14,116,144,.10), inset 0 1px 0 rgba(255,255,255,.86) !important;
+}
+.btn-sm.action-money,
+.class-mgr-actions .btn-sm.action-money,
+button[data-bank-reconcile],
+.bank-tx-quick-recommend,
+button[data-bank-inspect-confirm-received]{
+  background:linear-gradient(180deg,#ecfdf5,#d1fae5) !important;
+  border:1px solid rgba(16,185,129,.36) !important;
+  color:#047857 !important;
+  box-shadow:0 7px 16px rgba(16,185,129,.13), inset 0 1px 0 rgba(255,255,255,.82) !important;
+}
+.btn-sm.action-premium,
+.portal-row-actions .btn-sm.action-premium,
+.portal-free-add-btn,
+.portal-premium-save,
+.portal-picker-actions .primary{
+  background:linear-gradient(180deg,#fff7ed,#ffedd5) !important;
+  border:1px solid rgba(245,158,11,.42) !important;
+  color:#92400e !important;
+  box-shadow:0 7px 16px rgba(245,158,11,.13), inset 0 1px 0 rgba(255,255,255,.86) !important;
+}
+.btn-sm.action-success,
+.portal-row-actions .btn-sm.action-success,
+.portal-picker-bulk{
+  background:linear-gradient(180deg,#f0fdf4,#dcfce7) !important;
+  border:1px solid rgba(34,197,94,.34) !important;
+  color:#166534 !important;
+  box-shadow:0 7px 16px rgba(34,197,94,.12), inset 0 1px 0 rgba(255,255,255,.84) !important;
+}
+.btn-sm.action-warning,
+button[data-bank-inspect-confirm-not],
+.class-mgr-btn-pause{
+  background:linear-gradient(180deg,#fffbeb,#fef3c7) !important;
+  border:1px solid rgba(217,119,6,.34) !important;
+  color:#92400e !important;
+  box-shadow:0 7px 16px rgba(217,119,6,.12), inset 0 1px 0 rgba(255,255,255,.84) !important;
+}
+.btn-sm.action-danger,
+.portal-row-actions .btn-sm.action-danger,
+.portal-free-actions .btn-sm:last-child,
+.portal-picker-actions .danger,
+.portal-exam-manager-actions .danger,
+.portal-exam-manager-bulk-actions .danger,
+.btn-del,
+.btn-sm.btn-del{
+  background:linear-gradient(180deg,#fff1f2,#fee2e2) !important;
+  border:1px solid rgba(220,38,38,.34) !important;
+  color:#b91c1c !important;
+  box-shadow:0 7px 16px rgba(220,38,38,.12), inset 0 1px 0 rgba(255,255,255,.82) !important;
+}
+.portal-free-actions .btn-sm:first-child,
+.portal-picker-item .btn-sm{
+  background:linear-gradient(180deg,#eff6ff,#dbeafe) !important;
+  border:1px solid rgba(59,130,246,.30) !important;
+  color:#1e40af !important;
+  box-shadow:0 7px 16px rgba(59,130,246,.11), inset 0 1px 0 rgba(255,255,255,.84) !important;
+}
+.portal-free-tabs .btn-sm{
+  background:linear-gradient(180deg,#f8fafc,#edf2f7) !important;
+  border-color:rgba(71,85,105,.18) !important;
+  color:#334155 !important;
+}
+.portal-free-tabs .btn-sm.active{
+  background:linear-gradient(180deg,#102a5a,#0b1f45) !important;
+  border-color:#0b1f45 !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(15,31,61,.18) !important;
+}
+.portal-row-actions .btn-sm:not(.action-success):not(.action-premium):not(.action-danger),
+.portal-user-pager-actions .btn-sm{
+  background:linear-gradient(180deg,#f8fafc,#edf2f7) !important;
+  border-color:rgba(71,85,105,.22) !important;
+  color:#334155 !important;
+}
+.portal-r2-upload-btn{
+  background:linear-gradient(180deg,#102a5a,#0b1f45) !important;
+  border-color:#0b1f45 !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(15,31,61,.18) !important;
+}
+.btn-sm.action-attendance:hover,
+.btn-sm.action-info:hover,
+.btn-sm.action-money:hover,
+.btn-sm.action-premium:hover,
+.btn-sm.action-success:hover,
+.btn-sm.action-warning:hover,
+.btn-sm.action-danger:hover,
+button[data-bank-inspect]:hover,
+button[data-bank-reconcile]:hover,
+button[data-bank-inspect-confirm-received]:hover,
+button[data-bank-inspect-confirm-not]:hover,
+.portal-free-add-btn:hover,
+.portal-free-actions .btn-sm:hover,
+.portal-r2-upload-btn:hover,
+.portal-exam-manager-open:hover{
+  filter:brightness(1.02) !important;
+  transform:translateY(-2px) !important;
+  box-shadow:0 12px 24px rgba(15,31,61,.14) !important;
+}
 </style>
 
 <!-- Sidebar sync: copy branding from app-header into sidebar (pure DOM, no data) -->
@@ -10584,7 +10702,7 @@ a:focus-visible,
               <option value="premium">Premium</option>
               <option value="blocked">Đã khóa</option>
             </select>
-            <button type="button" class="btn-sm" onclick="undoLastPortalAccessChange()">Hoàn tác</button>
+            <button type="button" class="btn-sm action-info" onclick="undoLastPortalAccessChange()">Hoàn tác</button>
           </div>
           <div class="portal-panel-body" id="portal-student-users"></div>
         </div>
@@ -21773,9 +21891,9 @@ function renderPortalStudentUsers(rows) {
         <td class="num portal-user-stat-cell" data-label="Tài liệu">${p.docs}</td><td class="num portal-user-stat-cell" data-label="Mở">${p.opens}</td><td class="num portal-user-stat-cell" data-label="Tải">${p.downloads}</td><td class="num portal-user-stat-cell" data-label="Lưu">${p.saves}</td>
         <td class="portal-user-stat-cell" data-label="Gần nhất">${escapeHtml(portalActivityTimeLabel(p.lastAt))}</td>
         <td class="portal-user-actions-cell"><div class="portal-row-actions">
-          ${p.status !== 'active' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','free','active')">Duyệt</button>` : ''}
-          <button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${next}','active')">${label}</button>
-          ${p.status !== 'blocked' ? `<button type="button" class="btn-sm" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${p.rawPlan}','blocked')">Khóa</button>` : ''}
+          ${p.status !== 'active' ? `<button type="button" class="btn-sm action-success" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','free','active')">Duyệt</button>` : ''}
+          <button type="button" class="btn-sm action-premium" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${next}','active')">${label}</button>
+          ${p.status !== 'blocked' ? `<button type="button" class="btn-sm action-danger" onclick="updatePortalStudentAccess('${escapeHtml(p.uid)}','${p.rawPlan}','blocked')">Khóa</button>` : ''}
         </div></td>
       </tr>`;
     }).join('')
@@ -25795,7 +25913,7 @@ function renderClassManager() {
       : '';
     const attendanceBtn = paused
       ? ''
-      : `<button type="button" class="btn-sm" onclick="openQuickAttendanceFromDashboard('${enc}', true)">Điểm danh</button>`;
+      : `<button type="button" class="btn-sm action-attendance" onclick="openQuickAttendanceFromDashboard('${enc}', true)">Điểm danh</button>`;
     return `<div class="class-mgr-row">
       <div class="class-mgr-head">
         <div>
@@ -25824,8 +25942,8 @@ function renderClassManager() {
         ${roadmapHtml}
       <div class="class-mgr-actions">
         ${attendanceBtn}
-        <button type="button" class="btn-sm" onclick="openClassStudents('${enc}')">Học viên</button>
-        <button type="button" class="btn-sm" onclick="openClassTuition('${enc}')">Học phí</button>
+        <button type="button" class="btn-sm action-info" onclick="openClassStudents('${enc}')">Học viên</button>
+        <button type="button" class="btn-sm action-money" onclick="openClassTuition('${enc}')">Học phí</button>
         ${pauseBtn}
         ${editBtn}
         <button class="btn-del" onclick="deleteClassDefinition('${enc}')">Xóa</button>
