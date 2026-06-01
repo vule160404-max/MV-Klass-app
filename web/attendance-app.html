@@ -28221,7 +28221,7 @@ async function loadRevenue() {
     const clearDebtBtn = r.pending > 0
       ? `<button type="button" class="btn-del" onclick="clearStudentDebtWithPassword('${r.id}')">Xóa nợ</button>`
       : '';
-    const phoneOk = !!normalizePhoneForZalo(r.phone);
+    const phoneOk = !!normalizePhoneForZalo(tuitionPhoneForRow(r));
     const zaloBtn = `<button type="button" class="btn-zalo" onclick="openTuitionParentZalo('${r.id}')" ${phoneOk ? '' : 'disabled title="Học viên chưa có SĐT"'}>Zalo PH</button>`;
     return `
       <div class="rev-row rev-row--tuition" role="button" tabindex="0" title="Chạm hàng để ${expanded ? 'ẩn' : 'mở'} chi tiết và lịch sử thanh toán" onclick="toggleTuitionRow('${r.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTuitionRow('${r.id}');}">
@@ -30160,6 +30160,30 @@ function tuitionOwedVndForRow(row) {
   return Math.max(0, parseInt(String(row && row.owed != null ? row.owed : 0), 10) || 0);
 }
 
+function studentProfileForTuitionRow(studentId) {
+  const sid = String(studentId || '').trim();
+  if (!sid) return null;
+  return (students || []).find(s => String((s && s.id) || '').trim() === sid) || null;
+}
+
+function tuitionPhoneForRow(rowOrId) {
+  const row = rowOrId && typeof rowOrId === 'object' ? rowOrId : null;
+  const sid = String(row ? row.id || '' : rowOrId || '').trim();
+  const direct = row ? String(row.phone || row.parent_phone || row.parentPhone || '').trim() : '';
+  if (direct) return direct;
+  const st = studentProfileForTuitionRow(sid);
+  return st ? String(st.phone || st.parent_phone || st.parentPhone || '').trim() : '';
+}
+
+function tuitionDisplayRowForStudent(studentId) {
+  const sid = String(studentId || '').trim();
+  if (!sid) return null;
+  const aggregateRows = aggregateTuitionRowsByStudent(tuitionRowsCache || []);
+  return aggregateRows.find(r => String(r && r.id || '').trim() === sid) ||
+    (tuitionRowsCache || []).find(r => String(r && r.id || '').trim() === sid) ||
+    null;
+}
+
 function buildTuitionZaloMessage(row) {
   const r = row || {};
   const name = String(r.name || 'học sinh').trim();
@@ -30191,12 +30215,12 @@ function tuitionZaloLinkForPhone(phoneRaw) {
 
 function openTuitionParentZalo(studentId) {
   const sid = String(studentId || '').trim();
-  const row = (Array.isArray(tuitionRowsCache) ? tuitionRowsCache : []).find(r => String(r && r.id || '') === sid);
+  const row = tuitionDisplayRowForStudent(sid);
   if (!row) {
     showAppToast('Không tìm thấy học viên trong danh sách học phí.');
     return;
   }
-  const phone = String(row.phone || '').trim();
+  const phone = tuitionPhoneForRow(row);
   if (!normalizePhoneForZalo(phone)) {
     showAppToast('Học viên này chưa có SĐT để mở Zalo.');
     return;
