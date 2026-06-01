@@ -17889,6 +17889,7 @@ function studentExamFormatSourceLabel(value) {
   const aliases = {
     'nguon tong hop': 'Tổng hợp',
     'tong hop': 'Tổng hợp',
+    'vmpth': 'Vũ Mai Phương Thanh Hóa',
     'vmp': 'Vũ Mai Phương',
     'vu mai phuong': 'Vũ Mai Phương',
     'lgh': 'Lời Giải Hay',
@@ -17941,15 +17942,21 @@ function studentExamSourceTextFromName(value) {
     const key = studentExamSourceKeyFromLabel(raw);
     const labelKey = studentExamSourceKeyFromLabel(label);
     if (
-      /\bvmp\b/.test(key) &&
-      !/\b(vmp|vu\s+mai\s+phuong)\b/.test(labelKey) &&
-      /\bthanh\s+hoa\b/.test(labelKey)
+      (
+        /\bvmpth\b/.test(key) ||
+        (/\bvmp\b/.test(key) && /\bthanh\s+hoa\b/.test(labelKey))
+      ) &&
+      !/\b(vmpth|vu\s+mai\s+phuong\s+thanh\s+hoa)\b/.test(labelKey)
     ) {
-      return 'Vũ Mai Phương ' + studentExamFormatSourceLabel(label);
+      const formatted = studentExamFormatSourceLabel(label);
+      return /\bvu\s+mai\s+phuong\b/.test(studentExamSourceKeyFromLabel(formatted))
+        ? 'Vũ Mai Phương Thanh Hóa'
+        : 'Vũ Mai Phương ' + formatted;
     }
     return studentExamFormatSourceLabel(label);
   }
   const key = studentExamSourceKeyFromLabel(raw);
+  if (/\bvmpth\b/.test(key)) return 'Vũ Mai Phương Thanh Hóa';
   if (/\bvmp\b|\bvu\s+mai\s+phuong\b/.test(key)) return 'Vũ Mai Phương';
   if (/\blgh\b|\bloi\s+giai\s+hay\b/.test(key)) return 'Lời Giải Hay';
   return '';
