@@ -30189,23 +30189,18 @@ function buildTuitionZaloMessage(row) {
   const name = String(r.name || 'học sinh').trim();
   const owed = tuitionOwedVndForRow(r);
   const pending = Math.max(0, parseInt(String(r.pending || 0), 10) || 0);
-  const detailLines = (Array.isArray(r.classBreakdown) ? r.classBreakdown : [])
-    .filter(x => Math.max(0, parseInt(String(x && x.pending || 0), 10) || 0) > 0)
-    .map(x => {
-      const cName = classNameShortForTransfer(x.className) || displayClassVi(x.className);
-      const p = Math.max(0, parseInt(String(x.pending || 0), 10) || 0);
-      const o = Math.max(0, parseInt(String(x.owed || 0), 10) || 0);
-      return `${cName}: ${p} buổi - ${formatVnd(o)}`;
-    });
   const lines = [
-    `Phụ huynh em ${name} ơi, thầy/cô gửi mình thông tin học phí để gia đình tiện đối chiếu nhé:`,
-    detailLines.length
-      ? detailLines.join('; ')
-      : `${pending} buổi - ${formatVnd(owed)}`,
-    `Tổng cần thanh toán hiện tại: ${formatVnd(owed)}.`,
-    'Phụ huynh kiểm tra giúp thầy/cô, nếu có gì chưa khớp cứ nhắn lại để thầy/cô rà soát ngay nhé. Cảm ơn phụ huynh ạ.'
+    `Phụ huynh em ${name} ơi,`,
+    '',
+    'Thầy/cô gửi học phí tháng này để gia đình tiện đối chiếu nhé:',
+    '',
+    `${pending} buổi học: ${formatVnd(owed)}`,
+    '',
+    'Phụ huynh kiểm tra giúp thầy/cô, nếu có gì chưa khớp thì nhắn lại thầy/cô rà soát ngay ạ.',
+    '',
+    'Cảm ơn phụ huynh ạ.'
   ];
-  return lines.filter(Boolean).join('\n');
+  return lines.join('\n');
 }
 
 function tuitionZaloLinkForPhone(phoneRaw) {
