@@ -17897,6 +17897,9 @@ function studentExamFormatSourceLabel(value) {
     'thu vien hoc lieu': 'Thư Viện Học Liệu'
   };
   if (aliases[key]) return aliases[key];
+  if (/^vmp\s+/.test(key)) {
+    return 'Vũ Mai Phương ' + studentExamFormatSourceLabel(raw.replace(/^\s*vmp\s+/i, ''));
+  }
   if (studentExamIsKnownProvince(raw)) return studentExamDisplayProvince(raw);
   return raw.split(' ').filter(Boolean).map(word => {
     if (/^[A-Z0-9]{2,}$/.test(word)) return word;
@@ -17915,7 +17918,7 @@ function studentExamSourceTextFromName(value) {
     .trim();
   if (!raw) return '';
   const tokens = raw.split(' ').map(token => token.trim()).filter(Boolean);
-  const normTokens = tokens.map(token => normalizeText(token.replace(/[đĐ]/g, 'd')).replace(/[^a-z0-9]+/g, '').toLowerCase());
+  const normTokens = tokens.map(token => normalizeText(token.replace(/[đĐ]/g, 'd')).toLowerCase().replace(/[^a-z0-9]+/g, ''));
   const dropWords = new Set(['de', 'thi', 'vao', 'thpt', 'qg', 'quoc', 'dai', 'ielts', 'tieng', 'anh', 'english', 'nguon', 'minh', 'chinh', 'tai']);
   const kept = tokens.filter((token, index) => {
     const norm = normTokens[index];
@@ -17934,7 +17937,18 @@ function studentExamSourceTextFromName(value) {
     return true;
   });
   const label = kept.join(' ').replace(/\s+/g, ' ').trim();
-  if (label) return studentExamFormatSourceLabel(label);
+  if (label) {
+    const key = studentExamSourceKeyFromLabel(raw);
+    const labelKey = studentExamSourceKeyFromLabel(label);
+    if (
+      /\bvmp\b/.test(key) &&
+      !/\b(vmp|vu\s+mai\s+phuong)\b/.test(labelKey) &&
+      /\bthanh\s+hoa\b/.test(labelKey)
+    ) {
+      return 'Vũ Mai Phương ' + studentExamFormatSourceLabel(label);
+    }
+    return studentExamFormatSourceLabel(label);
+  }
   const key = studentExamSourceKeyFromLabel(raw);
   if (/\bvmp\b|\bvu\s+mai\s+phuong\b/.test(key)) return 'Vũ Mai Phương';
   if (/\blgh\b|\bloi\s+giai\s+hay\b/.test(key)) return 'Lời Giải Hay';
@@ -18004,6 +18018,20 @@ function studentExamCodeLabel(code) {
   return raw;
 }
 
+function studentExamCodeLabelWithSource(code, source, rawName) {
+  const label = studentExamCodeLabel(code);
+  const sourceKey = studentExamSourceKeyFromLabel(source);
+  const rawKey = studentExamSourceKeyFromLabel(rawName);
+  if (
+    /^VMP\s+\d{3,4}$/.test(label) &&
+    /\b(vmp|vu\s+mai\s+phuong)\b/.test(sourceKey + ' ' + rawKey) &&
+    /\bthanh\s+hoa\b/.test(sourceKey + ' ' + rawKey)
+  ) {
+    return label.replace(/^VMP\b/, 'VMPTH');
+  }
+  return label;
+}
+
 function studentExamCleanFileLabel(row) {
   const raw = studentExamFileNameForDisplay(row);
   return String(raw || '')
@@ -18051,15 +18079,20 @@ function studentExamParsedTitleParts(row) {
   const base = studentExamFileNameForDisplay(row);
   const norm = normalizeText(base).replace(/\s+/g, ' ').trim().toLowerCase();
   const yearMatch = norm.match(/\b(20\d{2})\b/);
-  const codeMatch = norm.match(/\bde\s+([a-z]{2,10})\s*0*([0-9]{1,4})\b/) || norm.match(/\bde\s+0*([0-9]{1,3})\b/);
-  let code = studentExamCodeLabel(row?.exam_code);
-  if (!code && codeMatch) {
-    code = codeMatch[2]
-      ? `${codeMatch[1].toUpperCase()} ${String(Number(codeMatch[2])).padStart(3, '0')}`
-      : String(Number(codeMatch[1])).padStart(3, '0');
-  }
   let source = studentExamSourceLabel(row);
   if (source === 'Tổng hợp') source = studentExamTitleHasAggregateSource(row) ? 'Nguồn Tổng Hợp' : '';
+  const codeMatch =
+    norm.match(/\bde\s+([a-z]{2,10})\s*0*([0-9]{1,4})\b/) ||
+    norm.match(/\bde\s+0*([0-9]{1,3})\b/) ||
+    norm.match(/^(?:de\s+)?([a-z]{2,10})\s*0*([0-9]{1,4})\b/);
+  let code = studentExamCodeLabelWithSource(row?.exam_code, source, base);
+  if (!code && codeMatch) {
+    code = codeMatch[2]
+      ? studentExamCodeLabelWithSource(`${codeMatch[1].toUpperCase()}${String(Number(codeMatch[2])).padStart(3, '0')}`, source, base)
+      : String(Number(codeMatch[1])).padStart(3, '0');
+  } else {
+    code = studentExamCodeLabelWithSource(code, source, base);
+  }
   return {
     code,
     source,
