@@ -178,7 +178,8 @@ function stem(key: string) {
 function guessCategory(key: string) {
   const n = normalizeText(key);
   if (/\b(dap an|answer)\b/.test(n)) return "answer";
-  if (/\b(audio|listening|nghe)\b/.test(n)) return "audio";
+  if (/\b(audio|listening|mp3)\b/.test(n)) return "audio";
+  if (/\b(file|bai|phan|track)\s+nghe\b|\bnghe\s+(audio|listening|mp3)\b/.test(n)) return "audio";
   if (/\b(chuyen de|topic)\b/.test(n)) return "topic";
   return "exam";
 }
