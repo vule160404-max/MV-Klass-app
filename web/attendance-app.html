@@ -17883,9 +17883,32 @@ function studentExamSourceKeyFromLabel(label) {
   return normalizeText(String(label || '').replace(/[đĐ]/g, 'd')).replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
+function studentExamProvinceLabelFromInitials(value) {
+  const wanted = String(value || '').replace(/[^a-z]/gi, '').toLowerCase();
+  if (!wanted) return '';
+  const seen = new Set();
+  for (const [, label] of STUDENT_EXAM_PROVINCE_ALIASES) {
+    const display = studentExamDisplayProvince(label);
+    const displayKey = studentExamProvinceKey(display);
+    if (!displayKey || seen.has(displayKey)) continue;
+    seen.add(displayKey);
+    const initials = displayKey.split(/\s+/).filter(Boolean).map(word => word.charAt(0)).join('');
+    if (initials === wanted) return display;
+  }
+  return '';
+}
+
+function studentExamVmpProvinceFromText(value) {
+  const key = studentExamSourceKeyFromLabel(value);
+  const match = key.match(/\bvmp([a-z]{2,4})\b/);
+  return match ? studentExamProvinceLabelFromInitials(match[1]) : '';
+}
+
 function studentExamFormatSourceLabel(value) {
   const raw = repairMojibakeText(value).replace(/\s+/g, ' ').trim();
   const key = studentExamSourceKeyFromLabel(raw);
+  const vmpProvince = studentExamVmpProvinceFromText(raw);
+  if (vmpProvince) return 'Vũ Mai Phương ' + vmpProvince;
   const aliases = {
     'nguon tong hop': 'Tổng hợp',
     'tong hop': 'Tổng hợp',
@@ -17941,6 +17964,13 @@ function studentExamSourceTextFromName(value) {
   if (label) {
     const key = studentExamSourceKeyFromLabel(raw);
     const labelKey = studentExamSourceKeyFromLabel(label);
+    const vmpProvince = studentExamVmpProvinceFromText(raw);
+    if (
+      vmpProvince &&
+      !labelKey.includes(studentExamSourceKeyFromLabel(vmpProvince))
+    ) {
+      return 'Vũ Mai Phương ' + vmpProvince;
+    }
     if (
       (
         /\bvmpth\b/.test(key) ||
@@ -17956,6 +17986,8 @@ function studentExamSourceTextFromName(value) {
     return studentExamFormatSourceLabel(label);
   }
   const key = studentExamSourceKeyFromLabel(raw);
+  const vmpProvince = studentExamVmpProvinceFromText(raw);
+  if (vmpProvince) return 'Vũ Mai Phương ' + vmpProvince;
   if (/\bvmpth\b/.test(key)) return 'Vũ Mai Phương Thanh Hóa';
   if (/\bvmp\b|\bvu\s+mai\s+phuong\b/.test(key)) return 'Vũ Mai Phương';
   if (/\blgh\b|\bloi\s+giai\s+hay\b/.test(key)) return 'Lời Giải Hay';
