@@ -6169,7 +6169,7 @@
     .student-exam-filter-toggle::after{content:"+";display:inline-grid;place-items:center;width:20px;height:20px;margin-left:8px;border-radius:999px;background:rgba(255,255,255,.14);font-size:14px;line-height:1}
     .student-exam-filter-toggle[aria-expanded="true"]{background:linear-gradient(180deg,#ffd66f,#f4a71d);color:#14213d;border-color:rgba(244,167,29,.55);box-shadow:0 12px 24px rgba(244,167,29,.20)}
     .student-exam-filter-toggle[aria-expanded="true"]::after{content:"-";background:rgba(20,33,61,.10)}
-    .student-exam-filter-advanced{display:none;margin-top:12px;padding:13px;border-radius:18px;background:#f8fbff;border:1px solid rgba(79,142,247,.14);grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .student-exam-filter-advanced{display:none;margin-top:12px;padding:13px;border-radius:18px;background:#f8fbff;border:1px solid rgba(79,142,247,.14);grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .student-exam-filter-advanced.open{display:grid}
     .student-exam-filter-group-title{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 2px;color:#12213d;font-size:13px;font-weight:950}
     .student-exam-filter-group-title small{color:#66748d;font-size:11px;font-weight:800;text-align:right}
@@ -12148,12 +12148,10 @@ button[data-bank-inspect-confirm-not]:hover,
               <option value="ielts">IELTS</option>
             </select>
           </label>
-          <label class="student-exam-filter-field is-primary" for="student-exam-type">
-            <span>Dạng đề</span>
-            <select id="student-exam-type" aria-label="Lọc đề chính thức hoặc đề minh họa">
-              <option value="all">Tất cả dạng đề</option>
-              <option value="official">Đề chính thức</option>
-              <option value="mock">Đề minh họa</option>
+          <label class="student-exam-filter-field is-primary" for="student-exam-source">
+            <span>Nguồn/bộ đề</span>
+            <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
+              <option value="all">Tất cả nguồn/bộ đề</option>
             </select>
           </label>
           <button type="button" class="student-exam-filter-toggle" id="student-exam-filter-toggle" aria-expanded="false" aria-controls="student-exam-advanced-filters">Lọc chi tiết</button>
@@ -12161,18 +12159,12 @@ button[data-bank-inspect-confirm-not]:hover,
         <div class="student-exam-filter-advanced" id="student-exam-advanced-filters">
           <div class="student-exam-filter-group-title">
             <span>Lọc chi tiết</span>
-            <small>Năm, nguồn và thứ tự hiển thị</small>
+            <small>Năm và thứ tự hiển thị</small>
           </div>
           <label class="student-exam-filter-field" for="student-exam-year">
             <span>Năm</span>
             <select id="student-exam-year" aria-label="Lọc năm">
               <option value="all">Tất cả năm</option>
-            </select>
-          </label>
-          <label class="student-exam-filter-field" for="student-exam-source">
-            <span>Nguồn/bộ đề</span>
-            <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
-              <option value="all">Tất cả nguồn/bộ đề</option>
             </select>
           </label>
           <label class="student-exam-filter-field" for="student-exam-sort">
@@ -18514,7 +18506,6 @@ function getStudentExamFilters() {
   return {
     q: normalizeText(String(document.getElementById('student-exam-search')?.value || '')).trim().toLowerCase(),
     level: String(document.getElementById('student-exam-level')?.value || 'all'),
-    type: String(document.getElementById('student-exam-type')?.value || 'all'),
     year: String(document.getElementById('student-exam-year')?.value || 'all'),
     source: String(document.getElementById('student-exam-source')?.value || 'all'),
     sort: String(document.getElementById('student-exam-sort')?.value || 'code')
@@ -18528,12 +18519,10 @@ function applyStudentExamFilters(options) {
   studentExamFilteredRows = studentExamRows.filter(row => {
     if (String(row.category || '') === 'answer') return false;
     if (f.level !== 'all' && String(row.level || '') !== f.level) return false;
-    if (f.type === 'official' && !studentExamIsOfficial(row)) return false;
-    if (f.type === 'mock' && studentExamIsOfficial(row)) return false;
     if (f.year !== 'all' && String(row.year || '') !== f.year) return false;
     if (f.source !== 'all' && studentExamSourceKey(row) !== f.source) return false;
     if (f.q) {
-      const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, studentExamSourceLabel(row), row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category), studentExamTypeLabel(row)]
+      const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, studentExamSourceLabel(row), row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category)]
         .map(x => normalizeText(String(x || '')).toLowerCase())
         .join(' ');
       if (!hay.includes(f.q)) return false;
@@ -18790,7 +18779,6 @@ function resetStudentExamFilters() {
   const defaults = {
     'student-exam-search': '',
     'student-exam-level': 'all',
-    'student-exam-type': 'all',
     'student-exam-year': 'all',
     'student-exam-source': 'all',
     'student-exam-sort': 'code'
@@ -18858,7 +18846,7 @@ async function loadStudentExamFiles() {
 }
 
 function bindStudentExamPortalEvents() {
-  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-type', 'student-exam-year', 'student-exam-source', 'student-exam-sort'];
+  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-year', 'student-exam-source', 'student-exam-sort'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.dataset.bound === '1') return;
