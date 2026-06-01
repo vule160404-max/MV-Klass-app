@@ -30198,12 +30198,12 @@ function buildTuitionZaloMessage(row) {
       return `${cName}: ${p} buổi - ${formatVnd(o)}`;
     });
   const lines = [
-    `Phụ huynh em ${name} cho thầy/cô nhắc học phí:`,
+    `Phụ huynh em ${name} ơi, thầy/cô gửi mình thông tin học phí để gia đình tiện đối chiếu nhé:`,
     detailLines.length
       ? detailLines.join('; ')
       : `${pending} buổi - ${formatVnd(owed)}`,
-    `Tổng còn nợ: ${formatVnd(owed)}.`,
-    'Phụ huynh kiểm tra và phản hồi giúp thầy/cô nhé.'
+    `Tổng cần thanh toán hiện tại: ${formatVnd(owed)}.`,
+    'Phụ huynh kiểm tra giúp thầy/cô, nếu có gì chưa khớp cứ nhắn lại để thầy/cô rà soát ngay nhé. Cảm ơn phụ huynh ạ.'
   ];
   return lines.filter(Boolean).join('\n');
 }
