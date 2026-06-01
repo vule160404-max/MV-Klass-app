@@ -17132,7 +17132,6 @@ function renderStudentExamPlanState() {
   const hasPackagePremium = ownedPremiumKeys && ownedPremiumKeys.size > 0;
   const plan = currentPortalPlan === 'premium' || isAdmin() || isTeacher() || hasPackagePremium ? 'premium' : 'free';
   const premiumPending = status === 'active' && currentPortalPlan !== 'premium' && !isAdmin() && !isTeacher() && !portalPremiumLoaded;
-  const groupLabel = portalFreeGroupLabel(currentPortalFreeGroup);
   const badge = document.getElementById('student-exam-plan-badge');
   if (badge) {
     badge.textContent = status === 'pending' ? 'Chờ duyệt' : (status === 'blocked' ? 'Đã khóa' : (premiumPending ? 'Đang tải' : (plan === 'premium' ? 'Premium' : 'Free')));
@@ -17153,7 +17152,7 @@ function renderStudentExamPlanState() {
       ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
       : hasPackagePremium
       ? studentExamActivatedPremiumNotice(ownedPremiumKeys)
-      : `Bạn đang có quyền truy cập đề miễn phí nhóm ${groupLabel}. Để mở thêm bộ đề, bấm Đăng ký Premium và thanh toán qua QR.`;
+      : 'Chào mừng bạn đến với kho tài liệu Vào 10/THPT/IELTS. Toàn bộ tài liệu được tổng hợp và sưu tầm từ nhiều nguồn. Bạn sẽ được free 31 mã đề và có thể truy cập toàn bộ 425 mã đề vĩnh viễn (và những đề update mới nhất) khi đăng ký Premium.';
   }
   const approvalNote = document.getElementById('student-exam-approval-note');
   if (approvalNote) {
