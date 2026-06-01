@@ -17886,6 +17886,18 @@ function studentExamSourceKeyFromLabel(label) {
 function studentExamProvinceLabelFromInitials(value) {
   const wanted = String(value || '').replace(/[^a-z]/gi, '').toLowerCase();
   if (!wanted) return '';
+  const preferred = {
+    th: 'thanh hoa',
+    nb: 'ninh binh',
+    pt: 'phu tho',
+    hp: 'hai phong',
+    hn: 'ha noi',
+    na: 'nghe an',
+    ht: 'ha tinh'
+  };
+  if (preferred[wanted]) {
+    return studentExamDisplayProvince(preferred[wanted]);
+  }
   const seen = new Set();
   for (const [, label] of STUDENT_EXAM_PROVINCE_ALIASES) {
     const display = studentExamDisplayProvince(label);
