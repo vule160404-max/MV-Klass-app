@@ -22114,9 +22114,12 @@ async function setPortalPremiumPackageForUser(encodedUserId, encodedProductKey, 
     await refreshPortalPremiumAccessUi(uid);
     showAppToast(enabled ? 'Đã bật gói Premium đã chọn.' : 'Đã tắt gói Premium đã chọn.', 'success');
   } catch (e) {
+    const rawMsg = String(e?.message || e?.details || e?.hint || e?.code || e?.body?.message || '');
     const msg = isRpcMissingError(e)
       ? 'Cần chạy migration 084 để bật/tắt Premium theo từng gói.'
-      : 'Chưa cập nhật được gói Premium.';
+      : /admin_required/i.test(rawMsg)
+        ? 'Tài khoản hiện tại chưa có quyền admin để bật/tắt gói Premium. Hãy đăng nhập bằng tài khoản admin.'
+        : 'Chưa cập nhật được gói Premium.';
     if (errEl) errEl.textContent = msg;
     showAppToast(msg, 'warn');
     throw e;
@@ -22152,9 +22155,12 @@ async function clearPortalPremiumForUser() {
     await refreshPortalPremiumAccessUi(uid);
     showAppToast('Đã tắt toàn bộ Premium của tài khoản.', 'success');
   } catch (e) {
+    const rawMsg = String(e?.message || e?.details || e?.hint || e?.code || e?.body?.message || '');
     const msg = isRpcMissingError(e)
       ? 'Cần chạy migration 084 để tắt Premium theo từng gói.'
-      : 'Chưa tắt được Premium.';
+      : /admin_required/i.test(rawMsg)
+        ? 'Tài khoản hiện tại chưa có quyền admin để tắt Premium. Hãy đăng nhập bằng tài khoản admin.'
+        : 'Chưa tắt được Premium.';
     if (errEl) errEl.textContent = msg;
     showAppToast(msg, 'warn');
     throw e;
