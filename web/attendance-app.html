@@ -4110,14 +4110,14 @@
     .portal-user-table-wrap{ max-height:620px; overflow:auto; border:1px solid rgba(99,138,218,.12); border-radius:14px; }
     .portal-user-table-wrap .portal-table th{ position:sticky; top:0; z-index:1; }
     .portal-user-name{ display:flex; align-items:center; gap:9px; min-width:0; }
-    .portal-user-presence{ --presence-core:#a16207; --presence-glow:rgba(161,98,7,.20); --presence-ring:rgba(161,98,7,.34); position:relative; width:32px; height:32px; border-radius:11px; display:grid; place-items:center; flex:0 0 auto; overflow:visible; isolation:isolate; background:linear-gradient(180deg,#fff,#f8fbff); border:1px solid rgba(99,138,218,.14); box-shadow:0 8px 18px rgba(17,42,100,.07), inset 0 1px 0 rgba(255,255,255,.92); transition:transform .16s ease, box-shadow .16s ease; }
+    .portal-user-presence{ --presence-core:#a16207; --presence-glow:rgba(161,98,7,.20); --presence-ring:rgba(161,98,7,.34); position:relative; width:32px; height:32px; display:grid; place-items:center; flex:0 0 auto; overflow:visible; isolation:isolate; background:transparent; border:0; box-shadow:none; transition:transform .16s ease; }
     .portal-user-presence::before{ content:""; position:absolute; width:11px; height:11px; border-radius:999px; background:var(--presence-core); box-shadow:0 0 0 4px #fff, 0 0 0 5px var(--presence-ring), 0 8px 18px var(--presence-glow); z-index:2; }
     .portal-user-presence::after{ content:""; position:absolute; inset:7px; border-radius:999px; border:1.5px solid var(--presence-ring); opacity:.78; z-index:1; }
-    .portal-user-presence:hover{ transform:translateY(-1px); box-shadow:0 12px 24px rgba(17,42,100,.11), inset 0 1px 0 rgba(255,255,255,.95); }
-    .portal-user-presence.is-online{ --presence-core:#16a34a; --presence-glow:rgba(22,163,74,.25); --presence-ring:rgba(34,197,94,.42); background:linear-gradient(180deg,#fbfffd,#eefdf4); }
+    .portal-user-presence:hover{ transform:translateY(-1px); }
+    .portal-user-presence.is-online{ --presence-core:#16a34a; --presence-glow:rgba(22,163,74,.25); --presence-ring:rgba(34,197,94,.42); }
     .portal-user-presence.is-online::before{ animation:portalPresenceOnlineCore 1.45s ease-in-out infinite; }
     .portal-user-presence.is-online::after{ animation:portalPresenceOnlineRing 1.45s ease-out infinite; }
-    .portal-user-presence.is-offline{ --presence-core:#b7791f; --presence-glow:rgba(183,121,31,.22); --presence-ring:rgba(183,121,31,.36); background:linear-gradient(180deg,#fffdfa,#fff7ea); }
+    .portal-user-presence.is-offline{ --presence-core:#b7791f; --presence-glow:rgba(183,121,31,.22); --presence-ring:rgba(183,121,31,.36); }
     .portal-user-presence.is-offline::before{ animation:portalPresenceOfflineCore 2.6s ease-in-out infinite; }
     .portal-user-presence.is-offline::after{ inset:10px 7px; height:2px; margin:auto 0; border:0; border-radius:999px; background:var(--presence-ring); animation:portalPresenceOfflineBar 2.6s ease-in-out infinite; }
     @keyframes portalPresenceOnlineCore{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(.78); } }
