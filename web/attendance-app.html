@@ -3029,6 +3029,130 @@
     }
 
     #app-confirm-modal{ z-index: 6000; }
+    #app-confirm-modal .app-confirm-card{
+      max-width: 460px;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(148,163,184,.22);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.99), rgba(248,250,252,.98));
+      box-shadow: 0 28px 80px rgba(15,23,42,.24), 0 10px 28px rgba(15,23,42,.12), inset 0 1px 0 rgba(255,255,255,.92);
+      animation: appConfirmIn 180ms cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes appConfirmIn{
+      from{ opacity:0; transform: translateY(10px) scale(.98); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
+    }
+    .app-confirm-head{
+      display:grid;
+      grid-template-columns: 46px minmax(0,1fr);
+      gap: 13px;
+      align-items:center;
+      padding: 20px 22px 12px;
+    }
+    .app-confirm-icon{
+      width:46px;
+      height:46px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      color:#1d4ed8;
+      background:linear-gradient(180deg,#eff6ff,#dbeafe);
+      border:1px solid rgba(59,130,246,.24);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.86), 0 10px 22px rgba(37,99,235,.12);
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+    .app-confirm-danger .app-confirm-icon{
+      color:#b91c1c;
+      background:linear-gradient(180deg,#fff7ed,#fee2e2);
+      border-color:rgba(239,68,68,.26);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.88), 0 12px 24px rgba(220,38,38,.13);
+    }
+    #app-confirm-modal .modal-title{
+      margin:0;
+      font-size:18px;
+      line-height:1.25;
+      letter-spacing:-.015em;
+      color:#0f2447;
+    }
+    #app-confirm-modal .app-confirm-body{
+      margin:0;
+      padding: 0 22px 18px;
+      color:#475569;
+      font-size:13px;
+      font-weight:650;
+      line-height:1.55;
+    }
+    .app-confirm-message{
+      margin: 0;
+      overflow-wrap:anywhere;
+    }
+    .app-confirm-meta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .app-confirm-meta-item{
+      min-width:0;
+      border:1px solid rgba(148,163,184,.20);
+      background:rgba(255,255,255,.78);
+      border-radius:14px;
+      padding:10px 11px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.86);
+    }
+    .app-confirm-meta-label{
+      display:block;
+      color:#64748b;
+      font-size:10.5px;
+      line-height:1.1;
+      font-weight:850;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      margin-bottom:5px;
+    }
+    .app-confirm-meta-value{
+      display:block;
+      color:#102a5a;
+      font-size:12.5px;
+      line-height:1.35;
+      font-weight:850;
+      overflow-wrap:anywhere;
+    }
+    #app-confirm-modal .modal-actions{
+      margin:0;
+      padding: 14px 22px 20px;
+      border-top:1px solid rgba(148,163,184,.16);
+      background:rgba(248,250,252,.72);
+    }
+    #app-confirm-modal .app-confirm-cancel,
+    #app-confirm-modal .app-confirm-ok{
+      min-height:40px;
+      border-radius:12px;
+      padding:9px 15px;
+      font-weight:850;
+    }
+    #app-confirm-modal .app-confirm-ok.danger{
+      color:#fff !important;
+      border-color:#dc2626 !important;
+      background:linear-gradient(180deg,#ef4444,#b91c1c) !important;
+      box-shadow:0 12px 24px rgba(220,38,38,.23), inset 0 1px 0 rgba(255,255,255,.24) !important;
+    }
+    #app-confirm-modal .app-confirm-ok.danger:hover{
+      filter:brightness(1.02);
+      box-shadow:0 16px 30px rgba(220,38,38,.28) !important;
+    }
+    @media (max-width:520px){
+      #app-confirm-modal .app-confirm-card{ border-radius:18px; }
+      .app-confirm-head{ grid-template-columns:40px minmax(0,1fr); padding:18px 18px 10px; }
+      .app-confirm-icon{ width:40px; height:40px; font-size:19px; }
+      #app-confirm-modal .app-confirm-body{ padding:0 18px 16px; }
+      .app-confirm-meta{ grid-template-columns:1fr; }
+      #app-confirm-modal .modal-actions{ padding:12px 18px 18px; }
+    }
     #app-password-modal{ z-index: 6001; }
     #bank-tx-inspect-modal{ z-index: 1003; }
     #bank-tx-inspect-modal .modal{ max-width: 500px; }
@@ -12231,12 +12355,15 @@ button[data-bank-inspect-confirm-not]:hover,
 
 <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
 <div class="modal-backdrop" id="app-confirm-modal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="app-confirm-title">
-    <div class="modal-title" id="app-confirm-title">Xác nhận</div>
+  <div class="modal app-confirm-card app-confirm-default" role="dialog" aria-modal="true" aria-labelledby="app-confirm-title">
+    <div class="app-confirm-head">
+      <div class="app-confirm-icon" id="app-confirm-icon" aria-hidden="true">?</div>
+      <div class="modal-title" id="app-confirm-title">Xác nhận</div>
+    </div>
     <div class="modal-row app-confirm-body" id="app-confirm-body"></div>
     <div class="modal-actions">
-      <button type="button" class="btn-sm" id="app-confirm-cancel">Hủy</button>
-      <button type="button" class="btn-save btn-sm" id="app-confirm-ok">OK</button>
+      <button type="button" class="btn-sm app-confirm-cancel" id="app-confirm-cancel">Hủy</button>
+      <button type="button" class="btn-save btn-sm app-confirm-ok" id="app-confirm-ok">OK</button>
     </div>
   </div>
 </div>
@@ -16731,13 +16858,18 @@ function confirmApp(message, options = {}) {
   const okLabel = normalizeToastText(options.okLabel != null ? String(options.okLabel) : 'OK');
   const cancelLabel = normalizeToastText(options.cancelLabel != null ? String(options.cancelLabel) : 'Hủy');
   const bodyMessage = normalizeToastText(message);
+  const intent = ['danger', 'warning', 'default'].includes(String(options.intent || 'default')) ? String(options.intent || 'default') : 'default';
+  const iconText = normalizeToastText(options.icon != null ? String(options.icon) : (intent === 'danger' ? '!' : '?'));
+  const metaItems = Array.isArray(options.metaItems) ? options.metaItems : [];
   return new Promise(resolve => {
     const backdrop = document.getElementById('app-confirm-modal');
+    const dialog = backdrop ? backdrop.querySelector('.app-confirm-card') : null;
     const titleEl = document.getElementById('app-confirm-title');
+    const iconEl = document.getElementById('app-confirm-icon');
     const bodyEl = document.getElementById('app-confirm-body');
     const okBtn = document.getElementById('app-confirm-ok');
     const cancelBtn = document.getElementById('app-confirm-cancel');
-    if (!backdrop || !titleEl || !bodyEl || !okBtn || !cancelBtn) {
+    if (!backdrop || !dialog || !titleEl || !bodyEl || !okBtn || !cancelBtn) {
       resolve(false);
       return;
     }
@@ -16764,9 +16896,22 @@ function confirmApp(message, options = {}) {
       }
     };
     titleEl.textContent = title;
-    bodyEl.textContent = bodyMessage;
+    if (iconEl) iconEl.textContent = iconText;
+    dialog.classList.remove('app-confirm-default', 'app-confirm-danger', 'app-confirm-warning');
+    dialog.classList.add('app-confirm-' + intent);
+    const metaHtml = metaItems.length
+      ? `<div class="app-confirm-meta">${metaItems.map(item => `
+          <div class="app-confirm-meta-item">
+            <span class="app-confirm-meta-label">${escapeHtml(item && item.label != null ? item.label : '')}</span>
+            <span class="app-confirm-meta-value">${escapeHtml(item && item.value != null ? item.value : '')}</span>
+          </div>
+        `).join('')}</div>`
+      : '';
+    bodyEl.innerHTML = `<p class="app-confirm-message">${escapeHtml(bodyMessage)}</p>${metaHtml}`;
     okBtn.textContent = okLabel;
     cancelBtn.textContent = cancelLabel;
+    okBtn.className = 'btn-save btn-sm app-confirm-ok' + (intent === 'danger' ? ' danger' : '');
+    cancelBtn.className = 'btn-sm app-confirm-cancel';
     okBtn.addEventListener('click', onOk);
     cancelBtn.addEventListener('click', onCancel);
     backdrop.addEventListener('click', onBackdrop);
@@ -22673,7 +22818,26 @@ async function updatePortalStudentAccess(userId, plan, status, options) {
   const oldStatus = p ? String(p.portal_status || 'active') : 'active';
   const label = portalUserLabel(uid);
   if (!opts.skipConfirm) {
-    const ok = window.confirm(`Cập nhật quyền portal cho ${label}: ${portalPlanLabel(oldPlan)} / ${portalStatusLabel(oldStatus)} -> ${portalPlanLabel(next)} / ${portalStatusLabel(nextStatus)}?`);
+    const isBlocking = nextStatus === 'blocked';
+    const isReopening = oldStatus === 'blocked' && nextStatus !== 'blocked';
+    const ok = await confirmApp(
+      isBlocking
+        ? `${label} sẽ bị khóa truy cập Portal học sinh. Học sinh này sẽ không thể đăng nhập để xem hoặc tải tài liệu cho đến khi thầy/cô mở lại.`
+        : isReopening
+          ? `${label} sẽ được mở lại quyền truy cập Portal học sinh.`
+          : `Cập nhật quyền portal cho ${label}.`,
+      {
+        title: isBlocking ? 'Khóa tài khoản học sinh?' : (isReopening ? 'Mở lại tài khoản học sinh?' : 'Cập nhật quyền Portal?'),
+        icon: isBlocking ? '!' : '✓',
+        intent: isBlocking ? 'danger' : 'default',
+        okLabel: isBlocking ? 'Khóa tài khoản' : 'Cập nhật',
+        cancelLabel: isBlocking ? 'Giữ nguyên' : 'Hủy',
+        metaItems: [
+          { label: 'Hiện tại', value: `${portalPlanLabel(oldPlan)} / ${portalStatusLabel(oldStatus)}` },
+          { label: 'Sau thay đổi', value: `${portalPlanLabel(next)} / ${portalStatusLabel(nextStatus)}` }
+        ]
+      }
+    );
     if (!ok) return;
   }
   try {
