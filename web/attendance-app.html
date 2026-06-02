@@ -14156,6 +14156,7 @@ const STUDENT_EXAM_PAGE_SIZE = 20;
 let studentExamVisibleCount = STUDENT_EXAM_PAGE_SIZE;
 let studentExamAdvancedFiltersOpen = false;
 let studentPortalPresenceTimer = null;
+let studentPortalPresenceUnloadBound = false;
 
 function resetPortalPremiumState() {
   if (portalPremiumPollingTimer) clearInterval(portalPremiumPollingTimer);
@@ -17109,19 +17110,37 @@ function initAppShellDefaults() {
   document.getElementById('attendance-date').value = selectedDate;
 }
 
-async function touchStudentPortalPresence() {
+function markStudentPortalPresence(status, options = {}) {
   const uid = currentSession?.user?.id ? String(currentSession.user.id).trim() : '';
-  if (!uid || !currentSession?.access_token || !isStudent()) return;
+  if (!uid || !currentSession?.access_token || !isStudent()) return Promise.resolve(false);
+  const next = status === 'offline' ? 'offline' : 'online';
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + encodeURIComponent(uid), {
+    return fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + encodeURIComponent(uid), {
       method: 'PATCH',
       headers: getHeaders(),
-      body: JSON.stringify({ last_seen_at: new Date().toISOString() }),
+      body: JSON.stringify({
+        last_seen_at: new Date().toISOString(),
+        portal_presence_status: next
+      }),
+      keepalive: !!options.keepalive,
       cache: 'no-store'
+    }).then(r => !!(r && (r.ok || r.status === 204))).catch(e => {
+      if (!options.keepalive) console.warn('markStudentPortalPresence', e);
+      return false;
     });
   } catch (e) {
-    console.warn('touchStudentPortalPresence', e);
+    if (!options.keepalive) console.warn('markStudentPortalPresence', e);
+    return Promise.resolve(false);
   }
+}
+
+function touchStudentPortalPresence() {
+  return markStudentPortalPresence('online');
+}
+
+function markStudentPortalOfflineOnUnload() {
+  if (!isStudent() || !currentSession?.access_token) return;
+  markStudentPortalPresence('offline', { keepalive: true });
 }
 
 function stopStudentPortalPresenceHeartbeat() {
@@ -17134,6 +17153,11 @@ function stopStudentPortalPresenceHeartbeat() {
 function startStudentPortalPresenceHeartbeat() {
   if (!isStudent() || !currentSession?.access_token) return;
   touchStudentPortalPresence();
+  if (!studentPortalPresenceUnloadBound) {
+    studentPortalPresenceUnloadBound = true;
+    window.addEventListener('pagehide', markStudentPortalOfflineOnUnload);
+    window.addEventListener('beforeunload', markStudentPortalOfflineOnUnload);
+  }
   if (studentPortalPresenceTimer) return;
   studentPortalPresenceTimer = setInterval(() => {
     if (document.hidden) return;
@@ -19545,6 +19569,7 @@ async function signOutUser() {
   const rememberedWorkspaceKey = workspaceModuleStorageKeyForUser();
   stopPortalPresenceRefresh();
   stopStudentPortalPresenceHeartbeat();
+  await markStudentPortalPresence('offline').catch(() => false);
   try {
     if (currentSession?.access_token) {
       await fetch(SUPABASE_URL + '/auth/v1/logout', {
@@ -20770,7 +20795,7 @@ async function fetchPortalAnalyticsData() {
     'student_exam_activity?select=user_id,exam_file_id,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
   const examPath =
     'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,storage_provider,object_key,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published&is_published=eq.true&order=download_count.desc.nullslast,created_at.desc&limit=1000';
-  const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label,last_seen_at&limit=5000';
+  const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label,last_seen_at,portal_presence_status&limit=5000';
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const premiumOrdersPath = 'portal_premium_orders?select=id,user_id,product_key,amount_vnd,status,paid_at,created_at,expires_at,ref_code&order=created_at.desc&limit=200';
   const premiumEntitlementsPath = 'portal_premium_entitlements?select=user_id,product_key,portal_free_group,status,activated_at,expires_at&status=eq.active&limit=5000';
@@ -22444,9 +22469,10 @@ function portalLatestTime(...values) {
     .sort((a, b) => Date.parse(b || 0) - Date.parse(a || 0))[0] || '';
 }
 
-function portalUserPresenceState(lastAt) {
+function portalUserPresenceState(lastAt, presenceStatus) {
   const t = Date.parse(lastAt || '');
-  const online = !!t && (Date.now() - t) <= 5 * 60 * 1000;
+  const explicitOnline = String(presenceStatus || '').trim().toLowerCase() === 'online';
+  const online = explicitOnline && !!t && (Date.now() - t) <= 5 * 60 * 1000;
   return {
     online,
     className: online ? 'is-online' : 'is-offline',
@@ -22471,7 +22497,8 @@ function renderPortalStudentUsers(rows) {
       const status = String(p.portal_status || 'active');
       const premiumLabels = premiumKeys.map(portalPremiumProductTitle).filter(Boolean);
       const lastAt = portalLatestTime(p.last_seen_at, a.lastAt);
-      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, opens: a.opens, downloads: a.downloads, docs: a.docs.size, lastAt, score: a.opens + a.downloads * 2 };
+      const presenceStatus = String(p.portal_presence_status || 'offline').trim().toLowerCase() === 'online' ? 'online' : 'offline';
+      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, presenceStatus, opens: a.opens, downloads: a.downloads, docs: a.docs.size, lastAt, score: a.opens + a.downloads * 2 };
     });
   const counts = {
     total: allProfiles.length,
@@ -22501,7 +22528,7 @@ function renderPortalStudentUsers(rows) {
   const table = pageRows.length ? `<div class="portal-user-table-wrap"><table class="portal-table"><thead><tr><th>Học sinh</th><th>Nhóm</th><th>Gói</th><th>Trạng thái</th><th class="num">TL</th><th class="num">Mở</th><th class="num">Tải</th><th>Gần nhất</th><th></th></tr></thead><tbody>${
     pageRows.map(p => {
       const premiumButtonLabel = p.plan === 'premium' ? 'Gói premium' : 'Bật premium';
-      const presence = portalUserPresenceState(p.lastAt);
+      const presence = portalUserPresenceState(p.lastAt, p.presenceStatus);
       const planTitle = p.rawPlan === 'premium'
         ? 'Premium toàn bộ'
         : (p.premiumLabels && p.premiumLabels.length ? p.premiumLabels.join(', ') : portalPlanLabel(p.plan));
