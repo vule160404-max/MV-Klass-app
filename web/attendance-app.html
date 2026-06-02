@@ -14155,6 +14155,7 @@ let studentExamDownloadQuota = null;
 const STUDENT_EXAM_PAGE_SIZE = 20;
 let studentExamVisibleCount = STUDENT_EXAM_PAGE_SIZE;
 let studentExamAdvancedFiltersOpen = false;
+let studentPortalPresenceTimer = null;
 
 function resetPortalPremiumState() {
   if (portalPremiumPollingTimer) clearInterval(portalPremiumPollingTimer);
@@ -17108,6 +17109,38 @@ function initAppShellDefaults() {
   document.getElementById('attendance-date').value = selectedDate;
 }
 
+async function touchStudentPortalPresence() {
+  const uid = currentSession?.user?.id ? String(currentSession.user.id).trim() : '';
+  if (!uid || !currentSession?.access_token || !isStudent()) return;
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + encodeURIComponent(uid), {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({ last_seen_at: new Date().toISOString() }),
+      cache: 'no-store'
+    });
+  } catch (e) {
+    console.warn('touchStudentPortalPresence', e);
+  }
+}
+
+function stopStudentPortalPresenceHeartbeat() {
+  if (studentPortalPresenceTimer) {
+    clearInterval(studentPortalPresenceTimer);
+    studentPortalPresenceTimer = null;
+  }
+}
+
+function startStudentPortalPresenceHeartbeat() {
+  if (!isStudent() || !currentSession?.access_token) return;
+  touchStudentPortalPresence();
+  if (studentPortalPresenceTimer) return;
+  studentPortalPresenceTimer = setInterval(() => {
+    if (document.hidden) return;
+    touchStudentPortalPresence();
+  }, 60000);
+}
+
 function showStudentExamPortalUI() {
   runAfterAuthLoadingMinimum(() => {
     hideAuthLoadingNow();
@@ -17126,6 +17159,7 @@ function showStudentExamPortalUI() {
     if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
     const adminSwitch = document.getElementById('student-exam-admin-switch');
     if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
+    startStudentPortalPresenceHeartbeat();
     renderStudentExamPlanState();
     studentExamSetView(studentExamView || 'library');
   });
@@ -19510,6 +19544,7 @@ async function signUpStudentAccount() {
 async function signOutUser() {
   const rememberedWorkspaceKey = workspaceModuleStorageKeyForUser();
   stopPortalPresenceRefresh();
+  stopStudentPortalPresenceHeartbeat();
   try {
     if (currentSession?.access_token) {
       await fetch(SUPABASE_URL + '/auth/v1/logout', {
@@ -20735,7 +20770,7 @@ async function fetchPortalAnalyticsData() {
     'student_exam_activity?select=user_id,exam_file_id,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
   const examPath =
     'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,storage_provider,object_key,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published&is_published=eq.true&order=download_count.desc.nullslast,created_at.desc&limit=1000';
-  const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label&limit=5000';
+  const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label,last_seen_at&limit=5000';
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const premiumOrdersPath = 'portal_premium_orders?select=id,user_id,product_key,amount_vnd,status,paid_at,created_at,expires_at,ref_code&order=created_at.desc&limit=200';
   const premiumEntitlementsPath = 'portal_premium_entitlements?select=user_id,product_key,portal_free_group,status,activated_at,expires_at&status=eq.active&limit=5000';
@@ -22402,6 +22437,13 @@ function portalUserActivitySummary(rows) {
   return byUser;
 }
 
+function portalLatestTime(...values) {
+  return values
+    .map(v => String(v || '').trim())
+    .filter(Boolean)
+    .sort((a, b) => Date.parse(b || 0) - Date.parse(a || 0))[0] || '';
+}
+
 function portalUserPresenceState(lastAt) {
   const t = Date.parse(lastAt || '');
   const online = !!t && (Date.now() - t) <= 5 * 60 * 1000;
@@ -22428,7 +22470,8 @@ function renderPortalStudentUsers(rows) {
       const plan = rawPlan === 'premium' || premiumKeys.length ? 'premium' : 'free';
       const status = String(p.portal_status || 'active');
       const premiumLabels = premiumKeys.map(portalPremiumProductTitle).filter(Boolean);
-      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, opens: a.opens, downloads: a.downloads, docs: a.docs.size, lastAt: a.lastAt, score: a.opens + a.downloads * 2 };
+      const lastAt = portalLatestTime(p.last_seen_at, a.lastAt);
+      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, opens: a.opens, downloads: a.downloads, docs: a.docs.size, lastAt, score: a.opens + a.downloads * 2 };
     });
   const counts = {
     total: allProfiles.length,
