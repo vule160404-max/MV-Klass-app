@@ -879,7 +879,7 @@ begin
     coalesce(v_txn.occurred_at, now()),
     null
   )
-  on conflict (user_id, product_key)
+  on conflict on constraint portal_premium_entitlements_user_product_uidx
   do update set
     portal_free_group = excluded.portal_free_group,
     source_order_id = excluded.source_order_id,

@@ -1,6 +1,7 @@
--- 084 - Admin manual Premium package entitlements
--- Lets admin grant/revoke a specific Premium product without switching the
--- student's legacy portal_plan to global Premium access.
+-- 088 - Fix ambiguous Premium entitlement upsert conflict target
+-- The admin RPC returns a column named user_id, so PL/pgSQL can treat
+-- "on conflict (user_id, product_key)" as ambiguous. Use the named
+-- unique constraint instead.
 
 create or replace function public.admin_set_portal_premium_entitlement(
   p_user_id uuid,
@@ -131,7 +132,7 @@ begin
     v_old_status,
     v_new_status,
     nullif(trim(concat_ws(
-      ' · ',
+      ' - ',
       nullif(trim(coalesce(p_note, '')), ''),
       'product_key=' || v_product.product_key,
       coalesce(v_product.title, '')
@@ -149,88 +150,4 @@ begin
 end;
 $$;
 
-create or replace function public.admin_clear_portal_premium_access(
-  p_user_id uuid,
-  p_note text default null
-)
-returns table (
-  user_id uuid,
-  revoked_count integer,
-  portal_plan text,
-  portal_status text
-)
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_actor uuid := auth.uid();
-  v_old_plan text;
-  v_old_status text;
-  v_new_status text;
-  v_revoked integer := 0;
-begin
-  if not exists (
-    select 1 from public.profiles p
-    where p.id = v_actor and p.role = 'admin'
-  ) then
-    raise exception 'admin_required';
-  end if;
-
-  select p.portal_plan, p.portal_status
-  into v_old_plan, v_old_status
-  from public.profiles p
-  where p.id = p_user_id
-    and p.role = 'student';
-
-  if not found then
-    raise exception 'student_not_found';
-  end if;
-
-  v_new_status := case
-    when v_old_status in ('pending', 'blocked') then v_old_status
-    else 'active'
-  end;
-
-  update public.profiles p
-  set portal_plan = 'free',
-      portal_status = v_new_status
-  where p.id = p_user_id
-    and p.role = 'student';
-
-  update public.portal_premium_entitlements pe
-  set status = 'revoked',
-      expires_at = coalesce(pe.expires_at, now()),
-      updated_at = now()
-  where pe.user_id = p_user_id
-    and pe.status = 'active';
-
-  get diagnostics v_revoked = row_count;
-
-  insert into public.portal_account_audit (
-    actor_id,
-    target_user_id,
-    action,
-    old_portal_plan,
-    new_portal_plan,
-    old_portal_status,
-    new_portal_status,
-    note
-  )
-  values (
-    v_actor,
-    p_user_id,
-    'admin_clear_premium_access',
-    v_old_plan,
-    'free',
-    v_old_status,
-    v_new_status,
-    nullif(trim(concat_ws(' · ', nullif(trim(coalesce(p_note, '')), ''), 'revoked_count=' || v_revoked::text)), '')
-  );
-
-  return query select p_user_id, v_revoked, 'free'::text, v_new_status;
-end;
-$$;
-
 grant execute on function public.admin_set_portal_premium_entitlement(uuid, text, boolean, text) to authenticated;
-grant execute on function public.admin_clear_portal_premium_access(uuid, text) to authenticated;
