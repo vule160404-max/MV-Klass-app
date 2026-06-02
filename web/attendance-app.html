@@ -3028,8 +3028,8 @@
       }
     }
 
-    #app-confirm-modal{ z-index: 2001; }
-    #app-password-modal{ z-index: 2002; }
+    #app-confirm-modal{ z-index: 6000; }
+    #app-password-modal{ z-index: 6001; }
     #bank-tx-inspect-modal{ z-index: 1003; }
     #bank-tx-inspect-modal .modal{ max-width: 500px; }
     #bank-tx-receive-picker-modal{ z-index: 1004; }
@@ -22057,6 +22057,8 @@ function closePortalPremiumAccessPicker() {
 }
 
 function onPortalPremiumAccessKeydown(e) {
+  const confirmModal = document.getElementById('app-confirm-modal');
+  if (confirmModal && confirmModal.classList.contains('show')) return;
   if (e.key === 'Escape') {
     e.preventDefault();
     closePortalPremiumAccessPicker();
@@ -22096,8 +22098,8 @@ async function setPortalPremiumPackageForUser(encodedUserId, encodedProductKey, 
   const oldKeys = new Set(portalActivePremiumKeysForUser(uid));
   const oldEnabled = oldKeys.has(productKey);
   const text = enabled
-    ? `Bật gói "${productTitle}" cho ${label}?${oldPlan === 'premium' ? '\n\nQuyền Premium toàn bộ cũ sẽ được tắt và thay bằng quyền theo gói.' : ''}`
-    : `Tắt gói "${productTitle}" của ${label}?`;
+    ? `Bật gói "${productTitle}" cho học sinh ${label}?${oldPlan === 'premium' ? '\n\nQuyền Premium toàn bộ cũ sẽ được tắt và thay bằng quyền theo gói.' : ''}`
+    : `Tắt gói "${productTitle}" cho học sinh ${label}?`;
   const ok = await confirmApp(text, {
     title: enabled ? 'Bật gói Premium' : 'Tắt gói Premium',
     okLabel: enabled ? 'Bật gói' : 'Tắt gói',
