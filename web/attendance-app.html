@@ -4110,7 +4110,13 @@
     .portal-user-table-wrap{ max-height:620px; overflow:auto; border:1px solid rgba(99,138,218,.12); border-radius:14px; }
     .portal-user-table-wrap .portal-table th{ position:sticky; top:0; z-index:1; }
     .portal-user-name{ display:flex; align-items:center; gap:9px; min-width:0; }
-    .portal-user-avatar{ width:32px; height:32px; border-radius:12px; display:grid; place-items:center; background:#eef6ff; color:#1d4ed8; font-size:11px; font-weight:950; flex:0 0 auto; }
+    .portal-user-presence{ position:relative; width:32px; height:32px; border-radius:12px; display:grid; place-items:center; flex:0 0 auto; border:1px solid rgba(99,138,218,.14); box-shadow:0 8px 18px rgba(17,42,100,.08); }
+    .portal-user-presence::before{ content:""; width:14px; height:14px; border-radius:999px; box-shadow:0 0 0 4px rgba(255,255,255,.92), 0 0 0 7px rgba(99,138,218,.10); }
+    .portal-user-presence.is-online{ background:linear-gradient(135deg,#ecfdf5,#dcfce7); border-color:rgba(34,197,94,.28); }
+    .portal-user-presence.is-online::before{ background:#22c55e; box-shadow:0 0 0 4px rgba(255,255,255,.94), 0 0 0 8px rgba(34,197,94,.14); animation:portalPresencePulse 1.8s ease-in-out infinite; }
+    .portal-user-presence.is-offline{ background:linear-gradient(135deg,#fff7ed,#fef3c7); border-color:rgba(180,83,9,.24); }
+    .portal-user-presence.is-offline::before{ background:#b7791f; box-shadow:0 0 0 4px rgba(255,255,255,.94), 0 0 0 8px rgba(180,83,9,.12); }
+    @keyframes portalPresencePulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(.86); } }
     .portal-user-text{ min-width:0; }
     .portal-user-text .portal-table-title,.portal-user-text .portal-table-muted{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:260px; }
     .portal-user-pager{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; color:#718096; font-size:12px; font-weight:850; }
@@ -4316,7 +4322,7 @@
       .portal-user-table-wrap .portal-table td.portal-user-stat-cell::before{ content:attr(data-label); color:#718096; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
       .portal-user-table-wrap .portal-table td.portal-user-actions-cell{ margin-top:10px; padding-top:10px; border-top:1px solid rgba(99,138,218,.12); }
       .portal-user-name{ align-items:flex-start; }
-      .portal-user-avatar{ width:38px; height:38px; border-radius:14px; }
+      .portal-user-presence{ width:38px; height:38px; border-radius:14px; }
       .portal-user-text .portal-table-title{ white-space:normal; line-height:1.3; }
       .portal-user-text .portal-table-muted{ white-space:normal; line-height:1.4; margin-top:3px; overflow-wrap:anywhere; }
       .portal-row-actions{ display:grid; grid-template-columns:1fr; gap:7px; justify-content:stretch; }
@@ -19495,6 +19501,7 @@ async function signUpStudentAccount() {
 
 async function signOutUser() {
   const rememberedWorkspaceKey = workspaceModuleStorageKeyForUser();
+  stopPortalPresenceRefresh();
   try {
     if (currentSession?.access_token) {
       await fetch(SUPABASE_URL + '/auth/v1/logout', {
@@ -19769,6 +19776,7 @@ let _portalPremiumProducts = null;
 let _portalPremiumOrders = null;
 let _portalPremiumEntitlements = null;
 let _portalAnalyticsLoadedAt = 0;
+let portalPresenceRefreshTimer = null;
 let lastPortalAccessChange = null;
 let portalPremiumAccessUserId = '';
 let portalFreePickerRank = null;
@@ -20687,6 +20695,20 @@ async function loadAnalyticsIfNeeded() {
     return;
   }
   await refreshAnalytics();
+}
+
+function stopPortalPresenceRefresh() {
+  if (portalPresenceRefreshTimer) {
+    clearInterval(portalPresenceRefreshTimer);
+    portalPresenceRefreshTimer = null;
+  }
+}
+
+function startPortalPresenceRefresh() {
+  if (portalPresenceRefreshTimer || !isAdmin()) return;
+  portalPresenceRefreshTimer = setInterval(() => {
+    loadPortalAnalyticsIfNeeded(true).catch(e => console.warn('portal presence refresh', e));
+  }, 30000);
 }
 
 function invalidatePortalAnalyticsCache() {
@@ -22372,6 +22394,17 @@ function portalUserActivitySummary(rows) {
   return byUser;
 }
 
+function portalUserPresenceState(lastAt) {
+  const t = Date.parse(lastAt || '');
+  const online = !!t && (Date.now() - t) <= 5 * 60 * 1000;
+  return {
+    online,
+    className: online ? 'is-online' : 'is-offline',
+    label: online ? 'Đang hoạt động' : 'Offline',
+    title: online ? 'Đang hoạt động' : ('Offline' + (lastAt ? ' · gần nhất ' + portalActivityTimeLabel(lastAt) : ''))
+  };
+}
+
 function renderPortalStudentUsers(rows) {
   const el = document.getElementById('portal-student-users');
   if (!el) return;
@@ -22417,13 +22450,13 @@ function renderPortalStudentUsers(rows) {
   const table = pageRows.length ? `<div class="portal-user-table-wrap"><table class="portal-table"><thead><tr><th>Học sinh</th><th>Nhóm</th><th>Gói</th><th>Trạng thái</th><th class="num">TL</th><th class="num">Mở</th><th class="num">Tải</th><th>Gần nhất</th><th></th></tr></thead><tbody>${
     pageRows.map(p => {
       const premiumButtonLabel = p.plan === 'premium' ? 'Gói premium' : 'Bật premium';
-      const initials = portalUserLabel(p.uid).split(/\s+/).filter(Boolean).slice(-2).map(x => x[0]).join('').toUpperCase().slice(0, 2) || 'HS';
+      const presence = portalUserPresenceState(p.lastAt);
       const planTitle = p.rawPlan === 'premium'
         ? 'Premium toàn bộ'
         : (p.premiumLabels && p.premiumLabels.length ? p.premiumLabels.join(', ') : portalPlanLabel(p.plan));
       const uidArg = portalPremiumAccessArg(p.uid);
       return `<tr>
-        <td class="portal-user-primary-cell"><div class="portal-user-name"><div class="portal-user-avatar">${escapeHtml(initials)}</div><div class="portal-user-text"><div class="portal-table-title">${escapeHtml(portalUserLabel(p.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(p.uid))}</div></div></div></td>
+        <td class="portal-user-primary-cell"><div class="portal-user-name"><span class="portal-user-presence ${presence.className}" title="${escapeHtml(presence.title)}" aria-label="${escapeHtml(presence.label)}"></span><div class="portal-user-text"><div class="portal-table-title">${escapeHtml(portalUserLabel(p.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(p.uid))}</div></div></div></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity quiet">${escapeHtml(p.portal_class_label || portalFreeGroupLabel(p.portal_free_group))}</span></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity ${p.plan === 'premium' ? 'hot' : 'quiet'}" title="${escapeHtml(planTitle)}">${escapeHtml(portalPlanLabel(p.plan))}</span></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity ${portalStatusClass(p.status)}">${escapeHtml(portalStatusLabel(p.status))}</span></td>
@@ -32425,6 +32458,8 @@ function setBankAdminSubtab(tab) {
 function showTab(t, options = {}) {
   t = setTabDomState(t);
   updateTabDeepLink(t);
+  if (t === 'portal-admin') startPortalPresenceRefresh();
+  else stopPortalPresenceRefresh();
   // Keep sidebar open on desktop so admin can switch tabs continuously.
   // Auto-close only on smaller screens/touch-like layouts.
   if (window.innerWidth < 901) closeSidebarMenu();
