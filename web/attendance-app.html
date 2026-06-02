@@ -4101,7 +4101,7 @@
     .portal-premium-access-foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; }
     .portal-premium-access-error{ min-height:16px; color:#b91c1c; font-size:12px; font-weight:800; }
     .portal-user-shell{ display:grid; gap:10px; }
-    .portal-user-tools{ display:grid; grid-template-columns:minmax(220px,1fr) repeat(2,minmax(140px,180px)); gap:8px; align-items:center; }
+    .portal-user-tools{ display:grid; grid-template-columns:minmax(320px,1fr) minmax(130px,150px) minmax(150px,180px) minmax(120px,150px); gap:8px; align-items:center; }
     .portal-user-search,.portal-user-select{ min-height:38px; border-radius:12px; border:1px solid rgba(99,138,218,.16); background:#fff; color:#263852; padding:0 11px; font-size:12px; font-weight:850; outline:none; }
     .portal-user-search:focus,.portal-user-select:focus{ border-color:rgba(79,142,247,.45); box-shadow:0 0 0 3px rgba(79,142,247,.10); }
     .portal-user-summary{ display:flex; flex-wrap:wrap; gap:6px; }
@@ -10780,14 +10780,7 @@ button[data-bank-inspect-confirm-not]:hover,
               <div class="portal-panel-title">Học sinh portal</div>
               <div class="portal-panel-sub">Quản lý trạng thái Free/Premium và hoạt động từng tài khoản.</div>
             </div>
-            <select id="portal-plan-filter" class="analytics-att-month-inp" onchange="onPortalStudentFilterChange()">
-              <option value="all">Tất cả</option>
-              <option value="pending">Chờ duyệt</option>
-              <option value="free">Free</option>
-              <option value="premium">Premium</option>
-              <option value="blocked">Đã khóa</option>
-            </select>
-            <button type="button" class="btn-sm action-info" onclick="undoLastPortalAccessChange()">Hoàn tác</button>
+            <button type="button" class="btn-sm action-info" onclick="loadPortalAnalyticsIfNeeded(true)">Làm mới</button>
           </div>
           <div class="portal-panel-body" id="portal-student-users"></div>
         </div>
@@ -22433,6 +22426,13 @@ function renderPortalStudentUsers(rows) {
   el.innerHTML = `<div class="portal-user-shell">
     <div class="portal-user-tools">
       <input class="portal-user-search" id="portal-user-lookup-box" name="mvklass_portal_user_lookup" type="search" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1" placeholder="Tìm tên, email, mã tài khoản..." value="${escapeHtml(portalStudentQuery)}" oninput="onPortalStudentSearch(this.value)"/>
+      <select class="portal-user-select" id="portal-plan-filter" onchange="onPortalStudentFilterChange()">
+        <option value="all">Tất cả</option>
+        <option value="pending">Chờ duyệt</option>
+        <option value="free">Free</option>
+        <option value="premium">Premium</option>
+        <option value="blocked">Đã khóa</option>
+      </select>
       <select class="portal-user-select" id="portal-student-sort" onchange="onPortalStudentSortChange(this.value)">
         <option value="priority">Ưu tiên xử lý</option>
         <option value="last">Hoạt động mới nhất</option>
@@ -22464,6 +22464,8 @@ function renderPortalStudentUsers(rows) {
   </div>`;
   const sortEl = document.getElementById('portal-student-sort');
   if (sortEl) sortEl.value = portalStudentSort;
+  const filterEl = document.getElementById('portal-plan-filter');
+  if (filterEl) filterEl.value = filter;
   const sizeEl = document.getElementById('portal-student-page-size');
   if (sizeEl) sizeEl.value = String(portalStudentPageSize);
   syncPortalStudentSearchInput();
