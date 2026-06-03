@@ -6243,38 +6243,38 @@
     @media (max-width:699px){.student-exam-portal{overflow-x:hidden}.student-exam-shell{width:100%;max-width:100%;padding:8px 10px 38px;overflow-x:hidden}.student-exam-header{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:9px;margin:0 -10px 10px;padding:10px;background:rgba(245,248,252,.96)}.student-exam-brand{width:100%;min-width:0}.student-exam-logo{width:36px;height:36px;border-radius:12px}.student-exam-brand-title{font-size:14px}.student-exam-brand-sub{font-size:10.5px}.student-exam-user{width:100%;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:6px;align-items:center}.student-exam-plan{min-height:32px;padding:6px 9px;font-size:10.5px}.student-exam-download-credit{min-width:0;min-height:34px;justify-content:center;padding:0 9px;font-size:11px;overflow:hidden;text-overflow:ellipsis}.student-exam-logout{min-width:0;min-height:34px;padding:7px 10px;font-size:11px;box-shadow:0 5px 13px rgba(18,33,61,.06);white-space:nowrap}.student-exam-admin-link{font-size:0;padding-left:10px;padding-right:9px}.student-exam-admin-link::before{content:"Quản trị";font-size:11px;line-height:1}.student-exam-admin-link svg{width:13px;height:13px}.student-premium-entry{display:grid;grid-template-columns:1fr;justify-content:stretch}.student-premium-entry-btn{width:100%;min-height:50px}.student-exam-history-btn{width:100%}.student-premium-view{padding:12px;place-items:end center}.student-premium-purchase{width:calc(100vw - 18px);max-height:calc(100vh - 24px);border-radius:22px}.student-premium-close{top:10px;right:10px;width:38px;height:38px}.student-premium-head{padding:22px 58px 20px 18px}.student-premium-body{padding:14px}.student-premium-title-row,.student-premium-checkout-head{display:grid;grid-template-columns:1fr}.student-premium-price{justify-items:start;text-align:left}.student-premium-pay-grid{grid-template-columns:1fr}.student-premium-qr-panel{justify-items:center}.student-premium-qr{width:min(240px,100%)}.student-premium-copy-row{grid-template-columns:1fr}.student-premium-success-panel{grid-template-columns:1fr;text-align:center;justify-items:center;padding:20px 16px}.student-premium-success-meta{justify-content:center}.student-premium-success-mark{width:70px;height:70px}.student-exam-hero{border-radius:22px;padding:20px 16px}.student-exam-hero h1{font-size:30px}.student-exam-hero p{margin:10px 0 14px;font-size:13px;line-height:1.55}.portal-premium-grid{grid-template-columns:1fr}.portal-premium-form{grid-template-columns:1fr}.student-exam-data-overview{padding:13px;border-radius:18px}.student-exam-data-line{display:grid;grid-template-columns:1fr;gap:6px}.student-exam-data-title{font-size:15px}.student-exam-data-mini{text-align:left}.student-exam-data-columns{grid-template-columns:1fr}.student-exam-data-column{padding:11px}.student-exam-data-source-name{font-size:11.5px}.student-exam-filters{margin-top:10px;border-radius:20px}.student-exam-filter-grid{display:grid;grid-template-columns:1fr}.student-exam-filter-main{grid-template-columns:1fr 1fr}.student-exam-filter-main .student-exam-filter-toggle{grid-column:1/-1}.student-exam-filter-advanced{display:none;grid-template-columns:1fr}.student-exam-filter-advanced.open{display:grid}.student-exam-search{min-height:44px}.student-exam-section{margin-top:18px}.student-exam-feature-grid{display:flex;grid-template-columns:none;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 2px 4px;scrollbar-width:none}.student-exam-feature-grid::-webkit-scrollbar{display:none}.student-exam-feature-grid .student-exam-card{min-width:84%;scroll-snap-align:start}.student-exam-card{border-radius:18px;padding:14px}.student-exam-card-top{display:grid;grid-template-columns:1fr;gap:8px}.student-exam-card-tools{justify-content:space-between}.student-exam-downloads{justify-self:start}.student-exam-actions{gap:9px}.student-exam-action{min-height:46px}.student-exam-more{width:100%}.student-exam-preview-modal{padding:10px}.student-exam-preview-dialog{width:100%;max-height:92vh;border-radius:20px;grid-template-rows:auto minmax(320px,1fr) auto}.student-exam-preview-body{min-height:320px}.student-exam-preview-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}.student-exam-preview-actions .student-exam-action{width:100%;min-width:0;min-height:48px}.student-exam-pdf-pages{padding:10px}.student-exam-pdf-page{border-radius:8px}}
     @media (max-width:420px){.student-exam-user{grid-template-columns:auto minmax(0,1fr) auto}.student-exam-admin-link{grid-column:1/3}.student-exam-logout:not(.student-exam-admin-link){grid-column:3}.student-exam-hero h1{font-size:28px}.student-exam-download-credit{font-size:10.5px}}
     @media (max-width:699px){
-      #portal-premium-products-admin.portal-panel-body{ padding:10px; }
+      #portal-premium-products-admin.portal-panel-body{ max-height:min(70dvh,640px); overflow:auto; padding:10px; scrollbar-gutter:stable; }
       .portal-premium-summary{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin-bottom:10px; }
       .portal-premium-summary .portal-user-chip{ border-radius:12px; min-height:34px; }
       .portal-premium-summary .portal-user-chip:last-child{ grid-column:1/-1; }
-      .portal-premium-grid{ gap:10px; }
-      .portal-premium-product{ gap:11px; padding:12px; border-radius:16px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 20px rgba(17,42,100,.06); }
-      .portal-premium-product-head{ gap:8px; }
-      .portal-premium-product-title{ font-size:14px; }
-      .portal-premium-product-sub{ font-size:11.5px; }
-      .portal-premium-product .portal-intensity{ min-width:auto; min-height:32px; padding:6px 9px; border-radius:999px; }
+      .portal-premium-grid{ gap:8px; }
+      .portal-premium-product{ gap:8px; padding:10px; border-radius:15px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 7px 16px rgba(17,42,100,.055); }
+      .portal-premium-product-head{ gap:7px; }
+      .portal-premium-product-title{ font-size:13px; }
+      .portal-premium-product-sub{ font-size:10.5px; line-height:1.25; }
+      .portal-premium-product .portal-intensity{ min-width:auto; min-height:28px; padding:5px 8px; border-radius:999px; font-size:10.5px; }
       .portal-premium-field-label{ font-size:9.5px; }
-      .portal-premium-title-input,.portal-premium-price-input{ min-height:42px; border-radius:12px; font-size:14px; }
-      .portal-premium-desc-input{ min-height:78px; border-radius:12px; font-size:13px; line-height:1.45; }
+      .portal-premium-title-input,.portal-premium-price-input{ min-height:38px; border-radius:11px; font-size:13px; }
+      .portal-premium-desc-input{ min-height:58px; max-height:76px; resize:none; overflow:auto; border-radius:11px; font-size:12px; line-height:1.38; }
       .portal-premium-controls{ grid-template-columns:minmax(0,1fr) auto; gap:8px; }
-      .portal-premium-switch{ min-height:42px; align-self:end; padding:7px 10px; border-radius:13px; }
-      .portal-premium-switch-text{ font-size:11.5px; }
-      .portal-premium-save{ width:100%; min-height:44px; border-radius:12px; font-size:13px; }
+      .portal-premium-switch{ min-height:36px; align-self:end; padding:6px 9px; border-radius:12px; }
+      .portal-premium-switch-text{ font-size:11px; }
+      .portal-premium-save{ width:100%; min-height:36px; border-radius:11px; font-size:12px; }
       .portal-premium-compact .portal-panel-sub{ display:block; font-size:11px; line-height:1.35; }
       .portal-premium-compact .portal-premium-summary{ grid-template-columns:repeat(2,minmax(0,1fr)); margin-bottom:10px; }
       .portal-premium-compact .portal-premium-summary .portal-user-chip:last-child{ grid-column:1/-1; }
-      .portal-premium-compact .portal-premium-grid{ grid-template-columns:1fr; gap:10px; }
-      .portal-premium-compact .portal-premium-product{ grid-template-columns:1fr; gap:11px; padding:12px; border-radius:16px; }
-      .portal-premium-compact .portal-premium-product-head,
-      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(1),
-      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(2),
-      .portal-premium-compact .portal-premium-form{ grid-column:auto; }
-      .portal-premium-compact .portal-premium-desc-input{ min-height:78px; max-height:none; resize:vertical; border-radius:12px; font-size:13px; line-height:1.45; }
-      .portal-premium-compact .portal-premium-form{ grid-template-columns:1fr; }
-      .portal-premium-compact .portal-premium-controls .portal-premium-field,
+      .portal-premium-compact .portal-premium-grid{ grid-template-columns:1fr; gap:8px; }
+      .portal-premium-compact .portal-premium-product{ grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:8px; padding:10px; border-radius:15px; align-items:end; }
+      .portal-premium-compact .portal-premium-product-head{ grid-column:1; grid-row:1; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; padding:0; border:0; }
+      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(1){ grid-column:2; grid-row:1; }
+      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(2){ grid-column:1; grid-row:2; }
+      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(3){ grid-column:1/-1; grid-row:3; }
+      .portal-premium-compact .portal-premium-form{ grid-column:2; grid-row:2; display:grid; grid-template-columns:minmax(0,1fr) 66px; gap:7px; align-items:end; }
+      .portal-premium-compact .portal-premium-controls{ display:contents; }
       .portal-premium-compact .portal-premium-switch,
       .portal-premium-compact .portal-premium-save{ grid-column:auto; justify-self:stretch; }
-      .portal-premium-compact .portal-premium-switch{ width:100%; }
+      .portal-premium-compact .portal-premium-switch{ width:100%; min-width:0; }
+      .portal-premium-compact .portal-premium-save{ min-width:0; padding-left:8px; padding-right:8px; }
     }
     @media (min-width:700px){.student-exam-filter-grid{grid-template-columns:1fr}.student-exam-filter-main{grid-template-columns:repeat(2,minmax(0,1fr)) auto}.student-exam-filter-advanced{grid-template-columns:repeat(4,minmax(0,1fr))}}
     .student-exam-data-overview{position:relative;overflow:hidden;margin-top:16px;padding:20px 22px;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,251,255,.96) 54%,rgba(255,248,232,.82));border:1px solid rgba(26,52,96,.12);box-shadow:0 18px 44px rgba(18,33,61,.10)}
