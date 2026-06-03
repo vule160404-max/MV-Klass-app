@@ -4504,8 +4504,60 @@
       .analytics-report-field{ flex: 1 1 150px; }
     }
     @media (max-width: 520px){
-      .analytics-report-controls{ flex-direction:column; align-items:stretch; }
-      .analytics-report-export{ width:100%; }
+      #analytics-pane-rev > .analytics-muted{
+        margin-bottom:8px !important;
+        font-size:11.5px !important;
+        line-height:1.45 !important;
+      }
+      #analytics-export-section.analytics-reports{
+        gap:10px;
+        padding:12px;
+        margin:8px 0 12px;
+        border-radius:16px;
+        box-shadow:0 10px 26px rgba(15,31,61,.08);
+      }
+      #analytics-export-section .analytics-reports-main{
+        min-width:0;
+      }
+      #analytics-export-section .analytics-reports-main h3{
+        font-size:14px;
+        margin-bottom:2px;
+      }
+      #analytics-export-section .analytics-reports-main .analytics-muted{
+        font-size:11px;
+        line-height:1.35;
+      }
+      .analytics-report-controls{
+        flex-direction:column;
+        align-items:stretch;
+        gap:8px;
+      }
+      .analytics-report-field{
+        flex:0 0 auto;
+        min-width:0;
+        gap:5px;
+      }
+      .analytics-report-field label{
+        font-size:10px;
+        letter-spacing:.04em;
+        text-transform:uppercase;
+      }
+      .analytics-report-field select,
+      .analytics-report-field input{
+        width:100%;
+        height:42px;
+        min-height:42px;
+        border-radius:12px;
+        font-size:14px;
+        padding:8px 12px;
+      }
+      .analytics-report-export{
+        width:100%;
+        height:42px;
+        min-height:42px;
+        margin-top:2px;
+        border-radius:12px;
+      }
     }
 
     /* Tuition / revenue table (keep structure but modernize) */
