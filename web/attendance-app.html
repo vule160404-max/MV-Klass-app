@@ -20263,13 +20263,28 @@ let leaderboardMetric = 'performance';
 let leaderboardPanelTab = 'ranking';
 let leaderboardHistoryPage = 1;
 const LEADERBOARD_HISTORY_PAGE_SIZE = 13;
-const LEADERBOARD_MANUAL_STORAGE_KEY = 'leaderboard_manual_scores_v2';
+const LEADERBOARD_MANUAL_STORAGE_KEY = 'leaderboard_manual_scores_v3';
 const LEADERBOARD_PERFORMANCE_HISTORY_KEY = 'leaderboard_performance_history_v1';
 let leaderboardManualScores = loadLeaderboardManualScores();
 let leaderboardPerformanceHistory = loadLeaderboardPerformanceHistory();
 /** true khi GET bảng leaderboard_manual_scores thành công (đã triển khai SQL 029). */
 let leaderboardManualRemoteOk = false;
 let leaderboardHistoryRemoteOk = false;
+
+function leaderboardCurrentMonthKey() {
+  const now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+}
+
+function normalizeLeaderboardMonthKey(monthKey) {
+  const key = String(monthKey || '').trim();
+  return /^\d{4}-\d{2}$/.test(key) ? key : leaderboardCurrentMonthKey();
+}
+
+function getSelectedLeaderboardMonthKey() {
+  const monthSel = document.getElementById('leaderboard-month-filter');
+  return normalizeLeaderboardMonthKey(monthSel && monthSel.value ? monthSel.value : '');
+}
 
 function leaderboardNameFromMetric(metric) {
   if (metric === 'attendance') return 'chuyên cần';
@@ -20292,10 +20307,14 @@ function normalizeLeaderboardMetric(metric) {
 
 function loadLeaderboardManualScores() {
   try {
-    const raw = localStorage.getItem(LEADERBOARD_MANUAL_STORAGE_KEY);
+    const raw = localStorage.getItem(LEADERBOARD_MANUAL_STORAGE_KEY) || localStorage.getItem('leaderboard_manual_scores_v2');
     if (!raw) return {};
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    if (!parsed || typeof parsed !== 'object') return {};
+    const monthKey = leaderboardCurrentMonthKey();
+    const looksMonthly = Object.keys(parsed).some(k => /^\d{4}-\d{2}$/.test(k));
+    if (looksMonthly) return parsed;
+    return { [monthKey]: parsed };
   } catch (e) {
     return {};
   }
@@ -20305,6 +20324,27 @@ function saveLeaderboardManualScores() {
   try {
     localStorage.setItem(LEADERBOARD_MANUAL_STORAGE_KEY, JSON.stringify(leaderboardManualScores || {}));
   } catch (e) {}
+}
+
+function getLeaderboardManualMonthBucket(monthKey, create) {
+  const key = normalizeLeaderboardMonthKey(monthKey);
+  if (!leaderboardManualScores || typeof leaderboardManualScores !== 'object') leaderboardManualScores = {};
+  if (!leaderboardManualScores[key] || typeof leaderboardManualScores[key] !== 'object') {
+    if (!create) return {};
+    leaderboardManualScores[key] = {};
+  }
+  return leaderboardManualScores[key];
+}
+
+function setLeaderboardManualEntry(studentId, entry, monthKey) {
+  const sid = String(studentId || '').trim();
+  if (!sid) return;
+  const bucket = getLeaderboardManualMonthBucket(monthKey, true);
+  bucket[sid] = {
+    performance: Math.max(0, parseInt(entry && entry.performance, 10) || 0),
+    contribution: Math.max(0, parseInt(entry && entry.contribution, 10) || 0),
+    minigame: Math.max(0, parseInt(entry && entry.minigame, 10) || 0)
+  };
 }
 
 function loadLeaderboardPerformanceHistory() {
@@ -20334,6 +20374,7 @@ function normalizeLeaderboardHistoryRecord(input, idx) {
   const dateLabel = x.dateLabel || (dt ? dt.toLocaleDateString(APP.i18n.locale || 'vi-VN') : '');
   const timeLabel = x.timeLabel || (dt ? dt.toLocaleTimeString(APP.i18n.locale || 'vi-VN', { hour: '2-digit', minute: '2-digit' }) : '');
   const metric = normalizeLeaderboardMetric(x.metric);
+  const scoreMonth = normalizeLeaderboardMonthKey(x.scoreMonth || x.score_month || (ts ? ts.slice(0, 7) : ''));
   return {
     id,
     ts,
@@ -20344,18 +20385,26 @@ function normalizeLeaderboardHistoryRecord(input, idx) {
     classShort: String(x.classShort || x.class_short || 'Chua gán l?p'),
     points: Math.max(0, parseInt(x.points, 10) || 0),
     topName: String(x.topName || x.top_name || leaderboardTopNameFromMetric(metric)),
-    metric
+    metric,
+    scoreMonth
   };
 }
 
 async function refreshLeaderboardPerformanceHistory() {
   if (!isAdmin() || typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return;
   try {
-    const r = await fetch(
+    const fetchRows = (includeMonth) => fetch(
       SUPABASE_URL +
-        '/rest/v1/leaderboard_performance_history?select=client_event_id,student_id,student_name,class_short,points,metric,top_name,event_at,created_at&order=event_at.desc.nullslast,created_at.desc&limit=200',
+        '/rest/v1/leaderboard_performance_history?select=client_event_id,student_id,student_name,class_short,points,metric,top_name,event_at,created_at' +
+        (includeMonth ? ',score_month' : '') +
+        '&order=event_at.desc.nullslast,created_at.desc&limit=500',
       { headers: { ...getHeaders(), Accept: 'application/json' }, cache: 'no-store' }
     );
+    let r = await fetchRows(true);
+    if (!r.ok && r.status === 400) {
+      const txt = await r.text().catch(() => '');
+      if (/score_month/i.test(txt)) r = await fetchRows(false);
+    }
     if (!r.ok) {
       leaderboardHistoryRemoteOk = false;
       return;
@@ -20374,10 +20423,8 @@ async function insertLeaderboardPerformanceHistoryApi(entry) {
   if (!isAdmin() || typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return false;
   const rec = normalizeLeaderboardHistoryRecord(entry || {}, 0);
   if (!rec.id || !rec.studentId || !rec.points) return false;
-  const post = (metric) => fetch(SUPABASE_URL + '/rest/v1/leaderboard_performance_history', {
-    method: 'POST',
-    headers: getHeaders('resolution=merge-duplicates,return=minimal'),
-    body: JSON.stringify({
+  const post = (metric, includeMonth) => {
+    const body = {
       client_event_id: rec.id,
       student_id: rec.studentId,
       student_name: rec.studentName,
@@ -20386,14 +20433,23 @@ async function insertLeaderboardPerformanceHistoryApi(entry) {
       metric,
       top_name: rec.topName,
       event_at: rec.ts || new Date().toISOString()
-    })
-  });
+    };
+    if (includeMonth) body.score_month = rec.scoreMonth;
+    return fetch(SUPABASE_URL + '/rest/v1/leaderboard_performance_history', {
+      method: 'POST',
+      headers: getHeaders('resolution=merge-duplicates,return=minimal'),
+      body: JSON.stringify(body)
+    });
+  };
   try {
-    let r = await post(rec.metric);
-    if (!r.ok && rec.metric === 'minigame' && r.status === 400) {
+    let r = await post(rec.metric, true);
+    if (!r.ok && r.status === 400) {
       const txt = await r.text().catch(() => '');
+      if (/score_month/i.test(txt)) {
+        r = await post(rec.metric, false);
+      }
       if (/metric/i.test(txt)) {
-        r = await post('performance');
+        r = await post('performance', !/score_month/i.test(txt));
       }
     }
     leaderboardHistoryRemoteOk = !!r.ok;
@@ -20428,6 +20484,7 @@ function pushLeaderboardPerformanceHistory(studentId, delta, metric) {
   const fullClass = student ? leaderboardClassLabelFromStudent(student) : 'Chua gán l?p';
   const classShort = compactClassLabel(String(fullClass || 'Chua gán l?p'), 20);
   const now = new Date();
+  const scoreMonth = getSelectedLeaderboardMonthKey();
   const entryId = 'hist_' + String(now.getTime()) + '_' + Math.random().toString(36).slice(2, 8);
   const normalizedMetric = normalizeLeaderboardMetric(metric);
   const topName = leaderboardTopNameFromMetric(normalizedMetric);
@@ -20441,7 +20498,8 @@ function pushLeaderboardPerformanceHistory(studentId, delta, metric) {
     classShort,
     points,
     topName,
-    metric: normalizedMetric
+    metric: normalizedMetric,
+    scoreMonth
   };
   leaderboardPerformanceHistory.unshift(rec);
   if (leaderboardPerformanceHistory.length > 200) leaderboardPerformanceHistory = leaderboardPerformanceHistory.slice(0, 200);
@@ -20457,6 +20515,7 @@ async function rollbackLeaderboardHistory(recordId) {
   const rec = leaderboardPerformanceHistory[idx] || {};
   const sid = String(rec.studentId || '').trim();
   const metric = normalizeLeaderboardMetric(rec.metric);
+  const scoreMonth = normalizeLeaderboardMonthKey(rec.scoreMonth || (rec.ts ? String(rec.ts).slice(0, 7) : ''));
   const points = Math.max(0, parseInt(rec.points, 10) || 0);
   if (!sid || !points) {
     showAppToast('Không thể hủy dòng lịch sử cũ này (thiếu dữ liệu học sinh/điểm).');
@@ -20464,19 +20523,19 @@ async function rollbackLeaderboardHistory(recordId) {
   }
   const yes = window.confirm('Hủy cộng ' + points + ' điểm cho "' + String(rec.studentName || 'học sinh') + '"?');
   if (!yes) return;
-  const cur = getLeaderboardManualEntry(sid);
+  const cur = getLeaderboardManualEntry(sid, scoreMonth);
   const next = {
     performance: Math.max(0, cur.performance - (metric === 'performance' ? points : 0)),
     contribution: Math.max(0, cur.contribution - (metric === 'contribution' ? points : 0)),
     minigame: Math.max(0, cur.minigame - (metric === 'minigame' ? points : 0))
   };
-  leaderboardManualScores[sid] = next;
+  setLeaderboardManualEntry(sid, next, scoreMonth);
   leaderboardPerformanceHistory.splice(idx, 1);
   saveLeaderboardManualScores();
   saveLeaderboardPerformanceHistory();
   renderLeaderboard();
   const historyDeleted = await deleteLeaderboardPerformanceHistoryApi(id);
-  const synced = await upsertLeaderboardManualScoreApi(sid, next.performance, next.contribution, next.minigame);
+  const synced = await upsertLeaderboardManualScoreApi(sid, next.performance, next.contribution, next.minigame, scoreMonth);
   if (synced && historyDeleted) {
     showAppToast('Đã hủy điểm thành công');
   } else {
@@ -20498,7 +20557,10 @@ function renderLeaderboardPerformanceHistory() {
   const nextBtn = document.getElementById('leaderboard-history-next');
   const pageMeta = document.getElementById('leaderboard-history-page-meta');
   if (!body) return;
-  const allRows = Array.isArray(leaderboardPerformanceHistory) ? leaderboardPerformanceHistory.slice(0, 200) : [];
+  const selectedMonth = getSelectedLeaderboardMonthKey();
+  const allRows = (Array.isArray(leaderboardPerformanceHistory) ? leaderboardPerformanceHistory : [])
+    .filter(r => normalizeLeaderboardMonthKey((r && r.scoreMonth) || (r && r.ts ? String(r.ts).slice(0, 7) : '')) === selectedMonth)
+    .slice(0, 200);
   const totalPages = Math.max(1, Math.ceil(allRows.length / LEADERBOARD_HISTORY_PAGE_SIZE));
   if (leaderboardHistoryPage > totalPages) leaderboardHistoryPage = totalPages;
   if (leaderboardHistoryPage < 1) leaderboardHistoryPage = 1;
@@ -20535,31 +20597,36 @@ function renderLeaderboardPerformanceHistory() {
   if (pageMeta) pageMeta.textContent = 'Trang ' + leaderboardHistoryPage + '/' + totalPages;
 }
 
-async function upsertLeaderboardManualScoreApi(studentId, performance, contribution, minigame) {
+async function upsertLeaderboardManualScoreApi(studentId, performance, contribution, minigame, monthKey) {
   const sid = String(studentId || '').trim();
   if (!sid || typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return false;
+  const scoreMonth = normalizeLeaderboardMonthKey(monthKey);
   const performancePts = Math.max(0, parseInt(performance, 10) || 0);
   const contributionPts = Math.max(0, parseInt(contribution, 10) || 0);
   const minigamePts = Math.max(0, parseInt(minigame, 10) || 0);
-  const tryUpsert = async (includeMinigame) => {
+  const tryUpsert = async (includeMinigame, includeMonth) => {
     const body = {
       student_id: sid,
       performance_pts: performancePts,
       contribution_pts: contributionPts
     };
+    if (includeMonth) body.score_month = scoreMonth;
     if (includeMinigame) body.minigame_pts = minigamePts;
-    return fetch(SUPABASE_URL + '/rest/v1/leaderboard_manual_scores?on_conflict=student_id', {
+    return fetch(SUPABASE_URL + '/rest/v1/leaderboard_manual_scores?on_conflict=' + (includeMonth ? 'student_id,score_month' : 'student_id'), {
       method: 'POST',
       headers: getHeaders('resolution=merge-duplicates,return=minimal'),
       body: JSON.stringify(body)
     });
   };
   try {
-    let r = await tryUpsert(true);
+    let r = await tryUpsert(true, true);
     if (!r.ok && r.status === 400) {
       const txt = await r.text().catch(() => '');
+      if (/score_month|on_conflict/i.test(txt)) {
+        r = await tryUpsert(true, false);
+      }
       if (/minigame_pts/i.test(txt)) {
-        r = await tryUpsert(false);
+        r = await tryUpsert(false, !/score_month|on_conflict/i.test(txt));
       }
     }
     if (r.ok) {
@@ -20580,22 +20647,27 @@ async function refreshLeaderboardManualScores() {
   if (!isAdmin() || typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return;
   let rows = [];
   let minigameSupported = true;
-  const fetchRows = async (includeMinigame) => {
+  let monthSupported = true;
+  const fetchRows = async (includeMinigame, includeMonth) => {
     const cols = includeMinigame
-      ? 'student_id,performance_pts,contribution_pts,minigame_pts'
-      : 'student_id,performance_pts,contribution_pts';
+      ? 'student_id,performance_pts,contribution_pts,minigame_pts' + (includeMonth ? ',score_month' : '')
+      : 'student_id,performance_pts,contribution_pts' + (includeMonth ? ',score_month' : '');
     return fetch(
       SUPABASE_URL + '/rest/v1/leaderboard_manual_scores?select=' + cols + '&limit=5000',
       { headers: { ...getHeaders(), Accept: 'application/json' }, cache: 'no-store' }
     );
   };
   try {
-    let r = await fetchRows(true);
+    let r = await fetchRows(true, true);
     if (!r.ok && r.status === 400) {
       const txt = await r.text().catch(() => '');
+      if (/score_month/i.test(txt)) {
+        monthSupported = false;
+        r = await fetchRows(true, false);
+      }
       if (/minigame_pts/i.test(txt)) {
         minigameSupported = false;
-        r = await fetchRows(false);
+        r = await fetchRows(false, monthSupported);
       }
     }
     if (!r.ok) {
@@ -20613,7 +20685,9 @@ async function refreshLeaderboardManualScores() {
   (Array.isArray(rows) ? rows : []).forEach(row => {
     const sid = String(row.student_id || '').trim();
     if (!sid) return;
-    fromServer[sid] = {
+    const scoreMonth = monthSupported ? normalizeLeaderboardMonthKey(row.score_month) : leaderboardCurrentMonthKey();
+    if (!fromServer[scoreMonth]) fromServer[scoreMonth] = {};
+    fromServer[scoreMonth][sid] = {
       performance: Math.max(0, parseInt(row.performance_pts, 10) || 0),
       contribution: Math.max(0, parseInt(row.contribution_pts, 10) || 0),
       minigame: Math.max(0, parseInt(row.minigame_pts, 10) || 0)
@@ -20621,38 +20695,49 @@ async function refreshLeaderboardManualScores() {
   });
   const localOnly = loadLeaderboardManualScores();
   const merged = {};
-  Object.keys(fromServer).forEach(sid => {
-    merged[sid] = {
-      performance: fromServer[sid].performance,
-      contribution: fromServer[sid].contribution,
-      minigame: fromServer[sid].minigame
-    };
+  Object.keys(fromServer).forEach(monthKey => {
+    merged[monthKey] = {};
+    Object.keys(fromServer[monthKey] || {}).forEach(sid => {
+      merged[monthKey][sid] = {
+        performance: fromServer[monthKey][sid].performance,
+        contribution: fromServer[monthKey][sid].contribution,
+        minigame: fromServer[monthKey][sid].minigame
+      };
+    });
   });
   const toPush = [];
-  Object.keys(localOnly || {}).forEach(sid => {
-    const L = localOnly[sid] || {};
-    const Lp = Math.max(0, parseInt(L.performance, 10) || 0);
-    const Lc = Math.max(0, parseInt(L.contribution, 10) || 0);
-    const Lm = Math.max(0, parseInt(L.minigame, 10) || 0);
-    const Sp = (fromServer[sid] && fromServer[sid].performance) || 0;
-    const Sc = (fromServer[sid] && fromServer[sid].contribution) || 0;
-    const Sm = (fromServer[sid] && fromServer[sid].minigame) || 0;
-    const perf = Math.max(Sp, Lp);
-    const contrib = Math.max(Sc, Lc);
-    const mini = Math.max(Sm, Lm);
-    merged[sid] = { performance: perf, contribution: contrib, minigame: mini };
-    if (Lp > Sp || Lc > Sc || Lm > Sm) {
-      const row = { student_id: sid, performance_pts: perf, contribution_pts: contrib };
-      if (minigameSupported) row.minigame_pts = mini;
-      toPush.push(row);
-    }
+  Object.keys(localOnly || {}).forEach(rawMonth => {
+    const monthKey = normalizeLeaderboardMonthKey(rawMonth);
+    const localBucket = localOnly[rawMonth] || {};
+    if (!merged[monthKey]) merged[monthKey] = {};
+    Object.keys(localBucket || {}).forEach(sid => {
+      const L = localBucket[sid] || {};
+      const Lp = Math.max(0, parseInt(L.performance, 10) || 0);
+      const Lc = Math.max(0, parseInt(L.contribution, 10) || 0);
+      const Lm = Math.max(0, parseInt(L.minigame, 10) || 0);
+      const serverBucket = (fromServer[monthKey] || {});
+      const Sp = (serverBucket[sid] && serverBucket[sid].performance) || 0;
+      const Sc = (serverBucket[sid] && serverBucket[sid].contribution) || 0;
+      const Sm = (serverBucket[sid] && serverBucket[sid].minigame) || 0;
+      const perf = Math.max(Sp, Lp);
+      const contrib = Math.max(Sc, Lc);
+      const mini = Math.max(Sm, Lm);
+      merged[monthKey][sid] = { performance: perf, contribution: contrib, minigame: mini };
+      if (Lp > Sp || Lc > Sc || Lm > Sm) {
+        if (!monthSupported && monthKey !== leaderboardCurrentMonthKey()) return;
+        const row = { student_id: sid, performance_pts: perf, contribution_pts: contrib };
+        if (monthSupported) row.score_month = monthKey;
+        if (minigameSupported) row.minigame_pts = mini;
+        toPush.push(row);
+      }
+    });
   });
   const validIds = new Set((students || []).map(s => String(s && s.id)));
   const filtered = toPush.filter(row => validIds.has(String(row.student_id)));
   for (let i = 0; i < filtered.length; i += 200) {
     const chunk = filtered.slice(i, i + 200);
     try {
-      const r = await fetch(SUPABASE_URL + '/rest/v1/leaderboard_manual_scores?on_conflict=student_id', {
+      const r = await fetch(SUPABASE_URL + '/rest/v1/leaderboard_manual_scores?on_conflict=' + (monthSupported ? 'student_id,score_month' : 'student_id'), {
         method: 'POST',
         headers: getHeaders('resolution=merge-duplicates,return=minimal'),
         body: JSON.stringify(chunk)
@@ -20666,9 +20751,10 @@ async function refreshLeaderboardManualScores() {
   saveLeaderboardManualScores();
 }
 
-function getLeaderboardManualEntry(studentId) {
+function getLeaderboardManualEntry(studentId, monthKey) {
   const sid = String(studentId || '').trim();
-  const row = sid && leaderboardManualScores && leaderboardManualScores[sid] ? leaderboardManualScores[sid] : {};
+  const bucket = getLeaderboardManualMonthBucket(monthKey || getSelectedLeaderboardMonthKey(), false);
+  const row = sid && bucket && bucket[sid] ? bucket[sid] : {};
   return {
     performance: Math.max(0, parseInt(row.performance, 10) || 0),
     contribution: Math.max(0, parseInt(row.contribution, 10) || 0),
@@ -20820,12 +20906,14 @@ async function applyLeaderboardManualUpdate() {
     showAppToast('Nhập ít nhất một giá trị để cập nhật.');
     return;
   }
-  const cur = getLeaderboardManualEntry(sid);
-  leaderboardManualScores[sid] = {
+  const scoreMonth = getSelectedLeaderboardMonthKey();
+  const cur = getLeaderboardManualEntry(sid, scoreMonth);
+  const next = {
     performance: Math.max(0, cur.performance + deltaPerf),
     contribution: Math.max(0, cur.contribution + deltaContrib),
     minigame: Math.max(0, cur.minigame + deltaMini)
   };
+  setLeaderboardManualEntry(sid, next, scoreMonth);
   if (deltaPerf > 0) pushLeaderboardPerformanceHistory(sid, deltaPerf, 'performance');
   if (deltaContrib > 0) pushLeaderboardPerformanceHistory(sid, deltaContrib, 'contribution');
   if (deltaMini > 0) pushLeaderboardPerformanceHistory(sid, deltaMini, 'minigame');
@@ -20834,13 +20922,12 @@ async function applyLeaderboardManualUpdate() {
   if (contribEl) contribEl.value = '';
   if (miniEl) miniEl.value = '';
   renderLeaderboard();
-  const row = leaderboardManualScores[sid];
-  const synced = await upsertLeaderboardManualScoreApi(sid, row.performance, row.contribution, row.minigame);
+  const synced = await upsertLeaderboardManualScoreApi(sid, next.performance, next.contribution, next.minigame, scoreMonth);
   if (synced) {
     showAppToast('Đã cập nhật xếp hạng');
   } else {
     showAppToast(
-      'Đã lưu trên máy này. Chưa ghi được lên server, kiểm tra migration `029_leaderboard_manual_scores.sql` và `034_leaderboard_minigame_pts.sql` trong Supabase.'
+      'Đã lưu trên máy này. Chưa ghi được lên server, kiểm tra migration `089_leaderboard_monthly_scores.sql` trong Supabase.'
     );
   }
 }
@@ -20902,7 +20989,7 @@ function renderLeaderboard() {
     return classOk && roleOk && searchOk;
   }).map(s => {
     const classLabel = leaderboardClassLabelFromStudent(s);
-    const manual = getLeaderboardManualEntry(s.id);
+    const manual = getLeaderboardManualEntry(s.id, selectedMonth);
     const score =
       leaderboardMetric === 'contribution'
         ? manual.contribution
