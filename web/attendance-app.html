@@ -18492,6 +18492,28 @@ function studentExamComparePreferredGroup(a, b) {
   return pa - pb;
 }
 
+function studentExamShouldPrioritizeFree() {
+  return !isAdmin() && !isTeacher() && currentPortalPlan !== 'premium';
+}
+
+function studentExamCompareFreePriority(a, b) {
+  if (!studentExamShouldPrioritizeFree()) return 0;
+  const af = studentExamAccessTier(a) === 'free' ? 0 : 1;
+  const bf = studentExamAccessTier(b) === 'free' ? 0 : 1;
+  if (af !== bf) return af - bf;
+  if (af !== 0) return 0;
+  const gp = studentExamComparePreferredGroup(a, b);
+  if (gp) return gp;
+  const ag = portalNormalizeFreeGroup(a && a.free_group);
+  const bg = portalNormalizeFreeGroup(b && b.free_group);
+  if (ag === bg) {
+    const ar = Number(a && a.group_free_rank || 0) || Number.MAX_SAFE_INTEGER;
+    const br = Number(b && b.group_free_rank || 0) || Number.MAX_SAFE_INTEGER;
+    if (ar !== br) return ar - br;
+  }
+  return 0;
+}
+
 function studentExamSortForView(rows, sortMode) {
   const mode = String(sortMode || 'code');
   const list = Array.isArray(rows) ? rows.slice() : [];
@@ -18501,6 +18523,8 @@ function studentExamSortForView(rows, sortMode) {
     return 2;
   };
   const withAccessFirst = compare => (a, b) => {
+    const fp = studentExamCompareFreePriority(a, b);
+    if (fp) return fp;
     const ap = accessPriority(a);
     const bp = accessPriority(b);
     if (ap !== bp) return ap - bp;
@@ -18518,6 +18542,8 @@ function studentExamSortForView(rows, sortMode) {
   }
   if (mode === 'code') {
     return list.sort((a, b) => {
+      const fp = studentExamCompareFreePriority(a, b);
+      if (fp) return fp;
       const gp = studentExamComparePreferredGroup(a, b);
       if (gp) return gp;
       return studentExamCompareByYearCode(a, b);
