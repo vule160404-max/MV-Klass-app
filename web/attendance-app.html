@@ -7859,13 +7859,56 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
     overflow-x: hidden !important;
   }
   .bank-tx-table .bank-row{
-    gap: 12px !important;
-    padding: 14px 12px !important;
-    align-items: stretch !important;
+    display:grid !important;
+    grid-template-columns:auto minmax(0,1fr) auto !important;
+    gap:8px 10px !important;
+    padding:12px !important;
+    align-items:center !important;
+    border-radius:16px !important;
   }
   .bank-tx-table .bank-row > div[data-bank-col]::before{
-    content: attr(data-bank-col);
-    display: block;
+    content:none;
+    display: none;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col="KÃªnh"],
+  .bank-tx-table .bank-row > div[data-bank-col="Kênh"]{
+    grid-column:1;
+    grid-row:1;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="thá»i gian"],
+  .bank-tx-table .bank-row > div[data-bank-col*="thời gian"]{
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="Tráº¡ng thÃ¡i"],
+  .bank-tx-table .bank-row > div[data-bank-col*="Trạng thái"]{
+    grid-column:3;
+    grid-row:1;
+    justify-self:end;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="Sá»‘ tiá»n"],
+  .bank-tx-table .bank-row > div[data-bank-col*="Số tiền"]{
+    grid-column:1 / -1;
+    grid-row:2;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="Há»c sinh"],
+  .bank-tx-table .bank-row > div[data-bank-col*="Học sinh"]{
+    grid-column:1 / -1;
+    grid-row:3;
+    min-width:0;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="ThÃ´ng tin"],
+  .bank-tx-table .bank-row > div[data-bank-col*="Thông tin"]{
+    grid-column:1 / -1;
+    grid-row:4;
+    min-width:0;
+    padding-top:2px;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="ThÃ´ng tin"]::before,
+  .bank-tx-table .bank-row > div[data-bank-col*="Thông tin"]::before{
+    content:'Thông tin';
+    display:block;
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.04em;
@@ -7876,13 +7919,22 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
   .bank-tx-table .bank-col-main .title,
   .bank-tx-table .bank-col-main .sub{
     white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
     word-break: break-word !important;
+  }
+  .bank-tx-table .bank-row > div[data-bank-col*="thá»i gian"] .title,
+  .bank-tx-table .bank-row > div[data-bank-col*="thời gian"] .title,
+  .bank-tx-table .bank-row > div[data-bank-col*="thá»i gian"] .sub,
+  .bank-tx-table .bank-row > div[data-bank-col*="thời gian"] .sub{
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
   }
   .bank-tx-table .bank-money{
     text-align: left !important;
-    font-size: 15px !important;
+    font-size: 18px !important;
+    line-height:1.1 !important;
   }
   .bank-tx-table .bank-status{
     min-width: max-content !important;
@@ -7893,21 +7945,37 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
     min-width: 116px !important;
   }
   .bank-tx-table .bank-actions{
-    flex-direction: column !important;
+    grid-column:1 / -1;
+    grid-row:5;
+    flex-direction: row !important;
     align-items: stretch !important;
+    gap:8px !important;
     width: 100% !important;
-    padding-top: 10px !important;
-    margin-top: 6px !important;
+    padding-top: 8px !important;
+    margin-top: 4px !important;
     border-top: 1px solid rgba(15,23,42,0.08) !important;
   }
   .bank-tx-table .bank-actions .btn-sm{
-    width: 100% !important;
-    min-height: 44px !important;
-    font-size: 14px !important;
+    flex:1 1 0 !important;
+    width:auto !important;
+    min-width:0 !important;
+    min-height:40px !important;
+    font-size:13px !important;
     justify-content: center !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
   }
   .bank-tx-ck-masked{ display: none !important; }
-  .bank-tx-ck-full{ display: block !important; }
+  .bank-tx-ck-full{
+    display:-webkit-box !important;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    max-height:none !important;
+    overflow:hidden !important;
+    font-size:11.5px !important;
+    line-height:1.45 !important;
+    margin-top:0 !important;
+  }
   #bank-summary{
     flex-direction: column;
     align-items: flex-start;
