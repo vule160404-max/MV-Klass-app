@@ -4277,14 +4277,13 @@
     .portal-premium-compact .portal-premium-summary .portal-user-chip{ min-height:28px; justify-content:space-between; border-radius:10px; padding:4px 8px; }
     .portal-premium-compact .portal-premium-summary .portal-user-chip:last-child{ grid-column:auto; }
     .portal-premium-compact .portal-premium-grid{ grid-template-columns:1fr; gap:9px; }
-    .portal-premium-compact .portal-premium-product{ display:grid; grid-template-columns:minmax(0,1fr) minmax(136px,160px) minmax(126px,136px) minmax(72px,82px); gap:8px 10px; align-items:end; padding:10px 11px 11px; border-radius:15px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 20px rgba(17,42,100,.055); }
+    .portal-premium-compact .portal-premium-product{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 10px; align-items:end; padding:10px 11px 11px; border-radius:15px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 20px rgba(17,42,100,.055); }
     .portal-premium-compact .portal-premium-product-head{ grid-column:1/-1; align-items:center; padding-bottom:6px; border-bottom:1px solid rgba(99,138,218,.10); }
     .portal-premium-compact .portal-premium-product-title{ font-size:12.5px; }
     .portal-premium-compact .portal-premium-product-sub{ margin-top:1px; font-size:10.5px; }
     .portal-premium-compact .portal-intensity{ min-width:auto; min-height:24px; padding:4px 8px; font-size:10.5px; }
-    .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(1){ grid-column:1; }
-    .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(2){ grid-column:2; }
-    .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(3){ grid-column:1/3; }
+    .portal-premium-compact .portal-premium-product-desc{ grid-column:1; }
+    .portal-premium-compact .portal-premium-product-foot{ grid-column:2; flex-direction:column; align-items:flex-end; justify-content:end; }
     .portal-premium-compact .portal-premium-title-input,
     .portal-premium-compact .portal-premium-price-input{ min-height:34px; border-radius:9px; font-size:12px; }
     .portal-premium-compact .portal-premium-desc-input{ min-height:86px; max-height:110px; resize:none; overflow:auto; border-radius:9px; font-size:11.5px; line-height:1.34; padding:8px 9px; }
@@ -6181,6 +6180,10 @@
     .portal-premium-product-head{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
     .portal-premium-product-title{ color:#102858; font-size:13px; font-weight:950; line-height:1.3; }
     .portal-premium-product-sub{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.4; }
+    .portal-premium-product-desc{ color:#52627c; font-size:11.5px; font-weight:750; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .portal-premium-product-foot{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .portal-premium-product-price{ color:#102858; font-size:13px; font-weight:950; font-variant-numeric:tabular-nums; }
+    .portal-premium-config-btn{ min-height:34px; background:linear-gradient(180deg,#eff6ff,#dbeafe) !important; border:1px solid rgba(37,99,235,.24) !important; color:#1d4ed8 !important; }
     .portal-premium-field{ min-width:0; display:grid; gap:5px; }
     .portal-premium-field-label{ color:#66748d; font-size:10px; line-height:1; font-weight:950; text-transform:uppercase; letter-spacing:.06em; }
     .portal-premium-title-input,.portal-premium-desc-input,.portal-premium-price-input{ min-width:0; width:100%; border-radius:10px; border:1px solid rgba(99,138,218,.18); padding:0 10px; color:#263852; font-size:12px; font-weight:850; background:#fff; outline:none; }
@@ -6197,6 +6200,16 @@
     .portal-premium-switch input:checked + .portal-premium-switch-track::after{ transform:translateX(14px); }
     .portal-premium-switch input:focus-visible + .portal-premium-switch-track{ outline:2px solid rgba(79,142,247,.55); outline-offset:2px; }
     .portal-premium-save{ min-height:36px; justify-content:center; }
+    #portal-premium-config-modal{ z-index:2005; }
+    #portal-premium-config-modal .modal{ max-width:560px; }
+    .portal-premium-config-head{ display:grid; gap:5px; margin-bottom:14px; }
+    .portal-premium-config-title{ color:#102858; font-size:18px; line-height:1.2; font-weight:950; }
+    .portal-premium-config-sub{ color:#72809b; font-size:12px; line-height:1.45; font-weight:750; }
+    .portal-premium-config-grid{ display:grid; grid-template-columns:1fr 150px; gap:10px; align-items:end; }
+    .portal-premium-config-grid .portal-premium-field.full{ grid-column:1/-1; }
+    .portal-premium-config-actions{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(99,138,218,.12); }
+    .portal-premium-config-error{ min-height:16px; color:#b91c1c; font-size:12px; font-weight:800; }
+    .portal-premium-config-buttons{ display:flex; gap:8px; justify-content:flex-end; }
     .student-exam-hero{position:relative;overflow:hidden;border-radius:26px;padding:24px 18px;background:radial-gradient(circle at 80% 10%,rgba(244,167,29,.28),transparent 32%),linear-gradient(135deg,#0f1f3d 0%,#1a3460 100%);color:#fff;box-shadow:0 18px 42px rgba(15,31,61,.22)}.student-exam-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;color:#f8d98f;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.student-exam-kicker:before{content:"";width:24px;height:2px;border-radius:999px;background:#f4a71d}.student-exam-hero h1{margin:0;color:#fff;font-size:clamp(28px,8vw,48px);line-height:1.08;letter-spacing:-.02em}.student-exam-hero p{max-width:650px;margin:12px 0 18px;color:rgba(255,255,255,.78);font-size:14px;line-height:1.65;font-weight:600}.student-exam-cta{background:linear-gradient(180deg,#ffd66f,#f4a71d);color:#14213d;box-shadow:0 10px 24px rgba(244,167,29,.28)}.student-exam-download-credit{display:flex;align-items:center;min-height:36px;padding:0 13px;border-radius:999px;background:#eef6ff;border:1px solid rgba(59,130,246,.18);color:#1e4f8f;font-size:12px;font-weight:950;white-space:nowrap;box-shadow:0 8px 18px rgba(30,79,143,.08)}.student-exam-download-credit.is-low{background:#fff8e8;border-color:rgba(244,167,29,.35);color:#8a5208}.student-exam-download-credit.is-empty{background:#fff1f2;border-color:rgba(248,113,113,.42);color:#b91c1c}
     .student-exam-data-overview{margin-top:12px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.94);border:1px solid rgba(18,33,61,.08);box-shadow:0 10px 24px rgba(18,33,61,.06)}.student-exam-data-line{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}.student-exam-data-eyebrow{color:#66748d;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}.student-exam-data-title{margin:3px 0 0;color:#12213d;font-size:16px;line-height:1.25;font-weight:950}.student-exam-data-mini{flex:0 0 auto;padding-top:3px;color:#66748d;font-size:12px;font-weight:850;text-align:right;white-space:nowrap}.student-exam-data-columns{display:grid;grid-template-columns:1fr;gap:9px}.student-exam-data-column{min-width:0;padding:12px;border-radius:15px;background:#f8fafc;border:1px solid rgba(18,33,61,.08)}.student-exam-data-column-head{display:flex;align-items:flex-start;justify-content:space-between;gap:9px}.student-exam-data-column-title{min-width:0;color:#12213d;font-size:13px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.student-exam-data-column-total{flex:0 0 auto;color:#12213d;font-size:18px;line-height:1;font-weight:950}.student-exam-data-column-total span{color:#748096;font-size:11px;font-weight:800}.student-exam-data-source-list{display:grid;gap:7px;margin-top:10px}.student-exam-data-source-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px;padding:7px 8px;border-radius:11px;background:#fff;border:1px solid rgba(18,33,61,.07)}.student-exam-data-source-name{min-width:0;color:#334155;font-size:12px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.student-exam-data-source-name b{color:#12213d;font-weight:950}.student-exam-data-source-count{flex:0 0 auto;color:#12213d;font-size:12px;font-weight:950;white-space:nowrap}.student-exam-data-empty{color:#748096;font-size:12px;font-weight:800}.student-exam-data-loading{padding:16px;border-radius:15px;background:#f8fafc;border:1px dashed rgba(18,33,61,.14);color:#66748d;font-size:13px;font-weight:850;text-align:center}
     .student-exam-filters{margin-top:14px;padding:12px;border-radius:22px;background:rgba(255,255,255,.94);border:1px solid rgba(18,33,61,.08);box-shadow:0 12px 32px rgba(18,33,61,.08)}.student-exam-search{width:100%;min-height:46px;border:1px solid rgba(18,33,61,.12);border-radius:16px;background:#f8fafc;padding:0 14px;color:#12213d;font-size:14px;font-weight:700;outline:none}.student-exam-search:focus{border-color:rgba(244,167,29,.7);box-shadow:0 0 0 4px rgba(244,167,29,.14);background:#fff}.student-exam-filter-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:10px}.student-exam-filter-grid select{min-height:42px;border-radius:14px;border:1px solid rgba(18,33,61,.1);background:#fff;color:#263852;padding:0 10px;font-size:13px;font-weight:800;outline:none}
@@ -6264,17 +6277,18 @@
       .portal-premium-compact .portal-premium-summary{ grid-template-columns:repeat(2,minmax(0,1fr)); margin-bottom:10px; }
       .portal-premium-compact .portal-premium-summary .portal-user-chip:last-child{ grid-column:1/-1; }
       .portal-premium-compact .portal-premium-grid{ grid-template-columns:1fr; gap:8px; }
-      .portal-premium-compact .portal-premium-product{ grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:8px; padding:10px; border-radius:15px; align-items:end; }
-      .portal-premium-compact .portal-premium-product-head{ grid-column:1; grid-row:1; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; padding:0; border:0; }
-      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(1){ grid-column:2; grid-row:1; }
-      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(2){ grid-column:1; grid-row:2; }
-      .portal-premium-compact .portal-premium-product > .portal-premium-field:nth-of-type(3){ grid-column:1/-1; grid-row:3; }
-      .portal-premium-compact .portal-premium-form{ grid-column:2; grid-row:2; display:grid; grid-template-columns:minmax(0,1fr) 66px; gap:7px; align-items:end; }
-      .portal-premium-compact .portal-premium-controls{ display:contents; }
-      .portal-premium-compact .portal-premium-switch,
-      .portal-premium-compact .portal-premium-save{ grid-column:auto; justify-self:stretch; }
-      .portal-premium-compact .portal-premium-switch{ width:100%; min-width:0; }
-      .portal-premium-compact .portal-premium-save{ min-width:0; padding-left:8px; padding-right:8px; }
+      .portal-premium-compact .portal-premium-product{ grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px; border-radius:15px; align-items:end; }
+      .portal-premium-compact .portal-premium-product-head{ grid-column:1/-1; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; padding:0; border:0; }
+      .portal-premium-compact .portal-premium-product-desc{ grid-column:1; -webkit-line-clamp:2; line-clamp:2; }
+      .portal-premium-compact .portal-premium-product-foot{ grid-column:2; display:grid; gap:6px; justify-items:end; }
+      .portal-premium-compact .portal-premium-config-btn{ min-height:32px; padding:6px 9px; border-radius:10px; font-size:11.5px; }
+      #portal-premium-config-modal{ padding:10px; align-items:center; }
+      #portal-premium-config-modal .modal{ width:100%; max-height:calc(100dvh - 20px); border-radius:18px; }
+      .portal-premium-config-grid{ grid-template-columns:1fr; gap:9px; }
+      .portal-premium-config-grid .portal-premium-field.full{ grid-column:auto; }
+      .portal-premium-config-actions{ display:grid; grid-template-columns:1fr; gap:8px; }
+      .portal-premium-config-buttons{ display:grid; grid-template-columns:1fr 1fr; }
+      .portal-premium-config-buttons .btn-sm{ width:100%; min-height:40px; }
     }
     @media (min-width:700px){.student-exam-filter-grid{grid-template-columns:1fr}.student-exam-filter-main{grid-template-columns:repeat(2,minmax(0,1fr)) auto}.student-exam-filter-advanced{grid-template-columns:repeat(4,minmax(0,1fr))}}
     .student-exam-data-overview{position:relative;overflow:hidden;margin-top:16px;padding:20px 22px;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,251,255,.96) 54%,rgba(255,248,232,.82));border:1px solid rgba(26,52,96,.12);box-shadow:0 18px 44px rgba(18,33,61,.10)}
@@ -12423,6 +12437,41 @@ button[data-bank-inspect-confirm-not]:hover,
   </div>
 </div>
 
+<div class="modal-backdrop" id="portal-premium-config-modal" onclick="if(event.target===this) closePortalPremiumConfigModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="portal-premium-config-title">
+    <div class="portal-premium-config-head">
+      <div class="portal-premium-config-title" id="portal-premium-config-title">Cấu hình gói Premium</div>
+      <div class="portal-premium-config-sub" id="portal-premium-config-sub">Chỉnh tên, mô tả, giá bán và trạng thái mở bán của gói.</div>
+    </div>
+    <div class="portal-premium-config-grid">
+      <label class="portal-premium-field full">
+        <span class="portal-premium-field-label">Tên gói</span>
+        <input id="portal-premium-config-title-input" class="portal-premium-title-input" type="text" autocomplete="off"/>
+      </label>
+      <label class="portal-premium-field">
+        <span class="portal-premium-field-label">Giá bán</span>
+        <input id="portal-premium-config-price-input" class="portal-premium-price-input" type="number" min="0" step="1000"/>
+      </label>
+      <label class="portal-premium-switch" id="portal-premium-config-active-wrap">
+        <input id="portal-premium-config-active-input" type="checkbox"/>
+        <span class="portal-premium-switch-track" aria-hidden="true"></span>
+        <span class="portal-premium-switch-text">Mở bán</span>
+      </label>
+      <label class="portal-premium-field full">
+        <span class="portal-premium-field-label">Mô tả</span>
+        <textarea id="portal-premium-config-desc-input" class="portal-premium-desc-input"></textarea>
+      </label>
+    </div>
+    <div class="portal-premium-config-actions">
+      <div class="portal-premium-config-error" id="portal-premium-config-error"></div>
+      <div class="portal-premium-config-buttons">
+        <button type="button" class="btn-sm" onclick="closePortalPremiumConfigModal()">Hủy</button>
+        <button type="button" class="btn-sm portal-premium-save" onclick="savePortalPremiumProduct()">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="bank-tx-inspect-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bank-tx-inspect-title">
     <div class="modal-title" id="bank-tx-inspect-title">Chi tiết giao dịch</div>
@@ -14293,6 +14342,7 @@ let portalPremiumReloadTimer = null;
 let portalPremiumSuccessOrderId = '';
 let portalPremiumProductsHtmlKey = '';
 let portalPremiumCheckoutHtmlKey = '';
+let portalPremiumConfigKey = '';
 let studentExamRows = [];
 let studentExamFilteredRows = [];
 let studentExamActivityById = {};
@@ -22557,10 +22607,10 @@ function renderPortalPremiumAdmin() {
   <div class="portal-premium-grid">
     ${products.map(p => {
       const key = String(p.product_key || '');
-      const safe = key.replace(/[^a-z0-9_]/gi, '_');
       const price = Math.max(0, Number(p.price_vnd || 0) || 0);
       const productPaid = paidOrders.filter(o => String(o.product_key || '') === key).length;
       const count = Math.max(0, Number(p.exam_count || 0) || 0);
+      const desc = String(p.description || '').trim();
       return `<article class="portal-premium-product">
         <div class="portal-premium-product-head">
           <div>
@@ -22569,31 +22619,54 @@ function renderPortalPremiumAdmin() {
           </div>
           <span class="portal-intensity ${p.is_active ? 'good' : 'quiet'}">${p.is_active ? 'Đang mở' : 'Đang tắt'}</span>
         </div>
-        <label class="portal-premium-field">
-          <span class="portal-premium-field-label">Tên gói</span>
-          <input id="portal-premium-title-${escapeHtml(safe)}" class="portal-premium-title-input" type="text" value="${escapeHtml(p.title || key)}" aria-label="Tên gói ${escapeHtml(p.title || key)}"/>
-        </label>
-        <label class="portal-premium-field">
-          <span class="portal-premium-field-label">Giá bán</span>
-          <input id="portal-premium-price-${escapeHtml(safe)}" class="portal-premium-price-input" type="number" min="0" step="1000" value="${price}" aria-label="Giá ${escapeHtml(p.title || key)}"/>
-        </label>
-        <label class="portal-premium-field">
-          <span class="portal-premium-field-label">Mô tả</span>
-          <textarea id="portal-premium-desc-${escapeHtml(safe)}" class="portal-premium-desc-input" aria-label="Mô tả ${escapeHtml(p.title || key)}">${escapeHtml(p.description || '')}</textarea>
-        </label>
-        <div class="portal-premium-form">
-          <div class="portal-premium-controls">
-            <label class="portal-premium-switch">
-              <input id="portal-premium-active-${escapeHtml(safe)}" type="checkbox" ${p.is_active ? 'checked' : ''}/>
-              <span class="portal-premium-switch-track" aria-hidden="true"></span>
-              <span class="portal-premium-switch-text">Mở bán</span>
-            </label>
-          </div>
-          <button type="button" class="btn-sm portal-premium-save" onclick="savePortalPremiumProduct('${escapeHtml(key)}')">Lưu</button>
+        <div class="portal-premium-product-desc">${escapeHtml(desc || 'Chưa có mô tả hiển thị cho gói này.')}</div>
+        <div class="portal-premium-product-foot">
+          <div class="portal-premium-product-price">${escapeHtml(formatVnd(price))}</div>
+          <button type="button" class="btn-sm portal-premium-config-btn" onclick="openPortalPremiumConfigModal('${escapeHtml(key)}')">Cấu hình</button>
         </div>
       </article>`;
     }).join('')}
   </div>`;
+}
+
+function openPortalPremiumConfigModal(productKey) {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được cấu hình gói Premium.', 'warn');
+    return;
+  }
+  const key = String(productKey || '').trim();
+  const product = (Array.isArray(_portalPremiumProducts) ? _portalPremiumProducts : [])
+    .find(p => String(p.product_key || '') === key);
+  if (!key || !product) {
+    showAppToast('Không tìm thấy gói Premium để cấu hình.', 'warn');
+    return;
+  }
+  portalPremiumConfigKey = key;
+  const modal = document.getElementById('portal-premium-config-modal');
+  const title = document.getElementById('portal-premium-config-title');
+  const sub = document.getElementById('portal-premium-config-sub');
+  const titleInput = document.getElementById('portal-premium-config-title-input');
+  const priceInput = document.getElementById('portal-premium-config-price-input');
+  const descInput = document.getElementById('portal-premium-config-desc-input');
+  const activeInput = document.getElementById('portal-premium-config-active-input');
+  const err = document.getElementById('portal-premium-config-error');
+  if (title) title.textContent = 'Cấu hình gói Premium';
+  if (sub) sub.textContent = [portalFreeGroupLabel(product.portal_free_group), String(product.exam_count || 0) + ' đề', 'Mã: ' + key].filter(Boolean).join(' · ');
+  if (titleInput) titleInput.value = String(product.title || key);
+  if (priceInput) priceInput.value = String(Math.max(0, Number(product.price_vnd || 0) || 0));
+  if (descInput) descInput.value = String(product.description || '');
+  if (activeInput) activeInput.checked = product.is_active !== false;
+  if (err) err.textContent = '';
+  if (modal) {
+    modal.classList.add('show');
+    window.setTimeout(() => titleInput && titleInput.focus(), 30);
+  }
+}
+
+function closePortalPremiumConfigModal() {
+  const modal = document.getElementById('portal-premium-config-modal');
+  if (modal) modal.classList.remove('show');
+  portalPremiumConfigKey = '';
 }
 
 async function savePortalPremiumProduct(productKey) {
@@ -22601,19 +22674,25 @@ async function savePortalPremiumProduct(productKey) {
     showAppToast('Chỉ admin được cấu hình gói Premium.', 'warn');
     return;
   }
-  const key = String(productKey || '').trim();
-  const safe = key.replace(/[^a-z0-9_]/gi, '_');
-  const titleEl = document.getElementById('portal-premium-title-' + safe);
-  const descEl = document.getElementById('portal-premium-desc-' + safe);
-  const priceEl = document.getElementById('portal-premium-price-' + safe);
-  const activeEl = document.getElementById('portal-premium-active-' + safe);
+  const key = String(productKey || portalPremiumConfigKey || '').trim();
+  const titleEl = document.getElementById('portal-premium-config-title-input');
+  const descEl = document.getElementById('portal-premium-config-desc-input');
+  const priceEl = document.getElementById('portal-premium-config-price-input');
+  const activeEl = document.getElementById('portal-premium-config-active-input');
+  const errEl = document.getElementById('portal-premium-config-error');
   const price = Math.max(0, Math.round(Number(priceEl?.value || 0) || 0));
   const title = String(titleEl?.value || '').trim();
   const description = String(descEl?.value || '').trim();
-  if (!title) {
-    showAppToast('Tên gói Premium không được để trống.', 'warn');
+  if (!key) {
+    if (errEl) errEl.textContent = 'Chưa chọn gói Premium.';
     return;
   }
+  if (!title) {
+    if (errEl) errEl.textContent = 'Tên gói Premium không được để trống.';
+    else showAppToast('Tên gói Premium không được để trống.', 'warn');
+    return;
+  }
+  if (errEl) errEl.textContent = '';
   try {
     const r = await fetch(SUPABASE_URL + '/rest/v1/portal_premium_products?product_key=eq.' + encodeURIComponent(key), {
       method: 'PATCH',
@@ -22630,10 +22709,12 @@ async function savePortalPremiumProduct(productKey) {
     invalidatePortalAnalyticsCache();
     portalPremiumProducts = [];
     await loadPortalAnalyticsIfNeeded(true);
+    closePortalPremiumConfigModal();
     showAppToast('Đã lưu cấu hình gói Premium.', 'success');
   } catch (e) {
     console.warn('savePortalPremiumProduct', e);
-    showAppToast('Chưa lưu được gói Premium. Kiểm tra migration 079 và quyền admin.', 'warn');
+    if (errEl) errEl.textContent = 'Chưa lưu được gói Premium. Kiểm tra migration 079 và quyền admin.';
+    showAppToast('Chưa lưu được gói Premium.', 'warn');
   }
 }
 
