@@ -2246,6 +2246,20 @@
       padding-top: 4px;
       border-top: 1px solid rgba(226,232,240,0.8);
     }
+    .class-mgr-action-open{
+      min-width: 110px;
+      justify-content: center;
+    }
+    #class-action-modal{ z-index: 1006; }
+    #class-action-modal .modal{ max-width: 440px; }
+    .class-action-head{ display:grid; gap:5px; margin-bottom:12px; }
+    .class-action-title{ color:#102858; font-size:18px; line-height:1.2; font-weight:950; }
+    .class-action-sub{ color:#72809b; font-size:12px; line-height:1.45; font-weight:750; }
+    .class-action-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .class-action-grid .btn-sm,
+    .class-action-grid .btn-edit,
+    .class-action-grid .btn-del{ width:100%; min-height:40px; justify-content:center; }
+    .class-action-grid .wide{ grid-column:1/-1; }
     .class-mgr-btn-pause{
       background: linear-gradient(180deg, rgba(251,191,36,0.26), rgba(245,158,11,0.14)) !important;
       border: 1px solid rgba(217,119,6,0.5) !important;
@@ -7180,6 +7194,36 @@ input:focus, select:not(.attendance-class-select):focus, textarea:focus {
 }
 .students-kpi.topline .hint{
   color: rgba(255,255,255,0.72);
+}
+@media (max-width: 640px){
+  .students-insights{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .students-kpi{
+    min-height: 76px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    gap: 4px;
+  }
+  .students-kpi .k{
+    font-size: 9.5px;
+    line-height: 1.1;
+  }
+  .students-kpi .v{
+    font-size: 22px;
+  }
+  .students-kpi .hint{
+    font-size: 10.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .students-kpi.topline{
+    grid-column: 1 / -1;
+    min-height: 72px;
+  }
 }
 .students-ops-grid{
   display: grid;
@@ -12150,6 +12194,19 @@ button[data-bank-inspect-confirm-not]:hover,
     <div class="modal-actions">
       <button class="btn-sm" onclick="closeClassModal()">Hủy</button>
       <button class="btn-sm" id="class-save-btn" onclick="saveNewClassFromModal()">Lưu lớp</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="class-action-modal" onclick="if(event.target===this) closeClassActionModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="class-action-title">
+    <div class="class-action-head">
+      <div class="class-action-title" id="class-action-title">Thao tác lớp</div>
+      <div class="class-action-sub" id="class-action-sub"></div>
+    </div>
+    <div class="class-action-grid" id="class-action-grid"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-sm" onclick="closeClassActionModal()">Đóng</button>
     </div>
   </div>
 </div>
@@ -26827,6 +26884,56 @@ function openClassTuition(encodedClassName) {
   if (typeof setTuitionClassFilter === 'function') setTuitionClassFilter(className);
 }
 
+function closeClassActionModal() {
+  const modal = document.getElementById('class-action-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function runClassAction(action, encodedClassName) {
+  closeClassActionModal();
+  const enc = String(encodedClassName || '');
+  if (!enc) return;
+  if (action === 'attendance') return openQuickAttendanceFromDashboard(enc, true);
+  if (action === 'students') return openClassStudents(enc);
+  if (action === 'tuition') return openClassTuition(enc);
+  if (action === 'pause') return void toggleClassDashboardPause(enc);
+  if (action === 'edit') return editClassDefinition(enc);
+  if (action === 'delete') return deleteClassDefinition(enc);
+}
+
+function openClassActionModal(encodedClassName) {
+  const className = decodeURIComponent(String(encodedClassName || ''));
+  if (!className) return;
+  const def = classDefinitions.find(c => c.label === className);
+  const paused = isClassHiddenOnDashboard(className);
+  const enc = encodeURIComponent(className);
+  const modal = document.getElementById('class-action-modal');
+  const title = document.getElementById('class-action-title');
+  const sub = document.getElementById('class-action-sub');
+  const grid = document.getElementById('class-action-grid');
+  if (!modal || !grid) return;
+  if (title) title.textContent = def ? (def.name || def.label || className) : className;
+  if (sub) sub.textContent = `${className} · ${paused ? 'Tạm dừng' : 'Hoạt động'}`;
+  const attendanceBtn = paused
+    ? ''
+    : `<button type="button" class="btn-sm action-attendance" onclick="runClassAction('attendance','${escapeHtml(enc)}')">Điểm danh</button>`;
+  const pauseBtn = isAdmin()
+    ? paused
+      ? `<button type="button" class="btn-sm class-mgr-btn-resume" onclick="runClassAction('pause','${escapeHtml(enc)}')">Bật lại</button>`
+      : `<button type="button" class="btn-sm class-mgr-btn-pause" onclick="runClassAction('pause','${escapeHtml(enc)}')">Tạm dừng</button>`
+    : '';
+  const editBtn = def ? `<button type="button" class="btn-edit" onclick="runClassAction('edit','${escapeHtml(enc)}')">Sửa</button>` : '';
+  grid.innerHTML = `
+    ${attendanceBtn}
+    <button type="button" class="btn-sm action-info" onclick="runClassAction('students','${escapeHtml(enc)}')">Học viên</button>
+    <button type="button" class="btn-sm action-money" onclick="runClassAction('tuition','${escapeHtml(enc)}')">Học phí</button>
+    ${pauseBtn}
+    ${editBtn}
+    <button type="button" class="btn-del ${editBtn ? '' : 'wide'}" onclick="runClassAction('delete','${escapeHtml(enc)}')">Xóa</button>
+  `;
+  modal.classList.add('show');
+}
+
 function renderClassManager() {
   const el = document.getElementById('class-mgr-list');
   if (!el) return;
@@ -26880,15 +26987,6 @@ function renderClassManager() {
       : '<span class="class-mgr-chip muted">Chưa phân công giáo viên</span>';
     const perSession = studentCount * fee;
     const perMonth = perSession * Math.max(0, sessionsPerWeek) * 4;
-    const editBtn = def ? `<button class="btn-edit" onclick="editClassDefinition('${enc}')">Sửa</button>` : '';
-    const pauseBtn = isAdmin()
-      ? paused
-        ? `<button type="button" class="btn-sm class-mgr-btn-resume" title="Bật lại lớp: hiện lớp trên lịch dạy và dashboard." onclick="void toggleClassDashboardPause('${enc}')">Bật lại</button>`
-        : `<button type="button" class="btn-sm class-mgr-btn-pause" title="Tạm dừng lớp: ẩn lớp khỏi lịch dạy và dashboard. Học phí, điểm danh, báo cáo không đổi." onclick="void toggleClassDashboardPause('${enc}')">Tạm dừng</button>`
-      : '';
-    const attendanceBtn = paused
-      ? ''
-      : `<button type="button" class="btn-sm action-attendance" onclick="openQuickAttendanceFromDashboard('${enc}', true)">Điểm danh</button>`;
     return `<div class="class-mgr-row">
       <div class="class-mgr-head">
         <div>
@@ -26916,12 +27014,7 @@ function renderClassManager() {
       </div>
         ${roadmapHtml}
       <div class="class-mgr-actions">
-        ${attendanceBtn}
-        <button type="button" class="btn-sm action-info" onclick="openClassStudents('${enc}')">Học viên</button>
-        <button type="button" class="btn-sm action-money" onclick="openClassTuition('${enc}')">Học phí</button>
-        ${pauseBtn}
-        ${editBtn}
-        <button class="btn-del" onclick="deleteClassDefinition('${enc}')">Xóa</button>
+        <button type="button" class="btn-sm action-info class-mgr-action-open" onclick="openClassActionModal('${enc}')">Thao tác</button>
       </div>
     </div>`;
   }).join('');
