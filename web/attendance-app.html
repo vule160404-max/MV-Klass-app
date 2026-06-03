@@ -1482,29 +1482,215 @@
       }
     }
     @media (max-width: 640px){
+      #work-teacher-wrap,
+      #work-admin-wrap{
+        gap:10px;
+      }
       .work-console-hero,
       .work-card-head,
       .work-card-body{
-        padding:12px;
+        padding:10px;
+      }
+      .work-console-hero{
+        gap:10px;
+        border-radius:14px;
+        box-shadow:0 10px 24px rgba(15,31,61,0.07);
       }
       .work-console-title{
-        font-size:19px;
+        font-size:18px;
+        line-height:1.2;
+      }
+      .work-console-sub{
+        margin-top:5px;
+        font-size:11.5px;
+        line-height:1.45;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+      }
+      .work-console-actions{
+        margin-top:8px;
+      }
+      .work-console-actions .btn-sm{
+        width:100%;
+        min-height:38px;
       }
       .work-metric-grid,
       .admin-chk-kpi,
       .work-summary-strip{
-        grid-template-columns:1fr;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+        margin-bottom:10px;
+      }
+      .work-metric,
+      .work-summary-item{
+        padding:10px;
+        border-radius:12px;
+      }
+      .work-metric .label,
+      .work-summary-item .label{
+        font-size:9.5px;
+      }
+      .work-metric .value,
+      .work-summary-item .value{
+        margin-top:5px;
+        font-size:18px;
       }
       .work-card-head{
         display:grid;
+        gap:8px;
+        border-bottom-color:rgba(99,138,218,0.10);
+      }
+      .work-card-title,
+      .work-card h2.work-card-title{
+        font-size:15px;
+      }
+      .work-card-subtitle{
+        font-size:11px;
+        line-height:1.35;
+        margin-top:3px;
+      }
+      .work-payroll-total{
+        justify-self:start;
+        padding:6px 10px;
+        border-radius:999px;
+        background:rgba(239,246,255,.9);
+        color:#1d4ed8;
+        font-size:15px;
+      }
+      .admin-chk-toolbar{
+        padding:10px;
+        gap:8px;
+        border-radius:12px;
+        margin-bottom:10px;
+      }
+      .admin-chk-filter-field{
+        width:100%;
+        flex:0 0 auto !important;
+      }
+      .admin-chk-filter-field input[type="date"],
+      .admin-chk-filter-field input[type="month"],
+      .admin-chk-filter-field input[type="number"],
+      .admin-chk-filter-field input[type="text"],
+      .admin-chk-filter-field select{
+        width:100%;
+        min-height:40px;
+        font-size:14px;
+      }
+      .admin-chk-month-row{
+        display:grid;
+        grid-template-columns:minmax(0,1fr);
+        width:100%;
+      }
+      .admin-chk-month-row .btn-sm,
+      .admin-chk-filter-field > .btn-sm{
+        width:100%;
+        min-height:38px;
       }
       .teacher-class-checkin-row{
+        min-height:0;
+        padding:10px 12px;
         align-items:stretch;
+        display:grid;
+        gap:8px;
       }
       .teacher-class-checkin-act,
       .teacher-class-checkin-act .btn-checkin,
       .teacher-class-checkin-act .btn-sm{
         width:100%;
+      }
+      .teacher-class-checkin-note{
+        margin-top:3px;
+      }
+      #tab-work .admin-chk-table.work-payroll-table,
+      #tab-work .admin-chk-table.work-substitution-table{
+        display:block;
+        width:100%;
+        border-spacing:0;
+      }
+      #tab-work .work-payroll-table thead,
+      #tab-work .work-substitution-table thead{
+        display:none;
+      }
+      #tab-work .work-payroll-table tbody,
+      #tab-work .work-substitution-table tbody{
+        display:grid;
+        gap:8px;
+      }
+      #tab-work .work-payroll-table tr,
+      #tab-work .work-substitution-table tr{
+        display:grid;
+        gap:7px;
+        padding:10px;
+        border:1px solid rgba(99,138,218,0.14);
+        border-radius:12px;
+        background:#fff;
+        box-shadow:0 8px 18px rgba(15,31,61,0.05);
+      }
+      #tab-work .work-payroll-table td,
+      #tab-work .work-substitution-table td{
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+        padding:0;
+        border:0;
+        font-size:12.5px;
+        line-height:1.35;
+        min-width:0;
+      }
+      #tab-work .work-payroll-table td[colspan],
+      #tab-work .work-substitution-table td[colspan]{
+        display:block;
+      }
+      #tab-work .work-payroll-table td[colspan]::before,
+      #tab-work .work-substitution-table td[colspan]::before{
+        content:none;
+      }
+      #tab-work .work-payroll-table td::before,
+      #tab-work .work-substitution-table td::before{
+        flex:0 0 auto;
+        color:#64748b;
+        font-size:10px;
+        font-weight:950;
+        text-transform:uppercase;
+        letter-spacing:.04em;
+      }
+      #tab-work .work-payroll-table td:nth-child(1)::before{ content:'Giáo viên'; }
+      #tab-work .work-payroll-table td:nth-child(2)::before{ content:'Buổi'; }
+      #tab-work .work-payroll-table td:nth-child(3)::before{ content:'Đơn giá'; }
+      #tab-work .work-payroll-table td:nth-child(4)::before{ content:'Tạm tính'; }
+      #tab-work .work-substitution-table td:nth-child(1)::before{ content:'Ngày'; }
+      #tab-work .work-substitution-table td:nth-child(2)::before{ content:'Lớp'; }
+      #tab-work .work-substitution-table td:nth-child(3)::before{ content:'GV nghỉ'; }
+      #tab-work .work-substitution-table td:nth-child(4)::before{ content:'Dạy thay'; }
+      #tab-work .work-substitution-table td:nth-child(5)::before{ content:'Ghi chú'; }
+      #tab-work .work-substitution-table td:nth-child(6){
+        display:block;
+        padding-top:4px;
+      }
+      #tab-work .work-substitution-table td:nth-child(6)::before{
+        content:none;
+      }
+      #tab-work .work-substitution-table td:nth-child(6) .btn-sm{
+        width:100%;
+        min-height:36px;
+      }
+      .teacher-assign-panel{
+        padding:10px;
+        border-radius:14px;
+      }
+      .teacher-assign-panel-head{
+        gap:8px;
+      }
+      .teacher-assign-panel-head h2{
+        font-size:15px;
+      }
+      .teacher-assign-panel-head p{
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
       }
     }
 
@@ -15517,7 +15703,7 @@ function renderAdminWorkPanel() {
     ? '<div class="field-error" style="margin:0 0 10px">Không tải được đơn giá giáo viên từ Supabase; lương tạm tính có thể đang dùng bản lưu cục bộ.</div>'
     : '';
   const subRowsHtml = subRows.length
-    ? `<table class="admin-chk-table"><thead><tr><th>Ngày</th><th>Lớp</th><th>Giáo viên nghỉ</th><th>Dạy thay</th><th>Ghi chú</th><th></th></tr></thead><tbody>${
+    ? `<table class="admin-chk-table work-substitution-table"><thead><tr><th>Ngày</th><th>Lớp</th><th>Giáo viên nghỉ</th><th>Dạy thay</th><th>Ghi chú</th><th></th></tr></thead><tbody>${
         subRows.map(r => `<tr>
           <td>${escapeHtml(String(r.date || ''))}</td>
           <td>${escapeHtml(displayClassVi(String(r.class_name || '')))}</td>
@@ -15618,7 +15804,7 @@ function renderAdminWorkPanel() {
         <div class="admin-chk-filter-field"><label for="admin-payroll-rate">Đơn giá / buổi</label><div class="admin-chk-month-row"><input type="number" id="admin-payroll-rate" min="0" step="1000" placeholder="VD: 200000"/><button type="button" class="btn-sm" onclick="saveTeacherRateFromUI()">Lưu đơn giá</button></div></div>
       </div>
       ${teacherRatesStaleNote}
-      <div style="overflow-x:auto"><table class="admin-chk-table"><thead><tr><th>Giáo viên</th><th>Buổi đã duyệt</th><th>Đơn giá</th><th>Tạm tính</th></tr></thead><tbody>${payrollTableRows || '<tr><td colspan="4" class="analytics-muted">Không có dữ liệu chấm công đã duyệt trong tháng.</td></tr>'}</tbody></table></div>
+      <div style="overflow-x:auto"><table class="admin-chk-table work-payroll-table"><thead><tr><th>Giáo viên</th><th>Buổi đã duyệt</th><th>Đơn giá</th><th>Tạm tính</th></tr></thead><tbody>${payrollTableRows || '<tr><td colspan="4" class="analytics-muted">Không có dữ liệu chấm công đã duyệt trong tháng.</td></tr>'}</tbody></table></div>
     </div>
   </div>`;
   const teacherAssignHtml = `<div class="work-card teacher-assign-panel" id="teacher-assign-section">
