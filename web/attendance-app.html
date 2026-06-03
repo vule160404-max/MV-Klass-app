@@ -18529,8 +18529,8 @@ function studentExamProvinceKey(value) {
 // Add new province aliases here; display labels and source-filter ordering share this registry.
 const STUDENT_EXAM_PROVINCE_ALIASES = [
   ['ha noi', 'Hà Nội'],
-  ['tp hcm', 'TP HCM'],
-  ['ho chi minh', 'TP HCM'],
+  ['tp hcm', 'TP Hồ Chí Minh'],
+  ['ho chi minh', 'TP Hồ Chí Minh'],
   ['thanh hoa', 'Thanh Hóa'],
   ['nghe an', 'Nghệ An'],
   ['ha tinh', 'Hà Tĩnh'],
@@ -18601,8 +18601,8 @@ function studentExamDisplayProvince(value) {
   const key = studentExamProvinceKey(raw);
   const map = {
     'ha noi': 'Hà Nội',
-    'tp hcm': 'TP HCM',
-    'ho chi minh': 'TP HCM',
+    'tp hcm': 'TP Hồ Chí Minh',
+    'ho chi minh': 'TP Hồ Chí Minh',
     'thanh hoa': 'Thanh Hóa',
     'nghe an': 'Nghệ An',
     'ha tinh': 'Hà Tinh',
@@ -18751,13 +18751,14 @@ function studentExamSourceTextFromName(value) {
   if (!raw) return '';
   const tokens = raw.split(' ').map(token => token.trim()).filter(Boolean);
   const normTokens = tokens.map(token => normalizeText(token.replace(/[đĐ]/g, 'd')).toLowerCase().replace(/[^a-z0-9]+/g, ''));
-  const dropWords = new Set(['de', 'thi', 'vao', 'thpt', 'qg', 'quoc', 'dai', 'ielts', 'tieng', 'anh', 'english', 'nguon', 'minh', 'chinh', 'tai']);
+  const dropWords = new Set(['de', 'thi', 'vao', 'thpt', 'qg', 'quoc', 'dai', 'ielts', 'tieng', 'anh', 'english', 'nguon', 'chinh', 'tai']);
   const kept = tokens.filter((token, index) => {
     const norm = normTokens[index];
     const prev = normTokens[index - 1] || '';
     const next = normTokens[index + 1] || '';
     if (!norm) return false;
     if (dropWords.has(norm)) return false;
+    if (norm === 'minh' && next === 'hoa') return false;
     if (norm === 'gia' && prev === 'quoc') return false;
     if (norm === 'hoc' && prev === 'dai') return false;
     if (norm === 'hoa' && prev === 'minh') return false;

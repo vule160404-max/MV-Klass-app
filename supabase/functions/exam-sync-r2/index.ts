@@ -217,8 +217,8 @@ function displayProvince(value: string) {
   const key = normalizeText(value);
   const map: Record<string, string> = {
     "ha noi": "Hà Nội",
-    "tp hcm": "TP HCM",
-    "ho chi minh": "TP HCM",
+    "tp hcm": "TP Hồ Chí Minh",
+    "ho chi minh": "TP Hồ Chí Minh",
     "thanh hoa": "Thanh Hóa",
     "nghe an": "Nghệ An",
     "ha tinh": "Hà Tĩnh",
