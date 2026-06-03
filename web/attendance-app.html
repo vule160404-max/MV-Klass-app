@@ -23965,7 +23965,7 @@ function renderAttendanceAnalyticsCharts(rows) {
       tableEl.innerHTML = `
         <table class="analytics-table">
           <thead><tr>
-            <th>H?c viên</th><th>L?p</th><th class="num">Có m?t</th><th class="num">V?ng</th><th class="num">T? l?</th>
+            <th>Học viên</th><th>Lớp</th><th class="num">Có mặt</th><th class="num">Vắng</th><th class="num">Tỷ lệ</th>
           </tr></thead>
           <tbody>
             ${sorted.map(s => {
@@ -23991,21 +23991,23 @@ function renderAttendanceAnalyticsCharts(rows) {
     if (r.status === 'present') byDay[d].p += 1;
     else if (r.status === 'absent') byDay[d].a += 1;
   });
-  const dayRows = Object.keys(byDay)
-    .sort()
-    .map(ymd => {
+  const monthKey = getAnalyticsAttMonthKey();
+  const monthMatch = monthKey.match(/^(\d{4})-(\d{2})$/);
+  const daysInMonth = monthMatch ? new Date(Number(monthMatch[1]), Number(monthMatch[2]), 0).getDate() : 31;
+  const dayRows = Array.from({ length: daysInMonth }, (_, idx) => {
+      const day = String(idx + 1).padStart(2, '0');
+      const ymd = monthKey + '-' + day;
       const rec = byDay[ymd] || { p: 0, a: 0 };
       const total = (rec.p || 0) + (rec.a || 0);
       return {
         ymd,
-        label: String(ymd).slice(8, 10),
+        label: day,
         present: rec.p || 0,
         absent: rec.a || 0,
         total,
         rate: total ? Math.round(((rec.p || 0) * 1000) / total) / 10 : null
       };
-    })
-    .filter(x => x.total > 0);
+    });
   const labels = dayRows.map(x => x.label);
   const data = dayRows.map(x => x.rate);
 
@@ -24021,32 +24023,29 @@ function renderAttendanceAnalyticsCharts(rows) {
 
   const ctx = mCanvas.getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-  gradient.addColorStop(0, 'rgba(59,130,246,0.28)');
-  gradient.addColorStop(0.55, 'rgba(59,130,246,0.10)');
-  gradient.addColorStop(1, 'rgba(59,130,246,0.00)');
+  gradient.addColorStop(0, 'rgba(37,99,235,0.86)');
+  gradient.addColorStop(1, 'rgba(56,189,248,0.55)');
 
   chartAttStudents = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels,
       datasets: [
         {
-          label: 'T? l? di?m danh',
+          type: 'bar',
+          label: 'Tỷ lệ điểm danh',
           data,
-          borderColor: '#2563EB',
-          borderWidth: 2.5,
-          pointBackgroundColor: '#2563EB',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointHitRadius: 12,
           backgroundColor: gradient,
-          fill: true,
-          tension: 0.34
+          borderColor: 'rgba(37,99,235,0.72)',
+          borderWidth: 1,
+          borderRadius: 999,
+          borderSkipped: false,
+          barPercentage: 0.72,
+          categoryPercentage: 0.74
         },
         {
-          label: 'M?c tiêu 80%',
+          type: 'line',
+          label: 'Mục tiêu 80%',
           data: labels.map(() => 80),
           borderColor: 'rgba(16,185,129,0.70)',
           borderWidth: 1.5,
@@ -24077,9 +24076,10 @@ function renderAttendanceAnalyticsCharts(rows) {
               return row.ymd ? 'Ngày ' + shortDateVi(row.ymd) : '';
             },
             label(ctx) {
-              if (ctx.datasetIndex === 1) return 'M?c tiêu: 80%';
+              if (ctx.datasetIndex === 1) return 'Mục tiêu: 80%';
               const row = dayRows[ctx.dataIndex] || {};
-              return (ctx.raw || 0) + '% · ' + (row.present || 0) + '/' + (row.total || 0) + ' có m?t';
+              if (!row.total) return 'Chưa có điểm danh';
+              return (ctx.raw || 0) + '% · ' + (row.present || 0) + '/' + (row.total || 0) + ' có mặt';
             }
           }
         }
