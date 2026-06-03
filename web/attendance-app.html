@@ -20384,6 +20384,7 @@ let leaderboardPanelTab = 'ranking';
 let leaderboardHistoryPage = 1;
 const LEADERBOARD_HISTORY_PAGE_SIZE = 13;
 const LEADERBOARD_MANUAL_STORAGE_KEY = 'leaderboard_manual_scores_v3';
+const LEADERBOARD_LEGACY_SCORE_MONTH = '2026-05';
 const LEADERBOARD_PERFORMANCE_HISTORY_KEY = 'leaderboard_performance_history_v1';
 let leaderboardManualScores = loadLeaderboardManualScores();
 let leaderboardPerformanceHistory = loadLeaderboardPerformanceHistory();
@@ -20404,6 +20405,33 @@ function normalizeLeaderboardMonthKey(monthKey) {
 function getSelectedLeaderboardMonthKey() {
   const monthSel = document.getElementById('leaderboard-month-filter');
   return normalizeLeaderboardMonthKey(monthSel && monthSel.value ? monthSel.value : '');
+}
+
+function leaderboardScoreBucketHasPoints(bucket) {
+  if (!bucket || typeof bucket !== 'object') return false;
+  return Object.keys(bucket).some(sid => {
+    const row = bucket[sid] || {};
+    return (parseInt(row.performance, 10) || 0) > 0 ||
+      (parseInt(row.contribution, 10) || 0) > 0 ||
+      (parseInt(row.minigame, 10) || 0) > 0;
+  });
+}
+
+function normalizeLeaderboardManualStorage(parsed) {
+  if (!parsed || typeof parsed !== 'object') return {};
+  const looksMonthly = Object.keys(parsed).some(k => /^\d{4}-\d{2}$/.test(k));
+  if (!looksMonthly) return { [LEADERBOARD_LEGACY_SCORE_MONTH]: parsed };
+  const out = { ...parsed };
+  const currentMonth = leaderboardCurrentMonthKey();
+  if (
+    currentMonth === '2026-06' &&
+    !out[LEADERBOARD_LEGACY_SCORE_MONTH] &&
+    leaderboardScoreBucketHasPoints(out[currentMonth])
+  ) {
+    out[LEADERBOARD_LEGACY_SCORE_MONTH] = out[currentMonth];
+    delete out[currentMonth];
+  }
+  return out;
 }
 
 function leaderboardNameFromMetric(metric) {
@@ -20431,10 +20459,7 @@ function loadLeaderboardManualScores() {
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return {};
-    const monthKey = leaderboardCurrentMonthKey();
-    const looksMonthly = Object.keys(parsed).some(k => /^\d{4}-\d{2}$/.test(k));
-    if (looksMonthly) return parsed;
-    return { [monthKey]: parsed };
+    return normalizeLeaderboardManualStorage(parsed);
   } catch (e) {
     return {};
   }

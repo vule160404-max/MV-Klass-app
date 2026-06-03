@@ -6,7 +6,7 @@ alter table if exists public.leaderboard_manual_scores
   add column if not exists score_month text;
 
 update public.leaderboard_manual_scores
-set score_month = to_char(now(), 'YYYY-MM')
+set score_month = '2026-05'
 where score_month is null or not (score_month ~ '^\d{4}-\d{2}$');
 
 alter table if exists public.leaderboard_manual_scores
