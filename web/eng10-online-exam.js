@@ -31,6 +31,45 @@
       .replace(/\n/g, '<br>');
   }
 
+  function formatExamDisplayText(value) {
+    return String(value ?? '')
+      .replace(/\[\s*BLANK[_\s-]*(\d+)\s*\]/gi, '___$1___');
+  }
+
+  function safeExamRichText(value) {
+    return safeRichText(formatExamDisplayText(value));
+  }
+
+  function clozeBlankNumber(value) {
+    const match = String(value ?? '').match(/\[?\s*BLANK[_\s-]*(\d+)\s*\]?/i);
+    return match ? match[1] : '';
+  }
+
+  function blankNumberFromQuestion(q) {
+    const values = [q?.question, q?.blank_id, q?.display_id, q?.id];
+    for (const value of values) {
+      const number = clozeBlankNumber(value);
+      if (number) return number;
+    }
+    const fallback = String(q?.display_id || q?.id || '').match(/\d+/);
+    return fallback ? fallback[0] : '';
+  }
+
+  function displayQuestionText(q) {
+    const raw = String(q?.question || '');
+    const normalized = normalizeText(raw);
+    const hasBlankToken = /\[?\s*BLANK[_\s-]*\d+\s*\]?/i.test(raw);
+    const isGeneratedClozeText =
+      hasBlankToken &&
+      normalized.includes('vi tri tuong ung voi so') &&
+      normalized.includes('doan van dien tu');
+    if (isGeneratedClozeText) {
+      const number = blankNumberFromQuestion(q);
+      return number ? `Chọn đáp án đúng cho chỗ trống ___${number}___.` : 'Chọn đáp án đúng cho chỗ trống.';
+    }
+    return formatExamDisplayText(raw);
+  }
+
   function safeHttpUrl(value) {
     const s = String(value || '').trim();
     return /^https:\/\/[^\s"'<>]+$/i.test(s) || /^data:image\/(?:png|jpe?g|webp|gif);base64,[a-z0-9+/=\s]+$/i.test(s)
@@ -43,6 +82,7 @@
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
       .replace(/[“”"'.!?;:()[\]{}]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
@@ -305,8 +345,8 @@
       <figure class="eng10-online-image-frame">
         ${img.src
           ? `<img src="${escapeAttr(img.src)}" alt="${escapeAttr(img.alt || 'Hình ảnh trong đề')}" loading="lazy">`
-          : `<div class="eng10-online-missing-image"><strong>Thiếu ảnh</strong><span>${safeRichText(img.file_name || img.id || 'ảnh cần đính kèm')}</span></div>`}
-        ${img.caption ? `<figcaption>${safeRichText(img.caption)}</figcaption>` : ''}
+          : `<div class="eng10-online-missing-image"><strong>Thiếu ảnh</strong><span>${safeExamRichText(img.file_name || img.id || 'ảnh cần đính kèm')}</span></div>`}
+        ${img.caption ? `<figcaption>${safeExamRichText(img.caption)}</figcaption>` : ''}
       </figure>`).join('')}</div>`;
   }
 
@@ -314,9 +354,9 @@
     const sourceKey = String(page?.source_key || '').toLowerCase();
     let html = '';
     if (sourceKey === 'passage' && exam.passage) {
-      html += `<section class="eng10-online-source-block"><h3>Bài đọc</h3>${renderImages(exam)}${String(exam.passage).split('\n').map(p => `<p>${safeRichText(p)}</p>`).join('')}</section>`;
+      html += `<section class="eng10-online-source-block"><h3>Bài đọc</h3>${renderImages(exam)}${String(exam.passage).split('\n').map(p => `<p>${safeExamRichText(p)}</p>`).join('')}</section>`;
     } else if ((sourceKey === 'fill_passage' || sourceKey === 'fill') && exam.fill_passage) {
-      html += `<section class="eng10-online-source-block"><h3>Đoạn điền từ</h3>${String(exam.fill_passage).split('\n').map(p => `<p>${safeRichText(p)}</p>`).join('')}</section>`;
+      html += `<section class="eng10-online-source-block"><h3>Đoạn điền từ</h3>${String(exam.fill_passage).split('\n').map(p => `<p>${safeExamRichText(p)}</p>`).join('')}</section>`;
     } else if (exam.images.length) {
       html += `<section class="eng10-online-source-block"><h3>Tư liệu đề</h3>${renderImages(exam)}</section>`;
     }
@@ -331,8 +371,8 @@
   }
 
   function renderQuestion(q, answers, disabled) {
-    const title = safeRichText(questionTitle(q));
-    const body = safeRichText(q.question);
+    const title = safeExamRichText(questionTitle(q));
+    const body = safeRichText(displayQuestionText(q));
     if (q.type === 'multiple_choice') {
       return `<article class="eng10-online-q-card" data-qid="${escapeAttr(q.id)}">
         <div class="eng10-online-q-num">${title}</div>
@@ -343,7 +383,7 @@
           const checked = String(answers[`mcq_${q.id}`] || '') === letter;
           return `<label class="eng10-online-option ${checked ? 'selected' : ''}">
             <input type="radio" name="mcq_${escapeAttr(q.id)}" value="${escapeAttr(letter)}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
-            <span>${safeRichText(opt)}</span>
+            <span>${safeExamRichText(opt)}</span>
           </label>`;
         }).join('')}</div>
       </article>`;
@@ -354,7 +394,7 @@
         <div class="eng10-online-q-num">${title}</div>
         <div class="eng10-online-q-text">${body}</div>
         ${renderImages(q)}
-        ${q.word_bank.length ? `<div class="eng10-online-word-bank">${q.word_bank.map(w => `<button type="button" data-fill-word="${escapeAttr(w)}" data-fill-target="${escapeAttr(key)}" ${disabled ? 'disabled' : ''}>${safeRichText(w)}</button>`).join('')}</div>` : ''}
+        ${q.word_bank.length ? `<div class="eng10-online-word-bank">${q.word_bank.map(w => `<button type="button" data-fill-word="${escapeAttr(w)}" data-fill-target="${escapeAttr(key)}" ${disabled ? 'disabled' : ''}>${safeExamRichText(w)}</button>`).join('')}</div>` : ''}
         <input class="eng10-online-input" name="${escapeAttr(key)}" value="${escapeAttr(answers[key] || '')}" placeholder="Gõ đáp án..." ${disabled ? 'disabled' : ''}>
       </article>`;
     }
@@ -363,7 +403,7 @@
       <div class="eng10-online-q-num">${title}</div>
       <div class="eng10-online-q-text">${body}</div>
       ${renderImages(q)}
-      <div class="eng10-online-rewrite-prompt">${safeRichText(q.prompt)}</div>
+      <div class="eng10-online-rewrite-prompt">${safeExamRichText(q.prompt)}</div>
       <textarea class="eng10-online-input" name="${escapeAttr(key)}" rows="2" placeholder="Gõ câu hoàn chỉnh..." ${disabled ? 'disabled' : ''}>${escapeHtml(answers[key] || '')}</textarea>
     </article>`;
   }
@@ -487,7 +527,9 @@
   return {
     collectImageSlots,
     createRunner,
+    displayQuestionText,
     escapeHtml,
+    formatExamDisplayText,
     hydrateExamAssetUrls,
     isQuestionCorrect,
     normalizeText,

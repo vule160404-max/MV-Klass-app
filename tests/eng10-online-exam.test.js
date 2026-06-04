@@ -3,6 +3,8 @@ const assert = require('node:assert/strict');
 
 const {
   collectImageSlots,
+  displayQuestionText,
+  formatExamDisplayText,
   hydrateExamAssetUrls,
   safeRichText,
   scoreExam,
@@ -63,6 +65,38 @@ test('safeRichText escapes arbitrary HTML while preserving strong and underline 
   assert.equal(
     safeRichText('<img src=x onerror=alert(1)><strong>bold</strong><u>u</u>'),
     '&lt;img src=x onerror=alert(1)&gt;<strong>bold</strong><u>u</u>'
+  );
+  assert.equal(
+    safeRichText('A. c<strong><u>a</u></strong>lm'),
+    'A. c<strong><u>a</u></strong>lm'
+  );
+});
+
+test('formatExamDisplayText renders cloze placeholders as numbered blanks', () => {
+  assert.equal(
+    formatExamDisplayText('First [BLANK_19], then [blank-20], finally [blank 21].'),
+    'First ___19___, then ___20___, finally ___21___.'
+  );
+});
+
+test('displayQuestionText replaces generated cloze placeholder wording', () => {
+  assert.equal(
+    displayQuestionText({
+      id: 19,
+      display_id: '19',
+      type: 'multiple_choice',
+      question: 'Vị trí tương ứng với số [BLANK_19] trong đoạn văn điền từ.'
+    }),
+    'Chọn đáp án đúng cho chỗ trống ___19___.'
+  );
+  assert.equal(
+    displayQuestionText({
+      id: 20,
+      display_id: '20',
+      type: 'multiple_choice',
+      question: 'Choose the correct option for [BLANK_20].'
+    }),
+    'Choose the correct option for ___20___.'
   );
 });
 
