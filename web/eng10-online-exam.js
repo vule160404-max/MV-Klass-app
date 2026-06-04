@@ -417,6 +417,8 @@
       pageIndex: 0,
       startedAt: Date.now(),
       submitted: false,
+      submitting: false,
+      submitError: '',
       result: null
     };
     state.exam = hydrateExamAssetUrls(state.exam, state.assets);
@@ -438,13 +440,30 @@
     }
 
     async function submit() {
+      if (state.submitted || state.submitting) return;
       syncAnswers();
       const duration = Math.round((Date.now() - state.startedAt) / 1000);
-      if (typeof opts.onSubmit === 'function') {
-        state.result = await opts.onSubmit({ answers: state.answers, duration_seconds: duration });
-      } else {
+      state.submitting = true;
+      state.submitError = '';
+      render();
+      try {
+        if (typeof opts.onSubmit === 'function') {
+          const serverSubmit = opts.onSubmit({ answers: state.answers, duration_seconds: duration });
+          const timeoutSubmit = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('SUBMIT_TIMEOUT')), 12000);
+          });
+          state.result = await Promise.race([serverSubmit, timeoutSubmit]);
+        } else {
+          state.result = scoreExam(state.exam, state.answers, duration);
+        }
+      } catch (err) {
         state.result = scoreExam(state.exam, state.answers, duration);
+        state.submitError = String(err && err.message || err) === 'SUBMIT_TIMEOUT'
+          ? 'Server lưu kết quả hơi lâu. Bài đã được chấm tạm trên máy, em có thể chụp lại kết quả.'
+          : 'Chưa lưu được kết quả lên hệ thống. Bài đã được chấm tạm trên máy.';
+        if (typeof opts.onError === 'function') opts.onError(err);
       }
+      state.submitting = false;
       state.submitted = true;
       render();
     }
@@ -465,6 +484,13 @@
         ${state.submitted ? `<section class="eng10-online-result">
           <div class="eng10-online-score">${safeRichText(state.result?.score ?? 0)}<span>/${safeRichText(state.result?.total ?? state.exam.questions.length)}</span></div>
           <div class="eng10-online-result-text">Điểm ${safeRichText(state.result?.percent ?? 0)}% · ${safeRichText(state.result?.duration_seconds ?? 0)} giây</div>
+          ${state.submitError ? `<div class="eng10-online-result-note">${safeRichText(state.submitError)}</div>` : ''}
+        </section>` : state.submitting ? `<section class="eng10-online-submit-state">
+          <span class="eng10-online-submit-spinner" aria-hidden="true"></span>
+          <div>
+            <strong>Đang chấm bài...</strong>
+            <span>Hệ thống đang lưu kết quả. Vui lòng chờ một chút.</span>
+          </div>
         </section>` : ''}
         <div class="eng10-online-main">
           <aside class="eng10-online-source">${renderSource(state.exam, page)}</aside>
@@ -479,7 +505,7 @@
         <footer class="eng10-online-foot">
           <button type="button" data-action="prev" ${state.pageIndex <= 0 ? 'disabled' : ''}>Trang trước</button>
           <button type="button" data-action="next" ${state.pageIndex >= totalPages - 1 ? 'disabled' : ''}>Trang sau</button>
-          <button type="button" class="primary" data-action="submit" ${state.submitted ? 'disabled' : ''}>Nộp bài</button>
+          <button type="button" class="primary" data-action="submit" ${state.submitted || state.submitting ? 'disabled' : ''}>${state.submitting ? 'Đang chấm...' : 'Nộp bài'}</button>
         </footer>
       </div>`;
     }
@@ -511,6 +537,9 @@
       }
       if (action === 'submit') {
         submit().catch(err => {
+          state.submitting = false;
+          state.submitError = 'Có lỗi khi chấm bài. Em thử bấm nộp lại.';
+          render();
           if (typeof opts.onError === 'function') opts.onError(err);
         });
       }

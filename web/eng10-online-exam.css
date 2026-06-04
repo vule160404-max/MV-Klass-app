@@ -101,6 +101,62 @@
   font-weight: 800;
 }
 
+.eng10-online-result-note {
+  max-width: 720px;
+  margin-top: 4px;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(255, 244, 214, .14);
+  border: 1px solid rgba(255, 214, 111, .26);
+  color: rgba(255, 255, 255, .86);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.eng10-online-submit-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #fff8e8, #fff3d6);
+  border-bottom: 1px solid rgba(244, 167, 29, .24);
+  color: #7a4a06;
+}
+
+.eng10-online-submit-state strong,
+.eng10-online-submit-state span {
+  display: block;
+}
+
+.eng10-online-submit-state strong {
+  color: #12213d;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.eng10-online-submit-state span {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.eng10-online-submit-spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 3px solid rgba(154, 91, 0, .18);
+  border-top-color: #9a5b00;
+  animation: eng10OnlineSpin .76s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes eng10OnlineSpin {
+  to { transform: rotate(360deg); }
+}
+
 .eng10-online-main {
   min-height: 0;
   display: grid;
