@@ -20881,7 +20881,7 @@ let portalExamPreviewUrl = '';
 let portalExamPreviewLabel = '';
 let portalExamPreviewToken = 0;
 let websiteAdminSubtab = 'library';
-const PORTAL_ONLINE_RENDER_LIMIT = 120;
+const PORTAL_ONLINE_RENDER_LIMIT = 60;
 const PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS = 140;
 let portalOnlineRows = [];
 let portalOnlinePreparedRows = [];
@@ -21929,6 +21929,10 @@ function portalOnlineBuildSearchText(row) {
   ].map(x => normalizeText(String(x || ''))).join(' ');
 }
 
+function portalOnlineHasSearchQuery() {
+  return !!normalizeText(portalOnlineQuery);
+}
+
 function portalOnlineCompareRows(a, b) {
   const statusOrder = { published: 0, draft: 1, missing: 2 };
   const sa = statusOrder[portalOnlineStatusKey(a)] ?? 3;
@@ -22030,6 +22034,7 @@ function onPortalOnlineLevel(value) {
 
 function portalOnlineFilteredRows() {
   const q = normalizeText(portalOnlineQuery);
+  if (!q) return [];
   const rows = portalOnlinePreparedRows.length === (portalOnlineRows || []).length
     ? portalOnlinePreparedRows
     : (portalOnlineRows || []);
@@ -22037,7 +22042,6 @@ function portalOnlineFilteredRows() {
     .filter(row => portalOnlineStatus === 'all' || portalOnlineStatusKey(row) === portalOnlineStatus)
     .filter(row => portalOnlineLevel === 'all' || portalExamGroupKey(row) === portalOnlineLevel)
     .filter(row => {
-      if (!q) return true;
       const hay = row && row.__portalOnlineSearchText ? row.__portalOnlineSearchText : portalOnlineBuildSearchText(row);
       return hay.includes(q);
     });
@@ -22054,16 +22058,23 @@ function renderPortalOnlineExams() {
     list.innerHTML = `<div class="website-online-empty">${escapeHtml(portalOnlineError)}</div>`;
     return;
   }
-  const rows = portalOnlineFilteredRows();
   if (!portalOnlineRows.length) {
     list.innerHTML = '<div class="website-online-empty">Chưa có tài liệu nào trong kho để gắn đề online.</div>';
     return;
   }
+  const syncedAt = portalOnlineLoadedAt ? new Date(portalOnlineLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '';
+  if (!portalOnlineHasSearchQuery()) {
+    const loadedText = portalOnlineRows.length
+      ? `Đã tải ${portalOnlineRows.length} đề · cập nhật ${escapeHtml(syncedAt)}.`
+      : '';
+    list.innerHTML = `<div class="website-online-empty">Nhập từ khóa để tìm đề online. ${loadedText}</div>`;
+    return;
+  }
+  const rows = portalOnlineFilteredRows();
   if (!rows.length) {
     list.innerHTML = '<div class="website-online-empty">Không có đề khớp bộ lọc hiện tại.</div>';
     return;
   }
-  const syncedAt = portalOnlineLoadedAt ? new Date(portalOnlineLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '';
   const visibleRows = rows.slice(0, PORTAL_ONLINE_RENDER_LIMIT);
   const hiddenCount = Math.max(0, rows.length - visibleRows.length);
   const countText = hiddenCount
