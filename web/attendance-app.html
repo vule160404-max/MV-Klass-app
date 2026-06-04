@@ -4348,6 +4348,52 @@
       white-space: nowrap;
     }
     .portal-analytics-shell{ display:grid; gap:14px; }
+    .website-admin-subtabs{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:5px; border-radius:16px; background:#eef4ff; border:1px solid rgba(99,138,218,.16); box-shadow:0 10px 24px rgba(17,42,100,.06); }
+    .website-admin-subtab{ min-height:42px; border:0; border-radius:12px; background:transparent; color:#4a5b74; font-size:13px; font-weight:950; cursor:pointer; transition:background .18s ease,color .18s ease,box-shadow .18s ease; }
+    .website-admin-subtab.active{ background:#fff; color:#102858; box-shadow:0 8px 18px rgba(17,42,100,.10); }
+    .website-admin-panel{ display:none; gap:14px; }
+    .website-admin-panel.active{ display:grid; }
+    .website-admin-online-toolbar{ display:grid; grid-template-columns:minmax(220px,1fr) 150px 150px auto; gap:8px; align-items:center; padding:12px 14px; border-bottom:1px solid rgba(99,138,218,.10); background:#fbfdff; }
+    .website-admin-online-toolbar input,.website-admin-online-toolbar select{ min-width:0; width:100%; min-height:38px; border-radius:10px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
+    .website-online-list{ display:grid; gap:10px; padding:12px 14px 14px; background:#fbfdff; }
+    .website-online-row{ display:grid; grid-template-columns:48px minmax(0,1fr) auto; gap:12px; align-items:start; padding:12px; border:1px solid rgba(99,138,218,.14); border-radius:12px; background:#fff; box-shadow:0 8px 20px rgba(15,31,61,.05); }
+    .website-online-mark{ width:48px; height:48px; border-radius:12px; display:grid; place-items:center; background:#eef6ff; color:#0f3f91; border:1px solid rgba(79,142,247,.18); font-size:11px; font-weight:950; }
+    .website-online-main{ min-width:0; display:grid; gap:7px; }
+    .website-online-title{ color:#102033; font-size:13px; line-height:1.35; font-weight:950; overflow-wrap:anywhere; }
+    .website-online-meta{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; color:#64748b; font-size:11px; font-weight:800; line-height:1.25; }
+    .website-online-pill{ display:inline-flex; align-items:center; min-height:24px; padding:4px 8px; border-radius:999px; border:1px solid rgba(99,138,218,.16); background:#f8fbff; color:#42526c; font-size:10.5px; font-weight:900; line-height:1.1; }
+    .website-online-pill.published{ color:#166534; background:#ecfdf5; border-color:rgba(22,163,74,.18); }
+    .website-online-pill.draft{ color:#7c2d12; background:#fff7ed; border-color:rgba(249,115,22,.20); }
+    .website-online-path{ color:#7a879b; font-size:10.5px; line-height:1.35; font-weight:720; overflow-wrap:anywhere; }
+    .website-online-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; max-width:320px; }
+    .website-online-actions .btn-sm{ min-height:31px; height:31px; padding:6px 9px; border-radius:8px; font-size:11px; }
+    .website-online-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
+    .website-online-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
+    .website-online-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
+    .website-online-modal{ position:fixed; inset:0; z-index:1270; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(15,31,61,.50); backdrop-filter:blur(8px); }
+    .website-online-modal.show{ display:flex; }
+    .website-online-modal-card{ width:min(820px,100%); max-height:min(780px,calc(100vh - 36px)); display:grid; grid-template-rows:auto minmax(0,1fr) auto; overflow:hidden; border-radius:14px; background:#fff; border:1px solid rgba(99,138,218,.22); box-shadow:0 26px 70px rgba(15,31,61,.28); }
+    .website-online-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:16px 18px 13px; border-bottom:1px solid rgba(99,138,218,.12); background:#fbfdff; }
+    .website-online-modal-title{ color:#102858; font-size:16px; font-weight:950; line-height:1.2; }
+    .website-online-modal-sub{ margin-top:4px; color:#72809b; font-size:11.5px; font-weight:760; line-height:1.4; }
+    .website-online-modal-body{ min-height:220px; overflow:auto; padding:14px 18px; background:#fbfdff; }
+    .website-online-modal-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid rgba(99,138,218,.12); background:#fff; }
+    .website-online-textarea{ width:100%; min-height:380px; resize:vertical; border:1px solid rgba(99,138,218,.18); border-radius:12px; background:#fff; color:#132033; font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; padding:12px; outline:none; }
+    .website-online-prompt{ white-space:pre-wrap; padding:14px; border:1px solid rgba(99,138,218,.16); border-radius:12px; background:#fff; color:#263852; font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .website-online-assets{ display:grid; gap:10px; }
+    .website-online-asset-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid rgba(99,138,218,.14); border-radius:10px; background:#fff; }
+    .website-online-asset-name{ color:#102033; font-size:12px; font-weight:950; overflow-wrap:anywhere; }
+    .website-online-asset-meta{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; overflow-wrap:anywhere; }
+    @media (max-width:900px){
+      .website-online-modal{ padding:12px; align-items:flex-end; }
+      .website-online-modal-card{ max-height:88vh; border-radius:12px; }
+      .website-admin-online-toolbar{ grid-template-columns:1fr; }
+      .website-online-row{ grid-template-columns:38px minmax(0,1fr); }
+      .website-online-mark{ width:38px; height:38px; }
+      .website-online-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; }
+      .website-admin-subtabs{ grid-template-columns:1fr; }
+      .website-online-asset-row{ grid-template-columns:1fr; }
+    }
     .portal-analytics-hero{
       position:relative; overflow:hidden; border-radius:22px; padding:18px;
       background:radial-gradient(circle at 92% 10%, rgba(79,142,247,.18), transparent 34%), linear-gradient(135deg, rgba(15,31,61,.98), rgba(29,78,216,.88));
@@ -6550,7 +6596,7 @@
     .student-exam-section{margin-top:22px}.student-exam-section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}.student-exam-section h2{margin:0;color:#12213d;font-size:19px;line-height:1.2}.student-exam-count{color:#718096;font-size:12px;font-weight:800;white-space:nowrap}.student-exam-list,.student-exam-feature-grid{display:grid;grid-template-columns:1fr;gap:12px}
     .student-exam-card{display:grid;gap:12px;padding:15px;border-radius:20px;background:rgba(255,255,255,.96);border:1px solid rgba(18,33,61,.08);box-shadow:0 12px 30px rgba(18,33,61,.08)}.student-exam-card.is-locked{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,250,252,.94));border-style:dashed}.student-exam-card-top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}.student-exam-card h3{margin:0;color:#12213d;font-size:15px;line-height:1.35}.student-exam-desc{margin:6px 0 0;color:#65758e;font-size:13px;line-height:1.5;font-weight:600}.student-exam-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.student-exam-badge{display:inline-flex;align-items:center;min-height:24px;padding:4px 9px;border-radius:999px;background:#eef3f9;color:#40516c;font-size:11px;font-weight:900}.student-exam-badge.gold{background:#fff4d6;color:#8a5208}.student-exam-badge.locked{background:#f1f5f9;color:#475569}.student-exam-badge.premium{gap:5px;padding:5px 10px;background:linear-gradient(135deg,#0f1f3d,#1a3460 62%,#243f72);color:#ffe7a6;border:1px solid rgba(244,167,29,.46);box-shadow:0 7px 16px rgba(15,31,61,.14),inset 0 1px 0 rgba(255,255,255,.12);letter-spacing:.03em;text-transform:uppercase}.student-exam-badge.premium::before{content:"";width:6px;height:6px;border-radius:999px;background:#f4a71d;box-shadow:0 0 0 3px rgba(244,167,29,.14)}.student-exam-downloads{color:#7a8499;font-size:11px;font-weight:900;white-space:nowrap}
     .student-exam-badge.program{background:#edf7ff;color:#1a3460}.student-exam-badge.priority{background:#e9f9ef;color:#15803d}
-    .student-exam-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.student-exam-action{min-height:38px;border-radius:13px;border:1px solid rgba(18,33,61,.1);background:#fff;color:#162743;font-size:12px;font-weight:900;cursor:pointer}.student-exam-action.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-action.answer{background:#f8fbff;border-color:rgba(26,52,96,.18);color:#1a3460}.student-exam-action.audio{background:#fff8e8;border-color:rgba(244,167,29,.35);color:#8a5208}.student-exam-action.upgrade{grid-column:1/-1;background:#fff8e8;border-color:rgba(244,167,29,.42);color:#8a5208}.student-exam-action:disabled{cursor:not-allowed;opacity:.58}.student-exam-locked-note{padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid rgba(18,33,61,.08);color:#56657a;font-size:12px;font-weight:800;line-height:1.45}.student-exam-state{padding:22px 16px;border-radius:20px;background:rgba(255,255,255,.92);border:1px dashed rgba(18,33,61,.16);color:#62718a;font-size:14px;font-weight:800;text-align:center}
+    .student-exam-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.student-exam-action{min-height:38px;border-radius:13px;border:1px solid rgba(18,33,61,.1);background:#fff;color:#162743;font-size:12px;font-weight:900;cursor:pointer}.student-exam-action.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-action.online{grid-column:1/-1;background:linear-gradient(180deg,#1c7c54,#14532d);border-color:#14532d;color:#fff;box-shadow:0 10px 22px rgba(20,83,45,.18)}.student-exam-action.answer{background:#f8fbff;border-color:rgba(26,52,96,.18);color:#1a3460}.student-exam-action.audio{background:#fff8e8;border-color:rgba(244,167,29,.35);color:#8a5208}.student-exam-action.upgrade{grid-column:1/-1;background:#fff8e8;border-color:rgba(244,167,29,.42);color:#8a5208}.student-exam-action:disabled{cursor:not-allowed;opacity:.58}.student-exam-locked-note{padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid rgba(18,33,61,.08);color:#56657a;font-size:12px;font-weight:800;line-height:1.45}.student-exam-state{padding:22px 16px;border-radius:20px;background:rgba(255,255,255,.92);border:1px dashed rgba(18,33,61,.16);color:#62718a;font-size:14px;font-weight:800;text-align:center}
     .student-exam-personal{margin-top:18px;display:grid;grid-template-columns:1fr;gap:14px}.student-exam-mini-section{min-width:0}.student-exam-mini-section .student-exam-section-head{margin-bottom:8px}.student-exam-mini-section h2{font-size:17px}.student-exam-card-tools{display:flex;align-items:flex-start;gap:8px;flex-shrink:0}
     .student-exam-download-history-bar{display:flex;justify-content:flex-start;min-width:0}
     .student-exam-history-btn{display:inline-grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:54px;padding:9px 12px;border-radius:17px;border:1px solid rgba(18,33,61,.10);background:linear-gradient(180deg,#fff,#f8fbff);color:#102858;box-shadow:0 10px 24px rgba(18,33,61,.07);cursor:pointer;text-align:left}
@@ -6676,6 +6722,8 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <link rel="stylesheet" href="./eng10-online-exam.css?v=20260604-online-exam">
+  <script src="./eng10-online-exam.js?v=20260604-online-exam"></script>
   <!-- Cùng bump ?v= v?i WEB_PUSH_SUB_VERSION; VAPID Web Push uu tiên t? window.MVK_VAPID_PUBLIC ? <head> -->
   <script type="module" src="./firebase-config.js?v=vapid-session-rebind-20260430"></script>
 
@@ -10701,6 +10749,13 @@ a:focus-visible,
   color:#fff !important;
   box-shadow:0 10px 22px rgba(15,31,61,.18) !important;
 }
+.student-exam-card .student-exam-action.online{
+  grid-column:1/-1 !important;
+  background:linear-gradient(180deg,#1c7c54,#14532d) !important;
+  border-color:#14532d !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(20,83,45,.18) !important;
+}
 .student-exam-card .student-exam-action.answer{
   background:#f7fbff !important;
   color:#123c78 !important;
@@ -11195,7 +11250,7 @@ button[data-bank-inspect-confirm-not]:hover,
     </button>
     <button class="tab" id="tab-btn-portal-admin" onclick="showTab('portal-admin')">
       <span class="tab-icon" aria-hidden="true">PT</span>
-      Quản lí kho tài liệu
+      Quản lí website
     </button>
     <button class="tab" id="tab-btn-leaderboard" onclick="showTab('leaderboard')">
       <span class="tab-icon" aria-hidden="true">LB</span>
@@ -11445,8 +11500,8 @@ button[data-bank-inspect-confirm-not]:hover,
       <div class="portal-analytics-shell" id="portal-analytics-root">
         <div class="portal-analytics-hero">
           <div>
-            <h3>Student Portal Intelligence</h3>
-            <p>Theo dõi học sinh đang dùng kho đề ra sao: ai hoạt động, tài liệu nào được mở/tải nhiều, nhịp tương tác theo ngày và các tín hiệu cần chăm sóc.</p>
+            <h3>Quản lí website</h3>
+            <p>Quản trị kho tài liệu, gói Free/Premium và đề online trong cùng một khu vực. Tab đề online dùng để tạo prompt AI, nạp JSON, upload ảnh và xuất bản nút làm bài cho học sinh.</p>
           </div>
           <div class="portal-analytics-status">
             <strong id="portal-kpi-last-sync">—</strong>
@@ -11458,6 +11513,11 @@ button[data-bank-inspect-confirm-not]:hover,
           <div class="portal-kpi-card"><div class="label">Lượt mở đề</div><div class="value" id="portal-kpi-opens">0</div><div class="hint">Theo từng tài khoản</div></div>
           <div class="portal-kpi-card"><div class="label">Lượt tải</div><div class="value" id="portal-kpi-downloads">0</div><div class="hint">Tải file trong portal</div></div>
         </div>
+        <div class="website-admin-subtabs" role="tablist" aria-label="Quản lí website">
+          <button type="button" class="website-admin-subtab active" id="website-admin-subtab-library" role="tab" aria-selected="true" onclick="setWebsiteAdminSubtab('library')">Quản lí kho tài liệu</button>
+          <button type="button" class="website-admin-subtab" id="website-admin-subtab-online" role="tab" aria-selected="false" onclick="setWebsiteAdminSubtab('online')">Quản lí đề online</button>
+        </div>
+        <div class="website-admin-panel active" id="website-admin-panel-library" role="tabpanel" aria-labelledby="website-admin-subtab-library">
         <div class="portal-panel">
           <div class="portal-panel-head">
             <div>
@@ -11578,6 +11638,93 @@ button[data-bank-inspect-confirm-not]:hover,
             <div class="portal-panel-body" id="portal-top-users"></div>
           </div>
         </div>
+        </div>
+        <div class="website-admin-panel" id="website-admin-panel-online" role="tabpanel" aria-labelledby="website-admin-subtab-online">
+          <div class="portal-panel">
+            <div class="portal-panel-head">
+              <div>
+                <div class="portal-panel-title">Quản lí đề online</div>
+                <div class="portal-panel-sub">Tạo prompt AI, nạp JSON theo schema ENG10, upload ảnh theo slot và xuất bản/ẩn nút làm bài online trên card học sinh.</div>
+              </div>
+              <button type="button" class="btn-sm action-info" onclick="loadPortalOnlineExams(true)">Làm mới</button>
+            </div>
+            <div class="website-admin-online-toolbar">
+              <input type="search" id="portal-online-search" placeholder="Tìm đề, mã đề, tỉnh/thành, năm..." autocomplete="off" oninput="onPortalOnlineSearch(this.value)"/>
+              <select id="portal-online-status" onchange="onPortalOnlineStatus(this.value)">
+                <option value="all">Mọi trạng thái</option>
+                <option value="published">Đã xuất bản</option>
+                <option value="draft">Bản nháp</option>
+                <option value="missing">Chưa có JSON</option>
+              </select>
+              <select id="portal-online-level" onchange="onPortalOnlineLevel(this.value)">
+                <option value="all">Mọi chương trình</option>
+                <option value="entrance_10">Thi vào 10</option>
+                <option value="university">THPT QG</option>
+                <option value="ielts">IELTS</option>
+              </select>
+              <button type="button" class="btn-sm" onclick="loadPortalOnlineExams(true)">Đồng bộ</button>
+            </div>
+            <div class="website-online-list" id="portal-online-list">
+              <div class="website-online-empty">Chọn tab này để tải danh sách đề online.</div>
+            </div>
+          </div>
+        </div>
+        <div class="website-online-modal" id="portal-online-json-modal" onclick="onPortalOnlineModalBackdrop(event)">
+          <div class="website-online-modal-card" role="dialog" aria-modal="true" aria-labelledby="portal-online-json-title">
+            <div class="website-online-modal-head">
+              <div>
+                <div class="website-online-modal-title" id="portal-online-json-title">Nạp JSON đề online</div>
+                <div class="website-online-modal-sub" id="portal-online-json-sub">Dán hoặc upload JSON theo schema ENG10.</div>
+              </div>
+              <button type="button" class="btn-sm" onclick="closePortalOnlineJsonModal()">Đóng</button>
+            </div>
+            <div class="website-online-modal-body">
+              <textarea id="portal-online-json-input" class="website-online-textarea" spellcheck="false" placeholder='{"exam_id":"...","title":"...","questions":[]}'></textarea>
+            </div>
+            <div class="website-online-modal-actions">
+              <button type="button" class="btn-sm" onclick="choosePortalOnlineJsonFile()">Upload .json</button>
+              <button type="button" class="btn-sm" onclick="closePortalOnlineJsonModal()">Hủy</button>
+              <button type="button" class="btn-sm primary" id="portal-online-json-save" onclick="savePortalOnlineJson()">Lưu bản nháp</button>
+            </div>
+          </div>
+        </div>
+        <div class="website-online-modal" id="portal-online-prompt-modal" onclick="onPortalOnlineModalBackdrop(event)">
+          <div class="website-online-modal-card" role="dialog" aria-modal="true" aria-labelledby="portal-online-prompt-title">
+            <div class="website-online-modal-head">
+              <div>
+                <div class="website-online-modal-title" id="portal-online-prompt-title">Prompt AI tạo JSON</div>
+                <div class="website-online-modal-sub" id="portal-online-prompt-sub">Dùng prompt này để chuyển PDF thành JSON online.</div>
+              </div>
+              <button type="button" class="btn-sm" onclick="closePortalOnlinePromptModal()">Đóng</button>
+            </div>
+            <div class="website-online-modal-body">
+              <pre class="website-online-prompt" id="portal-online-prompt-text">Đang tạo prompt...</pre>
+            </div>
+            <div class="website-online-modal-actions">
+              <button type="button" class="btn-sm" onclick="closePortalOnlinePromptModal()">Đóng</button>
+              <button type="button" class="btn-sm primary" onclick="copyPortalOnlinePrompt()">Copy prompt</button>
+            </div>
+          </div>
+        </div>
+        <div class="website-online-modal" id="portal-online-assets-modal" onclick="onPortalOnlineModalBackdrop(event)">
+          <div class="website-online-modal-card" role="dialog" aria-modal="true" aria-labelledby="portal-online-assets-title">
+            <div class="website-online-modal-head">
+              <div>
+                <div class="website-online-modal-title" id="portal-online-assets-title">Ảnh theo đề online</div>
+                <div class="website-online-modal-sub" id="portal-online-assets-sub">Upload ảnh khớp từng slot trong JSON.</div>
+              </div>
+              <button type="button" class="btn-sm" onclick="closePortalOnlineAssetsModal()">Đóng</button>
+            </div>
+            <div class="website-online-modal-body">
+              <div class="website-online-assets" id="portal-online-assets-list"></div>
+            </div>
+            <div class="website-online-modal-actions">
+              <button type="button" class="btn-sm" onclick="closePortalOnlineAssetsModal()">Đóng</button>
+            </div>
+          </div>
+        </div>
+        <input id="portal-online-json-file" type="file" accept="application/json,.json" style="display:none" onchange="loadPortalOnlineJsonFile()"/>
+        <input id="portal-online-asset-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="uploadPortalOnlineAssetFromInput()"/>
       </div>
     </div>
 
@@ -12897,6 +13044,7 @@ button[data-bank-inspect-confirm-not]:hover,
     <div class="student-exam-preview-actions" id="student-exam-preview-actions"></div>
   </div>
 </div>
+<div id="eng10-online-overlay" class="eng10-online-overlay" aria-hidden="true"></div>
 
 <div id="tuition-success-overlay" class="tuition-success-overlay" aria-hidden="true" tabindex="-1" onkeydown="if(event.key==='Escape'){event.preventDefault();closeTuitionSuccessOverlay();}">
   <div class="tuition-success-backdrop" onclick="closeTuitionSuccessOverlay()"></div>
@@ -18375,6 +18523,7 @@ function hideStudentExamPortalUI() {
   if (portalPremiumPollingTimer) clearInterval(portalPremiumPollingTimer);
   portalPremiumPollingTimer = null;
   closeStudentExamPreview();
+  closeStudentOnlineExam();
 }
 
 function studentExamDisplayName() {
@@ -19273,6 +19422,13 @@ function studentExamCard(row, compact) {
   const hasFile = studentExamHasFile(row, 'file');
   const hasAnswer = studentExamHasFile(row, 'answer');
   const hasAudio = studentExamHasFile(row, 'audio');
+  const hasOnline = row && (
+    row.has_online_exam === true ||
+    row.hasOnlineExam === true ||
+    row.online_exam === true ||
+    (row.online_exam && typeof row.online_exam === 'object') ||
+    String(row.has_online_exam || '').toLowerCase() === 'true'
+  );
   const canAccess = studentExamCanAccess(row);
   const locked = !canAccess;
   const tier = studentExamAccessTier(row);
@@ -19298,6 +19454,7 @@ function studentExamCard(row, compact) {
       <div class="student-exam-actions">
         <button type="button" class="student-exam-action" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Xem đề</button>
         <button type="button" class="student-exam-action primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Tải đề</button>
+        ${hasOnline ? `<button type="button" class="student-exam-action online" data-exam-online="${id}" ${canAccess ? '' : 'disabled'}>Làm bài online</button>` : ''}
         ${hasAnswer ? `<button type="button" class="student-exam-action answer" data-exam-preview="${id}" data-exam-kind="answer" ${canAccess ? '' : 'disabled'}>Xem đáp án</button>` : ''}
         ${hasAudio ? `<button type="button" class="student-exam-action audio" data-exam-preview="${id}" data-exam-kind="audio" ${canAccess ? '' : 'disabled'}>Nghe audio</button>` : ''}
         ${locked ? `<button type="button" class="student-exam-action upgrade" onclick="requestStudentExamUpgrade('${id}')">${String(row.locked_reason || '') === 'pending_approval' ? 'Đang chờ duyệt' : 'Đăng ký Premium'}</button>` : ''}
@@ -19719,6 +19876,11 @@ function bindStudentExamPortalEvents() {
         openStudentExamPreview(preview.getAttribute('data-exam-preview'), preview.getAttribute('data-exam-kind'));
         return;
       }
+      const online = e.target.closest('[data-exam-online]');
+      if (online) {
+        openStudentOnlineExam(online.getAttribute('data-exam-online'));
+        return;
+      }
       const dl = e.target.closest('[data-exam-download]');
       if (dl) {
         downloadStudentExamFile(dl.getAttribute('data-exam-download'), dl.getAttribute('data-exam-kind'));
@@ -19878,6 +20040,85 @@ function closeStudentExamPreview() {
   modal.setAttribute('aria-hidden', 'true');
   const body = document.getElementById('student-exam-preview-body');
   if (body) body.replaceChildren();
+}
+
+function renderStudentOnlineExamStatus(message, title) {
+  const overlay = document.getElementById('eng10-online-overlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  overlay.innerHTML = `<div class="eng10-online-shell">
+    <header class="eng10-online-head">
+      <button type="button" class="eng10-online-icon-btn" onclick="closeStudentOnlineExam()" aria-label="Đóng">×</button>
+      <div>
+        <div class="eng10-online-kicker">Làm bài online</div>
+        <h2>${escapeHtml(title || 'Đề online')}</h2>
+      </div>
+      <div class="eng10-online-progress">Đang tải</div>
+    </header>
+    <main class="eng10-online-main" style="grid-template-columns:1fr;place-items:center">
+      <div class="student-exam-state" style="width:min(520px,100%)">${escapeHtml(message || 'Đang mở bài online...')}</div>
+    </main>
+  </div>`;
+}
+
+function closeStudentOnlineExam() {
+  const overlay = document.getElementById('eng10-online-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.replaceChildren();
+}
+
+async function openStudentOnlineExam(examId) {
+  const id = String(examId || '').trim();
+  const row = studentExamFind(id);
+  if (!id || !row) {
+    showAppToast('Không tìm thấy đề này.', 'warn');
+    return;
+  }
+  if (!studentExamCanAccess(row)) {
+    showAppToast('Đề online này cần tài khoản Premium.', 'warn');
+    return;
+  }
+  if (!window.Eng10OnlineExam || typeof window.Eng10OnlineExam.createRunner !== 'function') {
+    showAppToast('Runner bài online chưa sẵn sàng. Tải lại trang rồi thử lại.', 'error');
+    return;
+  }
+  const title = studentExamDisplayTitle(row);
+  renderStudentOnlineExamStatus('Đang tải bài online...', title);
+  try {
+    const data = await callExamOnline('get', { exam_file_id: id });
+    const overlay = document.getElementById('eng10-online-overlay');
+    if (!overlay) return;
+    window.Eng10OnlineExam.createRunner({
+      container: overlay,
+      exam: data.exam_json,
+      assets: data.assets || [],
+      onClose: closeStudentOnlineExam,
+      onError: (error) => {
+        console.warn('online exam runner', error);
+        showAppToast('Có lỗi khi hiển thị đề online.', 'error');
+      },
+      onSubmit: async ({ answers, duration_seconds }) => {
+        const submit = await callExamOnline('submit', {
+          exam_file_id: id,
+          answers,
+          duration_seconds
+        });
+        await loadStudentExamActivity().catch(() => {});
+        return submit.result || {};
+      }
+    });
+    void trackStudentExamPortalEvent(id, 'open');
+  } catch (e) {
+    console.warn('openStudentOnlineExam', e);
+    const msg = /403|Forbidden/i.test(String(e && (e.status || e.message) || e))
+      ? 'Tài khoản này chưa có quyền mở đề online.'
+      : 'Chưa mở được bài online. Em thử lại sau.';
+    renderStudentOnlineExamStatus(msg, title);
+    showAppToast(msg, 'warn');
+  }
 }
 
 async function incrementStudentExamDownload(id) {
@@ -20639,6 +20880,20 @@ let portalExamManagerLevel = 'all';
 let portalExamPreviewUrl = '';
 let portalExamPreviewLabel = '';
 let portalExamPreviewToken = 0;
+let websiteAdminSubtab = 'library';
+let portalOnlineRows = [];
+let portalOnlineLoadedAt = 0;
+let portalOnlineLoading = false;
+let portalOnlineError = '';
+let portalOnlineQuery = '';
+let portalOnlineStatus = 'all';
+let portalOnlineLevel = 'all';
+let portalOnlineJsonExamId = '';
+let portalOnlinePromptText = '';
+let portalOnlineAssetsExamId = '';
+let portalOnlineAssetSlotId = '';
+let portalOnlinePublishingId = '';
+let portalOnlineUploadingSlotId = '';
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -21568,6 +21823,532 @@ function invalidatePortalAnalyticsCache() {
   _portalAnalyticsLoadedAt = 0;
 }
 
+function setWebsiteAdminSubtab(tab) {
+  const active = tab === 'online' ? 'online' : 'library';
+  websiteAdminSubtab = active;
+  const tabs = {
+    library: document.getElementById('website-admin-subtab-library'),
+    online: document.getElementById('website-admin-subtab-online')
+  };
+  const panels = {
+    library: document.getElementById('website-admin-panel-library'),
+    online: document.getElementById('website-admin-panel-online')
+  };
+  Object.keys(tabs).forEach(key => {
+    const isActive = key === active;
+    tabs[key]?.classList.toggle('active', isActive);
+    tabs[key]?.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    panels[key]?.classList.toggle('active', isActive);
+  });
+  if (active === 'online') {
+    loadPortalOnlineExams(false).catch(e => console.warn('loadPortalOnlineExams', e));
+  }
+}
+
+async function callExamOnline(action, payload = {}) {
+  const sessionOk = await ensureSessionFresh();
+  if (!sessionOk || !currentSession?.access_token) throw new Error('missing_session');
+  const r = await fetch(SUPABASE_URL + '/functions/v1/exam-online', {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ ...payload, action }),
+    cache: 'no-store'
+  });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok || data.ok === false) {
+    const err = new Error(data.error || data.message || ('exam_online_' + r.status));
+    err.data = data;
+    err.status = r.status;
+    throw err;
+  }
+  return data;
+}
+
+function portalOnlineStatusKey(row) {
+  const online = row && row.online_exam;
+  if (!online) return 'missing';
+  return String(online.status || 'draft') === 'published' ? 'published' : 'draft';
+}
+
+function portalOnlineStatusLabel(row) {
+  const key = portalOnlineStatusKey(row);
+  if (key === 'published') return 'Đã xuất bản';
+  if (key === 'draft') return 'Bản nháp';
+  return 'Chưa có JSON';
+}
+
+function portalOnlineImageSlots(row) {
+  const slots = row && row.online_exam && row.online_exam.image_slots;
+  return Array.isArray(slots) ? slots : [];
+}
+
+function portalOnlineAssets(row) {
+  const assets = row && row.online_exam && row.online_exam.assets;
+  return Array.isArray(assets) ? assets : [];
+}
+
+function portalOnlineSlotKey(value) {
+  return normalizeText(String(value || '')).trim().toLowerCase();
+}
+
+function portalOnlineJsArg(value) {
+  return escapeHtml(String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r?\n/g, ' '));
+}
+
+function portalOnlineAssetForSlot(row, slot) {
+  const wanted = portalOnlineSlotKey(slot && (slot.slot_id || slot.id || slot.file_name || slot.fileName));
+  if (!wanted) return null;
+  return portalOnlineAssets(row).find(asset => {
+    const keys = [asset && asset.slot_id, asset && asset.file_name]
+      .map(portalOnlineSlotKey)
+      .filter(Boolean);
+    return keys.includes(wanted);
+  }) || null;
+}
+
+function portalOnlineMergeExam(examFileId, onlineExam) {
+  const id = String(examFileId || (onlineExam && onlineExam.exam_file_id) || '').trim();
+  if (!id) return;
+  const row = portalOnlineRows.find(item => String(item && item.id || '') === id);
+  if (!row) return;
+  row.online_exam = {
+    ...(row.online_exam || {}),
+    ...(onlineExam || {}),
+    assets: (onlineExam && Array.isArray(onlineExam.assets)) ? onlineExam.assets : portalOnlineAssets(row)
+  };
+}
+
+async function loadPortalOnlineExams(force = false) {
+  if (!isAdmin()) {
+    portalOnlineError = 'Chỉ admin được quản lý đề online.';
+    renderPortalOnlineExams();
+    return;
+  }
+  if (!force && !portalOnlineError && portalOnlineRows.length && portalOnlineLoadedAt) {
+    renderPortalOnlineExams();
+    return;
+  }
+  portalOnlineLoading = true;
+  portalOnlineError = '';
+  renderPortalOnlineExams();
+  try {
+    const data = await callExamOnline('admin_list');
+    portalOnlineRows = Array.isArray(data.rows) ? data.rows : [];
+    portalOnlineLoadedAt = Date.now();
+  } catch (e) {
+    console.warn('loadPortalOnlineExams', e);
+    portalOnlineError = /ROLE_NOT_ADMIN|Admin required|PROFILE_NOT_FOUND|UNAUTHORIZED_USER_TOKEN|403/i.test(String(e && e.message || e))
+      ? 'Tài khoản hiện tại chưa có quyền admin để quản lý đề online.'
+      : 'Chưa tải được danh sách đề online. Kiểm tra Edge Function exam-online.';
+  } finally {
+    portalOnlineLoading = false;
+    renderPortalOnlineExams();
+  }
+}
+
+function onPortalOnlineSearch(value) {
+  portalOnlineQuery = String(value || '');
+  renderPortalOnlineExams();
+}
+
+function onPortalOnlineStatus(value) {
+  portalOnlineStatus = ['all', 'published', 'draft', 'missing'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalOnlineExams();
+}
+
+function onPortalOnlineLevel(value) {
+  portalOnlineLevel = ['all', 'entrance_10', 'university', 'ielts'].includes(String(value || '')) ? String(value) : 'all';
+  renderPortalOnlineExams();
+}
+
+function portalOnlineFilteredRows() {
+  const q = normalizeText(portalOnlineQuery).toLowerCase().trim();
+  return (portalOnlineRows || [])
+    .filter(row => portalOnlineStatus === 'all' || portalOnlineStatusKey(row) === portalOnlineStatus)
+    .filter(row => portalOnlineLevel === 'all' || portalExamGroupKey(row) === portalOnlineLevel)
+    .filter(row => {
+      if (!q) return true;
+      const hay = [
+        portalExamTitle(row),
+        row?.title,
+        row?.exam_code,
+        row?.province,
+        studentExamDisplayProvince(row?.province),
+        row?.year,
+        row?.description,
+        row?.online_exam?.title,
+        row?.online_exam?.status
+      ].map(x => normalizeText(String(x || '')).toLowerCase()).join(' ');
+      return hay.includes(q);
+    })
+    .sort((a, b) => {
+      const statusOrder = { published: 0, draft: 1, missing: 2 };
+      const sa = statusOrder[portalOnlineStatusKey(a)] ?? 3;
+      const sb = statusOrder[portalOnlineStatusKey(b)] ?? 3;
+      if (sa !== sb) return sa - sb;
+      const at = Date.parse(a?.online_exam?.updated_at || a?.created_at || '') || 0;
+      const bt = Date.parse(b?.online_exam?.updated_at || b?.created_at || '') || 0;
+      return bt - at || portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi');
+    });
+}
+
+function renderPortalOnlineExams() {
+  const list = document.getElementById('portal-online-list');
+  if (!list) return;
+  if (portalOnlineLoading) {
+    list.innerHTML = '<div class="website-online-loading"><span>Đang tải đề online...</span></div>';
+    return;
+  }
+  if (portalOnlineError) {
+    list.innerHTML = `<div class="website-online-empty">${escapeHtml(portalOnlineError)}</div>`;
+    return;
+  }
+  const rows = portalOnlineFilteredRows();
+  if (!portalOnlineRows.length) {
+    list.innerHTML = '<div class="website-online-empty">Chưa có tài liệu nào trong kho để gắn đề online.</div>';
+    return;
+  }
+  if (!rows.length) {
+    list.innerHTML = '<div class="website-online-empty">Không có đề khớp bộ lọc hiện tại.</div>';
+    return;
+  }
+  const syncedAt = portalOnlineLoadedAt ? new Date(portalOnlineLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '';
+  const html = rows.slice(0, 300).map(renderPortalOnlineRow).join('');
+  list.innerHTML = (syncedAt ? `<div class="website-online-empty" style="padding:10px 12px;text-align:left">Hiển thị ${rows.length}/${portalOnlineRows.length} đề · cập nhật ${escapeHtml(syncedAt)}.</div>` : '') + html;
+}
+
+function renderPortalOnlineRow(row) {
+  const id = String(row && row.id || '');
+  const statusKey = portalOnlineStatusKey(row);
+  const statusLabel = portalOnlineStatusLabel(row);
+  const online = row && row.online_exam;
+  const slots = portalOnlineImageSlots(row);
+  const assets = portalOnlineAssets(row);
+  const groupLabel = portalFreeGroupLabel(portalExamGroupKey(row));
+  const province = studentExamDisplayProvince(row && row.province);
+  const year = row && row.year ? String(row.year) : '';
+  const accessTier = String(row && row.access_tier || 'free') === 'premium' ? 'Premium' : 'Free';
+  const updatedAt = online && online.updated_at ? portalActivityTimeLabel(online.updated_at) : '';
+  const questionCount = Math.max(0, Number(online && online.question_count || 0));
+  const busy = portalOnlinePublishingId === id;
+  const publishLabel = statusKey === 'published' ? 'Ẩn' : 'Xuất bản';
+  const mark = statusKey === 'published' ? 'ON' : (statusKey === 'draft' ? 'JSON' : 'PDF');
+  return `<div class="website-online-row">
+    <div class="website-online-mark">${escapeHtml(mark)}</div>
+    <div class="website-online-main">
+      <div class="website-online-title">${escapeHtml(portalExamTitle(row))}</div>
+      <div class="website-online-meta">
+        <span class="website-online-pill ${escapeHtml(statusKey)}">${escapeHtml(statusLabel)}</span>
+        <span class="website-online-pill">${escapeHtml(groupLabel)}</span>
+        ${province || year ? `<span class="website-online-pill">${escapeHtml([province, year].filter(Boolean).join(' · '))}</span>` : ''}
+        <span class="website-online-pill">${escapeHtml(accessTier)}</span>
+        ${online ? `<span class="website-online-pill">${questionCount} câu</span>` : ''}
+        ${slots.length ? `<span class="website-online-pill">${assets.length}/${slots.length} ảnh</span>` : ''}
+      </div>
+      <div class="website-online-path">${escapeHtml([row && row.exam_code ? 'Mã ' + row.exam_code : '', updatedAt ? 'Cập nhật ' + updatedAt : '', online && online.title ? 'Online: ' + online.title : 'Chưa nạp JSON'].filter(Boolean).join(' · '))}</div>
+    </div>
+    <div class="website-online-actions">
+      <button type="button" class="btn-sm" onclick="openPortalOnlinePrompt('${escapeHtml(id)}')">Prompt AI</button>
+      <button type="button" class="btn-sm" onclick="openPortalOnlineJson('${escapeHtml(id)}')">Nạp JSON</button>
+      <button type="button" class="btn-sm" onclick="openPortalOnlineAssets('${escapeHtml(id)}')" ${online ? '' : 'disabled'}>Ảnh</button>
+      <button type="button" class="btn-sm" onclick="togglePortalOnlinePublished('${escapeHtml(id)}')" ${online && !busy ? '' : 'disabled'}>${busy ? 'Đang lưu' : escapeHtml(publishLabel)}</button>
+    </div>
+  </div>`;
+}
+
+function portalOnlineRowById(examId) {
+  const id = String(examId || '').trim();
+  return portalOnlineRows.find(row => String(row && row.id || '') === id) || null;
+}
+
+function onPortalOnlineModalBackdrop(e) {
+  if (!e || !e.target) return;
+  if (e.target.id === 'portal-online-json-modal') closePortalOnlineJsonModal();
+  if (e.target.id === 'portal-online-prompt-modal') closePortalOnlinePromptModal();
+  if (e.target.id === 'portal-online-assets-modal') closePortalOnlineAssetsModal();
+}
+
+async function openPortalOnlinePrompt(examId) {
+  const id = String(examId || '').trim();
+  if (!id) return;
+  const modal = document.getElementById('portal-online-prompt-modal');
+  const sub = document.getElementById('portal-online-prompt-sub');
+  const text = document.getElementById('portal-online-prompt-text');
+  const row = portalOnlineRowById(id);
+  portalOnlinePromptText = '';
+  if (sub) sub.textContent = row ? portalExamTitle(row) : 'Dùng prompt này để chuyển đề PDF thành JSON online.';
+  if (text) text.textContent = 'Đang tạo prompt...';
+  if (modal) modal.classList.add('show');
+  try {
+    const data = await callExamOnline('prompt', { exam_file_id: id });
+    portalOnlinePromptText = String(data.prompt || '');
+    if (text) text.textContent = portalOnlinePromptText || 'Không tạo được prompt.';
+  } catch (e) {
+    console.warn('openPortalOnlinePrompt', e);
+    if (text) text.textContent = 'Chưa tạo được prompt. Kiểm tra quyền admin hoặc Edge Function exam-online.';
+  }
+}
+
+function closePortalOnlinePromptModal() {
+  const modal = document.getElementById('portal-online-prompt-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+async function copyPortalOnlinePrompt() {
+  const text = portalOnlinePromptText || document.getElementById('portal-online-prompt-text')?.textContent || '';
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    showAppToast('Đã copy prompt.', 'success');
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', 'true');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showAppToast('Đã copy prompt.', 'success'); } catch (copyErr) {}
+    ta.remove();
+  }
+}
+
+function openPortalOnlineJson(examId) {
+  const id = String(examId || '').trim();
+  if (!id) return;
+  portalOnlineJsonExamId = id;
+  const row = portalOnlineRowById(id);
+  const modal = document.getElementById('portal-online-json-modal');
+  const sub = document.getElementById('portal-online-json-sub');
+  const input = document.getElementById('portal-online-json-input');
+  if (sub) sub.textContent = row ? `Nạp JSON cho: ${portalExamTitle(row)}` : 'Dán JSON theo schema ENG10.';
+  if (input) {
+    input.value = '';
+    input.placeholder = '{"exam_id":"' + id + '","title":"...","questions":[...]}';
+  }
+  if (modal) modal.classList.add('show');
+  setTimeout(() => input && input.focus(), 0);
+}
+
+function closePortalOnlineJsonModal() {
+  const modal = document.getElementById('portal-online-json-modal');
+  if (modal) modal.classList.remove('show');
+  portalOnlineJsonExamId = '';
+}
+
+function choosePortalOnlineJsonFile() {
+  const input = document.getElementById('portal-online-json-file');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
+
+async function loadPortalOnlineJsonFile() {
+  const fileInput = document.getElementById('portal-online-json-file');
+  const textInput = document.getElementById('portal-online-json-input');
+  const file = fileInput && fileInput.files && fileInput.files[0];
+  if (!file || !textInput) return;
+  if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+    showAppToast('File JSON phải nhỏ hơn 2MB.', 'error');
+    return;
+  }
+  const name = String(file.name || '').toLowerCase();
+  const type = String(file.type || '').toLowerCase();
+  if (!name.endsWith('.json') && type && type !== 'application/json') {
+    showAppToast('Chỉ nhận file JSON.', 'error');
+    return;
+  }
+  try {
+    const raw = await file.text();
+    const parsed = JSON.parse(raw);
+    textInput.value = JSON.stringify(parsed, null, 2);
+    showAppToast('Đã nạp file JSON.', 'success');
+  } catch (e) {
+    showAppToast('File JSON chưa hợp lệ.', 'error');
+  }
+}
+
+async function savePortalOnlineJson() {
+  const id = String(portalOnlineJsonExamId || '').trim();
+  const input = document.getElementById('portal-online-json-input');
+  const btn = document.getElementById('portal-online-json-save');
+  if (!id || !input) return;
+  let parsed = null;
+  try {
+    parsed = JSON.parse(String(input.value || '').trim());
+  } catch (e) {
+    showAppToast('JSON chưa hợp lệ. Kiểm tra dấu ngoặc/dấu phẩy.', 'error');
+    return;
+  }
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Đang lưu...';
+  }
+  try {
+    const data = await callExamOnline('save_json', { exam_file_id: id, exam_json: parsed });
+    portalOnlineMergeExam(id, data.online_exam);
+    closePortalOnlineJsonModal();
+    showAppToast('Đã lưu bản nháp đề online.', 'success');
+    await loadPortalOnlineExams(true);
+  } catch (e) {
+    console.warn('savePortalOnlineJson', e);
+    showAppToast('Chưa lưu được JSON: ' + String(e && e.message || e).slice(0, 90), 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Lưu bản nháp';
+    }
+  }
+}
+
+function openPortalOnlineAssets(examId) {
+  const id = String(examId || '').trim();
+  const row = portalOnlineRowById(id);
+  if (!row || !row.online_exam) {
+    showAppToast('Cần nạp JSON trước khi upload ảnh.', 'warn');
+    return;
+  }
+  portalOnlineAssetsExamId = id;
+  const modal = document.getElementById('portal-online-assets-modal');
+  const sub = document.getElementById('portal-online-assets-sub');
+  if (sub) sub.textContent = portalExamTitle(row);
+  renderPortalOnlineAssetsModal(row);
+  if (modal) modal.classList.add('show');
+}
+
+function closePortalOnlineAssetsModal() {
+  const modal = document.getElementById('portal-online-assets-modal');
+  if (modal) modal.classList.remove('show');
+  portalOnlineAssetsExamId = '';
+  portalOnlineAssetSlotId = '';
+  portalOnlineUploadingSlotId = '';
+}
+
+function renderPortalOnlineAssetsModal(row) {
+  const list = document.getElementById('portal-online-assets-list');
+  if (!list) return;
+  const slots = portalOnlineImageSlots(row);
+  if (!slots.length) {
+    list.innerHTML = '<div class="website-online-empty">JSON này không khai báo ảnh. Nếu đề có hình, hãy bổ sung mảng images rồi nạp lại JSON.</div>';
+    return;
+  }
+  list.innerHTML = slots.map(slot => {
+    const slotId = String(slot && (slot.slot_id || slot.id || slot.file_name || slot.fileName) || '').trim();
+    const fileName = String(slot && (slot.file_name || slot.fileName) || '').trim();
+    const asset = portalOnlineAssetForSlot(row, slot);
+    const busy = portalOnlineUploadingSlotId && portalOnlineSlotKey(portalOnlineUploadingSlotId) === portalOnlineSlotKey(slotId);
+    return `<div class="website-online-asset-row">
+      <div>
+        <div class="website-online-asset-name">${escapeHtml(slotId || fileName || 'Ảnh chưa đặt id')}</div>
+        <div class="website-online-asset-meta">${escapeHtml([fileName ? 'file_name: ' + fileName : '', asset ? 'Đã upload: ' + (asset.file_name || asset.content_type || '') : 'Chưa upload ảnh'].filter(Boolean).join(' · '))}</div>
+      </div>
+      <button type="button" class="btn-sm" onclick="choosePortalOnlineAsset('${portalOnlineJsArg(row && row.id || '')}','${portalOnlineJsArg(slotId || fileName)}')" ${busy ? 'disabled' : ''}>${busy ? 'Đang upload' : (asset ? 'Thay ảnh' : 'Upload ảnh')}</button>
+    </div>`;
+  }).join('');
+}
+
+function choosePortalOnlineAsset(examId, slotId) {
+  portalOnlineAssetsExamId = String(examId || '').trim();
+  portalOnlineAssetSlotId = String(slotId || '').trim();
+  const input = document.getElementById('portal-online-asset-file');
+  if (!portalOnlineAssetsExamId || !portalOnlineAssetSlotId || !input) return;
+  input.value = '';
+  input.click();
+}
+
+async function uploadPortalOnlineAssetFromInput() {
+  const input = document.getElementById('portal-online-asset-file');
+  const file = input && input.files && input.files[0];
+  const examId = String(portalOnlineAssetsExamId || '').trim();
+  const slotId = String(portalOnlineAssetSlotId || '').trim();
+  if (!file || !examId || !slotId) return;
+  const okType = /^(image\/png|image\/jpeg|image\/webp|image\/gif)$/i.test(String(file.type || ''));
+  if (!okType || file.size <= 0 || file.size > 8 * 1024 * 1024) {
+    showAppToast('Ảnh phải là PNG/JPEG/WebP/GIF và tối đa 8MB.', 'error');
+    return;
+  }
+  const sessionOk = await ensureSessionFresh();
+  if (!sessionOk || !currentSession?.access_token) {
+    showAppToast('Phiên admin đã hết hạn. Vui lòng đăng nhập lại.', 'error');
+    return;
+  }
+  portalOnlineUploadingSlotId = slotId;
+  renderPortalOnlineAssetsModal(portalOnlineRowById(examId));
+  try {
+    const form = new FormData();
+    form.append('exam_file_id', examId);
+    form.append('slot_id', slotId);
+    form.append('file', file, file.name);
+    const r = await fetch(SUPABASE_URL + '/functions/v1/exam-online?mode=asset-upload', {
+      method: 'POST',
+      headers: {
+        apikey: KEY,
+        Authorization: 'Bearer ' + currentSession.access_token
+      },
+      body: form,
+      cache: 'no-store'
+    });
+    let data = {};
+    try { data = await r.json(); } catch (e) {}
+    if (!r.ok || data.ok === false) throw new Error(data.error || ('asset_upload_' + r.status));
+    const row = portalOnlineRowById(examId);
+    if (row && row.online_exam) {
+      const assets = portalOnlineAssets(row).filter(asset => portalOnlineSlotKey(asset.slot_id) !== portalOnlineSlotKey(slotId));
+      row.online_exam.assets = assets.concat(data.asset ? [data.asset] : []);
+      renderPortalOnlineAssetsModal(row);
+      renderPortalOnlineExams();
+    }
+    showAppToast('Đã upload ảnh cho đề online.', 'success');
+    await loadPortalOnlineExams(true);
+  } catch (e) {
+    console.warn('uploadPortalOnlineAssetFromInput', e);
+    showAppToast('Chưa upload được ảnh: ' + String(e && e.message || e).slice(0, 90), 'error');
+  } finally {
+    portalOnlineUploadingSlotId = '';
+    if (input) input.value = '';
+    const row = portalOnlineRowById(examId);
+    if (row) renderPortalOnlineAssetsModal(row);
+  }
+}
+
+async function togglePortalOnlinePublished(examId) {
+  const id = String(examId || '').trim();
+  const row = portalOnlineRowById(id);
+  if (!id || !row || !row.online_exam) return;
+  const isPublished = portalOnlineStatusKey(row) === 'published';
+  const slots = portalOnlineImageSlots(row);
+  const assets = portalOnlineAssets(row);
+  const needsImageWarning = !isPublished && slots.length > assets.length;
+  const ok = await confirmApp(
+    isPublished
+      ? `Ẩn bài online của "${portalExamTitle(row)}"? Nút Làm bài online sẽ biến mất khỏi card học sinh.`
+      : `Xuất bản bài online của "${portalExamTitle(row)}"?${needsImageWarning ? ' Một số slot ảnh chưa có file upload.' : ''}`,
+    { title: isPublished ? 'Ẩn đề online' : 'Xuất bản đề online', okLabel: isPublished ? 'Ẩn' : 'Xuất bản', cancelLabel: 'Hủy' }
+  );
+  if (!ok) return;
+  portalOnlinePublishingId = id;
+  renderPortalOnlineExams();
+  try {
+    const data = await callExamOnline(isPublished ? 'unpublish' : 'publish', { exam_file_id: id });
+    portalOnlineMergeExam(id, data.online_exam);
+    showAppToast(isPublished ? 'Đã ẩn bài online.' : 'Đã xuất bản bài online.', 'success');
+    await loadPortalOnlineExams(true);
+    if (document.getElementById('student-exam-portal')?.style.display !== 'none') {
+      await loadStudentExamFiles().catch(e => console.warn('refresh student online exams', e));
+    }
+  } catch (e) {
+    console.warn('togglePortalOnlinePublished', e);
+    showAppToast('Chưa cập nhật trạng thái online: ' + String(e && e.message || e).slice(0, 90), 'error');
+  } finally {
+    portalOnlinePublishingId = '';
+    renderPortalOnlineExams();
+  }
+}
+
 async function fetchPortalAnalyticsData() {
   const activityPath =
     'student_exam_activity?select=user_id,exam_file_id,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
@@ -21862,6 +22643,9 @@ async function syncPortalR2ExamFiles() {
     setPortalR2UploadStatus(`Đã cập nhật ${synced} tài liệu từ ${objects} file; ẩn ${unpublished} tài liệu đã xóa.`, false);
     invalidatePortalAnalyticsCache();
     await loadPortalAnalyticsIfNeeded(true);
+    if (websiteAdminSubtab === 'online') {
+      await loadPortalOnlineExams(true).catch(e => console.warn('refresh portal online after sync', e));
+    }
     if (document.getElementById('student-exam-portal')?.style.display !== 'none') {
       await loadStudentExamFiles();
     }
@@ -22607,6 +23391,9 @@ async function openPortalExamManagerFile(examId, kind) {
 async function refreshPortalAfterExamDelete() {
   invalidatePortalAnalyticsCache();
   await loadPortalAnalyticsIfNeeded(true).catch(e => console.warn('refresh portal analytics after delete', e));
+  if (websiteAdminSubtab === 'online') {
+    await loadPortalOnlineExams(true).catch(e => console.warn('refresh portal online after delete', e));
+  }
   if (typeof loadStudentExamFiles === 'function' && document.getElementById('student-exam-portal')?.style.display !== 'none') {
     await loadStudentExamFiles().catch(e => console.warn('refresh student exams after delete', e));
   }
@@ -33449,6 +34236,7 @@ function showTab(t, options = {}) {
     loadAnalyticsIfNeeded().catch(e => console.warn('showTab analytics', e));
   }
   if (t === 'portal-admin') {
+    setWebsiteAdminSubtab(websiteAdminSubtab);
     loadPortalAnalyticsIfNeeded(false).catch(e => console.warn('showTab portal-admin', e));
   }
   if (t === 'leaderboard') {
