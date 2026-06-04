@@ -4370,9 +4370,9 @@
     .website-online-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
     .website-online-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
     .website-online-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
-    .website-online-modal{ position:fixed; inset:0; z-index:1270; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(15,31,61,.50); backdrop-filter:blur(8px); }
+    .website-online-modal{ position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; max-width:100vw; box-sizing:border-box; z-index:5000; display:none; align-items:center; justify-content:center; padding:clamp(12px,2.2vh,22px); overflow:auto; background:rgba(15,31,61,.50); backdrop-filter:blur(8px); }
     .website-online-modal.show{ display:flex; }
-    .website-online-modal-card{ width:min(820px,100%); max-height:min(780px,calc(100vh - 36px)); display:grid; grid-template-rows:auto minmax(0,1fr) auto; overflow:hidden; border-radius:14px; background:#fff; border:1px solid rgba(99,138,218,.22); box-shadow:0 26px 70px rgba(15,31,61,.28); }
+    .website-online-modal-card{ width:min(860px,calc(100vw - 44px)); max-height:min(780px,calc(100dvh - 44px)); margin:auto; display:grid; grid-template-rows:auto minmax(0,1fr) auto; overflow:hidden; border-radius:14px; background:#fff; border:1px solid rgba(99,138,218,.22); box-shadow:0 26px 70px rgba(15,31,61,.28); }
     .website-online-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:16px 18px 13px; border-bottom:1px solid rgba(99,138,218,.12); background:#fbfdff; }
     .website-online-modal-title{ color:#102858; font-size:16px; font-weight:950; line-height:1.2; }
     .website-online-modal-sub{ margin-top:4px; color:#72809b; font-size:11.5px; font-weight:760; line-height:1.4; }
@@ -4385,7 +4385,7 @@
     .website-online-asset-name{ color:#102033; font-size:12px; font-weight:950; overflow-wrap:anywhere; }
     .website-online-asset-meta{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; overflow-wrap:anywhere; }
     @media (max-width:900px){
-      .website-online-modal{ padding:12px; align-items:flex-end; }
+      .website-online-modal{ padding:12px; align-items:center; }
       .website-online-modal-card{ max-height:88vh; border-radius:12px; }
       .website-admin-online-toolbar{ grid-template-columns:1fr; }
       .website-online-row{ grid-template-columns:38px minmax(0,1fr); }
@@ -22065,6 +22065,37 @@ function portalOnlineRowById(examId) {
   return portalOnlineRows.find(row => String(row && row.id || '') === id) || null;
 }
 
+function getWebsiteOnlineModal(id) {
+  const modal = document.getElementById(id);
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+  return modal;
+}
+
+function openWebsiteOnlineModal(id) {
+  const modal = getWebsiteOnlineModal(id);
+  if (!modal) return null;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  document.documentElement.classList.add('portal-modal-open');
+  document.body.classList.add('portal-modal-open');
+  requestAnimationFrame(() => { modal.scrollTop = 0; });
+  return modal;
+}
+
+function closeWebsiteOnlineModal(id) {
+  const modal = getWebsiteOnlineModal(id);
+  if (modal) {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  if (!document.querySelector('.website-online-modal.show,.portal-exam-manager.show,.portal-picker.show,.portal-exam-preview.show')) {
+    document.documentElement.classList.remove('portal-modal-open');
+    document.body.classList.remove('portal-modal-open');
+  }
+}
+
 function onPortalOnlineModalBackdrop(e) {
   if (!e || !e.target) return;
   if (e.target.id === 'portal-online-json-modal') closePortalOnlineJsonModal();
@@ -22075,14 +22106,13 @@ function onPortalOnlineModalBackdrop(e) {
 async function openPortalOnlinePrompt(examId) {
   const id = String(examId || '').trim();
   if (!id) return;
-  const modal = document.getElementById('portal-online-prompt-modal');
   const sub = document.getElementById('portal-online-prompt-sub');
   const text = document.getElementById('portal-online-prompt-text');
   const row = portalOnlineRowById(id);
   portalOnlinePromptText = '';
   if (sub) sub.textContent = row ? portalExamTitle(row) : 'Dùng prompt này để chuyển đề PDF thành JSON online.';
   if (text) text.textContent = 'Đang tạo prompt...';
-  if (modal) modal.classList.add('show');
+  openWebsiteOnlineModal('portal-online-prompt-modal');
   try {
     const data = await callExamOnline('prompt', { exam_file_id: id });
     portalOnlinePromptText = String(data.prompt || '');
@@ -22094,8 +22124,7 @@ async function openPortalOnlinePrompt(examId) {
 }
 
 function closePortalOnlinePromptModal() {
-  const modal = document.getElementById('portal-online-prompt-modal');
-  if (modal) modal.classList.remove('show');
+  closeWebsiteOnlineModal('portal-online-prompt-modal');
 }
 
 async function copyPortalOnlinePrompt() {
@@ -22122,7 +22151,6 @@ function openPortalOnlineJson(examId) {
   if (!id) return;
   portalOnlineJsonExamId = id;
   const row = portalOnlineRowById(id);
-  const modal = document.getElementById('portal-online-json-modal');
   const sub = document.getElementById('portal-online-json-sub');
   const input = document.getElementById('portal-online-json-input');
   if (sub) sub.textContent = row ? `Nạp JSON cho: ${portalExamTitle(row)}` : 'Dán JSON theo schema ENG10.';
@@ -22130,13 +22158,12 @@ function openPortalOnlineJson(examId) {
     input.value = '';
     input.placeholder = '{"exam_id":"' + id + '","title":"...","questions":[...]}';
   }
-  if (modal) modal.classList.add('show');
+  openWebsiteOnlineModal('portal-online-json-modal');
   setTimeout(() => input && input.focus(), 0);
 }
 
 function closePortalOnlineJsonModal() {
-  const modal = document.getElementById('portal-online-json-modal');
-  if (modal) modal.classList.remove('show');
+  closeWebsiteOnlineModal('portal-online-json-modal');
   portalOnlineJsonExamId = '';
 }
 
@@ -22213,16 +22240,14 @@ function openPortalOnlineAssets(examId) {
     return;
   }
   portalOnlineAssetsExamId = id;
-  const modal = document.getElementById('portal-online-assets-modal');
   const sub = document.getElementById('portal-online-assets-sub');
   if (sub) sub.textContent = portalExamTitle(row);
   renderPortalOnlineAssetsModal(row);
-  if (modal) modal.classList.add('show');
+  openWebsiteOnlineModal('portal-online-assets-modal');
 }
 
 function closePortalOnlineAssetsModal() {
-  const modal = document.getElementById('portal-online-assets-modal');
-  if (modal) modal.classList.remove('show');
+  closeWebsiteOnlineModal('portal-online-assets-modal');
   portalOnlineAssetsExamId = '';
   portalOnlineAssetSlotId = '';
   portalOnlineUploadingSlotId = '';
