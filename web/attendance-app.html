@@ -11698,6 +11698,7 @@ button[data-bank-inspect-confirm-not]:hover,
             </div>
             <div class="website-online-modal-actions">
               <button type="button" class="btn-sm" id="portal-online-json-upload" onclick="savePortalOnlineJson()">Upload JSON</button>
+              <button type="button" class="btn-sm" id="portal-online-json-image-upload" onclick="uploadPortalOnlineJsonImage()">Upload ảnh</button>
               <button type="button" class="btn-sm" onclick="closePortalOnlineJsonModal()">Hủy</button>
             </div>
           </div>
@@ -22411,6 +22412,35 @@ async function savePortalOnlineJson() {
     actionButtons.forEach(btn => { btn.disabled = false; });
     if (uploadBtn) uploadBtn.textContent = 'Upload JSON';
   }
+}
+
+function uploadPortalOnlineJsonImage() {
+  const id = String(portalOnlineJsonExamId || '').trim();
+  const row = portalOnlineJsonModalRow();
+  const online = row && row.online_exam;
+  const slots = portalOnlineImageSlots(row);
+  if (!id) return;
+  if (!slots.length) {
+    renderPortalOnlineJsonAssets();
+    showAppToast('JSON chưa có slot ảnh. Thêm images trong JSON rồi upload JSON trước.', 'warn');
+    return;
+  }
+  if (!online || !online.id) {
+    renderPortalOnlineJsonAssets();
+    showAppToast('Upload JSON trước, sau đó mới upload ảnh.', 'warn');
+    return;
+  }
+  const target = slots.find(slot => !portalOnlineAssetForSlot(row, slot)) || slots[0];
+  const slotId = String(target && (target.slot_id || target.id || target.file_name || target.fileName) || '').trim();
+  if (!slotId) {
+    showAppToast('Chưa xác định được slot ảnh trong JSON.', 'error');
+    return;
+  }
+  if (slots.length > 1) {
+    document.getElementById('portal-online-json-assets-list')?.scrollIntoView({ block: 'nearest' });
+    showAppToast('Đang chọn ảnh cho slot: ' + slotId, 'info');
+  }
+  choosePortalOnlineAsset(id, slotId);
 }
 
 function openPortalOnlineAssets(examId) {
