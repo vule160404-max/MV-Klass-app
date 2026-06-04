@@ -4459,6 +4459,7 @@
     .portal-intensity.hot{ background:#fff4d6; color:#9a5b00; }
     .portal-intensity.quiet{ background:#f1f5f9; color:#64748b; }
     .portal-intensity.good{ background:#e8f8ef; color:#14532d; }
+    .portal-intensity.warn{ background:#fff7ed; color:#9a3412; }
     .portal-intensity.bad{ background:#fee2e2; color:#991b1b; }
     .portal-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
     .portal-row-actions .btn-sm{ min-height:30px; height:30px; padding:6px 9px; font-size:11px; }
@@ -20864,6 +20865,7 @@ let _portalAnalyticsAuditRows = null;
 let _portalPremiumProducts = null;
 let _portalPremiumOrders = null;
 let _portalPremiumEntitlements = null;
+let _portalEmailVerificationByUserId = new Map();
 let _portalAnalyticsLoadedAt = 0;
 let portalPresenceRefreshTimer = null;
 let lastPortalAccessChange = null;
@@ -22677,7 +22679,7 @@ async function fetchPortalAnalyticsData() {
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const premiumOrdersPath = 'portal_premium_orders?select=id,user_id,product_key,amount_vnd,status,paid_at,created_at,expires_at,ref_code&order=created_at.desc&limit=200';
   const premiumEntitlementsPath = 'portal_premium_entitlements?select=user_id,product_key,portal_free_group,status,activated_at,expires_at&status=eq.active&limit=5000';
-  const [activityRows, examRows, profileRows, auditRows, premiumProductsRows, premiumOrderRows, premiumEntitlementRows] = await Promise.all([
+  const [activityRows, examRows, profileRows, auditRows, premiumProductsRows, premiumOrderRows, premiumEntitlementRows, emailVerificationRows] = await Promise.all([
     api('GET', activityPath),
     api('GET', examPath),
     api('GET', profilePath).catch(() => []),
@@ -22693,7 +22695,8 @@ async function fetchPortalAnalyticsData() {
       return text.trim() ? JSON.parse(text) : [];
     }).catch(() => []),
     api('GET', premiumOrdersPath).catch(() => []),
-    api('GET', premiumEntitlementsPath).catch(() => [])
+    api('GET', premiumEntitlementsPath).catch(() => []),
+    callSupabaseRpc('admin_list_portal_email_verifications', {}).catch(() => [])
   ]);
   _portalAnalyticsRows = Array.isArray(activityRows) ? activityRows : [];
   _portalAnalyticsExamRows = Array.isArray(examRows) ? examRows : [];
@@ -22702,6 +22705,7 @@ async function fetchPortalAnalyticsData() {
   _portalPremiumProducts = Array.isArray(premiumProductsRows) ? premiumProductsRows : [];
   _portalPremiumOrders = Array.isArray(premiumOrderRows) ? premiumOrderRows : [];
   _portalPremiumEntitlements = Array.isArray(premiumEntitlementRows) ? premiumEntitlementRows : [];
+  _portalEmailVerificationByUserId = portalEmailVerificationMapFromRows(emailVerificationRows);
   _portalAnalyticsLoadedAt = Date.now();
 }
 
@@ -22715,6 +22719,23 @@ function setPortalR2UploadStatus(message, busy) {
     btn.textContent = 'Upload';
   }
   if (input) input.disabled = !!busy;
+}
+
+function portalEmailVerificationMapFromRows(rows) {
+  const map = new Map();
+  (Array.isArray(rows) ? rows : []).forEach(row => {
+    const uid = String(row && (row.user_id || row.id || row.uid) || '').trim();
+    if (!uid) return;
+    const confirmedRaw = row.is_email_confirmed;
+    const confirmedAt = String(row.email_confirmed_at || row.confirmed_at || '').trim();
+    const confirmed = confirmedRaw === true || confirmedRaw === 'true' || confirmedAt.length > 0;
+    map.set(uid, {
+      confirmed,
+      confirmedAt,
+      email: String(row.email || '').trim()
+    });
+  });
+  return map;
 }
 
 function portalR2FileSizeLabel(size) {
@@ -24143,6 +24164,7 @@ async function clearPortalPremiumForUser() {
 
 function portalStatusLabel(status) {
   const s = String(status || 'active');
+  if (s === 'unverified') return 'Chưa xác minh email';
   if (s === 'pending') return 'Chờ duyệt';
   if (s === 'blocked') return 'Đã khóa';
   return 'Đang mở';
@@ -24190,8 +24212,27 @@ function portalExamGroupMatches(row, group) {
 function portalStatusClass(status) {
   const s = String(status || 'active');
   if (s === 'active') return 'good';
+  if (s === 'unverified') return 'warn';
   if (s === 'blocked') return 'bad';
   return 'quiet';
+}
+
+function portalUserEmailVerificationState(uid) {
+  if (!_portalEmailVerificationByUserId || typeof _portalEmailVerificationByUserId.get !== 'function') {
+    return { known: false, confirmed: true };
+  }
+  const item = _portalEmailVerificationByUserId.get(String(uid || '').trim());
+  if (!item) return { known: false, confirmed: true };
+  return { known: true, confirmed: item.confirmed === true, confirmedAt: item.confirmedAt || '' };
+}
+
+function portalUserDisplayStatus(profile) {
+  const rawStatus = String(profile && profile.status || 'active');
+  if (rawStatus !== 'blocked') {
+    const verification = portalUserEmailVerificationState(profile && profile.uid);
+    if (verification.known && !verification.confirmed) return 'unverified';
+  }
+  return rawStatus;
 }
 
 function renderPortalAnalyticsError(e) {
@@ -24413,21 +24454,24 @@ function renderPortalStudentUsers(rows) {
       const premiumLabels = premiumKeys.map(portalPremiumProductTitle).filter(Boolean);
       const lastAt = portalLatestTime(p.last_seen_at, a.lastAt);
       const presenceStatus = String(p.portal_presence_status || 'offline').trim().toLowerCase() === 'online' ? 'online' : 'offline';
-      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, presenceStatus, opens: a.opens, downloads: a.downloads, docs: a.docs.size, lastAt, score: a.opens + a.downloads * 2 };
+      const emailVerification = portalUserEmailVerificationState(uid);
+      const displayStatus = portalUserDisplayStatus({ uid, status });
+      return { ...p, uid, plan, rawPlan, premiumKeys, premiumLabels, status, displayStatus, emailVerification, presenceStatus, opens: a.opens, downloads: a.downloads, docs: a.docs.size, lastAt, score: a.opens + a.downloads * 2 };
     });
   const counts = {
     total: allProfiles.length,
-    pending: allProfiles.filter(p => p.status === 'pending').length,
+    pending: allProfiles.filter(p => p.displayStatus === 'pending').length,
+    unverified: allProfiles.filter(p => p.displayStatus === 'unverified').length,
     premium: allProfiles.filter(p => p.plan === 'premium').length,
-    blocked: allProfiles.filter(p => p.status === 'blocked').length,
-    active: allProfiles.filter(p => p.status === 'active').length
+    blocked: allProfiles.filter(p => p.displayStatus === 'blocked').length,
+    active: allProfiles.filter(p => p.displayStatus === 'active').length
   };
   const q = normalizeText(portalStudentQuery).toLowerCase().trim();
   let profiles = allProfiles
-    .filter(p => filter === 'all' || p.plan === filter || p.status === filter)
+    .filter(p => filter === 'all' || p.plan === filter || p.status === filter || p.displayStatus === filter)
     .filter(p => {
       if (!q) return true;
-      const hay = [portalUserLabel(p.uid), p.email, p.display_name, p.uid, p.plan, p.rawPlan, p.status, ...(p.premiumLabels || [])]
+      const hay = [portalUserLabel(p.uid), p.email, p.display_name, p.uid, p.plan, p.rawPlan, p.status, p.displayStatus, portalStatusLabel(p.displayStatus), ...(p.premiumLabels || [])]
         .map(x => normalizeText(String(x || '')).toLowerCase())
         .join(' ');
       return hay.includes(q);
@@ -24452,7 +24496,7 @@ function renderPortalStudentUsers(rows) {
         <td class="portal-user-primary-cell"><div class="portal-user-name"><span class="portal-user-presence ${presence.className}" title="${escapeHtml(presence.title)}" aria-label="${escapeHtml(presence.label)}"></span><div class="portal-user-text"><div class="portal-table-title">${escapeHtml(portalUserLabel(p.uid))}</div><div class="portal-table-muted">${escapeHtml(portalUserSubLabel(p.uid))}</div></div></div></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity quiet">${escapeHtml(p.portal_class_label || portalFreeGroupLabel(p.portal_free_group))}</span></td>
         <td class="portal-user-meta-cell"><span class="portal-intensity ${p.plan === 'premium' ? 'hot' : 'quiet'}" title="${escapeHtml(planTitle)}">${escapeHtml(portalPlanLabel(p.plan))}</span></td>
-        <td class="portal-user-meta-cell"><span class="portal-intensity ${portalStatusClass(p.status)}">${escapeHtml(portalStatusLabel(p.status))}</span></td>
+        <td class="portal-user-meta-cell"><span class="portal-intensity ${portalStatusClass(p.displayStatus)}">${escapeHtml(portalStatusLabel(p.displayStatus))}</span></td>
         <td class="num portal-user-stat-cell" data-label="Tài liệu">${p.docs}</td><td class="num portal-user-stat-cell" data-label="Mở">${p.opens}</td><td class="num portal-user-stat-cell" data-label="Tải">${p.downloads}</td>
         <td class="portal-user-stat-cell" data-label="Gần nhất">${escapeHtml(portalActivityTimeLabel(p.lastAt))}</td>
         <td class="portal-user-actions-cell"><div class="portal-row-actions">
@@ -24469,6 +24513,7 @@ function renderPortalStudentUsers(rows) {
       <select class="portal-user-select" id="portal-plan-filter" onchange="onPortalStudentFilterChange()">
         <option value="all">Tất cả</option>
         <option value="pending">Chờ duyệt</option>
+        <option value="unverified">Chưa xác minh email</option>
         <option value="free">Free</option>
         <option value="premium">Premium</option>
         <option value="blocked">Đã khóa</option>
@@ -24488,6 +24533,7 @@ function renderPortalStudentUsers(rows) {
     <div class="portal-user-summary">
       <span class="portal-user-chip">Tổng <strong>${counts.total}</strong></span>
       <span class="portal-user-chip">Chờ duyệt <strong>${counts.pending}</strong></span>
+      <span class="portal-user-chip">Chưa xác minh <strong>${counts.unverified}</strong></span>
       <span class="portal-user-chip">Đang mở <strong>${counts.active}</strong></span>
       <span class="portal-user-chip">Premium <strong>${counts.premium}</strong></span>
       <span class="portal-user-chip">Đã khóa <strong>${counts.blocked}</strong></span>
@@ -24522,9 +24568,9 @@ function sortPortalStudentProfiles(list) {
   if (portalStudentSort === 'last') {
     return rows.sort((a, b) => Date.parse(b.lastAt || 0) - Date.parse(a.lastAt || 0) || portalUserLabel(a.uid).localeCompare(portalUserLabel(b.uid), 'vi'));
   }
-  const statusWeight = s => s === 'pending' ? 0 : (s === 'blocked' ? 2 : 1);
+  const statusWeight = s => s === 'pending' ? 0 : (s === 'unverified' ? 1 : (s === 'blocked' ? 3 : 2));
   return rows.sort((a, b) =>
-    statusWeight(a.status) - statusWeight(b.status) ||
+    statusWeight(a.displayStatus || a.status) - statusWeight(b.displayStatus || b.status) ||
     (b.plan === 'premium') - (a.plan === 'premium') ||
     Date.parse(b.lastAt || 0) - Date.parse(a.lastAt || 0) ||
     portalUserLabel(a.uid).localeCompare(portalUserLabel(b.uid), 'vi')
