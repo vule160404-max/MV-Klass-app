@@ -11682,7 +11682,7 @@ button[data-bank-inspect-confirm-not]:hover,
               <textarea id="portal-online-json-input" class="website-online-textarea" spellcheck="false" placeholder='{"exam_id":"...","title":"...","questions":[]}'></textarea>
             </div>
             <div class="website-online-modal-actions">
-              <button type="button" class="btn-sm" onclick="choosePortalOnlineJsonFile()">Upload .json</button>
+              <button type="button" class="btn-sm" id="portal-online-json-upload" onclick="savePortalOnlineJson()">Upload JSON</button>
               <button type="button" class="btn-sm" onclick="closePortalOnlineJsonModal()">Hủy</button>
               <button type="button" class="btn-sm primary" id="portal-online-json-save" onclick="savePortalOnlineJson()">Lưu bản nháp</button>
             </div>
@@ -22280,7 +22280,9 @@ async function loadPortalOnlineJsonFile() {
 async function savePortalOnlineJson() {
   const id = String(portalOnlineJsonExamId || '').trim();
   const input = document.getElementById('portal-online-json-input');
-  const btn = document.getElementById('portal-online-json-save');
+  const uploadBtn = document.getElementById('portal-online-json-upload');
+  const saveBtn = document.getElementById('portal-online-json-save');
+  const actionButtons = [uploadBtn, saveBtn].filter(Boolean);
   if (!id || !input) return;
   let parsed = null;
   try {
@@ -22289,10 +22291,9 @@ async function savePortalOnlineJson() {
     showAppToast('JSON chưa hợp lệ. Kiểm tra dấu ngoặc/dấu phẩy.', 'error');
     return;
   }
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = 'Đang lưu...';
-  }
+  actionButtons.forEach(btn => { btn.disabled = true; });
+  if (uploadBtn) uploadBtn.textContent = 'Đang upload...';
+  if (saveBtn) saveBtn.textContent = 'Đang lưu...';
   try {
     const data = await callExamOnline('save_json', { exam_file_id: id, exam_json: parsed });
     portalOnlineMergeExam(id, data.online_exam);
@@ -22303,10 +22304,9 @@ async function savePortalOnlineJson() {
     console.warn('savePortalOnlineJson', e);
     showAppToast('Chưa lưu được JSON: ' + String(e && e.message || e).slice(0, 90), 'error');
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = 'Lưu bản nháp';
-    }
+    actionButtons.forEach(btn => { btn.disabled = false; });
+    if (uploadBtn) uploadBtn.textContent = 'Upload JSON';
+    if (saveBtn) saveBtn.textContent = 'Lưu bản nháp';
   }
 }
 
