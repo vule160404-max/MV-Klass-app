@@ -4381,6 +4381,10 @@
     .website-online-textarea{ width:100%; min-height:380px; resize:vertical; border:1px solid rgba(99,138,218,.18); border-radius:12px; background:#fff; color:#132033; font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; padding:12px; outline:none; }
     .website-online-prompt{ white-space:pre-wrap; padding:14px; border:1px solid rgba(99,138,218,.16); border-radius:12px; background:#fff; color:#263852; font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace; }
     .website-online-assets{ display:grid; gap:10px; }
+    .website-online-json-assets{ margin-top:12px; display:grid; gap:8px; }
+    .website-online-json-assets-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .website-online-json-assets-title{ color:#102858; font-size:12px; font-weight:950; }
+    .website-online-json-assets-hint{ color:#72809b; font-size:11px; font-weight:760; line-height:1.4; text-align:right; }
     .website-online-asset-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid rgba(99,138,218,.14); border-radius:10px; background:#fff; }
     .website-online-asset-name{ color:#102033; font-size:12px; font-weight:950; overflow-wrap:anywhere; }
     .website-online-asset-meta{ margin-top:3px; color:#72809b; font-size:11px; font-weight:750; line-height:1.35; overflow-wrap:anywhere; }
@@ -11683,12 +11687,18 @@ button[data-bank-inspect-confirm-not]:hover,
               <button type="button" class="btn-sm" onclick="closePortalOnlineJsonModal()">Đóng</button>
             </div>
             <div class="website-online-modal-body">
-              <textarea id="portal-online-json-input" class="website-online-textarea" spellcheck="false" placeholder='{"exam_id":"...","title":"...","questions":[]}'></textarea>
+              <textarea id="portal-online-json-input" class="website-online-textarea" spellcheck="false" placeholder='{"exam_id":"...","title":"...","questions":[]}' oninput="renderPortalOnlineJsonAssets()"></textarea>
+              <div class="website-online-json-assets">
+                <div class="website-online-json-assets-head">
+                  <div class="website-online-json-assets-title">Ảnh theo JSON</div>
+                  <div class="website-online-json-assets-hint" id="portal-online-json-assets-hint">Dán JSON có images, upload JSON, rồi thêm ảnh tại đây.</div>
+                </div>
+                <div class="website-online-assets" id="portal-online-json-assets-list"></div>
+              </div>
             </div>
             <div class="website-online-modal-actions">
               <button type="button" class="btn-sm" id="portal-online-json-upload" onclick="savePortalOnlineJson()">Upload JSON</button>
               <button type="button" class="btn-sm" onclick="closePortalOnlineJsonModal()">Hủy</button>
-              <button type="button" class="btn-sm primary" id="portal-online-json-save" onclick="savePortalOnlineJson()">Lưu bản nháp</button>
             </div>
           </div>
         </div>
@@ -21936,6 +21946,69 @@ function portalOnlineAssetPreviewForSlot(slotId) {
     : null;
 }
 
+function portalOnlineNormalizeImageSlot(item, fallback) {
+  if (typeof item === 'string') {
+    const name = String(item || '').trim();
+    return name ? { id: name, file_name: name } : null;
+  }
+  const raw = item && typeof item === 'object' ? item : {};
+  const id = String(raw.slot_id || raw.id || raw.image_id || raw.file_name || raw.fileName || raw.filename || raw.name || fallback || '').trim();
+  const fileName = String(raw.file_name || raw.fileName || raw.filename || raw.name || id || '').trim();
+  if (!id && !fileName) return null;
+  return {
+    id: id || fileName,
+    slot_id: id || fileName,
+    file_name: fileName || id,
+    alt: String(raw.alt || raw.caption || '')
+  };
+}
+
+function portalOnlineCollectDraftImageSlots(examJson) {
+  const slots = [];
+  const seen = new Set();
+  const pushSlot = (item, fallback) => {
+    const slot = portalOnlineNormalizeImageSlot(item, fallback);
+    const key = portalOnlineSlotKey(slot && (slot.slot_id || slot.id || slot.file_name));
+    if (!slot || !key || seen.has(key)) return;
+    seen.add(key);
+    slots.push(slot);
+  };
+  const topImages = Array.isArray(examJson?.images) ? examJson.images : [];
+  topImages.forEach((img, i) => pushSlot(img, `image_${i + 1}`));
+  const questions = Array.isArray(examJson?.questions) ? examJson.questions : [];
+  questions.forEach(q => {
+    const qImages = Array.isArray(q?.images) ? q.images : [];
+    qImages.forEach((img, i) => pushSlot(img, `q${q?.id || ''}_image_${i + 1}`));
+  });
+  return slots;
+}
+
+function portalOnlineJsonDraftSlots() {
+  const input = document.getElementById('portal-online-json-input');
+  const raw = String(input && input.value || '').trim();
+  if (!raw) return [];
+  try {
+    return portalOnlineCollectDraftImageSlots(JSON.parse(raw));
+  } catch (e) {
+    return [];
+  }
+}
+
+function portalOnlineJsonModalRow() {
+  const row = portalOnlineRowById(portalOnlineJsonExamId) || { id: portalOnlineJsonExamId };
+  const draftSlots = portalOnlineJsonDraftSlots();
+  const online = row && row.online_exam ? row.online_exam : null;
+  const slots = draftSlots.length ? draftSlots : (online && Array.isArray(online.image_slots) ? online.image_slots : []);
+  return {
+    ...(row || {}),
+    online_exam: {
+      ...(online || {}),
+      image_slots: slots,
+      assets: online && Array.isArray(online.assets) ? online.assets : []
+    }
+  };
+}
+
 function portalOnlineBuildSearchText(row) {
   return [
     portalExamTitle(row),
@@ -22243,10 +22316,11 @@ async function copyPortalOnlinePrompt() {
   }
 }
 
-function openPortalOnlineJson(examId) {
+function openPortalOnlineJson(examId, options = {}) {
   const id = String(examId || '').trim();
   if (!id) return;
   portalOnlineJsonExamId = id;
+  portalOnlineAssetsExamId = id;
   const row = portalOnlineRowById(id);
   const sub = document.getElementById('portal-online-json-sub');
   const input = document.getElementById('portal-online-json-input');
@@ -22255,13 +22329,24 @@ function openPortalOnlineJson(examId) {
     input.value = '';
     input.placeholder = '{"exam_id":"' + id + '","title":"...","questions":[...]}';
   }
+  renderPortalOnlineJsonAssets();
   openWebsiteOnlineModal('portal-online-json-modal');
-  setTimeout(() => input && input.focus(), 0);
+  setTimeout(() => {
+    if (options && options.focusAssets) {
+      document.getElementById('portal-online-json-assets-list')?.scrollIntoView({ block: 'nearest' });
+    } else {
+      input && input.focus();
+    }
+  }, 0);
 }
 
 function closePortalOnlineJsonModal() {
   closeWebsiteOnlineModal('portal-online-json-modal');
   portalOnlineJsonExamId = '';
+  portalOnlineAssetsExamId = '';
+  portalOnlineAssetSlotId = '';
+  portalOnlineUploadingSlotId = '';
+  setPortalOnlineAssetUploadPreview(null);
 }
 
 function choosePortalOnlineJsonFile() {
@@ -22300,8 +22385,7 @@ async function savePortalOnlineJson() {
   const id = String(portalOnlineJsonExamId || '').trim();
   const input = document.getElementById('portal-online-json-input');
   const uploadBtn = document.getElementById('portal-online-json-upload');
-  const saveBtn = document.getElementById('portal-online-json-save');
-  const actionButtons = [uploadBtn, saveBtn].filter(Boolean);
+  const actionButtons = [uploadBtn].filter(Boolean);
   if (!id || !input) return;
   let parsed = null;
   try {
@@ -22312,20 +22396,20 @@ async function savePortalOnlineJson() {
   }
   actionButtons.forEach(btn => { btn.disabled = true; });
   if (uploadBtn) uploadBtn.textContent = 'Đang upload...';
-  if (saveBtn) saveBtn.textContent = 'Đang lưu...';
   try {
     const data = await callExamOnline('save_json', { exam_file_id: id, exam_json: parsed });
     portalOnlineMergeExam(id, data.online_exam);
-    closePortalOnlineJsonModal();
-    showAppToast('Đã lưu bản nháp đề online.', 'success');
+    portalOnlineAssetsExamId = id;
+    renderPortalOnlineJsonAssets();
+    showAppToast('Đã upload JSON. Có thể thêm ảnh ngay trong modal.', 'success');
     await loadPortalOnlineExams(true);
+    renderPortalOnlineJsonAssets();
   } catch (e) {
     console.warn('savePortalOnlineJson', e);
     showAppToast('Chưa lưu được JSON: ' + String(e && e.message || e).slice(0, 90), 'error');
   } finally {
     actionButtons.forEach(btn => { btn.disabled = false; });
     if (uploadBtn) uploadBtn.textContent = 'Upload JSON';
-    if (saveBtn) saveBtn.textContent = 'Lưu bản nháp';
   }
 }
 
@@ -22337,10 +22421,7 @@ function openPortalOnlineAssets(examId) {
     return;
   }
   portalOnlineAssetsExamId = id;
-  const sub = document.getElementById('portal-online-assets-sub');
-  if (sub) sub.textContent = portalExamTitle(row);
-  renderPortalOnlineAssetsModal(row);
-  openWebsiteOnlineModal('portal-online-assets-modal');
+  openPortalOnlineJson(id, { focusAssets: true });
 }
 
 function closePortalOnlineAssetsModal() {
@@ -22351,14 +22432,25 @@ function closePortalOnlineAssetsModal() {
   setPortalOnlineAssetUploadPreview(null);
 }
 
-function renderPortalOnlineAssetsModal(row) {
-  const list = document.getElementById('portal-online-assets-list');
+function renderPortalOnlineJsonAssets() {
+  const hint = document.getElementById('portal-online-json-assets-hint');
+  const row = portalOnlineJsonModalRow();
+  const saved = !!(row && row.online_exam && row.online_exam.id);
+  if (hint) hint.textContent = saved
+    ? 'Chọn ảnh khớp với từng slot trong JSON.'
+    : 'Upload JSON trước, sau đó mới thêm ảnh cho từng slot.';
+  renderPortalOnlineAssetsModal(row, 'portal-online-json-assets-list');
+}
+
+function renderPortalOnlineAssetsModal(row, listId = 'portal-online-assets-list') {
+  const list = document.getElementById(listId);
   if (!list) return;
   const slots = portalOnlineImageSlots(row);
   if (!slots.length) {
-    list.innerHTML = '<div class="website-online-empty">JSON này không khai báo ảnh. Nếu đề có hình, hãy bổ sung mảng images rồi nạp lại JSON.</div>';
+    list.innerHTML = '<div class="website-online-empty">JSON này chưa khai báo ảnh. Nếu đề có hình, thêm mảng images rồi upload JSON.</div>';
     return;
   }
+  const canUploadAssets = !!(row && row.online_exam && row.online_exam.id);
   list.innerHTML = slots.map(slot => {
     const slotId = String(slot && (slot.slot_id || slot.id || slot.file_name || slot.fileName) || '').trim();
     const fileName = String(slot && (slot.file_name || slot.fileName) || '').trim();
@@ -22382,7 +22474,7 @@ function renderPortalOnlineAssetsModal(row) {
         <div class="website-online-asset-meta">${escapeHtml([fileName ? 'file_name: ' + fileName : '', previewText || (asset ? 'Đã upload: ' + (asset.file_name || asset.content_type || '') : 'Chưa upload ảnh')].filter(Boolean).join(' · '))}</div>
         ${previewHtml}
       </div>
-      <button type="button" class="btn-sm" onclick="choosePortalOnlineAsset('${portalOnlineJsArg(row && row.id || '')}','${portalOnlineJsArg(slotId || fileName)}')" ${busy ? 'disabled' : ''}>${busy ? 'Đang upload' : (asset ? 'Thay ảnh' : 'Thêm ảnh')}</button>
+      <button type="button" class="btn-sm" onclick="choosePortalOnlineAsset('${portalOnlineJsArg(row && row.id || '')}','${portalOnlineJsArg(slotId || fileName)}')" ${busy || !canUploadAssets ? 'disabled' : ''}>${!canUploadAssets ? 'Upload JSON trước' : (busy ? 'Đang upload' : (asset ? 'Thay ảnh' : 'Thêm ảnh'))}</button>
     </div>`;
   }).join('');
 }
@@ -22417,6 +22509,7 @@ async function uploadPortalOnlineAssetFromInput() {
     message: 'Đang upload ảnh...'
   });
   renderPortalOnlineAssetsModal(portalOnlineRowById(examId));
+  renderPortalOnlineJsonAssets();
   const okType = /^(image\/png|image\/jpeg|image\/webp|image\/gif)$/i.test(String(file.type || ''));
   if (!okType || file.size <= 0 || file.size > 8 * 1024 * 1024) {
     setPortalOnlineAssetUploadPreview({
@@ -22431,6 +22524,7 @@ async function uploadPortalOnlineAssetFromInput() {
     portalOnlineUploadingSlotId = '';
     if (input) input.value = '';
     renderPortalOnlineAssetsModal(portalOnlineRowById(examId));
+    renderPortalOnlineJsonAssets();
     showAppToast('Ảnh phải là PNG/JPEG/WebP/GIF và tối đa 8MB.', 'error');
     return;
   }
@@ -22448,6 +22542,7 @@ async function uploadPortalOnlineAssetFromInput() {
     portalOnlineUploadingSlotId = '';
     if (input) input.value = '';
     renderPortalOnlineAssetsModal(portalOnlineRowById(examId));
+    renderPortalOnlineJsonAssets();
     showAppToast('Phiên admin đã hết hạn. Vui lòng đăng nhập lại.', 'error');
     return;
   }
@@ -22482,6 +22577,7 @@ async function uploadPortalOnlineAssetFromInput() {
         message: 'Đã upload ảnh.'
       });
       renderPortalOnlineAssetsModal(row);
+      renderPortalOnlineJsonAssets();
       renderPortalOnlineExams();
     }
     showAppToast('Đã upload ảnh cho đề online.', 'success');
@@ -22497,12 +22593,14 @@ async function uploadPortalOnlineAssetFromInput() {
       status: 'error',
       message: String(e && e.message || e).slice(0, 90)
     });
+    renderPortalOnlineJsonAssets();
     showAppToast('Chưa upload được ảnh: ' + String(e && e.message || e).slice(0, 90), 'error');
   } finally {
     portalOnlineUploadingSlotId = '';
     if (input) input.value = '';
     const row = portalOnlineRowById(examId);
     if (row) renderPortalOnlineAssetsModal(row);
+    renderPortalOnlineJsonAssets();
   }
 }
 

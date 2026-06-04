@@ -18,5 +18,17 @@ test('online JSON upload button saves pasted textarea JSON instead of opening a 
   assert.doesNotMatch(uploadButton[0], /choosePortalOnlineJsonFile/);
   assert.match(uploadButton[0], />Upload JSON<\/button>/);
 
+  assert.match(source, /id="portal-online-json-assets-list"/);
+  assert.doesNotMatch(source, /id="portal-online-json-save"/);
+  assert.doesNotMatch(source, />Lưu bản nháp<\/button>/);
   assert.doesNotMatch(source, /<button type="button"[^>]*onclick="choosePortalOnlineJsonFile\(\)"[^>]*>Upload \.json<\/button>/);
+
+  const saveFn = source.match(/async function savePortalOnlineJson\(\) \{[\s\S]*?\n\}\n\nfunction openPortalOnlineAssets/);
+  assert.ok(saveFn, 'savePortalOnlineJson should exist');
+  assert.match(saveFn[0], /renderPortalOnlineJsonAssets\(\)/);
+  assert.doesNotMatch(saveFn[0], /closePortalOnlineJsonModal\(\)/);
+
+  const assetsFn = source.match(/function openPortalOnlineAssets\(examId\) \{[\s\S]*?\n\}/);
+  assert.ok(assetsFn, 'openPortalOnlineAssets should exist');
+  assert.match(assetsFn[0], /openPortalOnlineJson\(id, \{ focusAssets: true \}\)/);
 });
