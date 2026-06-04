@@ -4597,6 +4597,10 @@
       return 'Tháng ' + String(date.getMonth() + 1) + '/' + String(date.getFullYear());
     }
 
+    function publicLeaderboardMonthKey(date = new Date()) {
+      return String(date.getFullYear()) + '-' + String(date.getMonth() + 1).padStart(2, '0');
+    }
+
     function syncPublicLeaderboardMonthLabels() {
       const monthTitle = publicLeaderboardMonthTitle();
       const heading = document.getElementById('public-lb-heading');
@@ -4742,10 +4746,12 @@
       setPublicLeaderboardStats([]);
       setPublicLeaderboardStatus('Đang tải bảng xếp hạng...');
       const base = LANDING_SB.url.replace(/\/+$/, '');
+      const monthKey = publicLeaderboardMonthKey();
       const url =
         base +
-        '/rest/v1/public_leaderboard?select=student_name,class_name,metric,score,updated_at' +
-        '&metric=eq.performance&score=gt.0&order=score.desc,student_name.asc&limit=50';
+        '/rest/v1/public_leaderboard?select=student_name,class_name,metric,score,score_month,updated_at' +
+        '&metric=eq.performance&score_month=eq.' + encodeURIComponent(monthKey) +
+        '&score=gt.0&order=score.desc,student_name.asc&limit=50';
       try {
         const r = await fetch(url, {
           headers: {
