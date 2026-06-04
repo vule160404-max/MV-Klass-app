@@ -12,15 +12,19 @@ function readSource() {
 test('portal online search is debounced and renders from prepared rows', () => {
   const source = readSource();
 
-  assert.match(source, /const PORTAL_ONLINE_RENDER_LIMIT = \d+;/);
-  assert.match(source, /const PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS = \d+;/);
+  assert.match(source, /const PORTAL_ONLINE_RENDER_LIMIT = 24;/);
+  assert.match(source, /const PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS = 420;/);
+  assert.match(source, /const PORTAL_ONLINE_MIN_QUERY_LENGTH = 2;/);
   assert.match(source, /let portalOnlinePreparedRows = \[\];/);
+  assert.match(source, /function portalOnlineNormalizedQuery\(\)/);
   assert.match(source, /function portalOnlineHasSearchQuery\(\)/);
   assert.match(source, /function portalOnlineBuildSearchText\(row\)/);
   assert.match(source, /function schedulePortalOnlineRender\(delayMs = 0\)/);
+  assert.match(source, /requestIdleCallback/);
   assert.match(source, /function preparePortalOnlineRows\(\)/);
   assert.match(source, /rows\.slice\(0, PORTAL_ONLINE_RENDER_LIMIT\)/);
   assert.match(source, /Nhập từ khóa để tìm đề online/);
+  assert.match(source, /Nhập ít nhất 2 ký tự/);
 
   const searchHandler = source.match(/function onPortalOnlineSearch\(value\) \{[\s\S]*?\n\}/);
   assert.ok(searchHandler, 'onPortalOnlineSearch handler should exist');
@@ -29,7 +33,7 @@ test('portal online search is debounced and renders from prepared rows', () => {
 
   const filterFn = source.match(/function portalOnlineFilteredRows\(\) \{[\s\S]*?\n\}/);
   assert.ok(filterFn, 'portalOnlineFilteredRows should exist');
-  assert.match(filterFn[0], /if \(!q\) return \[\];/);
+  assert.match(filterFn[0], /if \(q\.length < PORTAL_ONLINE_MIN_QUERY_LENGTH\) return \[\];/);
 
   const renderFn = source.match(/function renderPortalOnlineExams\(\) \{[\s\S]*?\n\}\n\nfunction renderPortalOnlineRow/);
   assert.ok(renderFn, 'renderPortalOnlineExams should exist');

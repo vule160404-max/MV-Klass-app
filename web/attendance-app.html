@@ -20881,8 +20881,9 @@ let portalExamPreviewUrl = '';
 let portalExamPreviewLabel = '';
 let portalExamPreviewToken = 0;
 let websiteAdminSubtab = 'library';
-const PORTAL_ONLINE_RENDER_LIMIT = 60;
-const PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS = 140;
+const PORTAL_ONLINE_RENDER_LIMIT = 24;
+const PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS = 420;
+const PORTAL_ONLINE_MIN_QUERY_LENGTH = 2;
 let portalOnlineRows = [];
 let portalOnlinePreparedRows = [];
 let portalOnlineLoadedAt = 0;
@@ -20898,6 +20899,7 @@ let portalOnlineAssetSlotId = '';
 let portalOnlinePublishingId = '';
 let portalOnlineUploadingSlotId = '';
 let portalOnlineRenderTimer = 0;
+let portalOnlineRenderIdle = 0;
 let portalOnlineRenderRaf = 0;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
@@ -21929,8 +21931,12 @@ function portalOnlineBuildSearchText(row) {
   ].map(x => normalizeText(String(x || ''))).join(' ');
 }
 
+function portalOnlineNormalizedQuery() {
+  return normalizeText(portalOnlineQuery);
+}
+
 function portalOnlineHasSearchQuery() {
-  return !!normalizeText(portalOnlineQuery);
+  return portalOnlineNormalizedQuery().length >= PORTAL_ONLINE_MIN_QUERY_LENGTH;
 }
 
 function portalOnlineCompareRows(a, b) {
@@ -21956,6 +21962,10 @@ function schedulePortalOnlineRender(delayMs = 0) {
     clearTimeout(portalOnlineRenderTimer);
     portalOnlineRenderTimer = 0;
   }
+  if (portalOnlineRenderIdle && typeof cancelIdleCallback === 'function') {
+    try { cancelIdleCallback(portalOnlineRenderIdle); } catch (e) {}
+    portalOnlineRenderIdle = 0;
+  }
   if (portalOnlineRenderRaf && typeof cancelAnimationFrame === 'function') {
     try { cancelAnimationFrame(portalOnlineRenderRaf); } catch (e) {}
     portalOnlineRenderRaf = 0;
@@ -21964,10 +21974,13 @@ function schedulePortalOnlineRender(delayMs = 0) {
   portalOnlineRenderTimer = setTimeout(() => {
     portalOnlineRenderTimer = 0;
     const run = () => {
+      portalOnlineRenderIdle = 0;
       portalOnlineRenderRaf = 0;
       renderPortalOnlineExams();
     };
-    if (typeof requestAnimationFrame === 'function') {
+    if (typeof requestIdleCallback === 'function') {
+      portalOnlineRenderIdle = requestIdleCallback(run, { timeout: 900 });
+    } else if (typeof requestAnimationFrame === 'function') {
       portalOnlineRenderRaf = requestAnimationFrame(run);
     } else {
       run();
@@ -22033,8 +22046,8 @@ function onPortalOnlineLevel(value) {
 }
 
 function portalOnlineFilteredRows() {
-  const q = normalizeText(portalOnlineQuery);
-  if (!q) return [];
+  const q = portalOnlineNormalizedQuery();
+  if (q.length < PORTAL_ONLINE_MIN_QUERY_LENGTH) return [];
   const rows = portalOnlinePreparedRows.length === (portalOnlineRows || []).length
     ? portalOnlinePreparedRows
     : (portalOnlineRows || []);
@@ -22064,10 +22077,12 @@ function renderPortalOnlineExams() {
   }
   const syncedAt = portalOnlineLoadedAt ? new Date(portalOnlineLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '';
   if (!portalOnlineHasSearchQuery()) {
+    const q = portalOnlineNormalizedQuery();
     const loadedText = portalOnlineRows.length
       ? `Đã tải ${portalOnlineRows.length} đề · cập nhật ${escapeHtml(syncedAt)}.`
       : '';
-    list.innerHTML = `<div class="website-online-empty">Nhập từ khóa để tìm đề online. ${loadedText}</div>`;
+    const hint = q ? `Nhập ít nhất ${PORTAL_ONLINE_MIN_QUERY_LENGTH} ký tự để tìm đề online.` : 'Nhập từ khóa để tìm đề online.';
+    list.innerHTML = `<div class="website-online-empty">${escapeHtml(hint)} ${loadedText}</div>`;
     return;
   }
   const rows = portalOnlineFilteredRows();
