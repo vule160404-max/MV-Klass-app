@@ -20881,7 +20881,10 @@ let portalExamPreviewUrl = '';
 let portalExamPreviewLabel = '';
 let portalExamPreviewToken = 0;
 let websiteAdminSubtab = 'library';
+const PORTAL_ONLINE_RENDER_LIMIT = 120;
+const PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS = 140;
 let portalOnlineRows = [];
+let portalOnlinePreparedRows = [];
 let portalOnlineLoadedAt = 0;
 let portalOnlineLoading = false;
 let portalOnlineError = '';
@@ -20894,6 +20897,8 @@ let portalOnlineAssetsExamId = '';
 let portalOnlineAssetSlotId = '';
 let portalOnlinePublishingId = '';
 let portalOnlineUploadingSlotId = '';
+let portalOnlineRenderTimer = 0;
+let portalOnlineRenderRaf = 0;
 let portalStudentQuery = '';
 let portalStudentSort = 'priority';
 let portalStudentPage = 1;
@@ -21910,6 +21915,62 @@ function portalOnlineAssetForSlot(row, slot) {
   }) || null;
 }
 
+function portalOnlineBuildSearchText(row) {
+  return [
+    portalExamTitle(row),
+    row?.title,
+    row?.exam_code,
+    row?.province,
+    studentExamDisplayProvince(row?.province),
+    row?.year,
+    row?.description,
+    row?.online_exam?.title,
+    row?.online_exam?.status
+  ].map(x => normalizeText(String(x || ''))).join(' ');
+}
+
+function portalOnlineCompareRows(a, b) {
+  const statusOrder = { published: 0, draft: 1, missing: 2 };
+  const sa = statusOrder[portalOnlineStatusKey(a)] ?? 3;
+  const sb = statusOrder[portalOnlineStatusKey(b)] ?? 3;
+  if (sa !== sb) return sa - sb;
+  const at = Date.parse(a?.online_exam?.updated_at || a?.created_at || '') || 0;
+  const bt = Date.parse(b?.online_exam?.updated_at || b?.created_at || '') || 0;
+  return bt - at || portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi');
+}
+
+function preparePortalOnlineRows() {
+  const rows = Array.isArray(portalOnlineRows) ? portalOnlineRows : [];
+  rows.forEach(row => {
+    if (row && typeof row === 'object') row.__portalOnlineSearchText = portalOnlineBuildSearchText(row);
+  });
+  portalOnlinePreparedRows = rows.slice().sort(portalOnlineCompareRows);
+}
+
+function schedulePortalOnlineRender(delayMs = 0) {
+  if (portalOnlineRenderTimer) {
+    clearTimeout(portalOnlineRenderTimer);
+    portalOnlineRenderTimer = 0;
+  }
+  if (portalOnlineRenderRaf && typeof cancelAnimationFrame === 'function') {
+    try { cancelAnimationFrame(portalOnlineRenderRaf); } catch (e) {}
+    portalOnlineRenderRaf = 0;
+  }
+  const delay = Math.max(0, Number(delayMs) || 0);
+  portalOnlineRenderTimer = setTimeout(() => {
+    portalOnlineRenderTimer = 0;
+    const run = () => {
+      portalOnlineRenderRaf = 0;
+      renderPortalOnlineExams();
+    };
+    if (typeof requestAnimationFrame === 'function') {
+      portalOnlineRenderRaf = requestAnimationFrame(run);
+    } else {
+      run();
+    }
+  }, delay);
+}
+
 function portalOnlineMergeExam(examFileId, onlineExam) {
   const id = String(examFileId || (onlineExam && onlineExam.exam_file_id) || '').trim();
   if (!id) return;
@@ -21920,6 +21981,7 @@ function portalOnlineMergeExam(examFileId, onlineExam) {
     ...(onlineExam || {}),
     assets: (onlineExam && Array.isArray(onlineExam.assets)) ? onlineExam.assets : portalOnlineAssets(row)
   };
+  preparePortalOnlineRows();
 }
 
 async function loadPortalOnlineExams(force = false) {
@@ -21938,6 +22000,7 @@ async function loadPortalOnlineExams(force = false) {
   try {
     const data = await callExamOnline('admin_list');
     portalOnlineRows = Array.isArray(data.rows) ? data.rows : [];
+    preparePortalOnlineRows();
     portalOnlineLoadedAt = Date.now();
   } catch (e) {
     console.warn('loadPortalOnlineExams', e);
@@ -21952,7 +22015,7 @@ async function loadPortalOnlineExams(force = false) {
 
 function onPortalOnlineSearch(value) {
   portalOnlineQuery = String(value || '');
-  renderPortalOnlineExams();
+  schedulePortalOnlineRender(PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS);
 }
 
 function onPortalOnlineStatus(value) {
@@ -21966,33 +22029,17 @@ function onPortalOnlineLevel(value) {
 }
 
 function portalOnlineFilteredRows() {
-  const q = normalizeText(portalOnlineQuery).toLowerCase().trim();
-  return (portalOnlineRows || [])
+  const q = normalizeText(portalOnlineQuery);
+  const rows = portalOnlinePreparedRows.length === (portalOnlineRows || []).length
+    ? portalOnlinePreparedRows
+    : (portalOnlineRows || []);
+  return rows
     .filter(row => portalOnlineStatus === 'all' || portalOnlineStatusKey(row) === portalOnlineStatus)
     .filter(row => portalOnlineLevel === 'all' || portalExamGroupKey(row) === portalOnlineLevel)
     .filter(row => {
       if (!q) return true;
-      const hay = [
-        portalExamTitle(row),
-        row?.title,
-        row?.exam_code,
-        row?.province,
-        studentExamDisplayProvince(row?.province),
-        row?.year,
-        row?.description,
-        row?.online_exam?.title,
-        row?.online_exam?.status
-      ].map(x => normalizeText(String(x || '')).toLowerCase()).join(' ');
+      const hay = row && row.__portalOnlineSearchText ? row.__portalOnlineSearchText : portalOnlineBuildSearchText(row);
       return hay.includes(q);
-    })
-    .sort((a, b) => {
-      const statusOrder = { published: 0, draft: 1, missing: 2 };
-      const sa = statusOrder[portalOnlineStatusKey(a)] ?? 3;
-      const sb = statusOrder[portalOnlineStatusKey(b)] ?? 3;
-      if (sa !== sb) return sa - sb;
-      const at = Date.parse(a?.online_exam?.updated_at || a?.created_at || '') || 0;
-      const bt = Date.parse(b?.online_exam?.updated_at || b?.created_at || '') || 0;
-      return bt - at || portalExamTitle(a).localeCompare(portalExamTitle(b), 'vi');
     });
 }
 
@@ -22017,8 +22064,13 @@ function renderPortalOnlineExams() {
     return;
   }
   const syncedAt = portalOnlineLoadedAt ? new Date(portalOnlineLoadedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '';
-  const html = rows.slice(0, 300).map(renderPortalOnlineRow).join('');
-  list.innerHTML = (syncedAt ? `<div class="website-online-empty" style="padding:10px 12px;text-align:left">Hiển thị ${rows.length}/${portalOnlineRows.length} đề · cập nhật ${escapeHtml(syncedAt)}.</div>` : '') + html;
+  const visibleRows = rows.slice(0, PORTAL_ONLINE_RENDER_LIMIT);
+  const hiddenCount = Math.max(0, rows.length - visibleRows.length);
+  const countText = hiddenCount
+    ? `Hiển thị ${visibleRows.length}/${rows.length} đề khớp · tổng ${portalOnlineRows.length} đề · gõ thêm để thu hẹp`
+    : `Hiển thị ${rows.length}/${portalOnlineRows.length} đề`;
+  const html = visibleRows.map(renderPortalOnlineRow).join('');
+  list.innerHTML = (syncedAt ? `<div class="website-online-empty" style="padding:10px 12px;text-align:left">${escapeHtml(countText)} · cập nhật ${escapeHtml(syncedAt)}.</div>` : '') + html;
 }
 
 function renderPortalOnlineRow(row) {
