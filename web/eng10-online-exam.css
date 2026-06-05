@@ -169,14 +169,31 @@
 }
 
 .eng10-online-submit-state {
+  position: fixed;
+  inset: 0;
+  z-index: 5320;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
-  padding: 12px 14px;
-  background: linear-gradient(180deg, #fff8e8, #fff3d6);
-  border-bottom: 1px solid rgba(244, 167, 29, .24);
-  color: #7a4a06;
+  padding: 22px;
+  background: rgba(15, 31, 61, .38);
+  color: #12213d;
+  backdrop-filter: blur(8px);
+  animation: eng10OnlineFadeIn .18s ease both;
+}
+
+.eng10-online-submit-panel {
+  width: min(360px, 100%);
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  padding: 16px 17px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(248, 252, 255, .96));
+  border: 1px solid rgba(99, 138, 218, .22);
+  box-shadow: 0 24px 70px rgba(15, 31, 61, .28), inset 0 1px 0 rgba(255, 255, 255, .92);
+  animation: eng10OnlinePanelIn .22s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .eng10-online-submit-state strong,
@@ -185,29 +202,42 @@
 }
 
 .eng10-online-submit-state strong {
-  color: #12213d;
+  color: #0f1f3d;
   font-size: 13px;
   font-weight: 950;
 }
 
 .eng10-online-submit-state span {
   margin-top: 2px;
+  color: #64748b;
   font-size: 12px;
   font-weight: 760;
 }
 
 .eng10-online-submit-spinner {
-  width: 24px;
-  height: 24px;
+  width: 38px;
+  height: 38px;
   border-radius: 999px;
-  border: 3px solid rgba(154, 91, 0, .18);
-  border-top-color: #9a5b00;
-  animation: eng10OnlineSpin .76s linear infinite;
+  background:
+    radial-gradient(circle at center, #fff 45%, transparent 47%),
+    conic-gradient(from 0deg, rgba(29, 78, 216, .12), #1d4ed8, #22c55e, rgba(29, 78, 216, .12));
+  box-shadow: 0 0 0 1px rgba(29, 78, 216, .10), 0 10px 22px rgba(29, 78, 216, .14);
+  animation: eng10OnlineSpin .9s linear infinite;
   flex: 0 0 auto;
 }
 
 @keyframes eng10OnlineSpin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes eng10OnlineFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes eng10OnlinePanelIn {
+  from { opacity: 0; transform: translateY(8px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .eng10-online-main {

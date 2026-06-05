@@ -488,6 +488,8 @@
       const page = state.exam.pages[state.pageIndex] || { id: 'all', title: 'Toàn bộ đề', question_ids: state.exam.questions.map(q => q.id) };
       const questions = pageQuestions(state.exam, state.pageIndex);
       const totalPages = Math.max(1, state.exam.pages.length || 1);
+      const footerPrimaryAction = state.submitted ? 'close' : 'submit';
+      const footerPrimaryLabel = state.submitted ? 'Thoát' : (state.submitting ? 'Đang chấm...' : 'Nộp bài');
       container.innerHTML = `<div class="eng10-online-shell">
         <header class="eng10-online-head">
           <button type="button" class="eng10-online-icon-btn" data-action="close" aria-label="Đóng">×</button>
@@ -508,11 +510,13 @@
               <button type="button" class="primary" data-action="close">Thoát</button>
             </div>
           </div>
-        </section>` : state.submitting ? `<section class="eng10-online-submit-state">
-          <span class="eng10-online-submit-spinner" aria-hidden="true"></span>
-          <div>
-            <strong>Đang chấm bài...</strong>
-            <span>Hệ thống đang lưu kết quả. Vui lòng chờ một chút.</span>
+        </section>` : state.submitting ? `<section class="eng10-online-submit-state" role="status" aria-live="polite">
+          <div class="eng10-online-submit-panel">
+            <span class="eng10-online-submit-spinner" aria-hidden="true"></span>
+            <div>
+              <strong>Đang chấm bài...</strong>
+              <span>Hệ thống đang lưu kết quả. Vui lòng chờ một chút.</span>
+            </div>
           </div>
         </section>` : ''}
         <div class="eng10-online-main">
@@ -522,13 +526,13 @@
               <strong>${safeRichText(page.title || 'Phần bài làm')}</strong>
               <span>Trang ${state.pageIndex + 1}/${totalPages}</span>
             </div>
-            ${questions.map(q => renderQuestion(q, state.answers, state.submitted)).join('')}
+            ${questions.map(q => renderQuestion(q, state.answers, state.submitted || state.submitting)).join('')}
           </section>
         </div>
         <footer class="eng10-online-foot">
           <button type="button" data-action="prev" ${state.pageIndex <= 0 ? 'disabled' : ''}>Trang trước</button>
           <button type="button" data-action="next" ${state.pageIndex >= totalPages - 1 ? 'disabled' : ''}>Trang sau</button>
-          <button type="button" class="primary" data-action="submit" ${state.submitted || state.submitting ? 'disabled' : ''}>${state.submitting ? 'Đang chấm...' : 'Nộp bài'}</button>
+          <button type="button" class="primary" data-action="${footerPrimaryAction}" ${state.submitting ? 'disabled' : ''}>${footerPrimaryLabel}</button>
         </footer>
       </div>`;
     }

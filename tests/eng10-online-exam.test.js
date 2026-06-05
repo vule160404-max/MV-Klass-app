@@ -93,6 +93,25 @@ test('submitted result is a top-layer dialog instead of an inline grid row', () 
   assert.match(resultRule, /z-index:\s*53\d\d/);
 });
 
+test('submit loading uses a centered viewport overlay', () => {
+  const source = fs.readFileSync(runnerSourcePath, 'utf8');
+  const css = fs.readFileSync(runnerCssPath, 'utf8');
+
+  assert.match(source, /eng10-online-submit-panel/);
+  const submitRule = css.match(/\.eng10-online-submit-state\s*\{[^}]+\}/)?.[0] || '';
+  assert.match(submitRule, /position:\s*fixed/);
+  assert.match(submitRule, /inset:\s*0/);
+  assert.match(submitRule, /align-items:\s*center/);
+  assert.match(submitRule, /justify-content:\s*center/);
+});
+
+test('footer submit button becomes exit after a completed submission', () => {
+  const source = fs.readFileSync(runnerSourcePath, 'utf8');
+
+  assert.match(source, /state\.submitted\s*\?\s*'close'\s*:\s*'submit'/);
+  assert.match(source, /state\.submitted\s*\?\s*'Thoát'\s*:\s*\(state\.submitting\s*\?\s*'Đang chấm\.\.\.'\s*:\s*'Nộp bài'\)/);
+});
+
 test('formatExamDisplayText renders cloze placeholders as numbered blanks', () => {
   assert.equal(
     formatExamDisplayText('First [BLANK_19], then [blank-20], finally [blank 21].'),

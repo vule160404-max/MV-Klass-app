@@ -6622,6 +6622,27 @@
     .student-exam-history-btn strong{display:block;color:#0b234d;font-size:13px;line-height:1.2;font-weight:950}
     .student-exam-history-btn small{display:block;margin-top:3px;color:#66748d;font-size:11px;line-height:1.25;font-weight:850}
     .student-exam-history-btn-count{display:inline-flex;align-items:center;min-height:26px;border-radius:999px;padding:4px 8px;background:#f4f7fb;border:1px solid rgba(18,33,61,.07);color:#52627c;font-size:11px;font-weight:950;white-space:nowrap}
+    .student-online-history-card{display:grid;gap:7px;min-width:min(360px,100%)}
+    .student-online-history-btn-icon{background:#eaf7ef;color:#17663c}
+    .student-online-history-panel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:8px;border-radius:16px;background:rgba(255,255,255,.86);border:1px solid rgba(18,33,61,.08);box-shadow:0 8px 18px rgba(18,33,61,.05)}
+    .student-online-history-panel div{min-width:0;padding:8px;border-radius:12px;background:#f8fbff;border:1px solid rgba(99,138,218,.10)}
+    .student-online-history-panel span{display:block;color:#718096;font-size:10px;font-weight:950;text-transform:uppercase;white-space:nowrap}
+    .student-online-history-panel strong{display:block;margin-top:3px;color:#0f1f3d;font-size:16px;line-height:1;font-weight:950;overflow-wrap:anywhere}
+    .student-online-history-modal{position:fixed;inset:0;z-index:4060;display:none;place-items:center;padding:18px;background:rgba(8,18,38,.56);backdrop-filter:blur(10px)}
+    .student-online-history-modal.open{display:grid}
+    .student-online-history-dialog{width:min(760px,100%);max-height:min(88vh,760px);display:grid;grid-template-rows:auto auto minmax(0,1fr);overflow:hidden;border-radius:22px;background:#fff;box-shadow:0 28px 80px rgba(0,0,0,.32)}
+    .student-online-history-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:12px 16px;background:#f8fbff;border-bottom:1px solid rgba(18,33,61,.08)}
+    .student-online-history-summary div{padding:10px;border-radius:14px;background:#fff;border:1px solid rgba(99,138,218,.12)}
+    .student-online-history-summary span{display:block;color:#718096;font-size:10.5px;font-weight:950;text-transform:uppercase}
+    .student-online-history-summary strong{display:block;margin-top:4px;color:#0f1f3d;font-size:18px;font-weight:950}
+    .student-online-history-list{min-height:220px;overflow:auto;padding:12px 16px;background:#eef3f9}
+    .student-online-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;margin-bottom:10px;padding:13px;border-radius:16px;background:#fff;border:1px solid rgba(18,33,61,.08);box-shadow:0 8px 18px rgba(18,33,61,.06)}
+    .student-online-history-row-title{color:#12213d;font-size:13px;font-weight:950;line-height:1.35;overflow-wrap:anywhere}
+    .student-online-history-row-meta{margin-top:5px;color:#64748b;font-size:11.5px;font-weight:800;line-height:1.45}
+    .student-online-history-score{text-align:right;color:#0f1f3d;font-size:22px;font-weight:950;line-height:1}
+    .student-online-history-score small{display:block;margin-top:4px;color:#718096;font-size:11px;font-weight:900}
+    .student-online-history-latest{display:inline-flex;align-items:center;margin-top:8px;min-height:22px;border-radius:999px;padding:3px 8px;background:#eaf7ef;color:#17663c;font-size:10.5px;font-weight:950}
+    .student-online-history-empty{display:grid;place-items:center;min-height:220px;padding:22px;border-radius:18px;background:#fff;border:1px dashed rgba(18,33,61,.16);color:#64748b;text-align:center;font-size:13px;font-weight:850;line-height:1.5}
     .student-exam-history-modal{position:fixed;inset:0;z-index:4050;display:none;place-items:center;padding:18px;background:rgba(8,18,38,.52);backdrop-filter:blur(10px)}
     .student-exam-history-modal.open{display:grid}
     .student-exam-history-dialog{width:min(760px,calc(100vw - 28px));max-height:min(86vh,760px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;border-radius:22px;background:#fff;border:1px solid rgba(255,255,255,.72);box-shadow:0 28px 80px rgba(8,18,38,.30)}
@@ -6739,8 +6760,8 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-  <link rel="stylesheet" href="./eng10-online-exam.css?v=20260605-online-exam-submit">
-  <script src="./eng10-online-exam.js?v=20260605-online-exam-submit"></script>
+  <link rel="stylesheet" href="./eng10-online-exam.css?v=20260605-online-submit-ui">
+  <script src="./eng10-online-exam.js?v=20260605-online-submit-ui"></script>
   <!-- Cùng bump ?v= v?i WEB_PUSH_SUB_VERSION; VAPID Web Push uu tiên t? window.MVK_VAPID_PUBLIC ? <head> -->
   <script type="module" src="./firebase-config.js?v=vapid-session-rebind-20260430"></script>
 
@@ -10747,6 +10768,10 @@ a:focus-visible,
   gap:9px !important;
 }
 .student-exam-card .student-exam-action{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
   min-height:44px !important;
   border-radius:14px !important;
   border-color:rgba(26,52,96,.12) !important;
@@ -10767,11 +10792,28 @@ a:focus-visible,
   box-shadow:0 10px 22px rgba(15,31,61,.18) !important;
 }
 .student-exam-card .student-exam-action.online{
-  grid-column:1/-1 !important;
-  background:linear-gradient(180deg,#1c7c54,#14532d) !important;
-  border-color:#14532d !important;
-  color:#fff !important;
-  box-shadow:0 10px 22px rgba(20,83,45,.18) !important;
+  grid-column:auto !important;
+  min-height:40px !important;
+  border-radius:13px !important;
+  background:linear-gradient(180deg,#f4fbf7,#e7f7ef) !important;
+  border-color:rgba(20,131,78,.22) !important;
+  color:#11623f !important;
+  box-shadow:0 8px 18px rgba(20,83,45,.075), inset 0 1px 0 rgba(255,255,255,.86) !important;
+}
+.student-exam-card .student-exam-action.online::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:#1f9d63;
+  box-shadow:0 0 0 3px rgba(31,157,99,.12);
+  flex:0 0 auto;
+}
+.student-exam-card .student-exam-action.online:not(:disabled):hover{
+  background:linear-gradient(180deg,#eefaf3,#dcf3e8) !important;
+  border-color:rgba(20,131,78,.32) !important;
+  color:#0d5737 !important;
+  box-shadow:0 11px 22px rgba(20,83,45,.105), inset 0 1px 0 rgba(255,255,255,.9) !important;
 }
 .student-exam-card .student-exam-action.answer{
   background:#f7fbff !important;
@@ -10811,6 +10853,9 @@ a:focus-visible,
   .student-exam-history-btn{
     width:100%;
   }
+  .student-online-history-card{
+    width:100%;
+  }
   .student-exam-zalo-btn{
     right:max(14px,env(safe-area-inset-right));
     bottom:max(14px,env(safe-area-inset-bottom));
@@ -10836,6 +10881,24 @@ a:focus-visible,
     width:100%;
     max-height:88vh;
     border-radius:20px;
+  }
+  .student-online-history-modal{
+    padding:10px;
+    place-items:end center;
+  }
+  .student-online-history-dialog{
+    width:100%;
+    max-height:88vh;
+    border-radius:20px;
+  }
+  .student-online-history-summary{
+    grid-template-columns:1fr 1fr;
+  }
+  .student-online-history-row{
+    grid-template-columns:1fr;
+  }
+  .student-online-history-score{
+    text-align:left;
   }
   .student-exam-history-dialog .student-exam-recent-downloads{
     min-height:320px;
@@ -12962,6 +13025,23 @@ button[data-bank-inspect-confirm-not]:hover,
           <span class="student-exam-history-btn-count" id="student-exam-download-history-count">0 đề</span>
         </button>
       </div>
+      <div class="student-online-history-card">
+        <button type="button" class="student-exam-history-btn student-online-history-btn" data-online-history-open aria-haspopup="dialog" aria-controls="student-online-history-modal">
+          <span class="student-exam-history-btn-icon student-online-history-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M8 17V9"></path><path d="M12 17V7"></path><path d="M16 17v-5"></path><path d="M20 19H4"></path></svg>
+          </span>
+          <span>
+            <strong>Lịch sử làm đề online</strong>
+            <small id="student-online-history-meta">Chưa có bài đã nộp.</small>
+          </span>
+          <span class="student-exam-history-btn-count" id="student-online-history-count">0 đề</span>
+        </button>
+        <div class="student-online-history-panel" id="student-online-history-card">
+          <div><span>Điểm TB</span><strong id="student-online-history-average">0%</strong></div>
+          <div><span>Đã làm</span><strong id="student-online-history-completed">0</strong></div>
+          <div><span>Lần nộp</span><strong id="student-online-history-attempts">0</strong></div>
+        </div>
+      </div>
       <a class="student-exam-zalo-btn" href="https://zalo.me/0916045202" target="_blank" rel="noopener noreferrer" aria-label="Nhắn Zalo hỗ trợ" title="Nhắn Zalo hỗ trợ">
         <span class="student-exam-zalo-icon" aria-hidden="true"><img src="./assets/social/zalo-logo.jpg" alt=""/></span>
         <span>Hỗ trợ Zalo</span>
@@ -13013,6 +13093,22 @@ button[data-bank-inspect-confirm-not]:hover,
         </div>
         <div class="student-exam-recent-downloads" id="student-exam-download-history-list">
           <div class="student-exam-state">Đang tải lịch sử tải đề...</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="student-online-history-modal" class="student-online-history-modal" aria-hidden="true" onclick="if(event.target===this) closeStudentOnlineExamHistory()">
+      <div class="student-online-history-dialog" role="dialog" aria-modal="true" aria-labelledby="student-online-history-title">
+        <div class="student-exam-history-head">
+          <div>
+            <div class="student-exam-history-kicker">Làm bài online</div>
+            <h2 id="student-online-history-title">Lịch sử làm đề online</h2>
+          </div>
+          <button type="button" class="student-exam-history-close" onclick="closeStudentOnlineExamHistory()" aria-label="Đóng lịch sử làm đề online">×</button>
+        </div>
+        <div class="student-online-history-summary" id="student-online-history-modal-summary"></div>
+        <div class="student-online-history-list" id="student-online-history-list">
+          <div class="student-exam-state">Đang tải lịch sử làm đề online...</div>
         </div>
       </div>
     </div>
@@ -15068,6 +15164,10 @@ let studentExamRows = [];
 let studentExamFilteredRows = [];
 let studentExamActivityById = {};
 let studentExamActivityError = '';
+let studentOnlineExamHistory = [];
+let studentOnlineExamSummary = null;
+let studentOnlineExamHistoryLoading = false;
+let studentOnlineExamHistoryError = '';
 let studentExamLoading = false;
 let studentExamError = '';
 let studentExamDownloadQuota = null;
@@ -19559,6 +19659,171 @@ async function loadStudentExamActivity() {
   }
 }
 
+function studentOnlineDefaultSummary() {
+  return {
+    completed_exam_count: 0,
+    average_percent: 0,
+    latest_attempt_count: 0,
+    attempt_count: 0,
+    last_submitted_at: null
+  };
+}
+
+function studentOnlineSummary() {
+  return Object.assign(studentOnlineDefaultSummary(), studentOnlineExamSummary || {});
+}
+
+function studentOnlinePercent(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '0%';
+  return (Math.round(n * 10) / 10).toLocaleString(APP.i18n.locale || 'vi-VN') + '%';
+}
+
+function studentOnlineDuration(seconds) {
+  const s = Math.max(0, Math.round(Number(seconds || 0) || 0));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  if (m <= 0) return r + ' giây';
+  return m + ' phút ' + String(r).padStart(2, '0') + ' giây';
+}
+
+function studentOnlineDateTime(value) {
+  const d = value ? new Date(value) : null;
+  if (!d || Number.isNaN(d.getTime())) return 'Chưa rõ thời gian';
+  return d.toLocaleString(APP.i18n.locale || 'vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+}
+
+function studentOnlineHistoryTitle(row) {
+  return String(row?.title || 'Đề online').trim();
+}
+
+function studentOnlineHistoryMeta(row) {
+  return [
+    studentExamLevelLabel(row?.level),
+    studentExamDisplayProvince(row?.province),
+    row?.year ? String(row.year) : '',
+    row?.exam_code ? 'Mã ' + String(row.exam_code) : '',
+    studentOnlineDateTime(row?.submitted_at),
+    studentOnlineDuration(row?.duration_seconds)
+  ].filter(Boolean).join(' · ');
+}
+
+async function loadStudentOnlineExamHistory(options = {}) {
+  if (!currentSession?.access_token) {
+    studentOnlineExamHistory = [];
+    studentOnlineExamSummary = studentOnlineDefaultSummary();
+    studentOnlineExamHistoryError = '';
+    renderStudentOnlineExamHistory();
+    return;
+  }
+  const silent = !!options.silent;
+  studentOnlineExamHistoryError = '';
+  if (!silent) {
+    studentOnlineExamHistoryLoading = true;
+    renderStudentOnlineExamHistory();
+  }
+  try {
+    const data = await callExamOnline('history', {});
+    studentOnlineExamHistory = Array.isArray(data.attempts) ? data.attempts : [];
+    studentOnlineExamSummary = Object.assign(studentOnlineDefaultSummary(), data.summary || {});
+  } catch (e) {
+    studentOnlineExamHistory = [];
+    studentOnlineExamSummary = studentOnlineDefaultSummary();
+    studentOnlineExamHistoryError = 'Chưa tải được lịch sử làm đề online.';
+  } finally {
+    studentOnlineExamHistoryLoading = false;
+    renderStudentOnlineExamHistory();
+  }
+}
+
+function refreshStudentOnlineExamHistory() {
+  return loadStudentOnlineExamHistory({ silent: true });
+}
+
+function renderStudentOnlineExamHistory() {
+  const summary = studentOnlineSummary();
+  const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
+  const attemptCount = Math.max(0, Number(summary.attempt_count || studentOnlineExamHistory.length || 0) || 0);
+  const latestCount = Math.max(0, Number(summary.latest_attempt_count || completed || 0) || 0);
+  const setText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+  setText('student-online-history-count', studentOnlineExamHistoryLoading ? 'Đang tải...' : completed + ' đề');
+  setText('student-online-history-average', studentOnlinePercent(summary.average_percent));
+  setText('student-online-history-completed', String(completed));
+  setText('student-online-history-attempts', String(attemptCount));
+  const meta = document.getElementById('student-online-history-meta');
+  if (meta) {
+    if (studentOnlineExamHistoryLoading) {
+      meta.textContent = 'Đang tải lịch sử...';
+    } else if (studentOnlineExamHistoryError) {
+      meta.textContent = studentOnlineExamHistoryError;
+    } else if (completed > 0) {
+      meta.textContent = 'Điểm TB: ' + studentOnlinePercent(summary.average_percent) + ' · lần gần nhất ' + studentOnlineDateTime(summary.last_submitted_at);
+    } else {
+      meta.textContent = 'Làm dở rồi thoát sẽ không tính.';
+    }
+  }
+  const openBtn = document.querySelector('[data-online-history-open]');
+  if (openBtn) openBtn.disabled = studentOnlineExamHistoryLoading || (!studentOnlineExamHistory.length && !studentOnlineExamHistoryError);
+
+  const modalSummary = document.getElementById('student-online-history-modal-summary');
+  if (modalSummary) {
+    modalSummary.innerHTML = `
+      <div><span>Đề đã làm</span><strong>${escapeHtml(String(completed))}</strong></div>
+      <div><span>Điểm TB</span><strong>${escapeHtml(studentOnlinePercent(summary.average_percent))}</strong></div>
+      <div><span>Lần nộp</span><strong>${escapeHtml(String(attemptCount || latestCount))}</strong></div>`;
+  }
+  const list = document.getElementById('student-online-history-list');
+  if (!list) return;
+  if (studentOnlineExamHistoryLoading) {
+    list.innerHTML = '<div class="student-online-history-empty">Đang tải lịch sử làm đề online...</div>';
+    return;
+  }
+  if (studentOnlineExamHistoryError) {
+    list.innerHTML = '<div class="student-online-history-empty">' + escapeHtml(studentOnlineExamHistoryError) + '</div>';
+    return;
+  }
+  if (!studentOnlineExamHistory.length) {
+    list.innerHTML = '<div class="student-online-history-empty">Chưa có bài online nào được nộp. Chỉ khi bấm Nộp bài thì điểm mới được lưu.</div>';
+    return;
+  }
+  list.innerHTML = studentOnlineExamHistory.map(row => {
+    const score = Math.max(0, Number(row?.score || 0) || 0);
+    const total = Math.max(0, Number(row?.total || 0) || 0);
+    return `<article class="student-online-history-row">
+      <div>
+        <div class="student-online-history-row-title">${escapeHtml(studentOnlineHistoryTitle(row))}</div>
+        <div class="student-online-history-row-meta">${escapeHtml(studentOnlineHistoryMeta(row))}</div>
+        ${row?.is_latest_for_exam ? '<span class="student-online-history-latest">Đang tính vào thống kê</span>' : ''}
+      </div>
+      <div class="student-online-history-score">${escapeHtml(String(score))}<small>/${escapeHtml(String(total))} · ${escapeHtml(studentOnlinePercent(row?.percent))}</small></div>
+    </article>`;
+  }).join('');
+}
+
+function openStudentOnlineExamHistory() {
+  const modal = document.getElementById('student-online-history-modal');
+  if (!modal) return;
+  renderStudentOnlineExamHistory();
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeStudentOnlineExamHistory() {
+  const modal = document.getElementById('student-online-history-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
 function requestStudentExamUpgrade(id) {
   const row = studentExamFind(id);
   const reason = String(row?.locked_reason || '').trim();
@@ -19806,6 +20071,7 @@ function renderStudentExamPersonalSections() {
     if (el) el.textContent = String(n) + ' đề';
   };
   setCount('student-exam-download-history-count', downloaded.length);
+  renderStudentOnlineExamHistory();
 }
 
 function formatStudentExamStat(n) {
@@ -20002,7 +20268,8 @@ async function loadStudentExamFiles() {
     });
     const [rows] = await Promise.all([
       Promise.resolve(rpcRows),
-      loadStudentExamActivity()
+      loadStudentExamActivity(),
+      loadStudentOnlineExamHistory({ silent: true })
     ]);
     studentExamRows = studentExamSortRows(applyStudentExamAccessState(Array.isArray(rows) ? rows : []).filter(studentExamIsExamDocumentRow));
     renderStudentExamSelectOptions();
@@ -20019,7 +20286,8 @@ async function loadStudentExamFiles() {
       const rowsPromise = api('GET', fallbackPath).catch(() => api('GET', legacyPath));
       const [rows] = await Promise.all([
         rowsPromise,
-        loadStudentExamActivity()
+        loadStudentExamActivity(),
+        loadStudentOnlineExamHistory({ silent: true })
       ]);
       let list = Array.isArray(rows) ? rows : [];
       if (!list.length) {
@@ -20060,6 +20328,11 @@ function bindStudentExamPortalEvents() {
   if (portal && portal.dataset.bound !== '1') {
     portal.dataset.bound = '1';
     portal.addEventListener('click', e => {
+      const history = e.target.closest('[data-online-history-open]');
+      if (history) {
+        openStudentOnlineExamHistory();
+        return;
+      }
       const buy = e.target.closest('[data-premium-buy]');
       if (buy) {
         startPortalPremiumCheckout(buy.getAttribute('data-premium-buy'));
@@ -20294,7 +20567,10 @@ async function openStudentOnlineExam(examId) {
       container: overlay,
       exam: data.exam_json,
       assets: data.assets || [],
-      onClose: closeStudentOnlineExam,
+      onClose: () => {
+        closeStudentOnlineExam();
+        void refreshStudentOnlineExamHistory();
+      },
       onError: (error) => {
         console.warn('online exam runner', error);
         showAppToast('Có lỗi khi hiển thị đề online.', 'error');
@@ -20306,6 +20582,7 @@ async function openStudentOnlineExam(examId) {
           duration_seconds
         });
         await loadStudentExamActivity().catch(() => {});
+        await refreshStudentOnlineExamHistory().catch(() => {});
         return submit.result || {};
       }
     });
@@ -20795,6 +21072,10 @@ async function signOutUser() {
   studentExamFilteredRows = [];
   studentExamActivityById = {};
   studentExamActivityError = '';
+  studentOnlineExamHistory = [];
+  studentOnlineExamSummary = null;
+  studentOnlineExamHistoryLoading = false;
+  studentOnlineExamHistoryError = '';
   studentExamLoading = false;
   studentExamError = '';
   studentExamDownloadQuota = null;
