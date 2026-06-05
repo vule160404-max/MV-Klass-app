@@ -6749,8 +6749,16 @@
     .student-exam-filter-advanced.open{display:grid}
     .student-exam-filter-group-title{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 2px;color:#12213d;font-size:13px;font-weight:950}
     .student-exam-filter-group-title small{color:#66748d;font-size:11px;font-weight:800;text-align:right}
+    .student-exam-online-toggle{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;border-radius:16px;border:1px solid rgba(20,131,78,.22);background:linear-gradient(180deg,#fff,#f4fbf7);color:#11623f;padding:0 13px;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap;box-shadow:0 8px 18px rgba(18,33,61,.05)}
+    .student-exam-online-toggle input{position:absolute;opacity:0;pointer-events:none}
+    .student-exam-online-toggle-mark{width:18px;height:18px;border-radius:7px;border:2px solid rgba(20,131,78,.38);background:#fff;display:grid;place-items:center;flex:0 0 auto}
+    .student-exam-online-toggle-mark::after{content:"";width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+    .student-exam-online-toggle input:checked + .student-exam-online-toggle-mark{background:#15803d;border-color:#15803d;box-shadow:0 0 0 4px rgba(21,128,61,.12)}
+    .student-exam-online-toggle input:checked + .student-exam-online-toggle-mark::after{opacity:1}
+    .student-exam-online-toggle:has(input:checked){border-color:rgba(21,128,61,.38);background:linear-gradient(180deg,#eafaf1,#ddf7e8);color:#075d35}
     @media (max-width:699px){.student-exam-filters{padding:14px;border-radius:22px}.student-exam-filter-head{align-items:flex-start}.student-exam-filter-head h2{font-size:18px}.student-exam-filter-reset{min-height:36px;padding:0 12px}.student-exam-filter-main{grid-template-columns:1fr}.student-exam-filter-toggle{width:100%;justify-content:center}.student-exam-filter-advanced{grid-template-columns:1fr;padding:12px}.student-exam-filter-group-title{display:grid;gap:3px}.student-exam-filter-group-title small{text-align:left}.student-exam-search{min-height:50px}.student-exam-filter-field select{min-height:46px}}
     @media (min-width:700px) and (max-width:960px){.student-exam-filter-main{grid-template-columns:1fr 1fr}.student-exam-filter-toggle{grid-column:1/-1;width:max-content;justify-self:end}.student-exam-filter-advanced{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (min-width:1180px){.student-exam-filter-grid{display:grid;grid-template-columns:minmax(260px,1.35fr) minmax(140px,.68fr) minmax(220px,1fr) minmax(110px,.55fr) minmax(150px,.7fr) minmax(130px,.58fr);gap:10px;align-items:end;margin-top:0}.student-exam-filter-main,.student-exam-filter-advanced{display:contents}.student-exam-filter-toggle,.student-exam-filter-group-title{display:none}.student-exam-filter-advanced{margin-top:0;padding:0;border:0;background:transparent}.student-exam-filter-head{margin-bottom:10px}.student-exam-search-wrap input.student-exam-search,.student-exam-filter-field select,.student-exam-online-toggle{min-height:46px!important}.student-exam-search-wrap span,.student-exam-filter-field span{font-size:10px}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -13148,11 +13156,11 @@ button[data-bank-inspect-confirm-not]:hover,
         </div>
         <button type="button" class="student-exam-filter-reset" id="student-exam-filter-reset">Xóa lọc</button>
       </div>
-      <label class="student-exam-search-wrap" for="student-exam-search">
-        <span>Tìm nhanh</span>
-        <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Mã đề, tên đề, nguồn, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
-      </label>
       <div class="student-exam-filter-grid">
+        <label class="student-exam-search-wrap" for="student-exam-search">
+          <span>Tìm nhanh</span>
+          <input id="student-exam-search" class="student-exam-search" type="search" name="mvk_student_exam_search" placeholder="Mã đề, tên đề, nguồn, năm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-no-autofill-search="1"/>
+        </label>
         <div class="student-exam-filter-main">
           <label class="student-exam-filter-field is-primary" for="student-exam-level">
             <span>Chương trình</span>
@@ -13189,6 +13197,11 @@ button[data-bank-inspect-confirm-not]:hover,
               <option value="newest">Mới upload</option>
               <option value="popular">Tải nhiều</option>
             </select>
+          </label>
+          <label class="student-exam-online-toggle" for="student-exam-online-filter">
+            <input id="student-exam-online-filter" type="checkbox" aria-label="Chỉ hiện đề online đang kích hoạt"/>
+            <span class="student-exam-online-toggle-mark" aria-hidden="true"></span>
+            <span>Đề online</span>
           </label>
         </div>
       </div>
@@ -18789,17 +18802,23 @@ function studentExamIsInlineAssetRef(value) {
   return /\.(png|jpe?g|gif|webp|svg|avif|bmp|ico)$/i.test(ref);
 }
 
+function studentExamHasPublishedOnline(row) {
+  return row && (
+    row.has_online_exam === true ||
+    row.hasOnlineExam === true ||
+    row.online_exam === true ||
+    (row.online_exam && typeof row.online_exam === 'object') ||
+    String(row.has_online_exam || '').toLowerCase() === 'true'
+  );
+}
+
 function studentExamIsExamDocumentRow(row) {
   if (!row) return false;
   if (String(row.category || '').trim().toLowerCase() === 'answer') return false;
   const primaryRefs = studentExamPrimaryFileRefs(row);
   if (primaryRefs.some(studentExamIsInlineAssetRef)) return false;
   if (primaryRefs.length) return true;
-  return row.has_online_exam === true ||
-    row.hasOnlineExam === true ||
-    row.online_exam === true ||
-    (row.online_exam && typeof row.online_exam === 'object') ||
-    String(row.has_online_exam || '').toLowerCase() === 'true';
+  return studentExamHasPublishedOnline(row);
 }
 
 function studentExamAccessTier(row) {
@@ -19913,13 +19932,7 @@ function studentExamCard(row, compact) {
   const hasFile = studentExamHasFile(row, 'file');
   const hasAnswer = studentExamHasFile(row, 'answer');
   const hasAudio = studentExamHasFile(row, 'audio');
-  const hasOnline = row && (
-    row.has_online_exam === true ||
-    row.hasOnlineExam === true ||
-    row.online_exam === true ||
-    (row.online_exam && typeof row.online_exam === 'object') ||
-    String(row.has_online_exam || '').toLowerCase() === 'true'
-  );
+  const hasOnline = studentExamHasPublishedOnline(row);
   const canAccess = studentExamCanAccess(row);
   const locked = !canAccess;
   const tier = studentExamAccessTier(row);
@@ -19992,7 +20005,8 @@ function getStudentExamFilters() {
     level: String(document.getElementById('student-exam-level')?.value || 'all'),
     year: String(document.getElementById('student-exam-year')?.value || 'all'),
     source: String(document.getElementById('student-exam-source')?.value || 'all'),
-    sort: String(document.getElementById('student-exam-sort')?.value || 'code')
+    sort: String(document.getElementById('student-exam-sort')?.value || 'code'),
+    onlineOnly: Boolean(document.getElementById('student-exam-online-filter')?.checked)
   };
 }
 
@@ -20005,6 +20019,7 @@ function applyStudentExamFilters(options) {
     if (f.level !== 'all' && String(row.level || '') !== f.level) return false;
     if (f.year !== 'all' && String(row.year || '') !== f.year) return false;
     if (f.source !== 'all' && studentExamSourceKey(row) !== f.source) return false;
+    if (f.onlineOnly && !studentExamHasPublishedOnline(row)) return false;
     if (f.q) {
       const hay = [studentExamDisplayTitle(row), row.title, row.exam_code, studentExamDisplayProvince(row.province), row.province, studentExamSourceLabel(row), row.year, row.description, studentExamLevelLabel(row.level), studentExamCategoryLabel(row.category)]
         .map(x => normalizeText(String(x || '')).toLowerCase())
@@ -20266,11 +20281,14 @@ function resetStudentExamFilters() {
     'student-exam-level': 'all',
     'student-exam-year': 'all',
     'student-exam-source': 'all',
-    'student-exam-sort': 'code'
+    'student-exam-sort': 'code',
+    'student-exam-online-filter': false
   };
   Object.entries(defaults).forEach(([id, value]) => {
     const el = document.getElementById(id);
-    if (el) el.value = value;
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = Boolean(value);
+    else el.value = value;
   });
   studentExamAdvancedFiltersOpen = false;
   syncStudentExamAdvancedFilters();
@@ -20333,7 +20351,7 @@ async function loadStudentExamFiles() {
 }
 
 function bindStudentExamPortalEvents() {
-  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-year', 'student-exam-source', 'student-exam-sort'];
+  const ids = ['student-exam-search', 'student-exam-level', 'student-exam-year', 'student-exam-source', 'student-exam-sort', 'student-exam-online-filter'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.dataset.bound === '1') return;
