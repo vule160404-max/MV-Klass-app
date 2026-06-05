@@ -33,7 +33,9 @@
 
   function formatExamDisplayText(value) {
     return String(value ?? '')
-      .replace(/\[\s*BLANK[_\s-]*(\d+)\s*\]/gi, '___$1___');
+      .replace(/\[\s*BLANK[_\s-]*(\d+)\s*\]/gi, '___$1___')
+      .replace(/\*{2,}\s*(\d+)\s*\*{2,}/g, '___$1___')
+      .replace(/_{2,}\s*(\d+)\s*_{2,}/g, '___$1___');
   }
 
   function safeExamRichText(value) {
@@ -41,7 +43,10 @@
   }
 
   function clozeBlankNumber(value) {
-    const match = String(value ?? '').match(/\[?\s*BLANK[_\s-]*(\d+)\s*\]?/i);
+    const text = String(value ?? '');
+    const match = text.match(/\[?\s*BLANK[_\s-]*(\d+)\s*\]?/i)
+      || text.match(/\*{2,}\s*(\d+)\s*\*{2,}/)
+      || text.match(/_{2,}\s*(\d+)\s*_{2,}/);
     return match ? match[1] : '';
   }
 
@@ -58,7 +63,7 @@
   function displayQuestionText(q) {
     const raw = String(q?.question || '');
     const normalized = normalizeText(raw);
-    const hasBlankToken = /\[?\s*BLANK[_\s-]*\d+\s*\]?/i.test(raw);
+    const hasBlankToken = Boolean(clozeBlankNumber(raw));
     const isGeneratedClozeText =
       hasBlankToken &&
       normalized.includes('vi tri tuong ung voi so') &&
@@ -338,6 +343,19 @@
     return /^câu\b/i.test(label) ? label : `Câu ${label}`;
   }
 
+  function shouldRenderRewritePrompt(q) {
+    const prompt = String(q?.prompt || '').trim();
+    if (!prompt) return false;
+    if (/_{2,}|\.{2,}|…/.test(prompt)) return true;
+    const plainPrompt = prompt.replace(/<[^>]*>/g, '').trim();
+    const lettersOnly = plainPrompt.replace(/[^A-Za-z]/g, '');
+    const isKeywordOnly = lettersOnly.length > 0
+      && lettersOnly.length <= 24
+      && /^[A-Z]+$/.test(lettersOnly)
+      && normalizeText(q?.question || '').includes(normalizeText(plainPrompt));
+    return !isKeywordOnly;
+  }
+
   function renderImages(source) {
     const images = normalizeImages(source?.images || source?.image);
     if (!images.length) return '';
@@ -365,12 +383,89 @@
     return 'Tư liệu đề';
   }
 
-  function renderSource(exam, page) {
+  function fillAnswerKey(q) {
+    return `fill_${q.blank_id}`;
+  }
+
+  function isWordBankFillQuestion(q) {
+    return q?.type === 'fill_blank' && Array.isArray(q.word_bank) && q.word_bank.length > 0;
+  }
+
+  function fillDropQuestionsForPage(exam, page) {
+    const ids = new Set((page?.question_ids || []).map(questionKey));
+    return (exam?.questions || []).filter(q => ids.has(questionKey(q.id)) && isWordBankFillQuestion(q));
+  }
+
+  function uniqueWordBank(questions) {
+    const seen = new Set();
+    const words = [];
+    questions.forEach(q => {
+      q.word_bank.forEach(word => {
+        const key = normalizeText(word);
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        words.push(word);
+      });
+    });
+    return words;
+  }
+
+  function fillQuestionByBlankNumber(questions) {
+    const byNumber = new Map();
+    questions.forEach(q => {
+      const number = blankNumberFromQuestion(q);
+      if (number && !byNumber.has(number)) byNumber.set(number, q);
+    });
+    return byNumber;
+  }
+
+  function renderSourceWordBank(questions, disabled, pendingWord) {
+    const words = uniqueWordBank(questions);
+    if (!words.length) return '';
+    return `<div class="eng10-online-source-bank">${words.map(word => {
+      const selected = pendingWord && normalizeText(pendingWord) === normalizeText(word);
+      return `<button type="button" class="eng10-online-bank-chip${selected ? ' selected' : ''}" ${disabled ? 'draggable="false" disabled' : 'draggable="true"'} data-bank-word="${escapeAttr(word)}">${safeExamRichText(word)}</button>`;
+    }).join('')}</div>`;
+  }
+
+  function renderClozeSourceParagraph(text, fillByNumber, answers, disabled) {
+    const source = String(text ?? '');
+    const tokenRe = /(\[\s*BLANK[_\s-]*(\d+)\s*\]|\*{2,}\s*(\d+)\s*\*{2,}|_{2,}\s*(\d+)\s*_{2,})/gi;
+    let html = '';
+    let lastIndex = 0;
+    let match;
+    while ((match = tokenRe.exec(source))) {
+      html += safeExamRichText(source.slice(lastIndex, match.index));
+      const number = match[2] || match[3] || match[4] || '';
+      const q = fillByNumber.get(number);
+      if (!q) {
+        html += safeExamRichText(match[0]);
+      } else {
+        const key = fillAnswerKey(q);
+        const value = String(answers[key] || '').trim();
+        html += `<button type="button" class="eng10-online-drop-blank${value ? ' filled' : ''}" data-fill-drop-target="${escapeAttr(key)}" data-blank-number="${escapeAttr(number)}" ${disabled ? 'disabled' : ''}>${value ? safeExamRichText(value) : `___${escapeHtml(number)}___`}</button>`;
+      }
+      lastIndex = tokenRe.lastIndex;
+    }
+    html += safeExamRichText(source.slice(lastIndex));
+    return html;
+  }
+
+  function renderSource(exam, page, answers, disabled, pendingWord) {
     const sourceKey = String(page?.source_key || '').toLowerCase();
     const sourceText = sourceTextForPage(exam, page);
+    const isFillSource = sourceKey === 'fill' || sourceKey.startsWith('fill_passage');
+    const dropQuestions = isFillSource ? fillDropQuestionsForPage(exam, page) : [];
+    const fillByNumber = fillQuestionByBlankNumber(dropQuestions);
     let html = '';
     if (sourceText) {
-      html += `<section class="eng10-online-source-block"><h3>${safeExamRichText(sourceTitleForKey(sourceKey))}</h3>${sourceKey === 'passage' ? renderImages(exam) : ''}${sourceText.split('\n').map(p => `<p>${safeExamRichText(p)}</p>`).join('')}</section>`;
+      const paragraphs = sourceText.split('\n').map(p => {
+        const body = dropQuestions.length
+          ? renderClozeSourceParagraph(p, fillByNumber, answers || {}, disabled)
+          : safeExamRichText(p);
+        return `<p>${body}</p>`;
+      }).join('');
+      html += `<section class="eng10-online-source-block"><h3>${safeExamRichText(sourceTitleForKey(sourceKey))}</h3>${sourceKey === 'passage' ? renderImages(exam) : ''}${renderSourceWordBank(dropQuestions, disabled, pendingWord)}${paragraphs}</section>`;
     } else if (exam.images.length) {
       html += `<section class="eng10-online-source-block"><h3>Tư liệu đề</h3>${renderImages(exam)}</section>`;
     }
@@ -384,7 +479,7 @@
     return exam.questions.filter(q => ids.has(questionKey(q.id)));
   }
 
-  function renderQuestion(q, answers, disabled) {
+  function renderQuestion(q, answers, disabled, context) {
     const title = safeExamRichText(questionTitle(q));
     const body = safeRichText(displayQuestionText(q));
     if (q.type === 'multiple_choice') {
@@ -403,7 +498,19 @@
       </article>`;
     }
     if (q.type === 'fill_blank') {
-      const key = `fill_${q.blank_id}`;
+      const key = fillAnswerKey(q);
+      if (context?.dropFillIds?.has(questionKey(q.id))) {
+        const value = String(answers[key] || '').trim();
+        const number = blankNumberFromQuestion(q);
+        return `<article class="eng10-online-q-card eng10-online-fill-card" data-qid="${escapeAttr(q.id)}">
+          <div class="eng10-online-q-num">${title}</div>
+          <div class="eng10-online-fill-status${value ? ' filled' : ''}">
+            <span>${number ? `___${escapeHtml(number)}___` : safeRichText(displayQuestionText(q))}</span>
+            <strong>${value ? safeExamRichText(value) : '...'}</strong>
+          </div>
+          <input type="hidden" class="eng10-online-input" name="${escapeAttr(key)}" value="${escapeAttr(value)}">
+        </article>`;
+      }
       return `<article class="eng10-online-q-card" data-qid="${escapeAttr(q.id)}">
         <div class="eng10-online-q-num">${title}</div>
         <div class="eng10-online-q-text">${body}</div>
@@ -417,7 +524,7 @@
       <div class="eng10-online-q-num">${title}</div>
       <div class="eng10-online-q-text">${body}</div>
       ${renderImages(q)}
-      <div class="eng10-online-rewrite-prompt">${safeExamRichText(q.prompt)}</div>
+      ${shouldRenderRewritePrompt(q) ? `<div class="eng10-online-rewrite-prompt">${safeExamRichText(q.prompt)}</div>` : ''}
       <textarea class="eng10-online-input" name="${escapeAttr(key)}" rows="2" placeholder="Gõ câu hoàn chỉnh..." ${disabled ? 'disabled' : ''}>${escapeHtml(answers[key] || '')}</textarea>
     </article>`;
   }
@@ -434,7 +541,8 @@
       resultOpen: false,
       submitting: false,
       submitError: '',
-      result: null
+      result: null,
+      pendingFillWord: ''
     };
     state.exam = hydrateExamAssetUrls(state.exam, state.assets);
     const container = opts.container;
@@ -487,6 +595,8 @@
     function render() {
       const page = state.exam.pages[state.pageIndex] || { id: 'all', title: 'Toàn bộ đề', question_ids: state.exam.questions.map(q => q.id) };
       const questions = pageQuestions(state.exam, state.pageIndex);
+      const disabled = state.submitted || state.submitting;
+      const dropFillIds = new Set(fillDropQuestionsForPage(state.exam, page).map(q => questionKey(q.id)));
       const totalPages = Math.max(1, state.exam.pages.length || 1);
       const footerPrimaryAction = state.submitted ? 'close' : 'submit';
       const footerPrimaryLabel = state.submitted ? 'Thoát' : (state.submitting ? 'Đang chấm...' : 'Nộp bài');
@@ -520,13 +630,13 @@
           </div>
         </section>` : ''}
         <div class="eng10-online-main">
-          <aside class="eng10-online-source">${renderSource(state.exam, page)}</aside>
+          <aside class="eng10-online-source">${renderSource(state.exam, page, state.answers, disabled, state.pendingFillWord)}</aside>
           <section class="eng10-online-paper">
             <div class="eng10-online-page-title">
               <strong>${safeRichText(page.title || 'Phần bài làm')}</strong>
               <span>Trang ${state.pageIndex + 1}/${totalPages}</span>
             </div>
-            ${questions.map(q => renderQuestion(q, state.answers, state.submitted || state.submitting)).join('')}
+            ${questions.map(q => renderQuestion(q, state.answers, disabled, { dropFillIds })).join('')}
           </section>
         </div>
         <footer class="eng10-online-foot">
@@ -539,10 +649,54 @@
 
     container.addEventListener('input', syncAnswers);
     container.addEventListener('change', syncAnswers);
+    function setDropAnswer(target, word) {
+      const key = target?.getAttribute('data-fill-drop-target') || '';
+      const value = String(word || '').trim();
+      if (!key || !value || target.disabled) return;
+      state.answers[key] = value;
+      state.pendingFillWord = '';
+      render();
+    }
+
+    container.addEventListener('dragstart', event => {
+      const chip = event.target.closest('[data-bank-word]');
+      if (!chip || chip.disabled) return;
+      const word = chip.getAttribute('data-bank-word') || '';
+      state.pendingFillWord = word;
+      event.dataTransfer?.setData('text/plain', word);
+      event.dataTransfer?.setData('application/x-eng10-word', word);
+    });
+
+    container.addEventListener('dragover', event => {
+      const target = event.target.closest('[data-fill-drop-target]');
+      if (!target || target.disabled) return;
+      event.preventDefault();
+    });
+
+    container.addEventListener('drop', event => {
+      const target = event.target.closest('[data-fill-drop-target]');
+      if (!target || target.disabled) return;
+      event.preventDefault();
+      const word = event.dataTransfer?.getData('application/x-eng10-word')
+        || event.dataTransfer?.getData('text/plain')
+        || state.pendingFillWord;
+      setDropAnswer(target, word);
+    });
+
     container.addEventListener('click', event => {
-      const target = event.target.closest('[data-action],[data-fill-word]');
+      const target = event.target.closest('[data-action],[data-fill-word],[data-bank-word],[data-fill-drop-target]');
       if (!target) return;
       const action = target.getAttribute('data-action');
+      if (target.hasAttribute('data-bank-word')) {
+        if (target.disabled) return;
+        state.pendingFillWord = target.getAttribute('data-bank-word') || '';
+        render();
+        return;
+      }
+      if (target.hasAttribute('data-fill-drop-target')) {
+        setDropAnswer(target, state.pendingFillWord);
+        return;
+      }
       if (target.hasAttribute('data-fill-word')) {
         const input = container.querySelector(`[name="${cssString(target.getAttribute('data-fill-target') || '')}"]`);
         if (input && !input.disabled) {
@@ -595,6 +749,7 @@
     normalizeText,
     safeRichText,
     scoreExam,
+    shouldRenderRewritePrompt,
     sourceTextForPage,
     validateExamJson
   };

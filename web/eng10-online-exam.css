@@ -397,6 +397,17 @@ textarea.eng10-online-input {
   gap: 7px;
 }
 
+.eng10-online-source-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(244, 167, 29, .26);
+  background: linear-gradient(180deg, #fffaf0, #fff7e1);
+}
+
 .eng10-online-word-bank button {
   min-height: 30px;
   border: 1px solid rgba(18, 33, 61, .1);
@@ -407,6 +418,99 @@ textarea.eng10-online-input {
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
+}
+
+.eng10-online-bank-chip {
+  min-height: 32px;
+  border: 1px solid rgba(154, 94, 9, .18);
+  border-radius: 999px;
+  background: #fff;
+  color: #89520a;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: grab;
+  box-shadow: 0 5px 12px rgba(154, 94, 9, .08);
+}
+
+.eng10-online-bank-chip.selected {
+  background: #0f1f3d;
+  border-color: #0f1f3d;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(15, 31, 61, .18);
+}
+
+.eng10-online-bank-chip:disabled {
+  cursor: default;
+  opacity: .72;
+}
+
+.eng10-online-drop-blank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  min-height: 28px;
+  margin: 0 2px;
+  padding: 2px 10px;
+  vertical-align: baseline;
+  border: 1px dashed rgba(61, 126, 248, .45);
+  border-radius: 10px;
+  background: #f5f9ff;
+  color: #1d4ed8;
+  font: inherit;
+  font-weight: 950;
+  cursor: copy;
+}
+
+.eng10-online-drop-blank.filled {
+  border-style: solid;
+  border-color: rgba(20, 131, 78, .35);
+  background: #effbf4;
+  color: #11623f;
+}
+
+.eng10-online-drop-blank:disabled {
+  cursor: default;
+}
+
+.eng10-online-fill-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.eng10-online-fill-card .eng10-online-q-num {
+  margin-right: 8px;
+}
+
+.eng10-online-fill-status {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(74px, auto) minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(18, 33, 61, .09);
+  background: #f8fafc;
+}
+
+.eng10-online-fill-status span {
+  color: #7a8499;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.eng10-online-fill-status strong {
+  color: #12213d;
+  font-size: 13px;
+  font-weight: 950;
+  overflow-wrap: anywhere;
+}
+
+.eng10-online-fill-status.filled {
+  border-color: rgba(20, 131, 78, .22);
+  background: #f2fbf6;
 }
 
 .eng10-online-rewrite-prompt {

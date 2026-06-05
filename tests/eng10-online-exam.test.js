@@ -10,6 +10,7 @@ const {
   hydrateExamAssetUrls,
   safeRichText,
   scoreExam,
+  shouldRenderRewritePrompt,
   sourceTextForPage,
   validateExamJson
 } = require('../web/eng10-online-exam.js');
@@ -117,6 +118,10 @@ test('formatExamDisplayText renders cloze placeholders as numbered blanks', () =
     formatExamDisplayText('First [BLANK_19], then [blank-20], finally [blank 21].'),
     'First ___19___, then ___20___, finally ___21___.'
   );
+  assert.equal(
+    formatExamDisplayText('It is close to everyone’s ***26*** life. It is ***27*** that gives you light.'),
+    'It is close to everyone’s ___26___ life. It is ___27___ that gives you light.'
+  );
 });
 
 test('displayQuestionText replaces generated cloze placeholder wording', () => {
@@ -137,6 +142,25 @@ test('displayQuestionText replaces generated cloze placeholder wording', () => {
       question: 'Choose the correct option for [BLANK_20].'
     }),
     'Choose the correct option for ___20___.'
+  );
+});
+
+test('keyword-only rewrite prompts are hidden while sentence starters remain visible', () => {
+  assert.equal(
+    shouldRenderRewritePrompt({
+      type: 'sentence_rewrite',
+      question: 'It seems that he will come late. (APPEARS)',
+      prompt: 'APPEARS'
+    }),
+    false
+  );
+  assert.equal(
+    shouldRenderRewritePrompt({
+      type: 'sentence_rewrite',
+      question: 'I sent my friend a letter in London last week.',
+      prompt: 'A letter ______'
+    }),
+    true
   );
 });
 
@@ -192,4 +216,17 @@ test('collectImageSlots and hydrateExamAssetUrls match assets by id, filename, a
   assert.equal(hydrated.images[0].src, 'https://cdn.example/chart.png');
   assert.equal(hydrated.questions[0].images[0].src, 'https://cdn.example/q1.png');
   assert.equal(hydrated.questions[1].images[0].src, 'https://cdn.example/notice.png');
+});
+
+test('word bank cloze pages render draggable bank chips and passage drop targets', () => {
+  const js = fs.readFileSync(runnerSourcePath, 'utf8');
+  const css = fs.readFileSync(runnerCssPath, 'utf8');
+
+  assert.match(js, /data-bank-word/);
+  assert.match(js, /draggable="true"/);
+  assert.match(js, /data-fill-drop-target/);
+  assert.match(js, /addEventListener\('dragstart'/);
+  assert.match(js, /addEventListener\('drop'/);
+  assert.match(css, /\.eng10-online-drop-blank/);
+  assert.match(css, /\.eng10-online-bank-chip/);
 });
