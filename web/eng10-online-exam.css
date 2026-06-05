@@ -76,12 +76,37 @@
 }
 
 .eng10-online-result {
+  position: fixed;
+  inset: 0;
+  z-index: 5300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 31, 61, .56);
+  color: #12213d;
+  backdrop-filter: blur(10px);
+}
+
+.eng10-online-result-card {
+  width: min(420px, 100%);
   display: grid;
-  place-items: center;
-  gap: 5px;
-  padding: 14px;
-  background: #0f1f3d;
-  color: #fff;
+  justify-items: center;
+  gap: 9px;
+  border-radius: 18px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid rgba(18, 33, 61, .1);
+  box-shadow: 0 28px 80px rgba(15, 31, 61, .22);
+  text-align: center;
+}
+
+.eng10-online-result-label {
+  color: #718096;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .eng10-online-score {
@@ -91,28 +116,56 @@
 }
 
 .eng10-online-score span {
-  color: rgba(255, 255, 255, .64);
+  color: #718096;
   font-size: 17px;
 }
 
 .eng10-online-result-text {
-  color: rgba(255, 255, 255, .78);
+  color: #64748b;
   font-size: 13px;
   font-weight: 800;
 }
 
 .eng10-online-result-note {
-  max-width: 720px;
+  width: 100%;
+  max-width: 360px;
   margin-top: 4px;
-  border-radius: 999px;
+  border-radius: 12px;
   padding: 7px 11px;
-  background: rgba(255, 244, 214, .14);
-  border: 1px solid rgba(255, 214, 111, .26);
-  color: rgba(255, 255, 255, .86);
+  background: #fff8e8;
+  border: 1px solid rgba(244, 167, 29, .28);
+  color: #8a5208;
   font-size: 12px;
   font-weight: 800;
   line-height: 1.35;
   text-align: center;
+}
+
+.eng10-online-result-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.eng10-online-result-actions button {
+  min-height: 40px;
+  border: 1px solid rgba(18, 33, 61, .12);
+  border-radius: 12px;
+  padding: 0 14px;
+  background: #fff;
+  color: #12213d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.eng10-online-result-actions button.primary {
+  border-color: #0f1f3d;
+  background: #0f1f3d;
+  color: #fff;
 }
 
 .eng10-online-submit-state {

@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const {
   collectImageSlots,
@@ -11,6 +13,9 @@ const {
   sourceTextForPage,
   validateExamJson
 } = require('../web/eng10-online-exam.js');
+
+const runnerSourcePath = path.join(__dirname, '..', 'web', 'eng10-online-exam.js');
+const runnerCssPath = path.join(__dirname, '..', 'web', 'eng10-online-exam.css');
 
 test('validateExamJson rejects missing questions', () => {
   assert.throws(
@@ -71,6 +76,21 @@ test('safeRichText escapes arbitrary HTML while preserving strong and underline 
     safeRichText('A. c<strong><u>a</u></strong>lm'),
     'A. c<strong><u>a</u></strong>lm'
   );
+});
+
+test('submitted result is a top-layer dialog instead of an inline grid row', () => {
+  const source = fs.readFileSync(runnerSourcePath, 'utf8');
+  const css = fs.readFileSync(runnerCssPath, 'utf8');
+
+  assert.match(source, /resultOpen:\s*false/);
+  assert.match(source, /state\.resultOpen\s*=\s*true/);
+  assert.match(source, /role="dialog"/);
+  assert.match(source, /eng10-online-result-card/);
+  assert.match(source, /data-action="close-result"/);
+
+  const resultRule = css.match(/\.eng10-online-result\s*\{[^}]+\}/)?.[0] || '';
+  assert.match(resultRule, /position:\s*fixed/);
+  assert.match(resultRule, /z-index:\s*53\d\d/);
 });
 
 test('formatExamDisplayText renders cloze placeholders as numbered blanks', () => {

@@ -431,6 +431,7 @@
       pageIndex: 0,
       startedAt: Date.now(),
       submitted: false,
+      resultOpen: false,
       submitting: false,
       submitError: '',
       result: null
@@ -479,6 +480,7 @@
       }
       state.submitting = false;
       state.submitted = true;
+      state.resultOpen = true;
       render();
     }
 
@@ -495,10 +497,17 @@
           </div>
           <div class="eng10-online-progress">${safeRichText(progressText())}</div>
         </header>
-        ${state.submitted ? `<section class="eng10-online-result">
-          <div class="eng10-online-score">${safeRichText(state.result?.score ?? 0)}<span>/${safeRichText(state.result?.total ?? state.exam.questions.length)}</span></div>
-          <div class="eng10-online-result-text">Điểm ${safeRichText(state.result?.percent ?? 0)}% · ${safeRichText(state.result?.duration_seconds ?? 0)} giây</div>
-          ${state.submitError ? `<div class="eng10-online-result-note">${safeRichText(state.submitError)}</div>` : ''}
+        ${state.submitted && state.resultOpen ? `<section class="eng10-online-result" role="dialog" aria-modal="true" aria-label="Kết quả bài làm">
+          <div class="eng10-online-result-card">
+            <div class="eng10-online-result-label">Kết quả bài làm</div>
+            <div class="eng10-online-score">${safeRichText(state.result?.score ?? 0)}<span>/${safeRichText(state.result?.total ?? state.exam.questions.length)}</span></div>
+            <div class="eng10-online-result-text">Điểm ${safeRichText(state.result?.percent ?? 0)}% · ${safeRichText(state.result?.duration_seconds ?? 0)} giây</div>
+            ${state.submitError ? `<div class="eng10-online-result-note">${safeRichText(state.submitError)}</div>` : ''}
+            <div class="eng10-online-result-actions">
+              <button type="button" data-action="close-result">Xem lại bài</button>
+              <button type="button" class="primary" data-action="close">Thoát</button>
+            </div>
+          </div>
         </section>` : state.submitting ? `<section class="eng10-online-submit-state">
           <span class="eng10-online-submit-spinner" aria-hidden="true"></span>
           <div>
@@ -539,6 +548,10 @@
         return;
       }
       if (action === 'close' && typeof opts.onClose === 'function') opts.onClose();
+      if (action === 'close-result') {
+        state.resultOpen = false;
+        render();
+      }
       if (action === 'prev') {
         syncAnswers();
         state.pageIndex = Math.max(0, state.pageIndex - 1);
