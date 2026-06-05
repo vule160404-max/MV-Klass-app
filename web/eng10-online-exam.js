@@ -35,7 +35,8 @@
     return String(value ?? '')
       .replace(/\[\s*BLANK[_\s-]*(\d+)\s*\]/gi, '___$1___')
       .replace(/\*{2,}\s*(\d+)\s*\*{2,}/g, '___$1___')
-      .replace(/_{2,}\s*(\d+)\s*_{2,}/g, '___$1___');
+      .replace(/_{2,}\s*(\d+)\s*_{2,}/g, '___$1___')
+      .replace(/\*{3,}/g, '______');
   }
 
   function safeExamRichText(value) {
@@ -419,10 +420,17 @@
     return byNumber;
   }
 
-  function renderSourceWordBank(questions, disabled, pendingWord) {
+  function renderSourceWordBank(questions, answers, disabled, pendingWord) {
     const words = uniqueWordBank(questions);
+    const usedWordKeys = new Set();
+    questions.forEach(q => {
+      const used = String(answers?.[fillAnswerKey(q)] || '').trim();
+      if (used) usedWordKeys.add(normalizeText(used));
+    });
+    const visibleWords = words.filter(word => !usedWordKeys.has(normalizeText(word)));
     if (!words.length) return '';
-    return `<div class="eng10-online-source-bank">${words.map(word => {
+    if (!visibleWords.length) return '<div class="eng10-online-source-bank empty" data-word-bank-drop="true"><span>Kéo đáp án về đây để trả lại word bank.</span></div>';
+    return `<div class="eng10-online-source-bank" data-word-bank-drop="true">${visibleWords.map(word => {
       const selected = pendingWord && normalizeText(pendingWord) === normalizeText(word);
       return `<button type="button" class="eng10-online-bank-chip${selected ? ' selected' : ''}" ${disabled ? 'draggable="false" disabled' : 'draggable="true"'} data-bank-word="${escapeAttr(word)}">${safeExamRichText(word)}</button>`;
     }).join('')}</div>`;
@@ -443,7 +451,7 @@
       } else {
         const key = fillAnswerKey(q);
         const value = String(answers[key] || '').trim();
-        html += `<button type="button" class="eng10-online-drop-blank${value ? ' filled' : ''}" data-fill-drop-target="${escapeAttr(key)}" data-blank-number="${escapeAttr(number)}" ${disabled ? 'disabled' : ''}>${value ? safeExamRichText(value) : `___${escapeHtml(number)}___`}</button>`;
+        html += `<button type="button" class="eng10-online-drop-blank${value ? ' filled' : ''}" data-fill-drop-target="${escapeAttr(key)}" data-blank-number="${escapeAttr(number)}" data-filled-word="${escapeAttr(value)}" ${value && !disabled ? 'draggable="true"' : ''} ${disabled ? 'disabled' : ''}>${value ? safeExamRichText(value) : `___${escapeHtml(number)}___`}</button>`;
       }
       lastIndex = tokenRe.lastIndex;
     }
@@ -465,7 +473,7 @@
           : safeExamRichText(p);
         return `<p>${body}</p>`;
       }).join('');
-      html += `<section class="eng10-online-source-block"><h3>${safeExamRichText(sourceTitleForKey(sourceKey))}</h3>${sourceKey === 'passage' ? renderImages(exam) : ''}${renderSourceWordBank(dropQuestions, disabled, pendingWord)}${paragraphs}</section>`;
+      html += `<section class="eng10-online-source-block"><h3>${safeExamRichText(sourceTitleForKey(sourceKey))}</h3>${sourceKey === 'passage' ? renderImages(exam) : ''}${renderSourceWordBank(dropQuestions, answers || {}, disabled, pendingWord)}${paragraphs}</section>`;
     } else if (exam.images.length) {
       html += `<section class="eng10-online-source-block"><h3>Tư liệu đề</h3>${renderImages(exam)}</section>`;
     }
@@ -649,38 +657,59 @@
 
     container.addEventListener('input', syncAnswers);
     container.addEventListener('change', syncAnswers);
-    function setDropAnswer(target, word) {
+    function setDropAnswer(target, word, sourceKey) {
       const key = target?.getAttribute('data-fill-drop-target') || '';
       const value = String(word || '').trim();
       if (!key || !value || target.disabled) return;
+      if (sourceKey && sourceKey !== key) delete state.answers[sourceKey];
       state.answers[key] = value;
       state.pendingFillWord = '';
       render();
     }
 
+    function returnDropAnswer(sourceKey) {
+      if (!sourceKey) return;
+      delete state.answers[sourceKey];
+      state.pendingFillWord = '';
+      render();
+    }
+
     container.addEventListener('dragstart', event => {
-      const chip = event.target.closest('[data-bank-word]');
-      if (!chip || chip.disabled) return;
-      const word = chip.getAttribute('data-bank-word') || '';
+      const source = event.target.closest('[data-bank-word],[data-fill-drop-target]');
+      if (!source || source.disabled) return;
+      const word = source.getAttribute('data-bank-word') || source.getAttribute('data-filled-word') || '';
+      if (!word) return;
+      const sourceKey = source.hasAttribute('data-fill-drop-target') ? source.getAttribute('data-fill-drop-target') || '' : '';
       state.pendingFillWord = word;
       event.dataTransfer?.setData('text/plain', word);
       event.dataTransfer?.setData('application/x-eng10-word', word);
+      event.dataTransfer?.setData('application/x-eng10-source-key', sourceKey);
+      source.classList.add('dragging');
+    });
+
+    container.addEventListener('dragend', event => {
+      event.target.closest('[data-bank-word],[data-fill-drop-target]')?.classList.remove('dragging');
     });
 
     container.addEventListener('dragover', event => {
-      const target = event.target.closest('[data-fill-drop-target]');
+      const target = event.target.closest('[data-fill-drop-target],[data-word-bank-drop]');
       if (!target || target.disabled) return;
       event.preventDefault();
     });
 
     container.addEventListener('drop', event => {
-      const target = event.target.closest('[data-fill-drop-target]');
+      const target = event.target.closest('[data-fill-drop-target],[data-word-bank-drop]');
       if (!target || target.disabled) return;
       event.preventDefault();
       const word = event.dataTransfer?.getData('application/x-eng10-word')
         || event.dataTransfer?.getData('text/plain')
         || state.pendingFillWord;
-      setDropAnswer(target, word);
+      const sourceKey = event.dataTransfer?.getData('application/x-eng10-source-key') || '';
+      if (target.hasAttribute('data-word-bank-drop')) {
+        returnDropAnswer(sourceKey);
+        return;
+      }
+      setDropAnswer(target, word, sourceKey);
     });
 
     container.addEventListener('click', event => {
@@ -694,7 +723,11 @@
         return;
       }
       if (target.hasAttribute('data-fill-drop-target')) {
-        setDropAnswer(target, state.pendingFillWord);
+        if (state.pendingFillWord) {
+          setDropAnswer(target, state.pendingFillWord);
+        } else if (target.getAttribute('data-filled-word')) {
+          returnDropAnswer(target.getAttribute('data-fill-drop-target') || '');
+        }
         return;
       }
       if (target.hasAttribute('data-fill-word')) {

@@ -122,6 +122,10 @@ test('formatExamDisplayText renders cloze placeholders as numbered blanks', () =
     formatExamDisplayText('It is close to everyone’s ***26*** life. It is ***27*** that gives you light.'),
     'It is close to everyone’s ___26___ life. It is ___27___ that gives you light.'
   );
+  assert.equal(
+    formatExamDisplayText('You should buy this book. It’s very ******.'),
+    'You should buy this book. It’s very ______.'
+  );
 });
 
 test('displayQuestionText replaces generated cloze placeholder wording', () => {
@@ -225,8 +229,13 @@ test('word bank cloze pages render draggable bank chips and passage drop targets
   assert.match(js, /data-bank-word/);
   assert.match(js, /draggable="true"/);
   assert.match(js, /data-fill-drop-target/);
+  assert.match(js, /usedWordKeys/);
+  assert.match(js, /data-word-bank-drop/);
+  assert.match(js, /delete state\.answers\[sourceKey\]/);
   assert.match(js, /addEventListener\('dragstart'/);
   assert.match(js, /addEventListener\('drop'/);
   assert.match(css, /\.eng10-online-drop-blank/);
   assert.match(css, /\.eng10-online-bank-chip/);
+  assert.match(css, /transition:/);
+  assert.match(css, /\.eng10-online-source-bank\.empty/);
 });

@@ -401,11 +401,23 @@ textarea.eng10-online-input {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  min-height: 48px;
   margin: 0 0 14px;
   padding: 10px;
   border-radius: 14px;
   border: 1px solid rgba(244, 167, 29, .26);
   background: linear-gradient(180deg, #fffaf0, #fff7e1);
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.eng10-online-source-bank.empty {
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  background: #fbfdff;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 850;
 }
 
 .eng10-online-word-bank button {
@@ -431,6 +443,21 @@ textarea.eng10-online-input {
   font-weight: 950;
   cursor: grab;
   box-shadow: 0 5px 12px rgba(154, 94, 9, .08);
+  transition: transform .16s ease, opacity .16s ease, color .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
+  will-change: transform;
+}
+
+.eng10-online-bank-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(154, 94, 9, .32);
+  box-shadow: 0 8px 18px rgba(154, 94, 9, .13);
+}
+
+.eng10-online-bank-chip:active,
+.eng10-online-bank-chip.dragging {
+  cursor: grabbing;
+  transform: scale(.96);
+  opacity: .62;
 }
 
 .eng10-online-bank-chip.selected {
@@ -461,6 +488,16 @@ textarea.eng10-online-input {
   font: inherit;
   font-weight: 950;
   cursor: copy;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .72);
+  transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease, opacity .16s ease;
+  will-change: transform;
+}
+
+.eng10-online-drop-blank:hover {
+  transform: translateY(-1px);
+  border-color: rgba(61, 126, 248, .68);
+  background: #eef5ff;
+  box-shadow: 0 8px 18px rgba(61, 126, 248, .12);
 }
 
 .eng10-online-drop-blank.filled {
@@ -468,6 +505,12 @@ textarea.eng10-online-input {
   border-color: rgba(20, 131, 78, .35);
   background: #effbf4;
   color: #11623f;
+  cursor: grab;
+}
+
+.eng10-online-drop-blank.filled.dragging {
+  transform: scale(.96);
+  opacity: .58;
 }
 
 .eng10-online-drop-blank:disabled {
