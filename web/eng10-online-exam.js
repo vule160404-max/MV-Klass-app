@@ -350,13 +350,27 @@
       </figure>`).join('')}</div>`;
   }
 
+  function sourceTextForPage(exam, page) {
+    const sourceKey = String(page?.source_key || '').trim();
+    if (!sourceKey) return '';
+    const normalizedKey = sourceKey.toLowerCase();
+    const value = normalizedKey === 'fill' ? exam?.fill_passage : exam?.[sourceKey];
+    return typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+  }
+
+  function sourceTitleForKey(sourceKey) {
+    const key = String(sourceKey || '').toLowerCase();
+    if (key === 'passage') return 'Bài đọc';
+    if (key === 'fill' || key.startsWith('fill_passage')) return 'Đoạn điền từ';
+    return 'Tư liệu đề';
+  }
+
   function renderSource(exam, page) {
     const sourceKey = String(page?.source_key || '').toLowerCase();
+    const sourceText = sourceTextForPage(exam, page);
     let html = '';
-    if (sourceKey === 'passage' && exam.passage) {
-      html += `<section class="eng10-online-source-block"><h3>Bài đọc</h3>${renderImages(exam)}${String(exam.passage).split('\n').map(p => `<p>${safeExamRichText(p)}</p>`).join('')}</section>`;
-    } else if ((sourceKey === 'fill_passage' || sourceKey === 'fill') && exam.fill_passage) {
-      html += `<section class="eng10-online-source-block"><h3>Đoạn điền từ</h3>${String(exam.fill_passage).split('\n').map(p => `<p>${safeExamRichText(p)}</p>`).join('')}</section>`;
+    if (sourceText) {
+      html += `<section class="eng10-online-source-block"><h3>${safeExamRichText(sourceTitleForKey(sourceKey))}</h3>${sourceKey === 'passage' ? renderImages(exam) : ''}${sourceText.split('\n').map(p => `<p>${safeExamRichText(p)}</p>`).join('')}</section>`;
     } else if (exam.images.length) {
       html += `<section class="eng10-online-source-block"><h3>Tư liệu đề</h3>${renderImages(exam)}</section>`;
     }
@@ -564,6 +578,7 @@
     normalizeText,
     safeRichText,
     scoreExam,
+    sourceTextForPage,
     validateExamJson
   };
 });

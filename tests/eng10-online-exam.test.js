@@ -8,6 +8,7 @@ const {
   hydrateExamAssetUrls,
   safeRichText,
   scoreExam,
+  sourceTextForPage,
   validateExamJson
 } = require('../web/eng10-online-exam.js');
 
@@ -98,6 +99,20 @@ test('displayQuestionText replaces generated cloze placeholder wording', () => {
     }),
     'Choose the correct option for ___20___.'
   );
+});
+
+test('sourceTextForPage supports dynamic source_key fields such as fill_passage_2', () => {
+  const exam = validateExamJson({
+    exam_id: 'demo',
+    title: 'Demo exam',
+    fill_passage_2: 'Second cloze ___36___ text.',
+    pages: [{ id: 'p2', title: 'Cloze 2', source_key: 'fill_passage_2', question_ids: [36] }],
+    questions: [
+      { id: 36, type: 'multiple_choice', question: 'Pick one', options: ['A', 'B'], answer: 'A' }
+    ]
+  });
+
+  assert.equal(sourceTextForPage(exam, exam.pages[0]), 'Second cloze ___36___ text.');
 });
 
 test('collectImageSlots and hydrateExamAssetUrls match assets by id, filename, and bare filename', () => {
