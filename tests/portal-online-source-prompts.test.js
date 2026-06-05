@@ -35,7 +35,11 @@ test('source prompt manager chooses a source from uploaded exam groups', () => {
   assert.match(source, /function portalOnlineSourceOptions\(/);
   assert.match(source, /function renderPortalOnlineSourcePromptOptions/);
   assert.match(source, /portalOnlineRows/);
-  assert.match(source, /studentExamDisplayProvince/);
+  assert.match(source, /studentExamSourceLabel\(row\)/);
+  assert.match(source, /studentExamOverviewSourceDisplayLabel/);
+  const sourceOptions = source.match(/function portalOnlineSourceOptions\(extra = null\) \{[\s\S]*?\n\}\n\nfunction renderPortalOnlineSourcePromptOptions/);
+  assert.ok(sourceOptions, 'portalOnlineSourceOptions should exist');
+  assert.doesNotMatch(sourceOptions[0], /source_prompt_candidate/);
 });
 
 test('portal online rows show matched prompt source status', () => {

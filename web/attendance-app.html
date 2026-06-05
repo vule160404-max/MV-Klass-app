@@ -11745,7 +11745,7 @@ button[data-bank-inspect-confirm-not]:hover,
                 <select id="portal-online-source-prompt-province" onchange="onPortalOnlineSourcePromptProvinceChange()">
                   <option value="">Chọn nguồn đề đã upload</option>
                 </select>
-                <input type="number" id="portal-online-source-prompt-year" placeholder="Năm" min="2020" max="2100"/>
+                <input type="number" id="portal-online-source-prompt-year" placeholder="Năm" min="2020" max="2100" onchange="onPortalOnlineSourcePromptYearChange()"/>
               </div>
               <textarea id="portal-online-source-prompt-text" class="website-online-textarea" spellcheck="false" placeholder="Dán prompt gốc của nguồn này. Dùng {{exam_id}}/{{title}}, __EXAM_ID__/__EXAM_TITLE__ hoặc THAY_BANG_ID/THAY_BANG_TEN_DE."></textarea>
               <div class="website-online-source-list" id="portal-online-source-prompt-list"></div>
@@ -18768,12 +18768,18 @@ const STUDENT_EXAM_PROVINCE_ALIASES = [
   ['thanh hoa', 'Thanh Hóa'],
   ['nghe an', 'Nghệ An'],
   ['ha tinh', 'Hà Tĩnh'],
+  ['hue', 'Huế'],
+  ['tp hue', 'Huế'],
   ['da nang', 'Đà Nẵng'],
   ['hai phong', 'Hải Phòng'],
   ['quang ninh', 'Quảng Ninh'],
+  ['cao bang', 'Cao Bằng'],
+  ['lang son', 'Lạng Sơn'],
   ['bac ninh', 'Bắc Ninh'],
   ['bac giang', 'Bắc Giang'],
+  ['bac kan', 'Bắc Kạn'],
   ['nam dinh', 'Nam Định'],
+  ['ha nam', 'Hà Nam'],
   ['thai binh', 'Thái Bình'],
   ['ninh binh', 'Ninh Bình'],
   ['hai duong', 'Hải Dương'],
@@ -18782,7 +18788,10 @@ const STUDENT_EXAM_PROVINCE_ALIASES = [
   ['phu tho', 'Phú Thọ'],
   ['thai nguyen', 'Thái Nguyên'],
   ['tuyen quang', 'Tuyên Quang'],
+  ['ha giang', 'Hà Giang'],
   ['lao cai', 'Lào Cai'],
+  ['dien bien', 'Điện Biên'],
+  ['lai chau', 'Lai Châu'],
   ['yen bai', 'Yên Bái'],
   ['son la', 'Sơn La'],
   ['hoa binh', 'Hòa Bình'],
@@ -18829,6 +18838,93 @@ STUDENT_EXAM_PROVINCE_ALIASES.forEach(([key, label]) => {
   }
   STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.set(key, STUDENT_EXAM_PROVINCE_ORDER_BY_KEY.get(labelKey));
 });
+
+const STUDENT_EXAM_PROVINCE_CODE_ALIASES = {
+  ag: 'an giang',
+  brvt: 'ba ria vung tau',
+  vt: 'ba ria vung tau',
+  bg: 'bac giang',
+  bk: 'bac kan',
+  bl: 'bac lieu',
+  bn: 'bac ninh',
+  btr: 'ben tre',
+  bdi: 'binh dinh',
+  bdinh: 'binh dinh',
+  bdu: 'binh duong',
+  bduong: 'binh duong',
+  bp: 'binh phuoc',
+  bth: 'binh thuan',
+  bthuan: 'binh thuan',
+  cm: 'ca mau',
+  cb: 'cao bang',
+  dl: 'dak lak',
+  dlk: 'dak lak',
+  daklak: 'dak lak',
+  dno: 'dak nong',
+  dkn: 'dak nong',
+  daknong: 'dak nong',
+  db: 'dien bien',
+  dng: 'da nang',
+  dna: 'da nang',
+  dni: 'dong nai',
+  don: 'dong nai',
+  dt: 'dong thap',
+  gl: 'gia lai',
+  hgi: 'ha giang',
+  hgiang: 'ha giang',
+  hna: 'ha nam',
+  hnam: 'ha nam',
+  hn: 'ha noi',
+  ht: 'ha tinh',
+  hd: 'hai duong',
+  hp: 'hai phong',
+  hbg: 'hoa binh',
+  hb: 'hoa binh',
+  hau: 'hau giang',
+  haug: 'hau giang',
+  haugiang: 'hau giang',
+  hy: 'hung yen',
+  kh: 'khanh hoa',
+  kg: 'kien giang',
+  kt: 'kon tum',
+  lch: 'lai chau',
+  ld: 'lam dong',
+  ls: 'lang son',
+  lc: 'lao cai',
+  la: 'long an',
+  nd: 'nam dinh',
+  na: 'nghe an',
+  nb: 'ninh binh',
+  nt: 'ninh thuan',
+  pt: 'phu tho',
+  py: 'phu yen',
+  qb: 'quang binh',
+  qna: 'quang nam',
+  qng: 'quang ngai',
+  qni: 'quang ninh',
+  qninh: 'quang ninh',
+  qt: 'quang tri',
+  st: 'soc trang',
+  sl: 'son la',
+  tni: 'tay ninh',
+  tyn: 'tay ninh',
+  tb: 'thai binh',
+  tng: 'thai nguyen',
+  tnguyen: 'thai nguyen',
+  th: 'thanh hoa',
+  tth: 'thua thien hue',
+  hue: 'hue',
+  tg: 'tien giang',
+  tv: 'tra vinh',
+  tq: 'tuyen quang',
+  vl: 'vinh long',
+  vp: 'vinh phuc',
+  yb: 'yen bai',
+  ct: 'can tho',
+  hcm: 'ho chi minh',
+  tphcm: 'ho chi minh',
+  sg: 'ho chi minh'
+};
 
 function studentExamDisplayProvince(value) {
   const raw = repairMojibakeText(value).trim();
@@ -18913,22 +19009,18 @@ function studentExamSourceKeyFromLabel(label) {
   return normalizeText(String(label || '').replace(/[đĐ]/g, 'd')).replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
+function studentExamProvinceLabelFromCode(value) {
+  const code = String(value || '').replace(/[^a-z]/gi, '').toLowerCase();
+  if (!code) return '';
+  const provinceKey = STUDENT_EXAM_PROVINCE_CODE_ALIASES[code] || '';
+  return provinceKey ? studentExamDisplayProvince(provinceKey) : '';
+}
+
 function studentExamProvinceLabelFromInitials(value) {
   const wanted = String(value || '').replace(/[^a-z]/gi, '').toLowerCase();
   if (!wanted) return '';
-  const preferred = {
-    th: 'thanh hoa',
-    nb: 'ninh binh',
-    pt: 'phu tho',
-    hp: 'hai phong',
-    hn: 'ha noi',
-    na: 'nghe an',
-    ht: 'ha tinh',
-    ct: 'can tho'
-  };
-  if (preferred[wanted]) {
-    return studentExamDisplayProvince(preferred[wanted]);
-  }
+  const direct = studentExamProvinceLabelFromCode(wanted);
+  if (direct) return direct;
   const seen = new Set();
   for (const [, label] of STUDENT_EXAM_PROVINCE_ALIASES) {
     const display = studentExamDisplayProvince(label);
@@ -18945,6 +19037,26 @@ function studentExamVmpProvinceFromText(value) {
   const key = studentExamSourceKeyFromLabel(value);
   const match = key.match(/\bvmp([a-z]{2,4})\b/);
   return match ? studentExamProvinceLabelFromInitials(match[1]) : '';
+}
+
+function studentExamProvinceLabelFromExamCodeText(value) {
+  const key = studentExamSourceKeyFromLabel(String(value || '')
+    .replace(/[\\/_.-]+/g, ' ')
+    .replace(/[()[\]{}.,;:]+/g, ' '));
+  if (!key) return '';
+  const patterns = [
+    /\b(?:dap\s+an\s+)?de\s+([a-z]{2,10})\s*0*\d{1,4}\b/,
+    /\b([a-z]{2,10})\s*0*\d{1,4}\b/
+  ];
+  for (const pattern of patterns) {
+    const match = key.match(pattern);
+    if (!match) continue;
+    const code = match[1] || '';
+    if (/^(vmp|thpt|ielts|lgh|pdf)$/i.test(code)) continue;
+    const province = studentExamProvinceLabelFromCode(code);
+    if (province) return province;
+  }
+  return '';
 }
 
 function studentExamFormatSourceLabel(value) {
@@ -18984,6 +19096,7 @@ function studentExamSourceTextFromName(value) {
     .replace(/\s+/g, ' ')
     .trim();
   if (!raw) return '';
+  const provinceFromCode = studentExamProvinceLabelFromExamCodeText(raw);
   const tokens = raw.split(' ').map(token => token.trim()).filter(Boolean);
   const normTokens = tokens.map(token => normalizeText(token.replace(/[đĐ]/g, 'd')).toLowerCase().replace(/[^a-z0-9]+/g, ''));
   const dropWords = new Set(['de', 'thi', 'vao', 'thpt', 'qg', 'quoc', 'dai', 'ielts', 'tieng', 'anh', 'english', 'nguon', 'chinh', 'tai', 'notice', 'online', 'image', 'images']);
@@ -19030,11 +19143,13 @@ function studentExamSourceTextFromName(value) {
         ? 'Vũ Mai Phương Thanh Hóa'
         : 'Vũ Mai Phương ' + formatted;
     }
+    if (provinceFromCode) return provinceFromCode;
     return studentExamFormatSourceLabel(label);
   }
   const key = studentExamSourceKeyFromLabel(raw);
   const vmpProvince = studentExamVmpProvinceFromText(raw);
   if (vmpProvince) return 'Vũ Mai Phương ' + vmpProvince;
+  if (provinceFromCode) return provinceFromCode;
   if (/\bvmpth\b/.test(key)) return 'Vũ Mai Phương Thanh Hóa';
   if (/\bvmp\b|\bvu\s+mai\s+phuong\b/.test(key)) return 'Vũ Mai Phương';
   if (/\blgh\b|\bloi\s+giai\s+hay\b/.test(key)) return 'Lời Giải Hay';
@@ -21987,63 +22102,78 @@ function portalOnlinePromptSourceLabel(row) {
 function portalOnlineSourcePromptCandidate(row) {
   const cand = row && row.source_prompt_candidate ? row.source_prompt_candidate : {};
   return {
-    province_label: String(cand.province_label || row?.province || '').trim(),
+    province_label: String(portalOnlinePromptSourceDisplayLabel(row) || cand.province_label || row?.province || '').trim(),
     year: String(cand.year || row?.year || new Date().getFullYear()).trim()
   };
 }
 
-function portalOnlineSourceOptionKey(provinceLabel, year) {
+function portalOnlineSourceOptionKey(provinceLabel) {
   const label = normalizeText(String(provinceLabel || '').replace(/[đĐ]/g, 'd'))
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+  return label;
+}
+
+function portalOnlineSourcePromptTemplateKey(provinceLabel, year) {
+  const label = portalOnlineSourceOptionKey(provinceLabel);
   const y = String(year || '').trim();
   return label && y ? `${label}|${y}` : '';
 }
 
+function portalOnlinePromptSourceDisplayLabel(row) {
+  const source = studentExamSourceLabel(row);
+  const display = typeof studentExamOverviewSourceDisplayLabel === 'function'
+    ? studentExamOverviewSourceDisplayLabel(source)
+    : source;
+  return String(display || source || row?.province || '').trim() || 'Tổng hợp';
+}
+
 function portalOnlineSourceOptions(extra = null) {
   const map = new Map();
-  const add = (provinceLabel, year) => {
-    const rawProvince = String(provinceLabel || '').trim();
-    const displayProvince = studentExamDisplayProvince(rawProvince) || rawProvince;
+  const add = (provinceLabel, year, countDelta = 1) => {
+    const sourceLabel = String(provinceLabel || '').trim();
     const y = String(year || '').trim();
-    const key = portalOnlineSourceOptionKey(displayProvince, y);
+    const key = portalOnlineSourceOptionKey(sourceLabel);
     if (!key) return;
     const existing = map.get(key);
     if (existing) {
-      existing.count += 1;
+      existing.count += countDelta;
+      if (y && !existing.years.includes(y)) existing.years.push(y);
+      if (y && (!existing.default_year || Number(y) > Number(existing.default_year))) existing.default_year = y;
       return;
     }
     map.set(key, {
       key,
-      province_label: displayProvince,
-      year: y,
-      count: 1
+      province_label: sourceLabel,
+      source_label: sourceLabel,
+      default_year: y,
+      years: y ? [y] : [],
+      count: Math.max(0, countDelta)
     });
   };
   (portalOnlineRows || []).forEach(row => {
-    const cand = row && row.source_prompt_candidate ? row.source_prompt_candidate : {};
-    add(cand.province_label || row?.province, cand.year || row?.year);
+    add(portalOnlinePromptSourceDisplayLabel(row), row?.year);
   });
-  if (extra && (extra.province_label || extra.province_key) && extra.year) {
-    add(extra.province_label || extra.province_key, extra.year);
+  if (extra && (extra.province_label || extra.province_key)) {
+    add(extra.province_label || extra.province_key, extra.year, 0);
   }
   return Array.from(map.values()).sort((a, b) =>
-    String(b.year || '').localeCompare(String(a.year || '')) ||
-    String(a.province_label || '').localeCompare(String(b.province_label || ''), 'vi')
+    Number(b.count || 0) - Number(a.count || 0) ||
+    String(a.province_label || '').localeCompare(String(b.province_label || ''), 'vi', { sensitivity: 'base', numeric: true })
   );
 }
 
 function renderPortalOnlineSourcePromptOptions(selected = {}) {
   const select = document.getElementById('portal-online-source-prompt-province');
   if (!select) return;
-  const selectedKey = portalOnlineSourceOptionKey(selected.province_label || selected.province_key, selected.year);
+  const selectedKey = portalOnlineSourceOptionKey(selected.province_label || selected.province_key);
   const options = portalOnlineSourceOptions(selected);
   select.innerHTML = [
     '<option value="">Chọn nguồn đề đã upload</option>',
     ...options.map(opt => {
-      const label = `${opt.province_label} ${opt.year} · ${opt.count} đề`;
-      return `<option value="${escapeHtml(opt.key)}" data-province-label="${escapeHtml(opt.province_label)}" data-year="${escapeHtml(opt.year)}">${escapeHtml(label)}</option>`;
+      const label = `${opt.source_label || opt.province_label} · ${opt.count} đề`;
+      return `<option value="${escapeHtml(opt.key)}" data-province-label="${escapeHtml(opt.source_label || opt.province_label)}" data-default-year="${escapeHtml(opt.default_year || '')}">${escapeHtml(label)}</option>`;
     })
   ].join('');
   select.value = selectedKey && options.some(opt => opt.key === selectedKey) ? selectedKey : '';
@@ -22054,23 +22184,35 @@ function portalOnlineSelectedSourcePrompt() {
   const option = select && select.selectedOptions && select.selectedOptions[0] ? select.selectedOptions[0] : null;
   return {
     province_label: String(option?.dataset?.provinceLabel || '').trim(),
-    year: String(option?.dataset?.year || document.getElementById('portal-online-source-prompt-year')?.value || '').trim()
+    year: String(document.getElementById('portal-online-source-prompt-year')?.value || option?.dataset?.defaultYear || '').trim(),
+    default_year: String(option?.dataset?.defaultYear || '').trim()
   };
+}
+
+function syncPortalOnlineSourcePromptTemplateForSelection() {
+  const selected = portalOnlineSelectedSourcePrompt();
+  const key = portalOnlineSourcePromptTemplateKey(selected.province_label, selected.year);
+  const existing = portalOnlineSourcePromptRows.find(row =>
+    portalOnlineSourcePromptTemplateKey(row && (row.province_label || row.province_key), row && row.year) === key
+  );
+  portalOnlineSourcePromptEditingId = existing ? String(existing.id || '').trim() : '';
+  const text = document.getElementById('portal-online-source-prompt-text');
+  if (existing) {
+    if (text) text.value = String(existing.template_text || '').trim();
+  } else if (text && !portalOnlineSourcePromptEditingId) {
+    text.value = '';
+  }
 }
 
 function onPortalOnlineSourcePromptProvinceChange() {
   const selected = portalOnlineSelectedSourcePrompt();
   const year = document.getElementById('portal-online-source-prompt-year');
-  if (year && selected.year) year.value = selected.year;
-  const key = portalOnlineSourceOptionKey(selected.province_label, selected.year);
-  const existing = portalOnlineSourcePromptRows.find(row =>
-    portalOnlineSourceOptionKey(row && (row.province_label || row.province_key), row && row.year) === key
-  );
-  portalOnlineSourcePromptEditingId = existing ? String(existing.id || '').trim() : '';
-  if (existing) {
-    const text = document.getElementById('portal-online-source-prompt-text');
-    if (text) text.value = String(existing.template_text || '').trim();
-  }
+  if (year && selected.default_year) year.value = selected.default_year;
+  syncPortalOnlineSourcePromptTemplateForSelection();
+}
+
+function onPortalOnlineSourcePromptYearChange() {
+  syncPortalOnlineSourcePromptTemplateForSelection();
 }
 
 function setPortalOnlineSourcePromptForm(data = {}) {
@@ -22079,7 +22221,7 @@ function setPortalOnlineSourcePromptForm(data = {}) {
   const text = document.getElementById('portal-online-source-prompt-text');
   portalOnlineSourcePromptEditingId = String(data.id || '').trim();
   renderPortalOnlineSourcePromptOptions(data);
-  if (province) province.value = portalOnlineSourceOptionKey(data.province_label || data.province_key, data.year);
+  if (province) province.value = portalOnlineSourceOptionKey(data.province_label || data.province_key);
   if (year) year.value = String(data.year || '').trim();
   if (text) text.value = String(data.template_text || '').trim();
 }
