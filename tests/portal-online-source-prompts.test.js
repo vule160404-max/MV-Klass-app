@@ -24,6 +24,20 @@ test('portal online admin has a source prompt manager modal', () => {
   assert.match(source, /callExamOnline\('save_prompt_source'/);
 });
 
+test('source prompt manager chooses a source from uploaded exam groups', () => {
+  const source = readSource();
+
+  const sourceControl = source.match(/<select[^>]*id="portal-online-source-prompt-province"[\s\S]*?<\/select>/);
+  assert.ok(sourceControl, 'source prompt province should be a dropdown, not a free text input');
+  assert.match(sourceControl[0], /onchange="onPortalOnlineSourcePromptProvinceChange\(\)"/);
+  assert.doesNotMatch(source, /<input[^>]*id="portal-online-source-prompt-province"/);
+
+  assert.match(source, /function portalOnlineSourceOptions\(/);
+  assert.match(source, /function renderPortalOnlineSourcePromptOptions/);
+  assert.match(source, /portalOnlineRows/);
+  assert.match(source, /studentExamDisplayProvince/);
+});
+
 test('portal online rows show matched prompt source status', () => {
   const source = readSource();
 

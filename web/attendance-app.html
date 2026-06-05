@@ -4393,7 +4393,7 @@
     .website-online-asset-thumb{ width:42px; height:42px; border-radius:8px; object-fit:cover; background:#fff; border:1px solid rgba(99,138,218,.18); flex:0 0 auto; }
     .website-online-asset-status{ min-width:0; overflow-wrap:anywhere; }
     .website-online-source-form{ display:grid; grid-template-columns:minmax(150px,1fr) 110px; gap:8px; margin-bottom:10px; }
-    .website-online-source-form input{ min-width:0; min-height:38px; border-radius:10px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
+    .website-online-source-form input,.website-online-source-form select{ min-width:0; min-height:38px; border-radius:10px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
     .website-online-source-list{ display:grid; gap:8px; margin-top:12px; }
     .website-online-source-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid rgba(99,138,218,.14); border-radius:10px; background:#fff; }
     .website-online-source-name{ color:#102033; font-size:12px; font-weight:950; overflow-wrap:anywhere; }
@@ -11742,7 +11742,9 @@ button[data-bank-inspect-confirm-not]:hover,
             </div>
             <div class="website-online-modal-body">
               <div class="website-online-source-form">
-                <input type="text" id="portal-online-source-prompt-province" placeholder="Nguồn, ví dụ: Thanh Hóa" autocomplete="off"/>
+                <select id="portal-online-source-prompt-province" onchange="onPortalOnlineSourcePromptProvinceChange()">
+                  <option value="">Chọn nguồn đề đã upload</option>
+                </select>
                 <input type="number" id="portal-online-source-prompt-year" placeholder="Năm" min="2020" max="2100"/>
               </div>
               <textarea id="portal-online-source-prompt-text" class="website-online-textarea" spellcheck="false" placeholder="Dán prompt gốc của nguồn này. Dùng {{exam_id}}/{{title}}, __EXAM_ID__/__EXAM_TITLE__ hoặc THAY_BANG_ID/THAY_BANG_TEN_DE."></textarea>
@@ -21990,12 +21992,94 @@ function portalOnlineSourcePromptCandidate(row) {
   };
 }
 
+function portalOnlineSourceOptionKey(provinceLabel, year) {
+  const label = normalizeText(String(provinceLabel || '').replace(/[đĐ]/g, 'd'))
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const y = String(year || '').trim();
+  return label && y ? `${label}|${y}` : '';
+}
+
+function portalOnlineSourceOptions(extra = null) {
+  const map = new Map();
+  const add = (provinceLabel, year) => {
+    const rawProvince = String(provinceLabel || '').trim();
+    const displayProvince = studentExamDisplayProvince(rawProvince) || rawProvince;
+    const y = String(year || '').trim();
+    const key = portalOnlineSourceOptionKey(displayProvince, y);
+    if (!key) return;
+    const existing = map.get(key);
+    if (existing) {
+      existing.count += 1;
+      return;
+    }
+    map.set(key, {
+      key,
+      province_label: displayProvince,
+      year: y,
+      count: 1
+    });
+  };
+  (portalOnlineRows || []).forEach(row => {
+    const cand = row && row.source_prompt_candidate ? row.source_prompt_candidate : {};
+    add(cand.province_label || row?.province, cand.year || row?.year);
+  });
+  if (extra && (extra.province_label || extra.province_key) && extra.year) {
+    add(extra.province_label || extra.province_key, extra.year);
+  }
+  return Array.from(map.values()).sort((a, b) =>
+    String(b.year || '').localeCompare(String(a.year || '')) ||
+    String(a.province_label || '').localeCompare(String(b.province_label || ''), 'vi')
+  );
+}
+
+function renderPortalOnlineSourcePromptOptions(selected = {}) {
+  const select = document.getElementById('portal-online-source-prompt-province');
+  if (!select) return;
+  const selectedKey = portalOnlineSourceOptionKey(selected.province_label || selected.province_key, selected.year);
+  const options = portalOnlineSourceOptions(selected);
+  select.innerHTML = [
+    '<option value="">Chọn nguồn đề đã upload</option>',
+    ...options.map(opt => {
+      const label = `${opt.province_label} ${opt.year} · ${opt.count} đề`;
+      return `<option value="${escapeHtml(opt.key)}" data-province-label="${escapeHtml(opt.province_label)}" data-year="${escapeHtml(opt.year)}">${escapeHtml(label)}</option>`;
+    })
+  ].join('');
+  select.value = selectedKey && options.some(opt => opt.key === selectedKey) ? selectedKey : '';
+}
+
+function portalOnlineSelectedSourcePrompt() {
+  const select = document.getElementById('portal-online-source-prompt-province');
+  const option = select && select.selectedOptions && select.selectedOptions[0] ? select.selectedOptions[0] : null;
+  return {
+    province_label: String(option?.dataset?.provinceLabel || '').trim(),
+    year: String(option?.dataset?.year || document.getElementById('portal-online-source-prompt-year')?.value || '').trim()
+  };
+}
+
+function onPortalOnlineSourcePromptProvinceChange() {
+  const selected = portalOnlineSelectedSourcePrompt();
+  const year = document.getElementById('portal-online-source-prompt-year');
+  if (year && selected.year) year.value = selected.year;
+  const key = portalOnlineSourceOptionKey(selected.province_label, selected.year);
+  const existing = portalOnlineSourcePromptRows.find(row =>
+    portalOnlineSourceOptionKey(row && (row.province_label || row.province_key), row && row.year) === key
+  );
+  portalOnlineSourcePromptEditingId = existing ? String(existing.id || '').trim() : '';
+  if (existing) {
+    const text = document.getElementById('portal-online-source-prompt-text');
+    if (text) text.value = String(existing.template_text || '').trim();
+  }
+}
+
 function setPortalOnlineSourcePromptForm(data = {}) {
   const province = document.getElementById('portal-online-source-prompt-province');
   const year = document.getElementById('portal-online-source-prompt-year');
   const text = document.getElementById('portal-online-source-prompt-text');
   portalOnlineSourcePromptEditingId = String(data.id || '').trim();
-  if (province) province.value = String(data.province_label || '').trim();
+  renderPortalOnlineSourcePromptOptions(data);
+  if (province) province.value = portalOnlineSourceOptionKey(data.province_label || data.province_key, data.year);
   if (year) year.value = String(data.year || '').trim();
   if (text) text.value = String(data.template_text || '').trim();
 }
@@ -22008,6 +22092,7 @@ function clearPortalOnlineSourcePromptForm() {
 async function loadPortalOnlineSourcePrompts(force = false) {
   const list = document.getElementById('portal-online-source-prompt-list');
   if (!force && portalOnlineSourcePromptRows.length && portalOnlineSourcePromptLoadedAt) {
+    renderPortalOnlineSourcePromptOptions(portalOnlineSelectedSourcePrompt());
     renderPortalOnlineSourcePromptList();
     return;
   }
@@ -22016,6 +22101,7 @@ async function loadPortalOnlineSourcePrompts(force = false) {
     const data = await callExamOnline('prompt_sources_list');
     portalOnlineSourcePromptRows = Array.isArray(data.rows) ? data.rows : [];
     portalOnlineSourcePromptLoadedAt = Date.now();
+    renderPortalOnlineSourcePromptOptions(portalOnlineSelectedSourcePrompt());
     renderPortalOnlineSourcePromptList();
   } catch (e) {
     console.warn('loadPortalOnlineSourcePrompts', e);
@@ -22053,6 +22139,9 @@ function editPortalOnlineSourcePrompt(id) {
 }
 
 async function openPortalOnlineSourcePromptManager(examId = '') {
+  if (!portalOnlineRows.length && !portalOnlineLoading) {
+    await loadPortalOnlineExams(false);
+  }
   const row = portalOnlineRowById(examId);
   if (row) {
     setPortalOnlineSourcePromptForm(portalOnlineSourcePromptCandidate(row));
@@ -22068,12 +22157,13 @@ function closePortalOnlineSourcePromptModal() {
 }
 
 async function savePortalOnlineSourcePrompt() {
-  const province = String(document.getElementById('portal-online-source-prompt-province')?.value || '').trim();
-  const year = Number(document.getElementById('portal-online-source-prompt-year')?.value || 0);
+  const selected = portalOnlineSelectedSourcePrompt();
+  const province = String(selected.province_label || '').trim();
+  const year = Number(selected.year || document.getElementById('portal-online-source-prompt-year')?.value || 0);
   const text = String(document.getElementById('portal-online-source-prompt-text')?.value || '').trim();
   const btn = document.getElementById('portal-online-source-prompt-save');
   if (!province || !Number.isInteger(year) || year < 2000 || year > 2100 || !text) {
-    showAppToast('Nhập đủ tỉnh, năm và prompt nguồn.', 'error');
+    showAppToast('Chọn nguồn đề đã upload, kiểm tra năm và nhập prompt nguồn.', 'error');
     return;
   }
   if (!(/__EXAM_ID__|THAY_BANG_ID|\{\{\s*exam_id\s*\}\}/.test(text)) || !(/__EXAM_TITLE__|THAY_BANG_TEN_DE|\{\{\s*title\s*\}\}/.test(text))) {
