@@ -12689,6 +12689,381 @@ a:focus-visible,
   }
 }
 
+/* Student portal final design polish against the document-library reference. */
+.student-exam-user-menu-wrap{
+  position:relative;
+  display:inline-grid;
+  place-items:center;
+}
+.student-exam-avatar-btn{
+  border:0;
+  cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.student-exam-avatar-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 12px 24px rgba(7,31,70,.18);
+}
+.student-exam-avatar-btn:focus-visible{
+  outline:3px solid rgba(37,99,235,.22);
+  outline-offset:3px;
+}
+.student-exam-user-menu{
+  position:absolute;
+  top:calc(100% + 12px);
+  right:0;
+  z-index:30;
+  display:none;
+  width:260px;
+  padding:10px;
+  border:1px solid var(--doc-line);
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 20px 44px rgba(8,29,66,.16);
+}
+.student-exam-user-menu.open{
+  display:grid;
+  gap:6px;
+}
+.student-exam-user-menu-head{
+  display:grid;
+  gap:6px;
+  padding:10px 10px 12px;
+  border-bottom:1px solid var(--doc-line);
+  margin-bottom:4px;
+}
+.student-exam-user-menu-head strong{
+  color:var(--doc-text);
+  font-size:14px;
+  line-height:1.2;
+  font-weight:950;
+}
+#student-exam-user-menu #student-exam-download-credit{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  width:max-content;
+  min-height:28px !important;
+  padding:0 10px !important;
+  border-radius:999px !important;
+  background:#edf5ff !important;
+  border:1px solid #cfe0ff !important;
+  color:#0f4a9f !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+}
+.student-exam-menu-item{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:100%;
+  min-height:38px !important;
+  padding:0 10px !important;
+  border:0 !important;
+  border-radius:9px !important;
+  background:transparent !important;
+  color:#203957 !important;
+  font-size:13px !important;
+  font-weight:850 !important;
+  text-align:left;
+  cursor:pointer;
+}
+.student-exam-menu-item:hover{
+  background:#f2f6fc !important;
+}
+.student-exam-menu-item.is-danger{
+  color:#b42318 !important;
+}
+.student-document-detail{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:100% !important;
+  min-height:38px !important;
+  padding:0 12px !important;
+  border:1px solid var(--doc-line) !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  color:#1d4ed8 !important;
+  font-size:12px !important;
+  font-weight:860 !important;
+  cursor:pointer;
+}
+.student-document-detail svg{
+  width:14px;
+  height:14px;
+}
+.student-document-detail:disabled{
+  cursor:not-allowed;
+  opacity:.5;
+}
+@media (min-width:1180px){
+  #student-exam-portal{
+    --doc-panel-line:#d7e3f2;
+    --doc-panel-shadow:0 12px 28px rgba(8,29,66,.05);
+  }
+  #student-exam-portal .student-exam-app-shell{
+    grid-template-columns:276px minmax(0,1fr) !important;
+  }
+  #student-exam-portal .student-exam-sidebar{
+    gap:26px !important;
+    padding:22px 14px 24px !important;
+  }
+  .student-exam-sidebar-brand{
+    min-height:68px !important;
+    padding:0 14px 20px !important;
+  }
+  .student-exam-sidebar-menu{
+    gap:8px !important;
+  }
+  .student-exam-side-item{
+    position:relative !important;
+    min-height:46px !important;
+    padding:0 16px !important;
+    border-radius:9px !important;
+  }
+  .student-exam-side-item.active{
+    background:#edf5ff !important;
+    color:#2563eb !important;
+    box-shadow:none !important;
+  }
+  .student-exam-side-item.active::before{
+    content:"" !important;
+    position:absolute;
+    left:0;
+    top:9px;
+    bottom:9px;
+    width:3px;
+    border-radius:999px;
+    background:#2563eb;
+  }
+  .student-exam-sidebar-premium{
+    display:grid !important;
+    gap:12px !important;
+    padding:18px 16px 16px !important;
+    border-radius:15px !important;
+  }
+  .student-exam-sidebar-premium p{
+    margin:0 !important;
+  }
+  .student-exam-sidebar-premium button{
+    margin-top:4px !important;
+  }
+  #student-exam-portal .student-exam-main{
+    padding-left:28px !important;
+    padding-right:28px !important;
+  }
+  #student-exam-portal .student-exam-header{
+    min-height:68px !important;
+    margin:0 -28px 26px !important;
+    padding:0 28px !important;
+  }
+  #student-exam-portal .student-exam-user{
+    gap:12px !important;
+  }
+  #student-exam-portal .student-exam-user > #student-exam-download-credit,
+  #student-exam-portal .student-exam-user > .student-exam-admin-link,
+  #student-exam-portal .student-exam-user > .student-exam-logout:not(.student-exam-admin-link){
+    display:none !important;
+  }
+  .student-exam-icon-btn{
+    width:40px !important;
+    height:40px !important;
+    border-color:#d9e4f2 !important;
+    box-shadow:none !important;
+  }
+  .student-exam-avatar{
+    width:42px !important;
+    height:42px !important;
+  }
+  .student-exam-page-head{
+    grid-template-columns:minmax(390px,1fr) minmax(430px,520px) 176px !important;
+    align-items:center !important;
+    gap:24px !important;
+    min-height:116px !important;
+    margin:0 0 22px !important;
+    padding:2px 0 18px !important;
+  }
+  .student-exam-page-head .student-exam-hero{
+    display:contents !important;
+  }
+  .student-exam-hero h1{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    font-size:36px !important;
+  }
+  .student-exam-hero p{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    max-width:680px !important;
+    margin-top:10px !important;
+    color:#405774 !important;
+    font-size:14px !important;
+    font-weight:650 !important;
+  }
+  .student-exam-page-head .student-exam-data-overview{
+    grid-column:2 !important;
+    grid-row:1 / span 2 !important;
+  }
+  .student-exam-cta{
+    grid-column:3 !important;
+    grid-row:1 / span 2 !important;
+    justify-self:end !important;
+    width:176px !important;
+    min-height:58px !important;
+  }
+  .student-exam-kpi-strip{
+    min-height:70px !important;
+    padding:0 16px !important;
+    background:#fff !important;
+    border-color:var(--doc-panel-line) !important;
+    box-shadow:var(--doc-panel-shadow) !important;
+  }
+  .student-exam-kpi strong{
+    color:#082454 !important;
+    font-size:25px !important;
+  }
+  .student-exam-kpi:first-child strong{
+    color:#2563eb !important;
+  }
+  .student-exam-filters{
+    padding:18px 24px 16px !important;
+    border-color:var(--doc-panel-line) !important;
+  }
+  .student-exam-filter-head{
+    justify-content:flex-start !important;
+    margin-bottom:14px !important;
+  }
+  .student-exam-filter-head h2{
+    font-size:17px !important;
+  }
+  .student-exam-filter-reset,
+  .student-exam-search-submit,
+  .student-exam-online-toggle{
+    min-height:42px !important;
+    margin-top:19px !important;
+  }
+  .student-exam-filter-reset{
+    min-width:0 !important;
+    padding:0 14px !important;
+    font-weight:850 !important;
+  }
+  .student-exam-online-toggle{
+    padding:0 12px !important;
+  }
+  .student-exam-category-tabs{
+    margin-bottom:20px !important;
+    border-top:1px solid #e2e9f3 !important;
+    box-shadow:0 10px 20px rgba(8,29,66,.035) !important;
+  }
+  .student-exam-section-head{
+    margin-bottom:18px !important;
+  }
+  .student-exam-card.student-document-card{
+    grid-template-rows:auto auto 1fr auto auto !important;
+    min-height:284px !important;
+    padding:16px !important;
+    border-radius:14px !important;
+  }
+  .student-document-main{
+    grid-template-columns:40px minmax(0,1fr) 30px !important;
+    gap:12px !important;
+  }
+  .student-doc-icon{
+    width:40px !important;
+    height:40px !important;
+  }
+  .student-document-menu{
+    justify-self:end !important;
+    margin-top:-2px !important;
+  }
+  .student-document-title-group h3{
+    min-height:40px !important;
+    font-size:14.5px !important;
+    line-height:1.35 !important;
+  }
+  .student-exam-card .student-exam-badges{
+    gap:6px !important;
+    margin-top:10px !important;
+  }
+  .student-exam-card .student-exam-badge{
+    min-height:22px !important;
+    padding:3px 8px !important;
+    font-size:10.5px !important;
+  }
+  .student-document-meta{
+    gap:7px !important;
+  }
+  .student-document-meta-line,
+  .student-document-source{
+    font-size:11.5px !important;
+    line-height:1.3 !important;
+  }
+  .student-exam-card .student-exam-downloads{
+    font-size:11px !important;
+    color:#6b7a93 !important;
+  }
+  .student-exam-card .student-exam-actions{
+    gap:8px !important;
+  }
+  .student-exam-card .student-exam-action{
+    min-height:39px !important;
+    border-radius:10px !important;
+    font-size:12px !important;
+  }
+  .student-document-detail{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    width:100% !important;
+    min-height:36px !important;
+    border:1px solid var(--doc-panel-line) !important;
+    border-radius:9px !important;
+    background:#fff !important;
+    color:#1d4ed8 !important;
+    font-size:12px !important;
+    font-weight:860 !important;
+    cursor:pointer;
+  }
+  .student-document-detail svg{
+    width:14px;
+    height:14px;
+  }
+  .student-document-detail:disabled{
+    cursor:not-allowed;
+    opacity:.5;
+  }
+  .student-exam-pagination{
+    margin-top:18px !important;
+    border-radius:14px !important;
+  }
+}
+@media (min-width:1180px) and (max-width:1499px){
+  .student-exam-filter-grid{
+    grid-template-columns:minmax(240px,1.4fr) minmax(135px,.8fr) minmax(190px,1fr) minmax(105px,.62fr) !important;
+    gap:12px !important;
+  }
+}
+@media (min-width:1500px){
+  .student-exam-filter-grid{
+    grid-template-columns:minmax(300px,1.8fr) minmax(145px,.78fr) minmax(220px,1.05fr) minmax(112px,.56fr) minmax(155px,.76fr) minmax(122px,.62fr) 96px minmax(136px,.7fr) !important;
+    gap:12px !important;
+  }
+}
+@media (max-width:699px){
+  .student-exam-user-menu-wrap .student-exam-avatar{
+    display:inline-grid !important;
+  }
+  .student-exam-user-menu{
+    right:0;
+    width:min(260px,calc(100vw - 24px));
+  }
+}
+
 /* Action button color system */
 .btn-sm.action-attendance,
 .class-mgr-actions .btn-sm.action-attendance{
@@ -14812,19 +15187,24 @@ button[data-bank-inspect-confirm-not]:hover,
       <div class="student-exam-user">
         <div class="student-exam-hello" id="student-exam-hello">Xin chào</div>
         <div class="student-exam-plan" id="student-exam-plan-badge">Free</div>
-        <div class="student-exam-download-credit" id="student-exam-download-credit">Tải: 0/5 hôm nay</div>
-        <button type="button" class="student-exam-logout student-exam-admin-link" id="student-exam-admin-switch" onclick="openAdminDashboardModule()" style="display:none">
-          Đi tới trang quản trị
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="m13 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
         <button type="button" class="student-exam-icon-btn" aria-label="Thông báo">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 1 0-12 0c0 7-3 6-3 9h18c0-3-3-2-3-9z"></path><path d="M10 21h4"></path></svg>
         </button>
-        <span class="student-exam-avatar" aria-hidden="true">TV</span>
-        <button type="button" class="student-exam-logout" onclick="signOutUser()">Đăng xuất</button>
+        <div class="student-exam-user-menu-wrap">
+          <button type="button" class="student-exam-avatar student-exam-avatar-btn" id="student-exam-avatar-button" aria-haspopup="menu" aria-expanded="false" aria-controls="student-exam-user-menu" onclick="toggleStudentExamUserMenu(event)">TV</button>
+          <div class="student-exam-user-menu" id="student-exam-user-menu" role="menu" aria-hidden="true">
+            <div class="student-exam-user-menu-head">
+              <strong id="student-exam-menu-name">Tài khoản học sinh</strong>
+              <span id="student-exam-download-credit">Tải: 0/5 hôm nay</span>
+            </div>
+            <button type="button" class="student-exam-menu-item" onclick="closeStudentExamUserMenu();studentExamShowOverview()" role="menuitem">Thông tin học sinh</button>
+            <button type="button" class="student-exam-menu-item" onclick="closeStudentExamUserMenu();studentExamShowStats()" role="menuitem">Thống kê học tập</button>
+            <button type="button" class="student-exam-menu-item student-exam-admin-link" id="student-exam-admin-switch" onclick="closeStudentExamUserMenu();openAdminDashboardModule()" role="menuitem" style="display:none">
+              Đi tới trang quản trị
+            </button>
+            <button type="button" class="student-exam-menu-item is-danger" onclick="closeStudentExamUserMenu();signOutUser()" role="menuitem">Đăng xuất</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -14942,7 +15322,6 @@ button[data-bank-inspect-confirm-not]:hover,
           <div class="student-exam-filter-kicker">Tìm kiếm & lọc</div>
           <h2>Bộ lọc tài liệu</h2>
         </div>
-        <button type="button" class="student-exam-filter-reset" id="student-exam-filter-reset">Xóa lọc</button>
       </div>
       <div class="student-exam-filter-grid">
         <label class="student-exam-search-wrap" for="student-exam-search">
@@ -14991,6 +15370,7 @@ button[data-bank-inspect-confirm-not]:hover,
             <span class="student-exam-online-toggle-mark" aria-hidden="true"></span>
             <span>Đề online</span>
           </label>
+          <button type="button" class="student-exam-filter-reset" id="student-exam-filter-reset">Đặt lại</button>
           <button type="button" class="student-exam-search-submit" onclick="applyStudentExamFilters()">
             <span>Tìm kiếm</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
@@ -20061,7 +20441,12 @@ function showStudentExamPortalUI() {
     document.body.classList.add('role-student');
     closeSidebarMenu();
     const hello = document.getElementById('student-exam-hello');
-    if (hello) hello.textContent = 'Xin chào, ' + studentExamDisplayName();
+    const displayName = studentExamDisplayName();
+    if (hello) hello.textContent = 'Xin chào, ' + displayName;
+    const menuName = document.getElementById('student-exam-menu-name');
+    if (menuName) menuName.textContent = displayName;
+    const avatarButton = document.getElementById('student-exam-avatar-button');
+    if (avatarButton) avatarButton.textContent = studentExamInitials(displayName);
     const adminSwitch = document.getElementById('student-exam-admin-switch');
     if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
     startStudentPortalPresenceHeartbeat();
@@ -20093,7 +20478,7 @@ function renderStudentExamPlanState() {
       : premiumPending
       ? 'Đang kiểm tra gói Premium đã đăng ký cho tài khoản này.'
       : currentPortalPlan === 'premium' || isAdmin() || isTeacher()
-      ? 'Tài khoản Premium đang mở toàn bộ kho đề miễn phí và tài liệu chuyên đề.'
+      ? 'Tài khoản Premium được truy cập toàn bộ kho đề, tài liệu chuyên sâu.'
       : hasPackagePremium
       ? studentExamActivatedPremiumNotice(ownedPremiumKeys)
       : 'Chào mừng bạn đến với kho tài liệu Vào 10/THPT/IELTS. Toàn bộ tài liệu được tổng hợp và sưu tầm từ nhiều nguồn. Bạn sẽ được free 31 mã đề và có thể truy cập toàn bộ 425 mã đề vĩnh viễn (và những đề update mới nhất) khi đăng ký Premium.';
@@ -20196,6 +20581,7 @@ function studentExamShowStats() {
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
+  closeStudentExamUserMenu();
   const historyModal = document.getElementById('student-exam-download-history-modal');
   if (historyModal?.classList.contains('open')) {
     event.preventDefault();
@@ -20568,6 +20954,44 @@ function studentExamDisplayName() {
   const email = String(currentSession?.user?.email || '').trim();
   return email ? email.split('@')[0] : 'học sinh';
 }
+
+function studentExamInitials(name) {
+  const parts = String(name || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const letters = (parts.length ? [parts[0], parts[parts.length - 1]] : ['TV'])
+    .map(part => part.charAt(0))
+    .join('')
+    .toUpperCase();
+  return letters.slice(0, 2) || 'TV';
+}
+
+function closeStudentExamUserMenu() {
+  const menu = document.getElementById('student-exam-user-menu');
+  const button = document.getElementById('student-exam-avatar-button');
+  if (menu) {
+    menu.classList.remove('open');
+    menu.setAttribute('aria-hidden', 'true');
+  }
+  if (button) button.setAttribute('aria-expanded', 'false');
+}
+
+function toggleStudentExamUserMenu(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('student-exam-user-menu');
+  const button = document.getElementById('student-exam-avatar-button');
+  if (!menu || !button) return;
+  const nextOpen = !menu.classList.contains('open');
+  menu.classList.toggle('open', nextOpen);
+  menu.setAttribute('aria-hidden', nextOpen ? 'false' : 'true');
+  button.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+}
+
+document.addEventListener('click', event => {
+  const menuWrap = document.querySelector('.student-exam-user-menu-wrap');
+  if (!menuWrap || !menuWrap.contains(event.target)) closeStudentExamUserMenu();
+});
 
 function studentExamLevelLabel(v) {
   const key = String(v || '').trim().toLowerCase();
@@ -21780,7 +22204,7 @@ function studentExamCard(row, compact) {
   const subject = escapeHtml(String(row?.subject || '').toLowerCase() === 'english' ? 'Tiếng Anh' : (row?.subject || 'Tiếng Anh'));
   const year = escapeHtml(row?.year ? String(row.year) : 'Đang cập nhật');
   const source = escapeHtml(studentExamSourceLabel(row) || studentExamDisplayProvince(row?.province) || 'Tổng hợp');
-  const code = escapeHtml(row?.exam_code ? 'Mã ' + String(row.exam_code) : '');
+  const code = escapeHtml(row?.exam_code ? String(row.exam_code) : '');
   return `
     <article class="student-exam-card student-document-card ${locked ? 'is-locked' : ''}" data-exam-id="${id}">
       <div class="student-document-main">
@@ -21806,7 +22230,7 @@ function studentExamCard(row, compact) {
         </div>
         <div class="student-document-source">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-4.4 7-11a7 7 0 1 0-14 0c0 6.6 7 11 7 11z"></path><path d="M12 10.5h.01"></path></svg>
-          <span>${code ? code + ' · ' : ''}Nguồn: ${source}</span>
+          <span>${code ? 'Mã đề: ' + code + ' · ' : ''}Nguồn: ${source}</span>
         </div>
         <div class="student-exam-downloads">${downloads} lượt tải</div>
       </div>
@@ -21819,6 +22243,10 @@ function studentExamCard(row, compact) {
         ${hasAudio ? `<button type="button" class="student-exam-action audio" data-exam-preview="${id}" data-exam-kind="audio" ${canAccess ? '' : 'disabled'}>Nghe audio</button>` : ''}
         ${locked ? `<button type="button" class="student-exam-action upgrade" onclick="requestStudentExamUpgrade('${id}')">${String(row.locked_reason || '') === 'pending_approval' ? 'Đang chờ duyệt' : 'Đăng ký Premium'}</button>` : ''}
       </div>
+      <button type="button" class="student-document-detail" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>
+        <span>Xem chi tiết</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+      </button>
     </article>`;
 }
 
