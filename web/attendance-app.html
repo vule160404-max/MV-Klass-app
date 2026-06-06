@@ -12341,12 +12341,65 @@ a:focus-visible,
 
 /* Student portal visual review pass: fix the desktop rhythm seen in production. */
 @media (min-width:1180px){
+  #student-exam-portal .student-exam-header{
+    justify-content:space-between !important;
+  }
+  .student-exam-global-search{
+    position:relative;
+    display:block;
+    flex:0 1 min(560px,42vw);
+    max-width:560px;
+    min-width:320px;
+  }
+  .student-exam-global-search input{
+    width:100%;
+    min-height:44px;
+    padding:0 48px 0 18px;
+    border:1px solid var(--doc-line);
+    border-radius:9px;
+    background:#fff;
+    color:var(--doc-text);
+    font-size:14px;
+    font-weight:650;
+    outline:none;
+    box-shadow:0 8px 18px rgba(8,29,66,.035);
+  }
+  .student-exam-global-search input:focus{
+    border-color:rgba(37,99,235,.52);
+    box-shadow:0 0 0 4px rgba(37,99,235,.11),0 10px 22px rgba(8,29,66,.055);
+  }
+  .student-exam-global-search svg{
+    position:absolute;
+    right:16px;
+    top:50%;
+    width:19px;
+    height:19px;
+    color:#607895;
+    transform:translateY(-50%);
+    pointer-events:none;
+  }
+  .student-exam-side-item{
+    font-weight:820 !important;
+  }
+  .student-exam-side-item:not(.active):hover{
+    background:#f4f8fd !important;
+    color:#244a79 !important;
+  }
   .student-premium-entry{
     grid-template-columns:minmax(300px,480px) minmax(520px,760px) !important;
     justify-content:start !important;
     align-items:stretch !important;
     gap:12px !important;
     margin:-2px 0 26px !important;
+    display:none !important;
+    padding:14px !important;
+    border:1px solid var(--doc-line) !important;
+    border-radius:16px !important;
+    background:#fff !important;
+    box-shadow:var(--doc-shadow-soft) !important;
+  }
+  .student-premium-entry.is-open{
+    display:grid !important;
   }
   .student-premium-entry-btn{
     display:none !important;
@@ -12363,7 +12416,7 @@ a:focus-visible,
     grid-template-columns:minmax(420px,1fr) 188px minmax(420px,520px) !important;
     gap:24px !important;
     align-items:center !important;
-    margin:0 0 24px !important;
+    margin:0 0 26px !important;
   }
   .student-exam-page-head .student-exam-hero{
     grid-column:1 / span 2 !important;
@@ -12375,16 +12428,44 @@ a:focus-visible,
   .student-exam-cta{
     width:176px !important;
     min-width:176px !important;
-    box-shadow:0 14px 26px rgba(7,31,70,.18) !important;
+    border-radius:11px !important;
+    box-shadow:0 12px 24px rgba(7,31,70,.16) !important;
   }
   .student-exam-filter-grid{
     grid-template-columns:minmax(260px,1.55fr) minmax(150px,.72fr) minmax(220px,1fr) minmax(120px,.55fr) minmax(150px,.72fr) minmax(150px,.7fr) minmax(136px,.64fr) !important;
   }
+  .student-exam-filters{
+    padding:20px 24px 18px !important;
+  }
+  .student-exam-search-wrap span,
+  .student-exam-filter-field span{
+    color:#314967 !important;
+    font-size:11.5px !important;
+    font-weight:800 !important;
+  }
+  .student-exam-search-wrap input.student-exam-search,
+  .student-exam-filter-field select,
+  .student-exam-online-toggle{
+    min-height:42px !important;
+    font-size:13px !important;
+    font-weight:760 !important;
+  }
   .student-exam-card.student-document-card{
-    min-height:260px !important;
+    min-height:252px !important;
+    padding:15px !important;
   }
   .student-document-title-group h3{
     min-height:39px;
+    font-size:14.5px !important;
+    font-weight:900 !important;
+  }
+  .student-document-meta-line,
+  .student-document-source{
+    font-weight:720 !important;
+  }
+  .student-exam-card .student-exam-action{
+    min-height:37px !important;
+    font-weight:860 !important;
   }
   .student-exam-card .student-exam-actions .student-exam-action.answer:nth-child(3):last-child{
     grid-column:1 / -1 !important;
@@ -12396,6 +12477,11 @@ a:focus-visible,
   }
   .student-exam-page-head{
     grid-template-columns:minmax(500px,1fr) 188px minmax(470px,540px) !important;
+  }
+}
+@media (max-width:1179px){
+  .student-exam-global-search{
+    display:none !important;
   }
 }
 
@@ -14489,37 +14575,17 @@ button[data-bank-inspect-confirm-not]:hover,
           </div>
         </div>
         <div class="student-exam-sidebar-menu">
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
+          <button type="button" class="student-exam-side-item" data-student-nav="overview" onclick="studentExamShowOverview()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6.5 10.5V20h15v-9.5"></path><path d="M10 20v-5h4v5"></path></svg>
             <span>Tổng quan</span>
           </button>
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18c4-1.5 6-5 6-12"></path><path d="M4 19c7 1 14-3 16-12"></path><path d="M7 8h5"></path></svg>
-            <span>Lộ trình học</span>
-          </button>
-          <button type="button" class="student-exam-side-item active" onclick="studentExamSetView('library')">
+          <button type="button" class="student-exam-side-item active" data-student-nav="library" onclick="studentExamShowLibrary()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"></path><path d="M14 3v6h6"></path><path d="M10 13h7"></path><path d="M10 17h5"></path></svg>
             <span>Kho tài liệu</span>
           </button>
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v18l-6-3-6 3z"></path><path d="M9 8h6"></path></svg>
-            <span>Đề thi</span>
-          </button>
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v13H5z"></path><path d="M8 21h8"></path><path d="M12 18v3"></path></svg>
-            <span>Bài giảng</span>
-          </button>
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h10"></path><path d="M7 12h10"></path><path d="M7 19h10"></path><path d="M4 5h.01"></path><path d="M4 12h.01"></path><path d="M4 19h.01"></path></svg>
-            <span>Bài tập</span>
-          </button>
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
+          <button type="button" class="student-exam-side-item" data-student-nav="stats" onclick="studentExamShowStats()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9"></path><path d="M12 19V5"></path><path d="M19 19v-7"></path><path d="M4 19h17"></path></svg>
             <span>Thống kê</span>
-          </button>
-          <button type="button" class="student-exam-side-item muted" aria-disabled="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M4.93 4.93l2.12 2.12"></path><path d="m16.95 16.95 2.12 2.12"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg>
-            <span>Cài đặt</span>
           </button>
         </div>
         <div class="student-exam-sidebar-premium">
@@ -14539,6 +14605,11 @@ button[data-bank-inspect-confirm-not]:hover,
           <div class="student-exam-brand-sub">Lớp tiếng Anh thầy Vũ</div>
         </div>
       </div>
+      <label class="student-exam-global-search" for="student-exam-global-search">
+        <span class="sr-only">Tìm tài liệu</span>
+        <input id="student-exam-global-search" type="search" placeholder="Tìm tài liệu: tên tài liệu, đề thi, nguồn, nhóm..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35"></path><path d="M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"></path></svg>
+      </label>
       <div class="student-exam-user">
         <div class="student-exam-hello" id="student-exam-hello">Xin chào</div>
         <div class="student-exam-plan" id="student-exam-plan-badge">Free</div>
@@ -14560,7 +14631,7 @@ button[data-bank-inspect-confirm-not]:hover,
 
     <div class="student-exam-approval-note" id="student-exam-approval-note" role="status"></div>
 
-    <div class="student-premium-entry">
+    <section class="student-premium-entry" id="student-exam-stats-panel" aria-label="Thống kê học tập">
       <div class="student-exam-download-history-bar">
         <button type="button" class="student-exam-history-btn" onclick="openStudentExamDownloadHistory()" aria-haspopup="dialog" aria-controls="student-exam-download-history-modal">
           <span class="student-exam-history-btn-icon" aria-hidden="true">
@@ -14595,7 +14666,7 @@ button[data-bank-inspect-confirm-not]:hover,
         <span>Hỗ trợ Zalo</span>
       </a>
       <button type="button" class="student-premium-entry-btn" id="student-exam-tab-premium" aria-controls="student-exam-premium-view" aria-expanded="false" onclick="studentExamSetView('premium')">Đăng ký Premium</button>
-    </div>
+    </section>
 
     <section class="student-premium-view" id="student-exam-premium-view" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="student-premium-title" onclick="if(event.target===this) studentExamSetView('library')">
       <div class="student-premium-purchase">
@@ -19889,6 +19960,41 @@ function studentExamSetView(view) {
   }
 }
 
+function studentExamSetSidebarActive(key) {
+  document.querySelectorAll('#student-exam-portal [data-student-nav]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-student-nav') === key);
+  });
+}
+
+function studentExamSetStatsPanel(open) {
+  const panel = document.getElementById('student-exam-stats-panel');
+  if (!panel) return;
+  panel.classList.toggle('is-open', !!open);
+  panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+}
+
+function studentExamShowOverview() {
+  studentExamSetView('library');
+  studentExamSetStatsPanel(false);
+  studentExamSetSidebarActive('overview');
+  document.getElementById('student-exam-hero-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function studentExamShowLibrary() {
+  studentExamSetView('library');
+  studentExamSetStatsPanel(false);
+  studentExamSetSidebarActive('library');
+  document.getElementById('student-exam-filter-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function studentExamShowStats() {
+  studentExamSetView('library');
+  renderStudentExamPersonalSections();
+  studentExamSetStatsPanel(true);
+  studentExamSetSidebarActive('stats');
+  document.getElementById('student-exam-stats-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   const historyModal = document.getElementById('student-exam-download-history-modal');
@@ -21886,6 +21992,8 @@ function resetStudentExamFilters() {
     if (el.type === 'checkbox') el.checked = Boolean(value);
     else el.value = value;
   });
+  const globalSearch = document.getElementById('student-exam-global-search');
+  if (globalSearch) globalSearch.value = '';
   studentExamAdvancedFiltersOpen = false;
   syncStudentExamAdvancedFilters();
   applyStudentExamFilters();
@@ -21952,8 +22060,25 @@ function bindStudentExamPortalEvents() {
     const el = document.getElementById(id);
     if (!el || el.dataset.bound === '1') return;
     el.dataset.bound = '1';
-    el.addEventListener(id === 'student-exam-search' ? 'input' : 'change', applyStudentExamFilters);
+    if (id === 'student-exam-search') {
+      el.addEventListener('input', () => {
+        const globalSearch = document.getElementById('student-exam-global-search');
+        if (globalSearch && globalSearch.value !== el.value) globalSearch.value = el.value;
+        applyStudentExamFilters();
+      });
+    } else {
+      el.addEventListener('change', applyStudentExamFilters);
+    }
   });
+  const globalSearch = document.getElementById('student-exam-global-search');
+  if (globalSearch && globalSearch.dataset.bound !== '1') {
+    globalSearch.dataset.bound = '1';
+    globalSearch.addEventListener('input', () => {
+      const localSearch = document.getElementById('student-exam-search');
+      if (localSearch && localSearch.value !== globalSearch.value) localSearch.value = globalSearch.value;
+      applyStudentExamFilters();
+    });
+  }
   const filterToggle = document.getElementById('student-exam-filter-toggle');
   if (filterToggle && filterToggle.dataset.bound !== '1') {
     filterToggle.dataset.bound = '1';
