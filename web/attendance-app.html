@@ -12339,6 +12339,66 @@ a:focus-visible,
   }
 }
 
+/* Student portal visual review pass: fix the desktop rhythm seen in production. */
+@media (min-width:1180px){
+  .student-premium-entry{
+    grid-template-columns:minmax(300px,480px) minmax(520px,760px) !important;
+    justify-content:start !important;
+    align-items:stretch !important;
+    gap:12px !important;
+    margin:-2px 0 26px !important;
+  }
+  .student-premium-entry-btn{
+    display:none !important;
+  }
+  .student-online-history-card{
+    grid-template-columns:minmax(280px,1fr) minmax(300px,.86fr) !important;
+    align-items:stretch !important;
+  }
+  .student-exam-history-btn,
+  .student-online-history-panel{
+    min-height:54px !important;
+  }
+  .student-exam-page-head{
+    grid-template-columns:minmax(420px,1fr) 188px minmax(420px,520px) !important;
+    gap:24px !important;
+    align-items:center !important;
+    margin:0 0 24px !important;
+  }
+  .student-exam-page-head .student-exam-hero{
+    grid-column:1 / span 2 !important;
+    grid-template-columns:minmax(0,1fr) 176px !important;
+  }
+  .student-exam-page-head .student-exam-data-overview{
+    grid-column:3 !important;
+  }
+  .student-exam-cta{
+    width:176px !important;
+    min-width:176px !important;
+    box-shadow:0 14px 26px rgba(7,31,70,.18) !important;
+  }
+  .student-exam-filter-grid{
+    grid-template-columns:minmax(260px,1.55fr) minmax(150px,.72fr) minmax(220px,1fr) minmax(120px,.55fr) minmax(150px,.72fr) minmax(150px,.7fr) minmax(136px,.64fr) !important;
+  }
+  .student-exam-card.student-document-card{
+    min-height:260px !important;
+  }
+  .student-document-title-group h3{
+    min-height:39px;
+  }
+  .student-exam-card .student-exam-actions .student-exam-action.answer:nth-child(3):last-child{
+    grid-column:1 / -1 !important;
+  }
+}
+@media (min-width:1500px){
+  .student-premium-entry{
+    grid-template-columns:minmax(360px,500px) minmax(650px,820px) !important;
+  }
+  .student-exam-page-head{
+    grid-template-columns:minmax(500px,1fr) 188px minmax(470px,540px) !important;
+  }
+}
+
 /* Action button color system */
 .btn-sm.action-attendance,
 .class-mgr-actions .btn-sm.action-attendance{
