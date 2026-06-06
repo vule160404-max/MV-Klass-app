@@ -10942,6 +10942,253 @@ a:focus-visible,
   .student-exam-list{grid-template-columns:1fr}
 }
 
+/* Student portal app-shell redesign: visual-only layout override. */
+.student-exam-portal{
+  background:
+    radial-gradient(circle at 14% 0%, rgba(244,167,29,.10), transparent 28%),
+    linear-gradient(180deg,#f7f9fd 0%,#eef3f9 100%) !important;
+}
+.student-exam-app-shell{display:block;min-height:calc(100vh - 20px)}
+.student-exam-main{min-width:0}
+.student-exam-sidebar{display:none}
+.student-exam-header{
+  background:rgba(255,255,255,.9) !important;
+  border:1px solid rgba(18,33,61,.08) !important;
+  box-shadow:0 10px 28px rgba(11,24,65,.06) !important;
+}
+.student-exam-hero{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:14px !important;
+  margin:0 0 14px !important;
+  padding:18px !important;
+  border-radius:20px !important;
+  background:#fff !important;
+  color:#12213d !important;
+  border:1px solid rgba(18,33,61,.08) !important;
+  box-shadow:0 12px 32px rgba(11,24,65,.07) !important;
+}
+.student-exam-hero h1{
+  color:#0f1f3d !important;
+  font-size:clamp(28px,4vw,40px) !important;
+  letter-spacing:-.01em !important;
+}
+.student-exam-hero p{
+  max-width:760px !important;
+  color:#53647d !important;
+  font-size:13px !important;
+  line-height:1.55 !important;
+}
+.student-exam-cta{
+  min-height:44px !important;
+  border-radius:14px !important;
+  background:linear-gradient(180deg,#0f1f3d,#183a70) !important;
+  color:#fff !important;
+  box-shadow:0 12px 28px rgba(15,31,61,.18) !important;
+}
+.student-premium-entry{
+  margin-bottom:14px !important;
+}
+.student-exam-filters{
+  margin-top:0 !important;
+  margin-bottom:14px !important;
+  padding:14px !important;
+  border-radius:18px !important;
+  background:#fff !important;
+  border:1px solid rgba(18,33,61,.08) !important;
+  box-shadow:0 10px 28px rgba(11,24,65,.06) !important;
+}
+.student-exam-filter-field,
+.student-exam-search-wrap{
+  min-width:0 !important;
+}
+.student-exam-filter-grid select,
+.student-exam-search,
+.student-exam-online-toggle{
+  border-radius:12px !important;
+  background:#fff !important;
+  border-color:rgba(99,138,218,.18) !important;
+  font-size:12px !important;
+}
+.student-exam-card{
+  gap:10px !important;
+  padding:14px !important;
+  border-radius:16px !important;
+  background:#fff !important;
+  border-color:rgba(99,138,218,.14) !important;
+  box-shadow:0 8px 22px rgba(11,24,65,.055) !important;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease !important;
+}
+.student-exam-card:hover{
+  transform:translateY(-1px) !important;
+  border-color:rgba(61,126,248,.28) !important;
+  box-shadow:0 14px 32px rgba(11,24,65,.09) !important;
+}
+.student-exam-card h3{
+  font-size:14px !important;
+  line-height:1.35 !important;
+  letter-spacing:0 !important;
+}
+.student-exam-badge{
+  min-height:22px !important;
+  padding:3px 8px !important;
+  font-size:10.5px !important;
+}
+.student-exam-card .student-exam-action.online{
+  grid-column:auto !important;
+  background:linear-gradient(180deg,#e9fbf2,#dff8ea) !important;
+  border-color:rgba(22,163,74,.28) !important;
+  color:#11623f !important;
+  box-shadow:0 8px 18px rgba(22,101,52,.08) !important;
+}
+.student-exam-action{
+  min-height:40px !important;
+  border-radius:11px !important;
+  font-size:11.5px !important;
+  transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease !important;
+}
+.student-exam-action:not(:disabled):hover{
+  transform:translateY(-1px) !important;
+  box-shadow:0 8px 18px rgba(11,24,65,.08) !important;
+}
+@media (min-width:1180px){
+  .student-exam-shell{
+    width:min(1760px,calc(100% - 28px)) !important;
+    padding:0 !important;
+  }
+  .student-exam-app-shell{
+    display:grid !important;
+    grid-template-columns:244px minmax(0,1fr) !important;
+    min-height:100vh !important;
+    overflow:hidden !important;
+    background:rgba(255,255,255,.40) !important;
+    border-left:1px solid rgba(18,33,61,.08) !important;
+    border-right:1px solid rgba(18,33,61,.08) !important;
+  }
+  .student-exam-sidebar{
+    position:sticky;
+    top:0;
+    display:grid !important;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    gap:18px;
+    height:100vh;
+    padding:20px 16px;
+    background:rgba(255,255,255,.88);
+    border-right:1px solid rgba(18,33,61,.10);
+    box-shadow:16px 0 40px rgba(11,24,65,.04);
+  }
+  .student-exam-sidebar-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .student-exam-sidebar .student-exam-logo{width:42px !important;height:42px !important}
+  .student-exam-sidebar-menu{
+    display:grid;
+    align-content:start;
+    gap:6px;
+    overflow:auto;
+    padding-right:2px;
+  }
+  .student-exam-side-item{
+    position:relative;
+    min-height:42px;
+    width:100%;
+    border:0;
+    border-radius:12px;
+    background:transparent;
+    color:#4f6078;
+    padding:0 12px 0 36px;
+    text-align:left;
+    font-size:13px;
+    font-weight:850;
+    cursor:pointer;
+  }
+  .student-exam-side-item::before{
+    content:"";
+    position:absolute;
+    left:13px;
+    top:50%;
+    width:12px;
+    height:12px;
+    border-radius:4px;
+    border:1.8px solid currentColor;
+    transform:translateY(-50%);
+    opacity:.55;
+  }
+  .student-exam-side-item.active{
+    background:#eef5ff;
+    color:#1d4ed8;
+    box-shadow:inset 3px 0 0 #1d4ed8;
+  }
+  .student-exam-side-item.muted{cursor:default}
+  .student-exam-sidebar-premium{
+    display:grid;
+    gap:10px;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#0f1f3d,#17376b);
+    color:#fff;
+    box-shadow:0 16px 34px rgba(15,31,61,.18);
+  }
+  .student-exam-sidebar-premium-title{
+    color:#fff;
+    font-size:15px;
+    font-weight:950;
+  }
+  .student-exam-sidebar-premium p{
+    margin:0;
+    color:rgba(255,255,255,.78);
+    font-size:12px;
+    line-height:1.55;
+    font-weight:750;
+  }
+  .student-exam-sidebar-premium button{
+    min-height:40px;
+    border:0;
+    border-radius:12px;
+    background:linear-gradient(180deg,#ffd66f,#f4a71d);
+    color:#14213d;
+    font-size:12px;
+    font-weight:950;
+    cursor:pointer;
+  }
+  .student-exam-main{padding:18px 22px 42px}
+  .student-exam-header{
+    margin:0 0 16px !important;
+    padding:14px 18px !important;
+    border-radius:0 0 18px 18px !important;
+  }
+  .student-exam-header .student-exam-brand{display:none !important}
+  .student-exam-user{width:100%;justify-content:flex-end}
+  .student-premium-entry{gap:12px !important}
+  .student-exam-hero{
+    grid-template-columns:minmax(420px,1fr) auto !important;
+    align-items:center !important;
+    min-height:106px !important;
+    padding:18px 20px !important;
+  }
+  .student-exam-hero h1{font-size:34px !important}
+  .student-exam-hero .student-exam-cta{
+    width:168px;
+    justify-self:end;
+  }
+  .student-exam-filter-head{display:none !important}
+  .student-exam-filter-grid{
+    grid-template-columns:minmax(260px,1.35fr) minmax(140px,.68fr) minmax(220px,1fr) minmax(110px,.55fr) minmax(150px,.7fr) minmax(130px,.58fr) !important;
+    gap:8px !important;
+  }
+  .student-exam-list{gap:14px !important}
+}
+@media (min-width:1500px){
+  .student-exam-main{padding:18px 28px 48px}
+}
+@media (max-width:699px){
+  .student-exam-app-shell{display:block}
+  .student-exam-sidebar{display:none}
+}
+
 /* Action button color system */
 .btn-sm.action-attendance,
 .class-mgr-actions .btn-sm.action-attendance{
@@ -13020,6 +13267,34 @@ button[data-bank-inspect-confirm-not]:hover,
 
 <div id="student-exam-portal" class="student-exam-portal" style="display:none">
   <div class="student-exam-shell">
+    <div class="student-exam-app-shell">
+      <aside class="student-exam-sidebar" aria-label="Điều hướng kho tài liệu">
+        <div class="student-exam-sidebar-brand">
+          <div class="student-exam-logo">
+            <img src="./assets/brand/Center-logo.png" alt="" onerror="this.style.display='none'"/>
+          </div>
+          <div>
+            <div class="student-exam-brand-title">MV Klass</div>
+            <div class="student-exam-brand-sub">Lớp tiếng Anh thầy Vũ</div>
+          </div>
+        </div>
+        <div class="student-exam-sidebar-menu">
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Tổng quan</button>
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Lộ trình học</button>
+          <button type="button" class="student-exam-side-item active" onclick="studentExamSetView('library')">Kho tài liệu</button>
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Đề thi</button>
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Bài giảng</button>
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Bài tập</button>
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Thống kê</button>
+          <button type="button" class="student-exam-side-item muted" aria-disabled="true">Cài đặt</button>
+        </div>
+        <div class="student-exam-sidebar-premium">
+          <div class="student-exam-sidebar-premium-title">Premium</div>
+          <p>Mở toàn bộ kho đề và tài liệu chuyên sâu.</p>
+          <button type="button" onclick="studentExamSetView('premium')">Nâng cấp ngay</button>
+        </div>
+      </aside>
+      <main class="student-exam-main">
     <header class="student-exam-header">
       <div class="student-exam-brand">
         <div class="student-exam-logo">
@@ -13215,6 +13490,8 @@ button[data-bank-inspect-confirm-not]:hover,
       <div class="student-exam-list" id="student-exam-list"></div>
       <div class="student-exam-more-wrap" id="student-exam-more-wrap"></div>
     </section>
+      </main>
+    </div>
   </div>
 </div>
 
