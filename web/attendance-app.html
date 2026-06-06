@@ -12485,6 +12485,203 @@ a:focus-visible,
   }
 }
 
+/* Student portal library header/filter exact pass. */
+@media (min-width:1180px){
+  #student-exam-portal{
+    --doc-shell-gap:24px;
+    --doc-panel-line:#d6e3f3;
+    --doc-panel-shadow:0 12px 28px rgba(8,29,66,.045);
+  }
+  #student-exam-portal .student-exam-main{
+    padding-left:24px !important;
+    padding-right:24px !important;
+  }
+  .student-exam-page-head{
+    grid-template-columns:minmax(420px,1fr) 176px minmax(470px,540px) !important;
+    align-items:center !important;
+    column-gap:24px !important;
+    row-gap:0 !important;
+    min-height:132px !important;
+    margin:0 0 18px !important;
+    padding:8px 0 18px !important;
+  }
+  .student-exam-page-head .student-exam-hero{
+    grid-column:1 / span 2 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 176px !important;
+    align-items:center !important;
+    gap:24px !important;
+  }
+  .student-exam-page-head .student-exam-data-overview{
+    grid-column:3 !important;
+    align-self:center !important;
+  }
+  .student-exam-hero h1{
+    font-size:38px !important;
+    line-height:1.05 !important;
+    font-weight:950 !important;
+    letter-spacing:0 !important;
+    color:#082454 !important;
+  }
+  .student-exam-hero p{
+    margin-top:26px !important;
+    max-width:720px !important;
+    color:#284260 !important;
+    font-size:15px !important;
+    line-height:1.4 !important;
+    font-weight:720 !important;
+  }
+  .student-exam-cta{
+    align-self:center !important;
+    width:176px !important;
+    min-width:176px !important;
+    min-height:58px !important;
+    border-radius:10px !important;
+    background:linear-gradient(135deg,#062653,#123e78) !important;
+    box-shadow:0 14px 26px rgba(7,31,70,.14) !important;
+  }
+  .student-exam-cta span{
+    font-size:14px !important;
+    font-weight:920 !important;
+  }
+  .student-exam-kpi-strip{
+    min-height:70px !important;
+    padding:0 18px !important;
+    border:1px solid var(--doc-panel-line) !important;
+    border-radius:13px !important;
+    background:linear-gradient(90deg,#fff 0%,#fff 78%,#fff8e8 100%) !important;
+    box-shadow:var(--doc-panel-shadow) !important;
+  }
+  .student-exam-kpi{
+    gap:6px !important;
+  }
+  .student-exam-kpi span{
+    color:#6d7c91 !important;
+    font-size:11px !important;
+    font-weight:780 !important;
+  }
+  .student-exam-kpi strong{
+    color:#062653 !important;
+    font-size:25px !important;
+    font-weight:950 !important;
+  }
+  .student-exam-kpi:first-child strong{
+    color:#2563eb !important;
+  }
+  .student-exam-filters{
+    margin-top:0 !important;
+    padding:24px 24px 18px !important;
+    border:1px solid var(--doc-panel-line) !important;
+    border-bottom:0 !important;
+    border-radius:14px 14px 0 0 !important;
+    background:#fff !important;
+    box-shadow:var(--doc-panel-shadow) !important;
+  }
+  .student-exam-filter-head{
+    margin:0 0 24px !important;
+    align-items:flex-start !important;
+  }
+  .student-exam-filter-head h2{
+    color:#092554 !important;
+    font-size:18px !important;
+    line-height:1.2 !important;
+    font-weight:930 !important;
+  }
+  .student-exam-filter-reset{
+    min-width:84px !important;
+    min-height:40px !important;
+    border-color:var(--doc-panel-line) !important;
+    border-radius:10px !important;
+    color:#476380 !important;
+    background:#fff !important;
+    font-size:13px !important;
+    font-weight:820 !important;
+  }
+  .student-exam-filter-grid{
+    grid-template-columns:minmax(330px,1.52fr) minmax(165px,.72fr) minmax(230px,1fr) minmax(130px,.58fr) minmax(170px,.76fr) minmax(160px,.7fr) minmax(150px,.66fr) !important;
+    align-items:end !important;
+    gap:14px !important;
+  }
+  .student-exam-search-wrap,
+  .student-exam-filter-field{
+    gap:8px !important;
+  }
+  .student-exam-search-wrap span,
+  .student-exam-filter-field span{
+    color:#18375a !important;
+    font-size:11.5px !important;
+    font-weight:780 !important;
+    line-height:1 !important;
+  }
+  .student-exam-search-wrap input.student-exam-search,
+  .student-exam-filter-field select,
+  .student-exam-online-toggle,
+  .student-exam-search-submit{
+    min-height:42px !important;
+    border-radius:9px !important;
+    font-size:13px !important;
+  }
+  .student-exam-search-wrap input.student-exam-search,
+  .student-exam-filter-field select{
+    border-color:var(--doc-panel-line) !important;
+    color:#082454 !important;
+    font-weight:760 !important;
+  }
+  .student-exam-search-wrap input.student-exam-search{
+    padding-left:15px !important;
+    padding-right:44px !important;
+  }
+  .student-exam-search-wrap::before{
+    right:17px !important;
+    left:auto !important;
+    bottom:13px !important;
+  }
+  .student-exam-search-wrap::after{
+    right:13px !important;
+    left:auto !important;
+    bottom:11px !important;
+  }
+  .student-exam-online-toggle{
+    justify-content:center !important;
+    margin-top:19px !important;
+    border-color:var(--doc-panel-line) !important;
+    color:#092554 !important;
+    font-weight:830 !important;
+  }
+  .student-exam-search-submit{
+    margin-top:19px !important;
+    border-color:#082454 !important;
+    background:linear-gradient(135deg,#062653,#123e78) !important;
+    box-shadow:0 12px 22px rgba(7,31,70,.13) !important;
+    font-weight:900 !important;
+  }
+  .student-exam-category-tabs{
+    min-height:52px !important;
+    margin:0 0 18px !important;
+    padding:0 24px !important;
+    gap:28px !important;
+    border:1px solid var(--doc-panel-line) !important;
+    border-top:1px solid #e2e9f3 !important;
+    border-radius:0 0 14px 14px !important;
+    background:#fff !important;
+    box-shadow:0 12px 22px rgba(8,29,66,.035) !important;
+  }
+  .student-exam-category-tab{
+    min-height:52px !important;
+    color:#294563 !important;
+    font-size:13px !important;
+    font-weight:780 !important;
+  }
+  .student-exam-category-tab.active{
+    color:#2563eb !important;
+    font-weight:900 !important;
+  }
+  .student-exam-category-tab.active::after{
+    height:3px !important;
+    background:#2563eb !important;
+  }
+}
+
 /* Action button color system */
 .btn-sm.action-attendance,
 .class-mgr-actions .btn-sm.action-attendance{
