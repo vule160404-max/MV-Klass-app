@@ -13064,6 +13064,127 @@ a:focus-visible,
   }
 }
 
+/* Student portal filter/card micro-polish. */
+#student-exam-portal .student-exam-filter-field{
+  position:relative !important;
+}
+#student-exam-portal .student-exam-filter-field select{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  background-image:none !important;
+  padding-right:40px !important;
+}
+#student-exam-portal .student-exam-filter-field::after{
+  content:"" !important;
+  position:absolute !important;
+  right:16px !important;
+  bottom:17px !important;
+  width:8px !important;
+  height:8px !important;
+  border-right:2px solid #647894 !important;
+  border-bottom:2px solid #647894 !important;
+  transform:rotate(45deg) !important;
+  pointer-events:none !important;
+}
+#student-exam-portal .student-exam-online-toggle{
+  min-width:116px !important;
+  padding:0 14px !important;
+  border-color:#cfdcf0 !important;
+  background:linear-gradient(180deg,#fff,#f9fbff) !important;
+  color:#0d2b56 !important;
+  box-shadow:0 8px 18px rgba(8,29,66,.045) !important;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease !important;
+}
+#student-exam-portal .student-exam-online-toggle:hover{
+  transform:translateY(-1px);
+  border-color:#aac5f7 !important;
+  box-shadow:0 12px 22px rgba(37,99,235,.10) !important;
+}
+#student-exam-portal .student-exam-online-toggle-mark{
+  width:19px !important;
+  height:19px !important;
+  border-radius:6px !important;
+  border:1.8px solid #8aa3c4 !important;
+  background:#fff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85) !important;
+}
+#student-exam-portal .student-exam-online-toggle-mark::after{
+  content:"" !important;
+  display:block !important;
+  width:8px !important;
+  height:4px !important;
+  border-left:2px solid #fff !important;
+  border-bottom:2px solid #fff !important;
+  opacity:0;
+  transform:rotate(-45deg) translate(-1px,2px) !important;
+}
+#student-exam-portal .student-exam-online-toggle input:checked + .student-exam-online-toggle-mark{
+  border-color:#2563eb !important;
+  background:#2563eb !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.12) !important;
+}
+#student-exam-portal .student-exam-online-toggle input:checked + .student-exam-online-toggle-mark::after{
+  opacity:1;
+}
+#student-exam-portal .student-exam-online-toggle:has(input:checked){
+  border-color:#a9c5ff !important;
+  background:linear-gradient(180deg,#f7fbff,#eef5ff) !important;
+  color:#0d3b82 !important;
+}
+#student-exam-portal .student-document-main{
+  grid-template-columns:48px minmax(0,1fr) 28px !important;
+  gap:14px !important;
+  align-items:start !important;
+}
+#student-exam-portal .student-doc-icon{
+  width:48px !important;
+  height:48px !important;
+  border-radius:13px !important;
+  background:linear-gradient(180deg,#edf5ff,#e7f1ff) !important;
+}
+#student-exam-portal .student-doc-icon svg{
+  width:25px !important;
+  height:25px !important;
+}
+#student-exam-portal .student-document-title-group{
+  display:grid !important;
+  gap:10px !important;
+  padding-top:1px !important;
+}
+#student-exam-portal .student-document-title-group h3{
+  min-height:0 !important;
+  line-height:1.34 !important;
+}
+#student-exam-portal .student-exam-card .student-exam-badges{
+  align-items:center !important;
+  gap:7px !important;
+  margin-top:0 !important;
+}
+#student-exam-portal .student-document-menu{
+  width:28px !important;
+  height:28px !important;
+  margin-top:0 !important;
+}
+#student-exam-portal .student-document-detail.student-document-online{
+  position:relative;
+  background:#eafaf1 !important;
+  border-color:#c6ecd6 !important;
+  color:#087846 !important;
+  box-shadow:none !important;
+}
+#student-exam-portal .student-document-detail.student-document-online::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:#16a765;
+  box-shadow:0 0 0 3px rgba(22,167,101,.13);
+}
+#student-exam-portal .student-document-detail.student-document-online:hover{
+  border-color:#9ee2bd !important;
+  box-shadow:0 10px 18px rgba(22,101,52,.08) !important;
+}
+
 /* Action button color system */
 .btn-sm.action-attendance,
 .class-mgr-actions .btn-sm.action-attendance{
@@ -22236,17 +22357,16 @@ function studentExamCard(row, compact) {
       </div>
       ${locked ? `<div class="student-exam-locked-note">${escapeHtml(lockedText)}</div>` : ''}
       <div class="student-exam-actions">
-        ${hasOnline ? `<button type="button" class="student-exam-action online" data-exam-online="${id}" ${canAccess ? '' : 'disabled'}>Làm bài online</button>` : ''}
         <button type="button" class="student-exam-action primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>Tải đề</button>
         <button type="button" class="student-exam-action" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Xem đề</button>
         ${hasAnswer ? `<button type="button" class="student-exam-action answer" data-exam-preview="${id}" data-exam-kind="answer" ${canAccess ? '' : 'disabled'}>Xem đáp án</button>` : ''}
         ${hasAudio ? `<button type="button" class="student-exam-action audio" data-exam-preview="${id}" data-exam-kind="audio" ${canAccess ? '' : 'disabled'}>Nghe audio</button>` : ''}
         ${locked ? `<button type="button" class="student-exam-action upgrade" onclick="requestStudentExamUpgrade('${id}')">${String(row.locked_reason || '') === 'pending_approval' ? 'Đang chờ duyệt' : 'Đăng ký Premium'}</button>` : ''}
       </div>
-      <button type="button" class="student-document-detail" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>
-        <span>Xem chi tiết</span>
+      ${hasOnline ? `<button type="button" class="student-document-detail student-document-online" data-exam-online="${id}" ${canAccess ? '' : 'disabled'}>
+        <span>Làm bài online</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
-      </button>
+      </button>` : ''}
     </article>`;
 }
 
