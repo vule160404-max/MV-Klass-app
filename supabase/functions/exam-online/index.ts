@@ -578,6 +578,37 @@ function promptSourceKeysForExam(row: any) {
   return Array.from(new Set(promptSourceLabelsForExam(row).map(normalizePromptProvinceKey).filter(Boolean)));
 }
 
+function normalizePromptExamLevel(value: unknown) {
+  const raw = String(value || "").trim().toLowerCase();
+  const norm = normalizeText(value).toLowerCase();
+  if (raw === "university" || /\b(thpt|qg|quoc gia|dai hoc)\b/.test(norm)) return "university";
+  return "entrance_10";
+}
+
+function promptExamLevelKey(row: any) {
+  const level = String(row?.level || "").trim().toLowerCase();
+  if (level === "university") return "university";
+  const hay = normalizeText([row?.title, row?.exam_code, row?.province, row?.object_key, row?.storage_path].filter(Boolean).join(" ")).toLowerCase();
+  return /\b(thpt|qg|quoc gia|dai hoc)\b/.test(hay) ? "university" : "entrance_10";
+}
+
+function scopedPromptProvinceKey(provinceKey: string, examLevel: string) {
+  const key = normalizePromptProvinceKey(provinceKey);
+  const level = normalizePromptExamLevel(examLevel);
+  return key ? `${level}|${key}` : "";
+}
+
+function promptExamLevelFromScopedProvinceKey(value: unknown) {
+  const key = String(value || "").trim().toLowerCase();
+  if (key.startsWith("university|")) return "university";
+  if (key.startsWith("entrance_10|")) return "entrance_10";
+  return "";
+}
+
+function unscopedPromptProvinceKey(value: unknown) {
+  return String(value || "").replace(/^(entrance_10|university)\|/i, "");
+}
+
 function inferExamYear(row: any) {
   const explicit = Number(row?.year || 0);
   if (Number.isInteger(explicit) && explicit >= 2000 && explicit <= 2100) return explicit;
@@ -592,6 +623,7 @@ function promptSourcePublic(row: any) {
     id: row.id,
     province_key: row.province_key,
     province_label: row.province_label,
+    exam_level: row.exam_level || promptExamLevelFromScopedProvinceKey(row.province_key) || "",
     year: row.year,
     is_active: row.is_active !== false,
     updated_at: row.updated_at || null,
@@ -604,6 +636,7 @@ function promptSourceCandidate(row: any) {
   return {
     province_key: provinceKey,
     province_label: provinceLabel,
+    exam_level: promptExamLevelKey(row),
     year: inferExamYear(row),
   };
 }
@@ -616,6 +649,12 @@ function findPromptTemplateInRows(row: any, templates: any[]) {
   );
   if (!active.length) return null;
   const sourceKeys = promptSourceKeysForExam(row);
+  const examLevel = promptExamLevelKey(row);
+  const levelScopedKeys = promptSourceKeysForExam(row).map((key) => scopedPromptProvinceKey(key, examLevel));
+  for (const sourceKey of levelScopedKeys) {
+    const exact = active.find((tpl) => String(tpl.province_key || "") === sourceKey);
+    if (exact) return exact;
+  }
   for (const sourceKey of sourceKeys) {
     const exact = active.find((tpl) => String(tpl.province_key || "") === sourceKey);
     if (exact) return exact;
@@ -629,7 +668,8 @@ function findPromptTemplateInRows(row: any, templates: any[]) {
     .slice()
     .sort((a, b) => String(b.province_key || "").length - String(a.province_key || "").length)
     .find((tpl) => {
-      const key = String(tpl.province_key || "");
+      if (promptExamLevelFromScopedProvinceKey(tpl.province_key)) return false;
+      const key = unscopedPromptProvinceKey(tpl.province_key);
       return key && new RegExp(`\\b${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(hay);
     }) || null;
 }
@@ -642,7 +682,10 @@ async function activePromptTemplates(service: any) {
     .order("year", { ascending: false })
     .order("province_label", { ascending: true });
   if (error) throw new Error(error.message || "PROMPT_SOURCE_LIST_FAILED");
-  return Array.isArray(data) ? data : [];
+  return Array.isArray(data) ? data.map((row: any) => ({
+    ...row,
+    exam_level: promptExamLevelFromScopedProvinceKey(row.province_key) || "",
+  })) : [];
 }
 
 async function promptSourcesList(service: any) {
@@ -652,7 +695,10 @@ async function promptSourcesList(service: any) {
     .order("year", { ascending: false })
     .order("province_label", { ascending: true });
   if (error) throw new Error(error.message || "PROMPT_SOURCE_LIST_FAILED");
-  return Array.isArray(data) ? data : [];
+  return Array.isArray(data) ? data.map((row: any) => ({
+    ...row,
+    exam_level: promptExamLevelFromScopedProvinceKey(row.province_key) || "",
+  })) : [];
 }
 
 async function findPromptTemplateForExam(service: any, row: any) {
@@ -685,12 +731,13 @@ function renderPromptTemplate(template: any, row: any) {
 async function savePromptSource(service: any, actor: any, body: any) {
   const provinceLabel = String(body?.province_label || body?.province || "").trim();
   const provinceKey = normalizePromptProvinceKey(body?.province_key || provinceLabel);
+  const examLevel = normalizePromptExamLevel(body?.exam_level || body?.examLevel || "entrance_10");
   const year = Number(body?.year || 0);
   if (!provinceLabel || !provinceKey) throw new Error("PROMPT_SOURCE_PROVINCE_REQUIRED");
   if (!Number.isInteger(year) || year < 2000 || year > 2100) throw new Error("PROMPT_SOURCE_YEAR_INVALID");
   const templateText = assertPromptTemplateText(body?.template_text || body?.templateText);
   const payload = {
-    province_key: provinceKey,
+    province_key: scopedPromptProvinceKey(provinceKey, examLevel),
     province_label: provinceLabel,
     year,
     template_text: templateText,
@@ -704,7 +751,10 @@ async function savePromptSource(service: any, actor: any, body: any) {
     .select("id,province_key,province_label,year,template_text,is_active,updated_at,created_at")
     .single();
   if (error) throw new Error(error.message || "PROMPT_SOURCE_SAVE_FAILED");
-  return data;
+  return {
+    ...data,
+    exam_level: promptExamLevelFromScopedProvinceKey(data?.province_key) || examLevel,
+  };
 }
 
 async function disablePromptSource(service: any, actor: any, body: any) {
@@ -716,7 +766,10 @@ async function disablePromptSource(service: any, actor: any, body: any) {
     .select("id,province_key,province_label,year,template_text,is_active,updated_at,created_at")
     .single();
   if (error) throw new Error(error.message || "PROMPT_SOURCE_DISABLE_FAILED");
-  return data;
+  return {
+    ...data,
+    exam_level: promptExamLevelFromScopedProvinceKey(data?.province_key) || "",
+  };
 }
 
 async function adminList(service: any) {

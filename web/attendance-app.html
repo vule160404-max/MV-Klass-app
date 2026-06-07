@@ -4392,7 +4392,7 @@
     .website-online-asset-preview.error{ background:#fff1f2; border-color:rgba(220,38,38,.18); color:#9f1239; }
     .website-online-asset-thumb{ width:42px; height:42px; border-radius:8px; object-fit:cover; background:#fff; border:1px solid rgba(99,138,218,.18); flex:0 0 auto; }
     .website-online-asset-status{ min-width:0; overflow-wrap:anywhere; }
-    .website-online-source-form{ display:grid; grid-template-columns:minmax(150px,1fr) 110px; gap:8px; margin-bottom:10px; }
+    .website-online-source-form{ display:grid; grid-template-columns:132px minmax(150px,1fr) 110px; gap:8px; margin-bottom:10px; }
     .website-online-source-form input,.website-online-source-form select{ min-width:0; min-height:38px; border-radius:10px; border:1px solid rgba(99,138,218,.18); background:#fff; color:#263852; font-size:12px; font-weight:800; padding:0 10px; outline:none; }
     .website-online-source-list{ display:grid; gap:8px; margin-top:12px; }
     .website-online-source-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid rgba(99,138,218,.14); border-radius:10px; background:#fff; }
@@ -14562,12 +14562,16 @@ button[data-bank-inspect-confirm-not]:hover,
             <div class="website-online-modal-head">
               <div>
                 <div class="website-online-modal-title" id="portal-online-source-prompt-title">Prompt theo nguồn đề</div>
-                <div class="website-online-modal-sub" id="portal-online-source-prompt-sub">Mỗi tỉnh/thành và năm dùng một prompt riêng. Khi tạo prompt AI chỉ thay exam_id và title.</div>
+                <div class="website-online-modal-sub" id="portal-online-source-prompt-sub">Mỗi loại đề, nguồn và năm dùng một prompt riêng. Khi tạo prompt AI chỉ thay exam_id và title.</div>
               </div>
               <button type="button" class="btn-sm" onclick="closePortalOnlineSourcePromptModal()">Đóng</button>
             </div>
             <div class="website-online-modal-body">
               <div class="website-online-source-form">
+                <select id="portal-online-source-prompt-level" onchange="onPortalOnlineSourcePromptLevelChange()">
+                  <option value="entrance_10">Vào 10</option>
+                  <option value="university">THPT QG</option>
+                </select>
                 <select id="portal-online-source-prompt-province" onchange="onPortalOnlineSourcePromptProvinceChange()">
                   <option value="">Chọn nguồn đề đã upload</option>
                 </select>
@@ -25843,10 +25847,10 @@ function portalOnlineStatusLabel(row) {
 
 function portalOnlinePromptSourceLabel(row) {
   const src = row && row.source_prompt;
-  if (src && src.province_label && src.year) return `Prompt: ${src.province_label} ${src.year}`;
+  if (src && src.province_label && src.year) return `Prompt: ${portalFreeGroupLabel(src.exam_level || portalOnlineSourcePromptLevelKeyFromProvinceKey(src.province_key))} · ${src.province_label} ${src.year}`;
   const cand = row && row.source_prompt_candidate;
   if (cand && (cand.province_label || cand.province_key) && cand.year) {
-    return `Chưa có prompt nguồn: ${cand.province_label || cand.province_key} ${cand.year}`;
+    return `Chưa có prompt nguồn: ${portalFreeGroupLabel(cand.exam_level || 'entrance_10')} · ${cand.province_label || cand.province_key} ${cand.year}`;
   }
   return 'Chưa có prompt nguồn';
 }
@@ -25854,9 +25858,24 @@ function portalOnlinePromptSourceLabel(row) {
 function portalOnlineSourcePromptCandidate(row) {
   const cand = row && row.source_prompt_candidate ? row.source_prompt_candidate : {};
   return {
+    exam_level: portalOnlineSourcePromptLevelKey(cand.exam_level || portalExamGroupKey(row)),
     province_label: String(portalOnlinePromptSourceDisplayLabel(row) || cand.province_label || row?.province || '').trim(),
     year: String(cand.year || row?.year || new Date().getFullYear()).trim()
   };
+}
+
+function portalOnlineSourcePromptLevelKey(value) {
+  const key = String(value || '').trim().toLowerCase();
+  return key === 'university' ? 'university' : 'entrance_10';
+}
+
+function portalOnlineSourcePromptLevelKeyFromProvinceKey(value) {
+  const key = String(value || '').trim().toLowerCase();
+  return key.startsWith('university|') ? 'university' : (key.startsWith('entrance_10|') ? 'entrance_10' : '');
+}
+
+function portalOnlineSourcePromptSourceKeyFromProvinceKey(value) {
+  return String(value || '').replace(/^(entrance_10|university)\|/i, '');
 }
 
 function portalOnlineSourceOptionKey(provinceLabel) {
@@ -25867,10 +25886,25 @@ function portalOnlineSourceOptionKey(provinceLabel) {
   return label;
 }
 
-function portalOnlineSourcePromptTemplateKey(provinceLabel, year) {
+function portalOnlineSourcePromptTemplateKey(examLevel, provinceLabel, year) {
+  const level = portalOnlineSourcePromptLevelKey(examLevel);
   const label = portalOnlineSourceOptionKey(provinceLabel);
   const y = String(year || '').trim();
-  return label && y ? `${label}|${y}` : '';
+  return level && label && y ? `${level}|${label}|${y}` : '';
+}
+
+function portalOnlineSourcePromptLegacyTemplateKey(provinceLabel, year) {
+  const label = portalOnlineSourceOptionKey(provinceLabel);
+  const y = String(year || '').trim();
+  return label && y ? `legacy|${label}|${y}` : '';
+}
+
+function portalOnlineSourcePromptRowTemplateKey(row) {
+  const level = row && (row.exam_level || portalOnlineSourcePromptLevelKeyFromProvinceKey(row.province_key));
+  const source = row && (row.province_label || portalOnlineSourcePromptSourceKeyFromProvinceKey(row.province_key));
+  return level
+    ? portalOnlineSourcePromptTemplateKey(level, source, row && row.year)
+    : portalOnlineSourcePromptLegacyTemplateKey(source, row && row.year);
 }
 
 function portalOnlinePromptSourceDisplayLabel(row) {
@@ -25883,6 +25917,7 @@ function portalOnlinePromptSourceDisplayLabel(row) {
 
 function portalOnlineSourceOptions(extra = null) {
   const map = new Map();
+  const levelKey = portalOnlineSourcePromptLevelKey(extra?.exam_level || document.getElementById('portal-online-source-prompt-level')?.value || 'entrance_10');
   const add = (provinceLabel, year, countDelta = 1) => {
     const sourceLabel = String(provinceLabel || '').trim();
     const y = String(year || '').trim();
@@ -25905,10 +25940,12 @@ function portalOnlineSourceOptions(extra = null) {
     });
   };
   (portalOnlineRows || []).forEach(row => {
-    add(portalOnlinePromptSourceDisplayLabel(row), row?.year);
+    if (portalExamGroupKey(row) === levelKey) {
+      add(portalOnlinePromptSourceDisplayLabel(row), row?.year);
+    }
   });
   if (extra && (extra.province_label || extra.province_key)) {
-    add(extra.province_label || extra.province_key, extra.year, 0);
+    add(extra.province_label || portalOnlineSourcePromptSourceKeyFromProvinceKey(extra.province_key), extra.year, 0);
   }
   return Array.from(map.values()).sort((a, b) =>
     Number(b.count || 0) - Number(a.count || 0) ||
@@ -25919,8 +25956,9 @@ function portalOnlineSourceOptions(extra = null) {
 function renderPortalOnlineSourcePromptOptions(selected = {}) {
   const select = document.getElementById('portal-online-source-prompt-province');
   if (!select) return;
-  const selectedKey = portalOnlineSourceOptionKey(selected.province_label || selected.province_key);
-  const options = portalOnlineSourceOptions(selected);
+  const selectedKey = portalOnlineSourceOptionKey(selected.province_label || portalOnlineSourcePromptSourceKeyFromProvinceKey(selected.province_key));
+  const level = portalOnlineSourcePromptLevelKey(selected.exam_level || portalOnlineSourcePromptLevelKeyFromProvinceKey(selected.province_key) || document.getElementById('portal-online-source-prompt-level')?.value || 'entrance_10');
+  const options = portalOnlineSourceOptions({ ...selected, exam_level: level });
   select.innerHTML = [
     '<option value="">Chọn nguồn đề đã upload</option>',
     ...options.map(opt => {
@@ -25932,9 +25970,11 @@ function renderPortalOnlineSourcePromptOptions(selected = {}) {
 }
 
 function portalOnlineSelectedSourcePrompt() {
+  const level = document.getElementById('portal-online-source-prompt-level');
   const select = document.getElementById('portal-online-source-prompt-province');
   const option = select && select.selectedOptions && select.selectedOptions[0] ? select.selectedOptions[0] : null;
   return {
+    exam_level: portalOnlineSourcePromptLevelKey(level?.value || 'entrance_10'),
     province_label: String(option?.dataset?.provinceLabel || '').trim(),
     year: String(document.getElementById('portal-online-source-prompt-year')?.value || option?.dataset?.defaultYear || '').trim(),
     default_year: String(option?.dataset?.defaultYear || '').trim()
@@ -25943,10 +25983,11 @@ function portalOnlineSelectedSourcePrompt() {
 
 function syncPortalOnlineSourcePromptTemplateForSelection() {
   const selected = portalOnlineSelectedSourcePrompt();
-  const key = portalOnlineSourcePromptTemplateKey(selected.province_label, selected.year);
-  const existing = portalOnlineSourcePromptRows.find(row =>
-    portalOnlineSourcePromptTemplateKey(row && (row.province_label || row.province_key), row && row.year) === key
-  );
+  const key = portalOnlineSourcePromptTemplateKey(selected.exam_level, selected.province_label, selected.year);
+  const legacyKey = portalOnlineSourcePromptLegacyTemplateKey(selected.province_label, selected.year);
+  const exact = portalOnlineSourcePromptRows.find(row => portalOnlineSourcePromptRowTemplateKey(row) === key);
+  const legacy = portalOnlineSourcePromptRows.find(row => portalOnlineSourcePromptRowTemplateKey(row) === legacyKey);
+  const existing = exact || legacy;
   portalOnlineSourcePromptEditingId = existing ? String(existing.id || '').trim() : '';
   const text = document.getElementById('portal-online-source-prompt-text');
   if (existing) {
@@ -25954,6 +25995,11 @@ function syncPortalOnlineSourcePromptTemplateForSelection() {
   } else if (text && !portalOnlineSourcePromptEditingId) {
     text.value = '';
   }
+}
+
+function onPortalOnlineSourcePromptLevelChange() {
+  renderPortalOnlineSourcePromptOptions(portalOnlineSelectedSourcePrompt());
+  syncPortalOnlineSourcePromptTemplateForSelection();
 }
 
 function onPortalOnlineSourcePromptProvinceChange() {
@@ -25968,12 +26014,15 @@ function onPortalOnlineSourcePromptYearChange() {
 }
 
 function setPortalOnlineSourcePromptForm(data = {}) {
+  const level = document.getElementById('portal-online-source-prompt-level');
   const province = document.getElementById('portal-online-source-prompt-province');
   const year = document.getElementById('portal-online-source-prompt-year');
   const text = document.getElementById('portal-online-source-prompt-text');
   portalOnlineSourcePromptEditingId = String(data.id || '').trim();
-  renderPortalOnlineSourcePromptOptions(data);
-  if (province) province.value = portalOnlineSourceOptionKey(data.province_label || data.province_key);
+  const examLevel = portalOnlineSourcePromptLevelKey(data.exam_level || portalOnlineSourcePromptLevelKeyFromProvinceKey(data.province_key) || 'entrance_10');
+  if (level) level.value = examLevel;
+  renderPortalOnlineSourcePromptOptions({ ...data, exam_level: examLevel });
+  if (province) province.value = portalOnlineSourceOptionKey(data.province_label || portalOnlineSourcePromptSourceKeyFromProvinceKey(data.province_key));
   if (year) year.value = String(data.year || '').trim();
   if (text) text.value = String(data.template_text || '').trim();
 }
@@ -26012,9 +26061,10 @@ function renderPortalOnlineSourcePromptList() {
   }
   list.innerHTML = portalOnlineSourcePromptRows.map(row => {
     const active = row && row.is_active !== false;
+    const levelLabel = portalFreeGroupLabel(row.exam_level || portalOnlineSourcePromptLevelKeyFromProvinceKey(row.province_key));
     return `<div class="website-online-source-row">
       <div>
-        <div class="website-online-source-name">${escapeHtml(row.province_label || row.province_key || 'Nguồn chưa đặt tên')} ${escapeHtml(row.year || '')}</div>
+        <div class="website-online-source-name">${escapeHtml(levelLabel)} · ${escapeHtml(row.province_label || row.province_key || 'Nguồn chưa đặt tên')} ${escapeHtml(row.year || '')}</div>
         <div class="website-online-source-meta">${escapeHtml([active ? 'Đang bật' : 'Đã ẩn', row.updated_at ? 'Cập nhật ' + portalActivityTimeLabel(row.updated_at) : '', String(row.template_text || '').length + ' ký tự'].filter(Boolean).join(' · '))}</div>
       </div>
       <div class="website-online-source-actions">
@@ -26067,6 +26117,7 @@ async function savePortalOnlineSourcePrompt() {
   if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu...'; }
   try {
     const data = await callExamOnline('save_prompt_source', {
+      exam_level: selected.exam_level,
       province_label: province,
       year,
       template_text: text
