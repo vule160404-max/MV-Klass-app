@@ -13208,6 +13208,30 @@ a:focus-visible,
   display:inline-grid;
   place-items:center;
 }
+#student-exam-notification-button{
+  position:relative;
+}
+.student-exam-notification-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  display:inline-grid;
+  place-items:center;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border:2px solid #fff;
+  border-radius:999px;
+  background:#ef4444;
+  color:#fff;
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+  box-shadow:0 8px 16px rgba(239,68,68,.26);
+}
+.student-exam-notification-badge[hidden]{
+  display:none !important;
+}
 .student-exam-header-popover{
   position:absolute;
   top:calc(100% + 12px);
@@ -13286,9 +13310,25 @@ a:focus-visible,
   border-radius:12px;
   background:#f8fbff;
 }
+.student-exam-notification-action{
+  min-height:30px;
+  margin-top:8px;
+  padding:0 10px;
+  border:1px solid #bfd3f1;
+  border-radius:9px;
+  background:#fff;
+  color:#123e78;
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+}
+.student-exam-notification-action:hover{
+  border-color:#93b4ed;
+  background:#eef5ff;
+}
 .student-exam-settings-form{
   display:grid;
-  gap:10px;
+  gap:12px;
 }
 .student-exam-settings-form label{
   display:grid;
@@ -13299,7 +13339,8 @@ a:focus-visible,
   font-size:11.5px;
   font-weight:850;
 }
-.student-exam-settings-form select{
+.student-exam-settings-form select,
+.student-exam-settings-form input[type="text"]{
   min-height:40px;
   border:1px solid #d6e3f3;
   border-radius:10px;
@@ -13350,6 +13391,78 @@ a:focus-visible,
   background:linear-gradient(135deg,#062653,#123e78);
   color:#fff;
 }
+.student-exam-settings-modal{
+  position:fixed;
+  inset:0;
+  z-index:4350;
+  display:none;
+  place-items:center;
+  padding:18px;
+  background:rgba(8,18,38,.52);
+  backdrop-filter:blur(10px);
+}
+.student-exam-settings-modal.open{
+  display:grid;
+}
+.student-exam-settings-dialog{
+  width:min(620px,calc(100vw - 28px));
+  max-height:min(88vh,760px);
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:0 30px 80px rgba(8,18,38,.30);
+}
+.student-exam-settings-head{
+  position:sticky;
+  top:0;
+  z-index:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:18px 18px 14px;
+  border-bottom:1px solid var(--doc-line);
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(8px);
+}
+.student-exam-settings-head h2{
+  margin:3px 0 0;
+  color:#082454;
+  font-size:20px;
+  line-height:1.15;
+  font-weight:950;
+}
+.student-exam-settings-close{
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border:1px solid #d6e3f3;
+  border-radius:12px;
+  background:#fff;
+  color:#082454;
+  font-size:23px;
+  line-height:1;
+  cursor:pointer;
+}
+.student-exam-settings-dialog .student-exam-settings-form{
+  padding:16px 18px 18px;
+}
+.student-exam-settings-section{
+  display:grid;
+  gap:10px;
+  padding:12px;
+  border:1px solid #dce7f5;
+  border-radius:14px;
+  background:linear-gradient(180deg,#fff,#f8fbff);
+}
+.student-exam-settings-section h3{
+  margin:0;
+  color:#082454;
+  font-size:13px;
+  font-weight:950;
+}
 .student-exam-overview-panel{
   display:none;
   margin:0 0 20px;
@@ -13368,6 +13481,34 @@ a:focus-visible,
 }
 #student-exam-stats-panel.is-open{
   display:grid !important;
+}
+#student-exam-portal.student-page-overview .student-exam-page-head,
+#student-exam-portal.student-page-overview .student-exam-filters,
+#student-exam-portal.student-page-overview .student-exam-category-tabs,
+#student-exam-portal.student-page-overview .student-exam-section,
+#student-exam-portal.student-page-stats .student-exam-page-head,
+#student-exam-portal.student-page-stats .student-exam-filters,
+#student-exam-portal.student-page-stats .student-exam-category-tabs,
+#student-exam-portal.student-page-stats .student-exam-section{
+  display:none !important;
+}
+#student-exam-portal.student-page-library .student-exam-overview-panel,
+#student-exam-portal.student-page-library #student-exam-stats-panel{
+  display:none !important;
+}
+#student-exam-portal.student-density-compact .student-exam-card.student-document-card{
+  min-height:246px !important;
+  padding:13px !important;
+}
+#student-exam-portal.student-density-compact .student-document-main{
+  grid-template-columns:40px minmax(0,1fr) 26px !important;
+}
+#student-exam-portal.student-density-compact .student-doc-icon{
+  width:40px !important;
+  height:40px !important;
+}
+#student-exam-portal.student-density-compact .student-document-title-group{
+  gap:7px !important;
 }
 .student-exam-overview-head,
 .student-stats-panel-head{
@@ -15605,7 +15746,7 @@ button[data-bank-inspect-confirm-not]:hover,
 </div>
 </div>
 
-<div id="student-exam-portal" class="student-exam-portal" style="display:none">
+<div id="student-exam-portal" class="student-exam-portal student-page-library" data-student-page="library" style="display:none">
   <div class="student-exam-shell">
     <div class="student-exam-app-shell">
       <aside class="student-exam-sidebar" aria-label="Điều hướng kho tài liệu">
@@ -15666,6 +15807,7 @@ button[data-bank-inspect-confirm-not]:hover,
         <div class="student-exam-header-popover-wrap">
           <button type="button" class="student-exam-icon-btn" id="student-exam-notification-button" aria-label="Thông báo" aria-haspopup="dialog" aria-expanded="false" aria-controls="student-exam-notification-popover" onclick="toggleStudentExamHeaderPanel('notifications', event)">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 1 0-12 0c0 7-3 6-3 9h18c0-3-3-2-3-9z"></path><path d="M10 21h4"></path></svg>
+            <span class="student-exam-notification-badge" id="student-exam-notification-badge" hidden>0</span>
           </button>
           <div class="student-exam-header-popover student-exam-notification-popover" id="student-exam-notification-popover" aria-hidden="true">
             <div class="student-exam-header-popover-head">
@@ -15677,43 +15819,6 @@ button[data-bank-inspect-confirm-not]:hover,
             </div>
           </div>
         </div>
-        <div class="student-exam-header-popover-wrap">
-          <button type="button" class="student-exam-icon-btn" id="student-exam-settings-button" aria-label="Cài đặt" aria-haspopup="dialog" aria-expanded="false" aria-controls="student-exam-settings-popover" onclick="toggleStudentExamHeaderPanel('settings', event)">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06a2.1 2.1 0 1 1-2.97 2.97l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V21a2.1 2.1 0 1 1-4.2 0v-.09a1.8 1.8 0 0 0-1.09-1.65 1.8 1.8 0 0 0-1.98.36l-.06.06a2.1 2.1 0 1 1-2.97-2.97l.06-.06a1.8 1.8 0 0 0 .36-1.98 1.8 1.8 0 0 0-1.65-1.09H2a2.1 2.1 0 1 1 0-4.2h.09A1.8 1.8 0 0 0 3.74 8.3a1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.1 2.1 0 1 1 2.97-2.97l.06.06a1.8 1.8 0 0 0 1.98.36 1.8 1.8 0 0 0 1.09-1.65V2a2.1 2.1 0 1 1 4.2 0v.09a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.06-.06a2.1 2.1 0 1 1 2.97 2.97l-.06.06a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.09H21a2.1 2.1 0 1 1 0 4.2h-.09A1.8 1.8 0 0 0 19.4 15Z"></path></svg>
-          </button>
-          <div class="student-exam-header-popover student-exam-settings-popover" id="student-exam-settings-popover" aria-hidden="true">
-            <div class="student-exam-header-popover-head">
-              <strong>Cài đặt hiển thị</strong>
-              <span>Lưu riêng trên trình duyệt này</span>
-            </div>
-            <div class="student-exam-settings-form">
-              <label>
-                <span>Số tài liệu/trang</span>
-                <select id="student-setting-page-size" aria-label="Số tài liệu mỗi trang">
-                  <option value="12">12 tài liệu</option>
-                  <option value="24">24 tài liệu</option>
-                  <option value="48">48 tài liệu</option>
-                </select>
-              </label>
-              <label>
-                <span>Sắp xếp mặc định</span>
-                <select id="student-setting-sort" aria-label="Sắp xếp mặc định">
-                  <option value="code">Theo số đề tăng dần</option>
-                  <option value="newest">Mới upload</option>
-                  <option value="popular">Tải nhiều</option>
-                </select>
-              </label>
-              <label class="student-exam-settings-check">
-                <input id="student-setting-online" type="checkbox"/>
-                <span>Chỉ hiện đề online</span>
-              </label>
-              <div class="student-exam-settings-actions">
-                <button type="button" class="student-exam-settings-reset" onclick="studentExamResetSettingsPanel()">Đặt lại</button>
-                <button type="button" class="student-exam-settings-apply" onclick="studentExamApplySettingsFromPanel()">Áp dụng</button>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="student-exam-user-menu-wrap">
           <button type="button" class="student-exam-avatar student-exam-avatar-btn" id="student-exam-avatar-button" aria-haspopup="menu" aria-expanded="false" aria-controls="student-exam-user-menu" onclick="toggleStudentExamUserMenu(event)">TV</button>
           <div class="student-exam-user-menu" id="student-exam-user-menu" role="menu" aria-hidden="true">
@@ -15721,6 +15826,7 @@ button[data-bank-inspect-confirm-not]:hover,
               <strong id="student-exam-menu-name">Tài khoản học sinh</strong>
               <span id="student-exam-download-credit">Tải: 0/5 hôm nay</span>
             </div>
+            <button type="button" class="student-exam-menu-item" onclick="openStudentExamSettingsPanel()" role="menuitem">Cài đặt tài khoản</button>
             <button type="button" class="student-exam-menu-item student-exam-admin-link" id="student-exam-admin-switch" onclick="closeStudentExamUserMenu();openAdminDashboardModule()" role="menuitem" style="display:none">
               Đi tới trang quản trị
             </button>
@@ -15731,6 +15837,64 @@ button[data-bank-inspect-confirm-not]:hover,
     </header>
 
     <div class="student-exam-approval-note" id="student-exam-approval-note" role="status"></div>
+
+    <div class="student-exam-settings-modal" id="student-exam-settings-popover" aria-hidden="true" onclick="if(event.target===this) closeStudentExamSettingsPanel()">
+      <div class="student-exam-settings-dialog" role="dialog" aria-modal="true" aria-labelledby="student-exam-settings-title">
+        <div class="student-exam-settings-head">
+          <div>
+            <div class="student-exam-overview-kicker">Cài đặt</div>
+            <h2 id="student-exam-settings-title">Tài khoản & giao diện</h2>
+          </div>
+          <button type="button" class="student-exam-settings-close" onclick="closeStudentExamSettingsPanel()" aria-label="Đóng cài đặt">×</button>
+        </div>
+        <div class="student-exam-settings-form">
+          <section class="student-exam-settings-section" aria-label="Thông tin cá nhân">
+            <h3>Thông tin cá nhân</h3>
+            <label>
+              <span>Tên hiển thị</span>
+              <input id="student-setting-display-name" type="text" maxlength="48" placeholder="Để trống để dùng tên tài khoản"/>
+            </label>
+          </section>
+          <section class="student-exam-settings-section" aria-label="Giao diện kho tài liệu">
+            <h3>Giao diện</h3>
+            <label>
+              <span>Mật độ hiển thị card</span>
+              <select id="student-setting-density" aria-label="Mật độ hiển thị card">
+                <option value="comfortable">Thoải mái</option>
+                <option value="compact">Gọn hơn</option>
+              </select>
+            </label>
+          </section>
+          <section class="student-exam-settings-section" aria-label="Mặc định kho tài liệu">
+            <h3>Kho tài liệu</h3>
+            <label>
+              <span>Số tài liệu/trang</span>
+              <select id="student-setting-page-size" aria-label="Số tài liệu mỗi trang">
+                <option value="12">12 tài liệu</option>
+                <option value="24">24 tài liệu</option>
+                <option value="48">48 tài liệu</option>
+              </select>
+            </label>
+            <label>
+              <span>Sắp xếp mặc định</span>
+              <select id="student-setting-sort" aria-label="Sắp xếp mặc định">
+                <option value="code">Theo số đề tăng dần</option>
+                <option value="newest">Mới upload</option>
+                <option value="popular">Tải nhiều</option>
+              </select>
+            </label>
+            <label class="student-exam-settings-check">
+              <input id="student-setting-online" type="checkbox"/>
+              <span>Chỉ hiện đề online khi mở kho</span>
+            </label>
+          </section>
+          <div class="student-exam-settings-actions">
+            <button type="button" class="student-exam-settings-reset" onclick="studentExamResetSettingsPanel()">Đặt lại</button>
+            <button type="button" class="student-exam-settings-apply" onclick="studentExamApplySettingsFromPanel()">Áp dụng</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <section class="student-exam-overview-panel" id="student-exam-overview-panel" aria-label="Tổng quan học tập" aria-hidden="true">
       <div class="student-exam-overview-head">
@@ -17936,14 +18100,16 @@ let studentExamDownloadQuota = null;
 const STUDENT_EXAM_PAGE_SIZE = 12;
 const STUDENT_EXAM_SETTINGS_KEY = 'mvk_student_portal_settings_v1';
 function studentExamDefaultSettings() {
-  return { pageSize: STUDENT_EXAM_PAGE_SIZE, sort: 'code', onlineOnly: false };
+  return { pageSize: STUDENT_EXAM_PAGE_SIZE, sort: 'code', onlineOnly: false, displayName: '', density: 'comfortable' };
 }
 function studentExamNormalizeSettings(value) {
   const defaults = studentExamDefaultSettings();
   const raw = value && typeof value === 'object' ? value : {};
   const pageSize = [12, 24, 48].includes(Number(raw.pageSize)) ? Number(raw.pageSize) : defaults.pageSize;
   const sort = ['code', 'newest', 'popular'].includes(String(raw.sort || '')) ? String(raw.sort) : defaults.sort;
-  return { pageSize, sort, onlineOnly: raw.onlineOnly === true };
+  const displayName = String(raw.displayName || '').trim().slice(0, 48);
+  const density = String(raw.density || '') === 'compact' ? 'compact' : defaults.density;
+  return { pageSize, sort, onlineOnly: raw.onlineOnly === true, displayName, density };
 }
 function studentExamLoadSettings() {
   try {
@@ -20999,17 +21165,14 @@ function showStudentExamPortalUI() {
     document.body.classList.remove('role-admin', 'role-teacher', 'tab-attendance-active');
     document.body.classList.add('role-student');
     closeSidebarMenu();
-    const hello = document.getElementById('student-exam-hello');
-    const displayName = studentExamDisplayName();
-    if (hello) hello.textContent = 'Xin chào, ' + displayName;
-    const menuName = document.getElementById('student-exam-menu-name');
-    if (menuName) menuName.textContent = displayName;
-    const avatarButton = document.getElementById('student-exam-avatar-button');
-    if (avatarButton) avatarButton.textContent = studentExamInitials(displayName);
+    studentExamApplyVisualSettings();
+    studentExamRefreshIdentityUi();
     const adminSwitch = document.getElementById('student-exam-admin-switch');
     if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
     startStudentPortalPresenceHeartbeat();
     renderStudentExamPlanState();
+    studentExamSetPortalPage('library');
+    studentExamSetSidebarActive('library');
     studentExamSetView(studentExamView || 'library');
   });
 }
@@ -21109,6 +21272,16 @@ function studentExamSetSidebarActive(key) {
   });
 }
 
+function studentExamSetPortalPage(page) {
+  const key = ['overview', 'library', 'stats'].includes(String(page || '')) ? String(page) : 'library';
+  const portal = document.getElementById('student-exam-portal');
+  if (!portal) return;
+  portal.dataset.studentPage = key;
+  portal.classList.toggle('student-page-overview', key === 'overview');
+  portal.classList.toggle('student-page-library', key === 'library');
+  portal.classList.toggle('student-page-stats', key === 'stats');
+}
+
 function studentExamSetStatsPanel(open) {
   const panel = document.getElementById('student-exam-stats-panel');
   if (!panel) return;
@@ -21125,14 +21298,9 @@ function studentExamSetOverviewPanel(open) {
 }
 
 function studentExamPortalQuotaText() {
-  if (isAdmin() || isTeacher()) return 'Không giới hạn';
-  const owned = portalPremiumOwnedProductKeys();
-  const hasPremiumPackage = currentPortalPlan === 'premium' || !!(owned && owned.size > 0);
-  const q = studentExamDownloadQuota || {};
-  const baseLimit = hasPremiumPackage ? 10 : 5;
-  const limit = Math.max(baseLimit, Number(q.limit || 0) || 0);
-  const used = Math.max(0, Number(q.used || 0) || 0);
-  return `${Math.max(0, limit - used)}/${limit} còn lại`;
+  const quota = studentExamQuotaInfo();
+  if (!Number.isFinite(quota.limit)) return 'Không giới hạn';
+  return `${quota.remaining}/${quota.limit} còn lại`;
 }
 
 function studentExamPublishedOnlineCount() {
@@ -21209,6 +21377,7 @@ function renderStudentExamOverviewPanel() {
 
 function studentExamShowOverview() {
   studentExamSetView('library');
+  studentExamSetPortalPage('overview');
   studentExamSetStatsPanel(false);
   studentExamSetOverviewPanel(true);
   studentExamSetSidebarActive('overview');
@@ -21217,6 +21386,7 @@ function studentExamShowOverview() {
 
 function studentExamShowLibrary() {
   studentExamSetView('library');
+  studentExamSetPortalPage('library');
   studentExamSetStatsPanel(false);
   studentExamSetOverviewPanel(false);
   studentExamSetSidebarActive('library');
@@ -21225,6 +21395,7 @@ function studentExamShowLibrary() {
 
 function studentExamShowStats() {
   studentExamSetView('library');
+  studentExamSetPortalPage('stats');
   renderStudentExamPersonalSections();
   studentExamSetOverviewPanel(false);
   studentExamSetStatsPanel(true);
@@ -21597,6 +21768,8 @@ function hideStudentExamPortalUI() {
 }
 
 function studentExamDisplayName() {
+  const localName = String(studentExamSettings?.displayName || '').trim();
+  if (localName) return localName;
   const profileName = String(currentProfileDisplayName || '').trim();
   if (profileName) return profileName;
   const metaName = String(
@@ -21607,6 +21780,16 @@ function studentExamDisplayName() {
   if (metaName) return metaName;
   const email = String(currentSession?.user?.email || '').trim();
   return email ? email.split('@')[0] : 'học sinh';
+}
+
+function studentExamRefreshIdentityUi() {
+  const displayName = studentExamDisplayName();
+  const hello = document.getElementById('student-exam-hello');
+  if (hello) hello.textContent = 'Xin chào, ' + displayName;
+  const menuName = document.getElementById('student-exam-menu-name');
+  if (menuName) menuName.textContent = displayName;
+  const avatarButton = document.getElementById('student-exam-avatar-button');
+  if (avatarButton) avatarButton.textContent = studentExamInitials(displayName);
 }
 
 function studentExamInitials(name) {
@@ -21632,7 +21815,7 @@ function closeStudentExamUserMenu() {
 }
 
 function closeStudentExamHeaderPanels() {
-  ['notification', 'settings'].forEach(key => {
+  ['notification'].forEach(key => {
     const popover = document.getElementById(`student-exam-${key}-popover`);
     const button = document.getElementById(`student-exam-${key}-button`);
     if (popover) {
@@ -21641,25 +21824,76 @@ function closeStudentExamHeaderPanels() {
     }
     if (button) button.setAttribute('aria-expanded', 'false');
   });
+  closeStudentExamSettingsPanel();
+}
+
+function closeStudentExamSettingsPanel() {
+  const modal = document.getElementById('student-exam-settings-popover');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  if (studentExamView !== 'premium') document.body.style.overflow = '';
+}
+
+function openStudentExamSettingsPanel(event) {
+  if (event) event.stopPropagation();
+  closeStudentExamUserMenu();
+  closeStudentExamHeaderPanels();
+  studentExamSyncSettingsControls();
+  const modal = document.getElementById('student-exam-settings-popover');
+  if (!modal) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('student-setting-display-name')?.focus({ preventScroll: true }), 20);
+}
+
+function studentExamQuotaInfo() {
+  const owned = portalPremiumOwnedProductKeys();
+  const hasPremiumPackage = currentPortalPlan === 'premium' || !!(owned && owned.size > 0);
+  const q = studentExamDownloadQuota || {};
+  const baseLimit = hasPremiumPackage ? 10 : 5;
+  const limit = isAdmin() || isTeacher() ? Infinity : Math.max(baseLimit, Number(q.limit || 0) || 0);
+  const used = Math.max(0, Number(q.used || 0) || 0);
+  const remaining = Number.isFinite(limit) ? Math.max(0, limit - used) : Infinity;
+  return { used, limit, remaining, hasPremiumPackage };
 }
 
 function studentExamNotificationItems() {
   const summary = studentOnlineSummary();
   const onlineCount = studentExamPublishedOnlineCount();
-  const quota = studentExamPortalQuotaText();
+  const quota = studentExamQuotaInfo();
+  const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
+  const attempts = Math.max(0, Number(summary.attempt_count || summary.latest_attempt_count || 0) || 0);
+  const avg = Number(summary.average_percent || 0) || 0;
+  const isFreeLike = !isAdmin() && !isTeacher() && currentPortalPlan !== 'premium' && !quota.hasPremiumPackage;
   const items = [];
   if (currentPortalStatus === 'pending') {
-    items.push({ tone: 'warn', title: 'Tài khoản đang chờ duyệt', detail: 'Kho tài liệu sẽ mở đầy đủ sau khi được duyệt.' });
+    items.push({ tone: 'warn', title: 'Tài khoản đang chờ duyệt', detail: 'Một số tài liệu có thể chưa mở cho tới khi tài khoản được duyệt.' });
   } else if (currentPortalStatus === 'blocked') {
     items.push({ tone: 'danger', title: 'Tài khoản đang bị khóa', detail: 'Liên hệ thầy/cô để kiểm tra quyền truy cập.' });
-  } else {
-    items.push({ tone: 'ok', title: currentPortalPlan === 'premium' ? 'Premium đang hoạt động' : 'Tài khoản đang hoạt động', detail: `Lượt tải hôm nay: ${quota}.` });
   }
-  items.push({ tone: onlineCount ? 'ok' : 'info', title: `${formatStudentExamStat(onlineCount)} đề online đang kích hoạt`, detail: onlineCount ? 'Bật bộ lọc Đề online để luyện đề ngay.' : 'Khi có đề online mới, nút làm bài sẽ xuất hiện trên card.' });
+  if (isFreeLike && Number.isFinite(quota.limit)) {
+    if (quota.remaining <= 0) {
+      items.push({ tone: 'danger', title: 'Em đã dùng hết lượt tải hôm nay', detail: 'Đăng ký Premium để tăng lượt tải và mở thêm kho đề.', action: 'premium', actionLabel: 'Đăng ký Premium' });
+    } else if (quota.remaining <= 1) {
+      items.push({ tone: 'warn', title: 'Sắp hết lượt tải miễn phí', detail: `Còn ${quota.remaining}/${quota.limit} lượt tải hôm nay. Premium giúp tăng lượt tải và mở khóa nhiều đề hơn.`, action: 'premium', actionLabel: 'Nâng cấp ngay' });
+    }
+  }
+  if (isFreeLike && onlineCount >= 1 && completed === 0) {
+    items.push({ tone: 'info', title: 'Có đề online đang chờ luyện', detail: `${formatStudentExamStat(onlineCount)} đề online đã kích hoạt. Làm thử một đề để bắt đầu ghi lịch sử điểm.`, action: 'online', actionLabel: 'Lọc đề online' });
+  } else if (onlineCount > completed && onlineCount >= 1) {
+    items.push({ tone: 'info', title: 'Còn đề online chưa hoàn thành', detail: `Đã làm ${formatStudentExamStat(completed)}/${formatStudentExamStat(onlineCount)} đề online đang mở.`, action: 'online', actionLabel: 'Xem đề online' });
+  }
+  if (attempts >= 1 && avg > 0 && avg < 50) {
+    items.push({ tone: 'score', title: 'Điểm TB đang dưới 50%', detail: `Điểm trung bình hiện tại là ${studentOnlinePercent(avg)}. Nên luyện lại đề gần nhất và xem đáp án sau khi nộp.` });
+  }
   if (summary.last_submitted_at) {
-    items.push({ tone: 'score', title: `Điểm TB ${studentOnlinePercent(summary.average_percent)}`, detail: `Lần nộp gần nhất: ${studentOnlineDateTime(summary.last_submitted_at)}.` });
-  } else {
-    items.push({ tone: 'info', title: 'Chưa có bài online đã nộp', detail: 'Mở đề online và bấm Nộp bài để ghi nhận lịch sử.' });
+    const last = new Date(summary.last_submitted_at);
+    const ageMs = Date.now() - last.getTime();
+    if (!Number.isNaN(ageMs) && ageMs > 1000 * 60 * 60 * 24 * 10) {
+      items.push({ tone: 'warn', title: 'Đã lâu chưa làm đề online', detail: `Lần nộp gần nhất: ${studentOnlineDateTime(summary.last_submitted_at)}.`, action: 'online', actionLabel: 'Luyện tiếp' });
+    }
   }
   return items;
 }
@@ -21668,15 +21902,24 @@ function renderStudentExamNotifications() {
   const list = document.getElementById('student-exam-notification-list');
   if (!list) return;
   const items = studentExamNotificationItems();
+  const badge = document.getElementById('student-exam-notification-badge');
+  const button = document.getElementById('student-exam-notification-button');
+  const count = items.length;
+  if (badge) {
+    badge.hidden = count <= 0;
+    badge.textContent = count > 9 ? '9+' : String(count);
+  }
+  if (button) button.setAttribute('aria-label', count > 0 ? `Thông báo (${count})` : 'Thông báo');
   list.innerHTML = items.length ? items.map(item => `
     <div class="student-exam-notification-item ${escapeHtml(item.tone)}">
       <span aria-hidden="true"></span>
       <div>
         <strong>${escapeHtml(item.title)}</strong>
         <small>${escapeHtml(item.detail)}</small>
+        ${item.action ? `<button type="button" class="student-exam-notification-action" data-student-notification-action="${escapeHtml(item.action)}">${escapeHtml(item.actionLabel || 'Mở')}</button>` : ''}
       </div>
     </div>
-  `).join('') : '<div class="student-exam-popover-empty">Chưa có thông báo mới.</div>';
+  `).join('') : '<div class="student-exam-popover-empty">Không có cảnh báo cần xử lý lúc này.</div>';
 }
 
 function studentExamSaveSettings() {
@@ -21685,15 +21928,28 @@ function studentExamSaveSettings() {
   } catch (e) {}
 }
 
+function studentExamApplyVisualSettings() {
+  const portal = document.getElementById('student-exam-portal');
+  if (!portal) return;
+  const density = studentExamNormalizeSettings(studentExamSettings).density;
+  portal.classList.toggle('student-density-compact', density === 'compact');
+  portal.classList.toggle('student-density-comfortable', density !== 'compact');
+}
+
 function studentExamSyncSettingsControls() {
   const settings = studentExamNormalizeSettings(studentExamSettings);
   studentExamSettings = settings;
   const pageSize = document.getElementById('student-setting-page-size');
   const sort = document.getElementById('student-setting-sort');
   const online = document.getElementById('student-setting-online');
+  const displayName = document.getElementById('student-setting-display-name');
+  const density = document.getElementById('student-setting-density');
   if (pageSize) pageSize.value = String(settings.pageSize);
   if (sort) sort.value = settings.sort;
   if (online) online.checked = settings.onlineOnly === true;
+  if (displayName) displayName.value = settings.displayName || '';
+  if (density) density.value = settings.density || 'comfortable';
+  studentExamApplyVisualSettings();
 }
 
 function studentExamApplySavedSettingsToFilters() {
@@ -21711,10 +21967,13 @@ function studentExamApplySettingsFromPanel() {
   const pageSize = Number(document.getElementById('student-setting-page-size')?.value || STUDENT_EXAM_PAGE_SIZE);
   const sort = String(document.getElementById('student-setting-sort')?.value || 'code');
   const onlineOnly = Boolean(document.getElementById('student-setting-online')?.checked);
-  studentExamSettings = studentExamNormalizeSettings({ pageSize, sort, onlineOnly });
+  const displayName = String(document.getElementById('student-setting-display-name')?.value || '').trim();
+  const density = String(document.getElementById('student-setting-density')?.value || 'comfortable');
+  studentExamSettings = studentExamNormalizeSettings({ pageSize, sort, onlineOnly, displayName, density });
   studentExamSaveSettings();
   studentExamApplySavedSettingsToFilters();
-  closeStudentExamHeaderPanels();
+  studentExamRefreshIdentityUi();
+  closeStudentExamSettingsPanel();
   applyStudentExamFilters();
 }
 
@@ -21722,7 +21981,8 @@ function studentExamResetSettingsPanel() {
   studentExamSettings = studentExamDefaultSettings();
   studentExamSaveSettings();
   studentExamApplySavedSettingsToFilters();
-  closeStudentExamHeaderPanels();
+  studentExamRefreshIdentityUi();
+  closeStudentExamSettingsPanel();
   applyStudentExamFilters();
 }
 
@@ -21730,6 +21990,10 @@ function toggleStudentExamHeaderPanel(kind, event) {
   if (event) event.stopPropagation();
   closeStudentExamUserMenu();
   const key = kind === 'settings' ? 'settings' : 'notification';
+  if (key === 'settings') {
+    openStudentExamSettingsPanel(event);
+    return;
+  }
   const popover = document.getElementById(`student-exam-${key}-popover`);
   const button = document.getElementById(`student-exam-${key}-button`);
   if (!popover || !button) return;
@@ -21758,7 +22022,9 @@ document.addEventListener('click', event => {
   const menuWrap = document.querySelector('.student-exam-user-menu-wrap');
   if (!menuWrap || !menuWrap.contains(event.target)) closeStudentExamUserMenu();
   const headerPopoverWrap = event.target.closest?.('.student-exam-header-popover-wrap');
-  if (!headerPopoverWrap) closeStudentExamHeaderPanels();
+  const settingsDialog = event.target.closest?.('.student-exam-settings-dialog');
+  const fromUserMenu = !!(menuWrap && menuWrap.contains(event.target));
+  if (!headerPopoverWrap && !settingsDialog && !fromUserMenu) closeStudentExamHeaderPanels();
 });
 
 function studentExamLevelLabel(v) {
@@ -21875,10 +22141,14 @@ function updateStudentExamDownloadQuota(quota) {
     studentExamDownloadQuota = quota;
   }
   const el = document.getElementById('student-exam-download-credit');
-  if (!el) return;
+  if (!el) {
+    renderStudentExamNotifications();
+    return;
+  }
   el.classList.remove('is-low', 'is-empty');
   if (isAdmin() || isTeacher()) {
     el.textContent = 'Tải: không giới hạn';
+    renderStudentExamNotifications();
     return;
   }
   const owned = portalPremiumOwnedProductKeys();
@@ -21892,6 +22162,7 @@ function updateStudentExamDownloadQuota(quota) {
   el.textContent = `Tải: ${used}/${limit} hôm nay`;
   if (remaining === 0) el.classList.add('is-empty');
   else if (remaining <= 1 || used >= limit - 1) el.classList.add('is-low');
+  renderStudentExamNotifications();
 }
 
 function studentExamLockedMessage(row) {
@@ -22816,6 +23087,7 @@ async function loadStudentOnlineExamHistory(options = {}) {
   } finally {
     studentOnlineExamHistoryLoading = false;
     renderStudentOnlineExamHistory();
+    renderStudentExamNotifications();
   }
 }
 
@@ -23393,7 +23665,11 @@ function resetStudentExamFilters() {
   });
   const globalSearch = document.getElementById('student-exam-global-search');
   if (globalSearch) globalSearch.value = '';
-  studentExamSettings = studentExamDefaultSettings();
+  studentExamSettings = studentExamNormalizeSettings(Object.assign({}, studentExamSettings, {
+    pageSize: STUDENT_EXAM_PAGE_SIZE,
+    sort: 'code',
+    onlineOnly: false
+  }));
   studentExamPageSize = studentExamSettings.pageSize;
   studentExamVisibleCount = studentExamPageSize;
   studentExamSaveSettings();
@@ -23504,6 +23780,24 @@ function bindStudentExamPortalEvents() {
   if (portal && portal.dataset.bound !== '1') {
     portal.dataset.bound = '1';
     portal.addEventListener('click', e => {
+      const notificationAction = e.target.closest('[data-student-notification-action]');
+      if (notificationAction) {
+        const action = notificationAction.getAttribute('data-student-notification-action');
+        closeStudentExamHeaderPanels();
+        if (action === 'premium') {
+          studentExamSetView('premium');
+          return;
+        }
+        if (action === 'online') {
+          const online = document.getElementById('student-exam-online-filter');
+          if (online) online.checked = true;
+          studentExamSettings = studentExamNormalizeSettings(Object.assign({}, studentExamSettings, { onlineOnly: true }));
+          studentExamSaveSettings();
+          studentExamShowLibrary();
+          applyStudentExamFilters();
+          return;
+        }
+      }
       const history = e.target.closest('[data-online-history-open]');
       if (history) {
         openStudentOnlineExamHistory();
