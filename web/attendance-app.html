@@ -13185,6 +13185,350 @@ a:focus-visible,
   box-shadow:0 10px 18px rgba(22,101,52,.08) !important;
 }
 
+/* Student portal navigation panels and fixed desktop sidebar. */
+.student-premium-crown-svg{
+  width:22px;
+  height:18px;
+  flex:0 0 auto;
+  color:var(--doc-gold);
+  fill:currentColor;
+  filter:drop-shadow(0 3px 5px rgba(255,194,71,.22));
+}
+#student-exam-portal .student-exam-sidebar-premium-title{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+}
+#student-exam-portal .student-exam-sidebar-premium-title::before{
+  content:none !important;
+  display:none !important;
+}
+.student-exam-header-popover-wrap{
+  position:relative;
+  display:inline-grid;
+  place-items:center;
+}
+.student-exam-header-popover{
+  position:absolute;
+  top:calc(100% + 12px);
+  right:0;
+  z-index:60;
+  display:none;
+  width:min(340px,calc(100vw - 24px));
+  padding:12px;
+  border:1px solid var(--doc-line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 22px 48px rgba(8,29,66,.18);
+}
+.student-exam-header-popover.open{
+  display:grid;
+  gap:12px;
+}
+.student-exam-header-popover-head{
+  display:grid;
+  gap:4px;
+  padding:2px 2px 10px;
+  border-bottom:1px solid var(--doc-line);
+}
+.student-exam-header-popover-head strong{
+  color:var(--doc-text);
+  font-size:15px;
+  font-weight:950;
+}
+.student-exam-header-popover-head span{
+  color:#667892;
+  font-size:12px;
+  font-weight:750;
+}
+.student-exam-notification-list{
+  display:grid;
+  gap:8px;
+}
+.student-exam-notification-item{
+  display:grid;
+  grid-template-columns:10px minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  padding:10px;
+  border:1px solid #e1eaf5;
+  border-radius:12px;
+  background:#f8fbff;
+}
+.student-exam-notification-item > span{
+  width:10px;
+  height:10px;
+  margin-top:3px;
+  border-radius:999px;
+  background:#2563eb;
+}
+.student-exam-notification-item.ok > span{background:#16a765}
+.student-exam-notification-item.warn > span{background:#f4a71d}
+.student-exam-notification-item.danger > span{background:#dc2626}
+.student-exam-notification-item.score > span{background:#0f766e}
+.student-exam-notification-item strong{
+  display:block;
+  color:#082454;
+  font-size:13px;
+  line-height:1.25;
+  font-weight:930;
+}
+.student-exam-notification-item small,
+.student-exam-popover-empty{
+  color:#60728b;
+  font-size:12px;
+  line-height:1.45;
+  font-weight:700;
+}
+.student-exam-popover-empty{
+  padding:12px;
+  border:1px dashed #d8e3f1;
+  border-radius:12px;
+  background:#f8fbff;
+}
+.student-exam-settings-form{
+  display:grid;
+  gap:10px;
+}
+.student-exam-settings-form label{
+  display:grid;
+  gap:6px;
+}
+.student-exam-settings-form label > span{
+  color:#304a69;
+  font-size:11.5px;
+  font-weight:850;
+}
+.student-exam-settings-form select{
+  min-height:40px;
+  border:1px solid #d6e3f3;
+  border-radius:10px;
+  background:#fff;
+  color:#082454;
+  padding:0 12px;
+  font-size:13px;
+  font-weight:780;
+  outline:none;
+}
+.student-exam-settings-check{
+  display:flex !important;
+  grid-template-columns:none !important;
+  flex-direction:row;
+  align-items:center;
+  gap:9px !important;
+  min-height:40px;
+  padding:0 10px;
+  border:1px solid #d6e3f3;
+  border-radius:10px;
+  background:#f8fbff;
+}
+.student-exam-settings-check input{
+  width:18px;
+  height:18px;
+  accent-color:#2563eb;
+}
+.student-exam-settings-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:2px;
+}
+.student-exam-settings-actions button{
+  min-height:40px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.student-exam-settings-reset{
+  border:1px solid #d6e3f3;
+  background:#fff;
+  color:#395571;
+}
+.student-exam-settings-apply{
+  border:1px solid #082454;
+  background:linear-gradient(135deg,#062653,#123e78);
+  color:#fff;
+}
+.student-exam-overview-panel{
+  display:none;
+  margin:0 0 20px;
+  padding:16px;
+  border:1px solid var(--doc-panel-line,#d7e3f2);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:var(--doc-panel-shadow,0 12px 28px rgba(8,29,66,.05));
+}
+.student-exam-overview-panel.is-open{
+  display:grid;
+  gap:14px;
+}
+#student-exam-stats-panel{
+  display:none !important;
+}
+#student-exam-stats-panel.is-open{
+  display:grid !important;
+}
+.student-exam-overview-head,
+.student-stats-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.student-exam-overview-kicker{
+  color:#2563eb;
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.student-exam-overview-head h2,
+.student-stats-panel-head h2{
+  margin:3px 0 0;
+  color:#082454;
+  font-size:19px;
+  line-height:1.2;
+  font-weight:950;
+}
+.student-exam-overview-action{
+  min-height:38px;
+  padding:0 14px;
+  border:1px solid #d6e3f3;
+  border-radius:10px;
+  background:#fff;
+  color:#123e78;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.student-exam-overview-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.student-exam-overview-card{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:2px 10px;
+  align-items:center;
+  min-height:96px;
+  padding:12px;
+  border:1px solid #dce7f5;
+  border-radius:13px;
+  background:linear-gradient(180deg,#fff,#f8fbff);
+}
+.student-exam-overview-icon{
+  grid-row:1 / span 3;
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:#eef5ff;
+  color:#2563eb;
+}
+.student-exam-overview-icon svg{
+  width:20px;
+  height:20px;
+}
+.student-exam-overview-icon svg path{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.student-exam-overview-card span:not(.student-exam-overview-icon){
+  color:#64748b;
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+.student-exam-overview-card strong{
+  color:#082454;
+  font-size:18px;
+  line-height:1.1;
+  font-weight:950;
+}
+.student-exam-overview-card small{
+  color:#61738b;
+  font-size:11.5px;
+  line-height:1.35;
+  font-weight:700;
+}
+.student-stats-panel-head{
+  grid-column:1 / -1;
+  padding-bottom:2px;
+}
+@media (min-width:1180px){
+  #student-exam-portal .student-exam-app-shell{
+    grid-template-columns:276px minmax(0,1fr) !important;
+  }
+  #student-exam-portal .student-exam-sidebar{
+    position:fixed !important;
+    inset:0 auto 0 0 !important;
+    width:276px !important;
+    height:100dvh !important;
+    min-height:100dvh !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain;
+  }
+  #student-exam-portal .student-exam-sidebar::-webkit-scrollbar{
+    width:6px;
+  }
+  #student-exam-portal .student-exam-sidebar::-webkit-scrollbar-thumb{
+    background:#d5e1ef;
+    border-radius:999px;
+  }
+  #student-exam-portal .student-exam-main{
+    grid-column:2 !important;
+  }
+  #student-exam-portal .student-exam-filter-field select{
+    appearance:none !important;
+    -webkit-appearance:none !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+  #student-exam-portal .student-exam-online-toggle{
+    gap:9px !important;
+    min-width:126px !important;
+    border-radius:10px !important;
+    background:linear-gradient(180deg,#fff,#f8fbff) !important;
+  }
+  #student-exam-portal .student-exam-online-toggle input:focus-visible + .student-exam-online-toggle-mark{
+    outline:3px solid rgba(37,99,235,.16);
+    outline-offset:3px;
+  }
+  #student-exam-portal .student-premium-entry.is-open{
+    grid-template-columns:minmax(360px,500px) minmax(520px,760px) !important;
+  }
+}
+@media (max-width:1179px){
+  .student-exam-overview-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .student-exam-header-popover{
+    right:50%;
+    transform:translateX(50%);
+  }
+}
+@media (max-width:699px){
+  .student-exam-overview-panel{
+    padding:13px;
+    border-radius:14px;
+  }
+  .student-exam-overview-head,
+  .student-stats-panel-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .student-exam-overview-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 /* Action button color system */
 .btn-sm.action-attendance,
 .class-mgr-actions .btn-sm.action-attendance{
@@ -15289,7 +15633,18 @@ button[data-bank-inspect-confirm-not]:hover,
           </button>
         </div>
         <div class="student-exam-sidebar-premium">
-          <div class="student-exam-sidebar-premium-title">Premium</div>
+          <div class="student-exam-sidebar-premium-title">
+            <svg class="student-premium-crown-svg" viewBox="0 0 64 48" aria-hidden="true" focusable="false">
+              <path d="M5.5 16.7c3.9 3 7 5 10 5.6 3.4.7 6.4-.6 9.4-4.1L32 6.7l7.1 11.5c3 3.5 6 4.8 9.4 4.1 3-.6 6.1-2.6 10-5.6L50.7 39H13.3L5.5 16.7Z"></path>
+              <circle cx="7.5" cy="15.1" r="5.1"></circle>
+              <circle cx="24.2" cy="13.3" r="5.1"></circle>
+              <circle cx="32" cy="6.9" r="6.4"></circle>
+              <circle cx="39.8" cy="13.3" r="5.1"></circle>
+              <circle cx="56.5" cy="15.1" r="5.1"></circle>
+              <path d="M12.6 41.1c8.8-1.4 17.6-2 26.4-1.8 4.9.1 9.8.5 14.4 1.2l-1.1 4.1H13.7l-1.1-3.5Z"></path>
+            </svg>
+            <span>Premium</span>
+          </div>
           <p>Mở toàn bộ kho đề và tài liệu chuyên sâu.</p>
           <button type="button" onclick="studentExamSetView('premium')">Nâng cấp ngay</button>
         </div>
@@ -15308,9 +15663,57 @@ button[data-bank-inspect-confirm-not]:hover,
       <div class="student-exam-user">
         <div class="student-exam-hello" id="student-exam-hello">Xin chào</div>
         <div class="student-exam-plan" id="student-exam-plan-badge">Free</div>
-        <button type="button" class="student-exam-icon-btn" aria-label="Thông báo">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 1 0-12 0c0 7-3 6-3 9h18c0-3-3-2-3-9z"></path><path d="M10 21h4"></path></svg>
-        </button>
+        <div class="student-exam-header-popover-wrap">
+          <button type="button" class="student-exam-icon-btn" id="student-exam-notification-button" aria-label="Thông báo" aria-haspopup="dialog" aria-expanded="false" aria-controls="student-exam-notification-popover" onclick="toggleStudentExamHeaderPanel('notifications', event)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 1 0-12 0c0 7-3 6-3 9h18c0-3-3-2-3-9z"></path><path d="M10 21h4"></path></svg>
+          </button>
+          <div class="student-exam-header-popover student-exam-notification-popover" id="student-exam-notification-popover" aria-hidden="true">
+            <div class="student-exam-header-popover-head">
+              <strong>Thông báo</strong>
+              <span>Tình trạng kho tài liệu</span>
+            </div>
+            <div class="student-exam-notification-list" id="student-exam-notification-list">
+              <div class="student-exam-popover-empty">Chưa có thông báo mới.</div>
+            </div>
+          </div>
+        </div>
+        <div class="student-exam-header-popover-wrap">
+          <button type="button" class="student-exam-icon-btn" id="student-exam-settings-button" aria-label="Cài đặt" aria-haspopup="dialog" aria-expanded="false" aria-controls="student-exam-settings-popover" onclick="toggleStudentExamHeaderPanel('settings', event)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06a2.1 2.1 0 1 1-2.97 2.97l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V21a2.1 2.1 0 1 1-4.2 0v-.09a1.8 1.8 0 0 0-1.09-1.65 1.8 1.8 0 0 0-1.98.36l-.06.06a2.1 2.1 0 1 1-2.97-2.97l.06-.06a1.8 1.8 0 0 0 .36-1.98 1.8 1.8 0 0 0-1.65-1.09H2a2.1 2.1 0 1 1 0-4.2h.09A1.8 1.8 0 0 0 3.74 8.3a1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.1 2.1 0 1 1 2.97-2.97l.06.06a1.8 1.8 0 0 0 1.98.36 1.8 1.8 0 0 0 1.09-1.65V2a2.1 2.1 0 1 1 4.2 0v.09a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.06-.06a2.1 2.1 0 1 1 2.97 2.97l-.06.06a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.09H21a2.1 2.1 0 1 1 0 4.2h-.09A1.8 1.8 0 0 0 19.4 15Z"></path></svg>
+          </button>
+          <div class="student-exam-header-popover student-exam-settings-popover" id="student-exam-settings-popover" aria-hidden="true">
+            <div class="student-exam-header-popover-head">
+              <strong>Cài đặt hiển thị</strong>
+              <span>Lưu riêng trên trình duyệt này</span>
+            </div>
+            <div class="student-exam-settings-form">
+              <label>
+                <span>Số tài liệu/trang</span>
+                <select id="student-setting-page-size" aria-label="Số tài liệu mỗi trang">
+                  <option value="12">12 tài liệu</option>
+                  <option value="24">24 tài liệu</option>
+                  <option value="48">48 tài liệu</option>
+                </select>
+              </label>
+              <label>
+                <span>Sắp xếp mặc định</span>
+                <select id="student-setting-sort" aria-label="Sắp xếp mặc định">
+                  <option value="code">Theo số đề tăng dần</option>
+                  <option value="newest">Mới upload</option>
+                  <option value="popular">Tải nhiều</option>
+                </select>
+              </label>
+              <label class="student-exam-settings-check">
+                <input id="student-setting-online" type="checkbox"/>
+                <span>Chỉ hiện đề online</span>
+              </label>
+              <div class="student-exam-settings-actions">
+                <button type="button" class="student-exam-settings-reset" onclick="studentExamResetSettingsPanel()">Đặt lại</button>
+                <button type="button" class="student-exam-settings-apply" onclick="studentExamApplySettingsFromPanel()">Áp dụng</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="student-exam-user-menu-wrap">
           <button type="button" class="student-exam-avatar student-exam-avatar-btn" id="student-exam-avatar-button" aria-haspopup="menu" aria-expanded="false" aria-controls="student-exam-user-menu" onclick="toggleStudentExamUserMenu(event)">TV</button>
           <div class="student-exam-user-menu" id="student-exam-user-menu" role="menu" aria-hidden="true">
@@ -15318,8 +15721,6 @@ button[data-bank-inspect-confirm-not]:hover,
               <strong id="student-exam-menu-name">Tài khoản học sinh</strong>
               <span id="student-exam-download-credit">Tải: 0/5 hôm nay</span>
             </div>
-            <button type="button" class="student-exam-menu-item" onclick="closeStudentExamUserMenu();studentExamShowOverview()" role="menuitem">Thông tin học sinh</button>
-            <button type="button" class="student-exam-menu-item" onclick="closeStudentExamUserMenu();studentExamShowStats()" role="menuitem">Thống kê học tập</button>
             <button type="button" class="student-exam-menu-item student-exam-admin-link" id="student-exam-admin-switch" onclick="closeStudentExamUserMenu();openAdminDashboardModule()" role="menuitem" style="display:none">
               Đi tới trang quản trị
             </button>
@@ -15331,7 +15732,25 @@ button[data-bank-inspect-confirm-not]:hover,
 
     <div class="student-exam-approval-note" id="student-exam-approval-note" role="status"></div>
 
-    <section class="student-premium-entry" id="student-exam-stats-panel" aria-label="Thống kê học tập">
+    <section class="student-exam-overview-panel" id="student-exam-overview-panel" aria-label="Tổng quan học tập" aria-hidden="true">
+      <div class="student-exam-overview-head">
+        <div>
+          <div class="student-exam-overview-kicker">Tổng quan</div>
+          <h2>Trạng thái học tập của em</h2>
+        </div>
+        <button type="button" class="student-exam-overview-action" onclick="studentExamShowLibrary()">Vào kho tài liệu</button>
+      </div>
+      <div class="student-exam-overview-grid" id="student-exam-overview-grid"></div>
+    </section>
+
+    <section class="student-premium-entry" id="student-exam-stats-panel" aria-label="Thống kê học tập" aria-hidden="true">
+      <div class="student-stats-panel-head">
+        <div>
+          <div class="student-exam-overview-kicker">Thống kê</div>
+          <h2>Hiệu suất làm đề</h2>
+        </div>
+        <button type="button" class="student-exam-overview-action" data-online-history-open>Xem lịch sử online</button>
+      </div>
       <div class="student-exam-download-history-bar">
         <button type="button" class="student-exam-history-btn" onclick="openStudentExamDownloadHistory()" aria-haspopup="dialog" aria-controls="student-exam-download-history-modal">
           <span class="student-exam-history-btn-icon" aria-hidden="true">
@@ -17515,9 +17934,28 @@ let studentExamLoading = false;
 let studentExamError = '';
 let studentExamDownloadQuota = null;
 const STUDENT_EXAM_PAGE_SIZE = 12;
-let studentExamPageSize = STUDENT_EXAM_PAGE_SIZE;
+const STUDENT_EXAM_SETTINGS_KEY = 'mvk_student_portal_settings_v1';
+function studentExamDefaultSettings() {
+  return { pageSize: STUDENT_EXAM_PAGE_SIZE, sort: 'code', onlineOnly: false };
+}
+function studentExamNormalizeSettings(value) {
+  const defaults = studentExamDefaultSettings();
+  const raw = value && typeof value === 'object' ? value : {};
+  const pageSize = [12, 24, 48].includes(Number(raw.pageSize)) ? Number(raw.pageSize) : defaults.pageSize;
+  const sort = ['code', 'newest', 'popular'].includes(String(raw.sort || '')) ? String(raw.sort) : defaults.sort;
+  return { pageSize, sort, onlineOnly: raw.onlineOnly === true };
+}
+function studentExamLoadSettings() {
+  try {
+    return studentExamNormalizeSettings(JSON.parse(localStorage.getItem(STUDENT_EXAM_SETTINGS_KEY) || '{}'));
+  } catch (e) {
+    return studentExamDefaultSettings();
+  }
+}
+let studentExamSettings = studentExamLoadSettings();
+let studentExamPageSize = studentExamSettings.pageSize;
 let studentExamCurrentPage = 1;
-let studentExamVisibleCount = STUDENT_EXAM_PAGE_SIZE;
+let studentExamVisibleCount = studentExamPageSize;
 let studentExamAdvancedFiltersOpen = false;
 let studentPortalPresenceTimer = null;
 let studentPortalPresenceUnloadBound = false;
@@ -20678,16 +21116,109 @@ function studentExamSetStatsPanel(open) {
   panel.setAttribute('aria-hidden', open ? 'false' : 'true');
 }
 
+function studentExamSetOverviewPanel(open) {
+  const panel = document.getElementById('student-exam-overview-panel');
+  if (!panel) return;
+  panel.classList.toggle('is-open', !!open);
+  panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+  if (open) renderStudentExamOverviewPanel();
+}
+
+function studentExamPortalQuotaText() {
+  if (isAdmin() || isTeacher()) return 'Không giới hạn';
+  const owned = portalPremiumOwnedProductKeys();
+  const hasPremiumPackage = currentPortalPlan === 'premium' || !!(owned && owned.size > 0);
+  const q = studentExamDownloadQuota || {};
+  const baseLimit = hasPremiumPackage ? 10 : 5;
+  const limit = Math.max(baseLimit, Number(q.limit || 0) || 0);
+  const used = Math.max(0, Number(q.used || 0) || 0);
+  return `${Math.max(0, limit - used)}/${limit} còn lại`;
+}
+
+function studentExamPublishedOnlineCount() {
+  return (studentExamRows || []).filter(row => studentExamIsExamDocumentRow(row) && studentExamHasPublishedOnline(row)).length;
+}
+
+function studentExamOverviewItems() {
+  const summary = studentOnlineSummary();
+  const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
+  const attempts = Math.max(0, Number(summary.attempt_count || summary.latest_attempt_count || 0) || 0);
+  const onlineCount = studentExamPublishedOnlineCount();
+  const planLabel = currentPortalPlan === 'premium' || isAdmin() || isTeacher() ? 'Premium' : 'Free';
+  const statusLabel = currentPortalStatus === 'pending' ? 'Chờ duyệt' : (currentPortalStatus === 'blocked' ? 'Đang khóa' : 'Hoạt động');
+  return [
+    {
+      icon: 'plan',
+      label: 'Gói tài khoản',
+      value: planLabel,
+      detail: statusLabel
+    },
+    {
+      icon: 'quota',
+      label: 'Lượt tải hôm nay',
+      value: studentExamPortalQuotaText(),
+      detail: isAdmin() || isTeacher() ? 'Tài khoản quản trị/giáo viên' : 'Tính theo giới hạn tài khoản'
+    },
+    {
+      icon: 'online',
+      label: 'Đề online đang mở',
+      value: `${formatStudentExamStat(onlineCount)} đề`,
+      detail: onlineCount ? 'Có thể lọc nhanh bằng Đề online' : 'Chưa có đề online phù hợp'
+    },
+    {
+      icon: 'score',
+      label: 'Điểm trung bình',
+      value: studentOnlinePercent(summary.average_percent),
+      detail: completed ? `${formatStudentExamStat(completed)} đề đã hoàn thành` : 'Chưa nộp bài online'
+    },
+    {
+      icon: 'attempts',
+      label: 'Lần nộp',
+      value: formatStudentExamStat(attempts),
+      detail: summary.last_submitted_at ? `Gần nhất ${studentOnlineDateTime(summary.last_submitted_at)}` : 'Chưa có lần nộp'
+    },
+    {
+      icon: 'next',
+      label: 'Gợi ý tiếp theo',
+      value: onlineCount ? 'Làm đề online' : 'Tải đề luyện tập',
+      detail: onlineCount ? 'Bật bộ lọc Đề online để làm ngay' : 'Chọn đề theo nguồn/năm cần ôn'
+    }
+  ];
+}
+
+function renderStudentExamOverviewPanel() {
+  const el = document.getElementById('student-exam-overview-grid');
+  if (!el) return;
+  const iconMap = {
+    plan: '<path d="M5 19V5l7-3 7 3v14l-7 3-7-3Z"></path><path d="M9 12h6"></path><path d="M12 8v8"></path>',
+    quota: '<path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path>',
+    online: '<path d="M4 6h16v12H4z"></path><path d="M8 21h8"></path><path d="M12 18v3"></path>',
+    score: '<path d="M4 19V5"></path><path d="M8 17V9"></path><path d="M12 17V7"></path><path d="M16 17v-5"></path><path d="M20 19H4"></path>',
+    attempts: '<path d="M7 7h10"></path><path d="M7 12h10"></path><path d="M7 17h6"></path><path d="M5 3h14v18H5z"></path>',
+    next: '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>'
+  };
+  el.innerHTML = studentExamOverviewItems().map(item => `
+    <article class="student-exam-overview-card">
+      <span class="student-exam-overview-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${iconMap[item.icon] || iconMap.next}</svg></span>
+      <span>${escapeHtml(item.label)}</span>
+      <strong>${escapeHtml(item.value)}</strong>
+      <small>${escapeHtml(item.detail)}</small>
+    </article>
+  `).join('');
+}
+
 function studentExamShowOverview() {
   studentExamSetView('library');
   studentExamSetStatsPanel(false);
+  studentExamSetOverviewPanel(true);
   studentExamSetSidebarActive('overview');
-  document.getElementById('student-exam-hero-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('student-exam-overview-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function studentExamShowLibrary() {
   studentExamSetView('library');
   studentExamSetStatsPanel(false);
+  studentExamSetOverviewPanel(false);
   studentExamSetSidebarActive('library');
   document.getElementById('student-exam-filter-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -20695,6 +21226,7 @@ function studentExamShowLibrary() {
 function studentExamShowStats() {
   studentExamSetView('library');
   renderStudentExamPersonalSections();
+  studentExamSetOverviewPanel(false);
   studentExamSetStatsPanel(true);
   studentExamSetSidebarActive('stats');
   document.getElementById('student-exam-stats-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -20703,6 +21235,7 @@ function studentExamShowStats() {
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   closeStudentExamUserMenu();
+  closeStudentExamHeaderPanels();
   const historyModal = document.getElementById('student-exam-download-history-modal');
   if (historyModal?.classList.contains('open')) {
     event.preventDefault();
@@ -21098,8 +21631,120 @@ function closeStudentExamUserMenu() {
   if (button) button.setAttribute('aria-expanded', 'false');
 }
 
+function closeStudentExamHeaderPanels() {
+  ['notification', 'settings'].forEach(key => {
+    const popover = document.getElementById(`student-exam-${key}-popover`);
+    const button = document.getElementById(`student-exam-${key}-button`);
+    if (popover) {
+      popover.classList.remove('open');
+      popover.setAttribute('aria-hidden', 'true');
+    }
+    if (button) button.setAttribute('aria-expanded', 'false');
+  });
+}
+
+function studentExamNotificationItems() {
+  const summary = studentOnlineSummary();
+  const onlineCount = studentExamPublishedOnlineCount();
+  const quota = studentExamPortalQuotaText();
+  const items = [];
+  if (currentPortalStatus === 'pending') {
+    items.push({ tone: 'warn', title: 'Tài khoản đang chờ duyệt', detail: 'Kho tài liệu sẽ mở đầy đủ sau khi được duyệt.' });
+  } else if (currentPortalStatus === 'blocked') {
+    items.push({ tone: 'danger', title: 'Tài khoản đang bị khóa', detail: 'Liên hệ thầy/cô để kiểm tra quyền truy cập.' });
+  } else {
+    items.push({ tone: 'ok', title: currentPortalPlan === 'premium' ? 'Premium đang hoạt động' : 'Tài khoản đang hoạt động', detail: `Lượt tải hôm nay: ${quota}.` });
+  }
+  items.push({ tone: onlineCount ? 'ok' : 'info', title: `${formatStudentExamStat(onlineCount)} đề online đang kích hoạt`, detail: onlineCount ? 'Bật bộ lọc Đề online để luyện đề ngay.' : 'Khi có đề online mới, nút làm bài sẽ xuất hiện trên card.' });
+  if (summary.last_submitted_at) {
+    items.push({ tone: 'score', title: `Điểm TB ${studentOnlinePercent(summary.average_percent)}`, detail: `Lần nộp gần nhất: ${studentOnlineDateTime(summary.last_submitted_at)}.` });
+  } else {
+    items.push({ tone: 'info', title: 'Chưa có bài online đã nộp', detail: 'Mở đề online và bấm Nộp bài để ghi nhận lịch sử.' });
+  }
+  return items;
+}
+
+function renderStudentExamNotifications() {
+  const list = document.getElementById('student-exam-notification-list');
+  if (!list) return;
+  const items = studentExamNotificationItems();
+  list.innerHTML = items.length ? items.map(item => `
+    <div class="student-exam-notification-item ${escapeHtml(item.tone)}">
+      <span aria-hidden="true"></span>
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <small>${escapeHtml(item.detail)}</small>
+      </div>
+    </div>
+  `).join('') : '<div class="student-exam-popover-empty">Chưa có thông báo mới.</div>';
+}
+
+function studentExamSaveSettings() {
+  try {
+    localStorage.setItem(STUDENT_EXAM_SETTINGS_KEY, JSON.stringify(studentExamSettings));
+  } catch (e) {}
+}
+
+function studentExamSyncSettingsControls() {
+  const settings = studentExamNormalizeSettings(studentExamSettings);
+  studentExamSettings = settings;
+  const pageSize = document.getElementById('student-setting-page-size');
+  const sort = document.getElementById('student-setting-sort');
+  const online = document.getElementById('student-setting-online');
+  if (pageSize) pageSize.value = String(settings.pageSize);
+  if (sort) sort.value = settings.sort;
+  if (online) online.checked = settings.onlineOnly === true;
+}
+
+function studentExamApplySavedSettingsToFilters() {
+  studentExamSettings = studentExamNormalizeSettings(studentExamSettings);
+  studentExamPageSize = studentExamSettings.pageSize;
+  studentExamVisibleCount = studentExamPageSize;
+  const sortEl = document.getElementById('student-exam-sort');
+  const onlineEl = document.getElementById('student-exam-online-filter');
+  if (sortEl) sortEl.value = studentExamSettings.sort;
+  if (onlineEl) onlineEl.checked = studentExamSettings.onlineOnly === true;
+  studentExamSyncSettingsControls();
+}
+
+function studentExamApplySettingsFromPanel() {
+  const pageSize = Number(document.getElementById('student-setting-page-size')?.value || STUDENT_EXAM_PAGE_SIZE);
+  const sort = String(document.getElementById('student-setting-sort')?.value || 'code');
+  const onlineOnly = Boolean(document.getElementById('student-setting-online')?.checked);
+  studentExamSettings = studentExamNormalizeSettings({ pageSize, sort, onlineOnly });
+  studentExamSaveSettings();
+  studentExamApplySavedSettingsToFilters();
+  closeStudentExamHeaderPanels();
+  applyStudentExamFilters();
+}
+
+function studentExamResetSettingsPanel() {
+  studentExamSettings = studentExamDefaultSettings();
+  studentExamSaveSettings();
+  studentExamApplySavedSettingsToFilters();
+  closeStudentExamHeaderPanels();
+  applyStudentExamFilters();
+}
+
+function toggleStudentExamHeaderPanel(kind, event) {
+  if (event) event.stopPropagation();
+  closeStudentExamUserMenu();
+  const key = kind === 'settings' ? 'settings' : 'notification';
+  const popover = document.getElementById(`student-exam-${key}-popover`);
+  const button = document.getElementById(`student-exam-${key}-button`);
+  if (!popover || !button) return;
+  const nextOpen = !popover.classList.contains('open');
+  closeStudentExamHeaderPanels();
+  if (key === 'notification') renderStudentExamNotifications();
+  if (key === 'settings') studentExamSyncSettingsControls();
+  popover.classList.toggle('open', nextOpen);
+  popover.setAttribute('aria-hidden', nextOpen ? 'false' : 'true');
+  button.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+}
+
 function toggleStudentExamUserMenu(event) {
   if (event) event.stopPropagation();
+  closeStudentExamHeaderPanels();
   const menu = document.getElementById('student-exam-user-menu');
   const button = document.getElementById('student-exam-avatar-button');
   if (!menu || !button) return;
@@ -21112,6 +21757,8 @@ function toggleStudentExamUserMenu(event) {
 document.addEventListener('click', event => {
   const menuWrap = document.querySelector('.student-exam-user-menu-wrap');
   if (!menuWrap || !menuWrap.contains(event.target)) closeStudentExamUserMenu();
+  const headerPopoverWrap = event.target.closest?.('.student-exam-header-popover-wrap');
+  if (!headerPopoverWrap) closeStudentExamHeaderPanels();
 });
 
 function studentExamLevelLabel(v) {
@@ -22503,6 +23150,9 @@ function studentExamSetPage(page) {
 function studentExamSetPageSize(value) {
   const next = Math.max(1, Number(value || STUDENT_EXAM_PAGE_SIZE) || STUDENT_EXAM_PAGE_SIZE);
   studentExamPageSize = [12, 24, 48].includes(next) ? next : STUDENT_EXAM_PAGE_SIZE;
+  studentExamSettings = studentExamNormalizeSettings(Object.assign({}, studentExamSettings, { pageSize: studentExamPageSize }));
+  studentExamSaveSettings();
+  studentExamSyncSettingsControls();
   studentExamVisibleCount = studentExamPageSize;
   studentExamCurrentPage = 1;
   renderStudentExamPortal();
@@ -22673,6 +23323,8 @@ function renderStudentExamDataOverview() {
 function renderStudentExamPortal() {
   updateStudentExamDownloadQuota();
   renderStudentExamDataOverview();
+  renderStudentExamOverviewPanel();
+  renderStudentExamNotifications();
   if (studentExamLoading) {
     ['student-exam-download-history-list', 'student-exam-list'].forEach(id => {
       const el = document.getElementById(id);
@@ -22741,6 +23393,11 @@ function resetStudentExamFilters() {
   });
   const globalSearch = document.getElementById('student-exam-global-search');
   if (globalSearch) globalSearch.value = '';
+  studentExamSettings = studentExamDefaultSettings();
+  studentExamPageSize = studentExamSettings.pageSize;
+  studentExamVisibleCount = studentExamPageSize;
+  studentExamSaveSettings();
+  studentExamSyncSettingsControls();
   studentExamAdvancedFiltersOpen = false;
   syncStudentExamAdvancedFilters();
   applyStudentExamFilters();
@@ -22769,6 +23426,7 @@ async function loadStudentExamFiles() {
     ]);
     studentExamRows = studentExamSortRows(applyStudentExamAccessState(Array.isArray(rows) ? rows : []).filter(studentExamIsExamDocumentRow));
     renderStudentExamSelectOptions();
+    studentExamApplySavedSettingsToFilters();
     studentExamLoading = false;
     applyStudentExamFilters();
   } catch (e) {
@@ -22791,6 +23449,7 @@ async function loadStudentExamFiles() {
       }
       studentExamRows = studentExamSortRows(applyStudentExamAccessState(list).filter(studentExamIsExamDocumentRow));
       renderStudentExamSelectOptions();
+      studentExamApplySavedSettingsToFilters();
       studentExamLoading = false;
       applyStudentExamFilters();
     } catch (fallbackError) {
@@ -22808,19 +23467,21 @@ function bindStudentExamPortalEvents() {
     if (!el || el.dataset.bound === '1') return;
     el.dataset.bound = '1';
     if (id === 'student-exam-search') {
-      el.addEventListener('input', () => {
+      el.addEventListener('keydown', event => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
         const globalSearch = document.getElementById('student-exam-global-search');
         if (globalSearch && globalSearch.value !== el.value) globalSearch.value = el.value;
         applyStudentExamFilters();
       });
-    } else {
-      el.addEventListener('change', applyStudentExamFilters);
     }
   });
   const globalSearch = document.getElementById('student-exam-global-search');
   if (globalSearch && globalSearch.dataset.bound !== '1') {
     globalSearch.dataset.bound = '1';
-    globalSearch.addEventListener('input', () => {
+    globalSearch.addEventListener('keydown', event => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
       const localSearch = document.getElementById('student-exam-search');
       if (localSearch && localSearch.value !== globalSearch.value) localSearch.value = globalSearch.value;
       applyStudentExamFilters();
@@ -22837,6 +23498,8 @@ function bindStudentExamPortalEvents() {
     filterReset.addEventListener('click', resetStudentExamFilters);
   }
   syncStudentExamAdvancedFilters();
+  studentExamSyncSettingsControls();
+  renderStudentExamNotifications();
   const portal = document.getElementById('student-exam-portal');
   if (portal && portal.dataset.bound !== '1') {
     portal.dataset.bound = '1';
