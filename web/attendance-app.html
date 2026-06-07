@@ -13640,6 +13640,313 @@ a:focus-visible,
   line-height:1.35;
   font-weight:700;
 }
+.student-exam-overview-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);
+  gap:14px;
+  align-items:start;
+}
+.student-exam-overview-hero{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  gap:13px;
+  min-height:188px;
+  padding:20px;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 92% 12%,rgba(255,204,94,.28),transparent 34%),
+    linear-gradient(135deg,#082454 0%,#124174 60%,#0f766e 100%);
+  color:#fff;
+  box-shadow:0 20px 42px rgba(8,36,84,.18);
+}
+.student-exam-overview-hero::after{
+  content:"";
+  position:absolute;
+  right:-46px;
+  bottom:-74px;
+  width:220px;
+  height:220px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  pointer-events:none;
+}
+.student-exam-overview-hero > *{position:relative;z-index:1}
+.student-exam-overview-hero-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#ffe39c;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.student-exam-overview-hero-kicker::before{
+  content:"";
+  width:24px;
+  height:2px;
+  border-radius:999px;
+  background:#f4a71d;
+}
+.student-exam-overview-hero strong{
+  max-width:620px;
+  color:#fff;
+  font-size:28px;
+  line-height:1.12;
+  font-weight:950;
+  letter-spacing:0;
+}
+.student-exam-overview-hero p{
+  max-width:650px;
+  margin:0;
+  color:rgba(255,255,255,.82);
+  font-size:13px;
+  line-height:1.6;
+  font-weight:750;
+}
+.student-exam-overview-hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:2px;
+}
+.student-exam-overview-hero-btn{
+  min-height:38px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  padding:0 13px;
+  font-size:12px;
+  font-weight:950;
+  cursor:pointer;
+}
+.student-exam-overview-hero-btn.primary{
+  background:linear-gradient(180deg,#ffd66f,#f4a71d);
+  border-color:rgba(244,167,29,.28);
+  color:#14213d;
+  box-shadow:0 12px 24px rgba(244,167,29,.22);
+}
+.student-exam-overview-layout .student-exam-overview-grid{
+  grid-column:1;
+}
+.student-exam-overview-focus,
+.student-exam-overview-activity,
+.student-exam-stats-card{
+  min-width:0;
+  padding:14px;
+  border:1px solid #dce7f5;
+  border-radius:16px;
+  background:linear-gradient(180deg,#fff,#f8fbff);
+  box-shadow:0 12px 28px rgba(8,29,66,.045);
+}
+.student-exam-overview-focus{
+  grid-column:2;
+  grid-row:1 / span 2;
+  display:grid;
+  gap:10px;
+}
+.student-exam-overview-activity{
+  grid-column:1 / -1;
+  display:grid;
+  gap:10px;
+}
+.student-exam-mini-head,
+.student-exam-stats-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.student-exam-mini-head span,
+.student-exam-stats-card-head span{
+  display:block;
+  color:#64748b;
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.student-exam-mini-head strong,
+.student-exam-stats-card-head strong{
+  display:block;
+  margin-top:4px;
+  color:#082454;
+  font-size:15px;
+  line-height:1.22;
+  font-weight:950;
+}
+.student-exam-focus-list,
+.student-exam-stats-insights{
+  display:grid;
+  gap:9px;
+}
+.student-exam-focus-item,
+.student-exam-stats-insight{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  padding:10px;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid rgba(8,36,84,.07);
+}
+.student-exam-focus-dot,
+.student-exam-stats-insight-dot{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:#eef5ff;
+  color:#2563eb;
+  font-size:15px;
+  font-weight:950;
+}
+.student-exam-focus-item strong,
+.student-exam-stats-insight strong{
+  display:block;
+  color:#0b234d;
+  font-size:12.5px;
+  line-height:1.35;
+  font-weight:950;
+}
+.student-exam-focus-item span,
+.student-exam-stats-insight span{
+  display:block;
+  margin-top:3px;
+  color:#64748b;
+  font-size:11.2px;
+  line-height:1.4;
+  font-weight:750;
+}
+.student-exam-overview-activity-list,
+.student-exam-stats-list{
+  display:grid;
+  gap:8px;
+}
+.student-exam-overview-activity-list{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.student-exam-stats-panel{
+  margin:0 0 20px;
+  padding:16px;
+  border:1px solid var(--doc-panel-line,#d7e3f2);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:var(--doc-panel-shadow,0 12px 28px rgba(8,29,66,.05));
+}
+.student-exam-stats-kpi-grid{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+}
+.student-exam-stats-kpi{
+  min-height:92px;
+  display:grid;
+  gap:5px;
+  padding:13px;
+  border-radius:15px;
+  border:1px solid #dce7f5;
+  background:linear-gradient(180deg,#fff,#f8fbff);
+}
+.student-exam-stats-kpi span{
+  color:#64748b;
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.student-exam-stats-kpi strong{
+  color:#082454;
+  font-size:21px;
+  line-height:1;
+  font-weight:950;
+}
+.student-exam-stats-kpi small{
+  color:#64748b;
+  font-size:11px;
+  line-height:1.35;
+  font-weight:750;
+}
+.student-exam-stats-layout{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:12px;
+}
+.student-exam-stats-card-wide{
+  grid-column:span 1;
+}
+.student-exam-stats-link{
+  min-height:30px;
+  border:1px solid #d6e3f3;
+  border-radius:10px;
+  background:#fff;
+  color:#123e78;
+  padding:0 10px;
+  font-size:11px;
+  font-weight:950;
+  cursor:pointer;
+}
+.student-exam-stats-row{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  min-height:58px;
+  padding:9px;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid rgba(8,36,84,.07);
+}
+.student-exam-stats-row-icon{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:#eef5ff;
+  color:#2563eb;
+}
+.student-exam-stats-row-icon svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.student-exam-stats-row-title{
+  color:#0b234d;
+  font-size:12.5px;
+  font-weight:950;
+  line-height:1.35;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.student-exam-stats-row-meta{
+  margin-top:3px;
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.35;
+}
+.student-exam-stats-row-value{
+  color:#082454;
+  font-size:12px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.student-exam-stats-list.compact{
+  margin-top:10px;
+}
 .student-stats-panel-head{
   grid-column:1 / -1;
   padding-bottom:2px;
@@ -13688,6 +13995,22 @@ a:focus-visible,
   }
 }
 @media (max-width:1179px){
+  .student-exam-overview-layout,
+  .student-exam-stats-layout{
+    grid-template-columns:1fr;
+  }
+  .student-exam-overview-focus,
+  .student-exam-overview-activity,
+  .student-exam-overview-layout .student-exam-overview-grid{
+    grid-column:auto;
+    grid-row:auto;
+  }
+  .student-exam-stats-kpi-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .student-exam-overview-activity-list{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
   .student-exam-overview-grid{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
@@ -13705,6 +14028,23 @@ a:focus-visible,
   .student-stats-panel-head{
     align-items:flex-start;
     flex-direction:column;
+  }
+  .student-exam-overview-hero{
+    min-height:auto;
+    padding:16px;
+  }
+  .student-exam-overview-hero strong{
+    font-size:22px;
+  }
+  .student-exam-overview-activity-list,
+  .student-exam-stats-kpi-grid{
+    grid-template-columns:1fr;
+  }
+  .student-exam-stats-row{
+    grid-template-columns:34px minmax(0,1fr);
+  }
+  .student-exam-stats-row-value{
+    grid-column:2;
   }
   .student-exam-overview-grid{
     grid-template-columns:1fr;
@@ -15949,10 +16289,15 @@ button[data-bank-inspect-confirm-not]:hover,
         </div>
         <button type="button" class="student-exam-overview-action" onclick="studentExamShowLibrary()">Vào kho tài liệu</button>
       </div>
-      <div class="student-exam-overview-grid" id="student-exam-overview-grid"></div>
+      <div class="student-exam-overview-layout">
+        <section class="student-exam-overview-hero" id="student-exam-overview-hero"></section>
+        <div class="student-exam-overview-grid" id="student-exam-overview-grid"></div>
+        <section class="student-exam-overview-focus" id="student-exam-overview-focus"></section>
+        <section class="student-exam-overview-activity" id="student-exam-overview-activity"></section>
+      </div>
     </section>
 
-    <section class="student-premium-entry" id="student-exam-stats-panel" aria-label="Thống kê học tập" aria-hidden="true">
+    <section class="student-exam-stats-panel" id="student-exam-stats-panel" aria-label="Thống kê học tập" aria-hidden="true">
       <div class="student-stats-panel-head">
         <div>
           <div class="student-exam-overview-kicker">Thống kê</div>
@@ -15960,34 +16305,75 @@ button[data-bank-inspect-confirm-not]:hover,
         </div>
         <button type="button" class="student-exam-overview-action" data-online-history-open>Xem lịch sử online</button>
       </div>
-      <div class="student-exam-download-history-bar">
-        <button type="button" class="student-exam-history-btn" onclick="openStudentExamDownloadHistory()" aria-haspopup="dialog" aria-controls="student-exam-download-history-modal">
-          <span class="student-exam-history-btn-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
-          </span>
-          <span>
-            <strong>Lịch sử tải đề</strong>
-            <small>10 đề gần nhất</small>
-          </span>
-          <span class="student-exam-history-btn-count" id="student-exam-download-history-count">0 đề</span>
-        </button>
-      </div>
-      <div class="student-online-history-card">
-        <button type="button" class="student-exam-history-btn student-online-history-btn" data-online-history-open aria-haspopup="dialog" aria-controls="student-online-history-modal">
-          <span class="student-exam-history-btn-icon student-online-history-btn-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M8 17V9"></path><path d="M12 17V7"></path><path d="M16 17v-5"></path><path d="M20 19H4"></path></svg>
-          </span>
-          <span>
-            <strong>Lịch sử làm đề online</strong>
-            <small id="student-online-history-meta">Chưa có bài đã nộp.</small>
-          </span>
-          <span class="student-exam-history-btn-count" id="student-online-history-count">0 đề</span>
-        </button>
-        <div class="student-online-history-panel" id="student-online-history-card">
-          <div><span>Điểm TB</span><strong id="student-online-history-average">0%</strong></div>
-          <div><span>Đã làm</span><strong id="student-online-history-completed">0</strong></div>
-          <div><span>Lần nộp</span><strong id="student-online-history-attempts">0</strong></div>
-        </div>
+      <div class="student-exam-stats-kpi-grid" id="student-exam-stats-kpi-grid"></div>
+      <div class="student-exam-stats-layout">
+        <section class="student-exam-stats-card student-exam-stats-card-wide">
+          <div class="student-exam-stats-card-head">
+            <div>
+              <span>Hoạt động gần đây</span>
+              <strong>Tải, mở và làm đề online</strong>
+            </div>
+          </div>
+          <div class="student-exam-stats-list" id="student-exam-stats-activity-list"></div>
+        </section>
+        <section class="student-exam-stats-card">
+          <div class="student-exam-stats-card-head">
+            <div>
+              <span>Gợi ý cải thiện</span>
+              <strong>Việc nên làm tiếp theo</strong>
+            </div>
+          </div>
+          <div class="student-exam-stats-insights" id="student-exam-stats-insights"></div>
+        </section>
+        <section class="student-exam-stats-card">
+          <div class="student-exam-stats-card-head">
+            <div>
+              <span>Đề đã tải</span>
+              <strong>Lịch sử tải đề</strong>
+            </div>
+            <button type="button" class="student-exam-stats-link" onclick="openStudentExamDownloadHistory()">Xem tất cả</button>
+          </div>
+          <div class="student-exam-download-history-bar">
+            <button type="button" class="student-exam-history-btn" onclick="openStudentExamDownloadHistory()" aria-haspopup="dialog" aria-controls="student-exam-download-history-modal">
+              <span class="student-exam-history-btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
+              </span>
+              <span>
+                <strong>Lịch sử tải đề</strong>
+                <small>10 đề gần nhất</small>
+              </span>
+              <span class="student-exam-history-btn-count" id="student-exam-download-history-count">0 đề</span>
+            </button>
+          </div>
+          <div class="student-exam-stats-list compact" id="student-exam-stats-download-list"></div>
+        </section>
+        <section class="student-exam-stats-card student-exam-stats-card-wide">
+          <div class="student-exam-stats-card-head">
+            <div>
+              <span>Làm đề online</span>
+              <strong>Điểm số và lần nộp</strong>
+            </div>
+            <button type="button" class="student-exam-stats-link" data-online-history-open>Xem lịch sử</button>
+          </div>
+          <div class="student-online-history-card">
+            <button type="button" class="student-exam-history-btn student-online-history-btn" data-online-history-open aria-haspopup="dialog" aria-controls="student-online-history-modal">
+              <span class="student-exam-history-btn-icon student-online-history-btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M8 17V9"></path><path d="M12 17V7"></path><path d="M16 17v-5"></path><path d="M20 19H4"></path></svg>
+              </span>
+              <span>
+                <strong>Lịch sử làm đề online</strong>
+                <small id="student-online-history-meta">Chưa có bài đã nộp.</small>
+              </span>
+              <span class="student-exam-history-btn-count" id="student-online-history-count">0 đề</span>
+            </button>
+            <div class="student-online-history-panel" id="student-online-history-card">
+              <div><span>Điểm TB</span><strong id="student-online-history-average">0%</strong></div>
+              <div><span>Đã làm</span><strong id="student-online-history-completed">0</strong></div>
+              <div><span>Lần nộp</span><strong id="student-online-history-attempts">0</strong></div>
+            </div>
+          </div>
+          <div class="student-exam-stats-list" id="student-exam-stats-online-list"></div>
+        </section>
       </div>
       <a class="student-exam-zalo-btn" href="https://zalo.me/0916045202" target="_blank" rel="noopener noreferrer" aria-label="Nhắn Zalo hỗ trợ" title="Nhắn Zalo hỗ trợ">
         <span class="student-exam-zalo-icon" aria-hidden="true"><img src="./assets/social/zalo-logo.jpg" alt=""/></span>
@@ -21432,6 +21818,25 @@ function studentExamPublishedOnlineCount() {
   return (studentExamRows || []).filter(row => studentExamIsExamDocumentRow(row) && studentExamHasPublishedOnline(row)).length;
 }
 
+function studentExamOpenedRows(limit) {
+  const rows = studentExamSortRows(studentExamRows || [])
+    .filter(row => !!studentExamActivityFor(row)?.last_opened_at)
+    .sort((a, b) => new Date(studentExamActivityFor(b)?.last_opened_at || 0) - new Date(studentExamActivityFor(a)?.last_opened_at || 0));
+  return Number.isFinite(Number(limit)) ? rows.slice(0, Number(limit)) : rows;
+}
+
+function studentExamBestOnlineAttempt() {
+  return (studentOnlineExamHistory || [])
+    .slice()
+    .sort((a, b) => Number(b?.percent || 0) - Number(a?.percent || 0))[0] || null;
+}
+
+function studentExamLatestOnlineAttempt() {
+  return (studentOnlineExamHistory || [])
+    .slice()
+    .sort((a, b) => new Date(b?.submitted_at || 0) - new Date(a?.submitted_at || 0))[0] || null;
+}
+
 function studentExamOverviewItems() {
   const summary = studentOnlineSummary();
   const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
@@ -21479,9 +21884,80 @@ function studentExamOverviewItems() {
   ];
 }
 
+function studentExamOverviewFocusItems() {
+  const summary = studentOnlineSummary();
+  const quota = studentExamQuotaInfo();
+  const downloaded = studentExamDownloadedRows(1);
+  const opened = studentExamOpenedRows(1);
+  const latest = studentExamLatestOnlineAttempt();
+  const onlineCount = studentExamPublishedOnlineCount();
+  const focus = [];
+  focus.push({
+    icon: '1',
+    title: onlineCount ? 'Làm một đề online đang mở' : 'Chọn một đề để bắt đầu',
+    detail: onlineCount ? `${formatStudentExamStat(onlineCount)} đề online đang sẵn sàng trong kho.` : 'Kho tài liệu đã có đề theo nguồn, năm và cấp học.'
+  });
+  focus.push({
+    icon: '2',
+    title: latest ? 'Xem lại lần nộp gần nhất' : 'Tạo lịch sử điểm đầu tiên',
+    detail: latest ? `${studentOnlineHistoryTitle(latest)} · ${studentOnlinePercent(latest.percent)}` : 'Chỉ các bài đã bấm Nộp bài mới được tính vào thống kê.'
+  });
+  focus.push({
+    icon: '3',
+    title: Number.isFinite(quota.limit) ? 'Theo dõi lượt tải hôm nay' : 'Tải tài liệu không giới hạn',
+    detail: Number.isFinite(quota.limit) ? `${formatStudentExamStat(quota.remaining)}/${formatStudentExamStat(quota.limit)} lượt còn lại.` : 'Tài khoản hiện không bị giới hạn lượt tải trong ngày.'
+  });
+  focus.push({
+    icon: '4',
+    title: downloaded.length ? 'Mở lại đề đã tải' : (opened.length ? 'Tiếp tục đề đã xem' : 'Khám phá kho đề'),
+    detail: downloaded.length ? studentExamDisplayTitle(downloaded[0]) : (opened.length ? studentExamDisplayTitle(opened[0]) : 'Dùng bộ lọc để tìm đúng nguồn đề cần ôn.')
+  });
+  if (Number(summary.average_percent || 0) > 0) {
+    focus.push({
+      icon: '5',
+      title: 'Duy trì điểm trung bình',
+      detail: `Điểm TB hiện tại ${studentOnlinePercent(summary.average_percent)}.`
+    });
+  }
+  return focus.slice(0, 5);
+}
+
+function studentExamOverviewActivityItems() {
+  return studentExamRecentActivityItems().slice(0, 6);
+}
+
+function studentExamActivitySummaryCard(item) {
+  const row = item?.row || null;
+  const id = escapeHtml(String(item?.exam_file_id || row?.id || ''));
+  const title = escapeHtml(String(item?.title || (row ? studentExamDisplayTitle(row) : 'Đề online')).trim());
+  const kind = String(item?.kind || 'download');
+  const label = kind === 'online' ? 'Làm online' : (kind === 'open' ? 'Đã mở' : 'Đã tải');
+  const time = studentExamRecentTimeLabel(item?.at) || 'Chưa rõ thời gian';
+  const canAccess = row && studentExamCanAccess(row);
+  const hasFile = row && studentExamHasFile(row, 'file');
+  const hasOnline = row && studentExamHasPublishedOnline(row);
+  return `<article class="student-exam-stats-row" data-exam-id="${id}">
+    <span class="student-exam-stats-row-icon ${escapeHtml(kind)}" aria-hidden="true">${studentExamActivityIcon(kind)}</span>
+    <span>
+      <strong class="student-exam-stats-row-title">${title}</strong>
+      <span class="student-exam-stats-row-meta">${escapeHtml(label)} · ${escapeHtml(time)}${item?.meta ? ' · ' + escapeHtml(item.meta) : ''}</span>
+    </span>
+    <span class="student-exam-stats-row-value">
+      ${hasOnline && canAccess ? `<button type="button" class="student-exam-stats-link" data-exam-online="${id}">Làm</button>` : (hasFile && canAccess ? `<button type="button" class="student-exam-stats-link" data-exam-preview="${id}" data-exam-kind="file">Xem</button>` : '')}
+    </span>
+  </article>`;
+}
+
 function renderStudentExamOverviewPanel() {
   const el = document.getElementById('student-exam-overview-grid');
   if (!el) return;
+  const summary = studentOnlineSummary();
+  const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
+  const avg = Number(summary.average_percent || 0) || 0;
+  const latest = studentExamLatestOnlineAttempt();
+  const hero = document.getElementById('student-exam-overview-hero');
+  const focus = document.getElementById('student-exam-overview-focus');
+  const activity = document.getElementById('student-exam-overview-activity');
   const iconMap = {
     plan: '<path d="M5 19V5l7-3 7 3v14l-7 3-7-3Z"></path><path d="M9 12h6"></path><path d="M12 8v8"></path>',
     quota: '<path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path>',
@@ -21498,6 +21974,146 @@ function renderStudentExamOverviewPanel() {
       <small>${escapeHtml(item.detail)}</small>
     </article>
   `).join('');
+  if (hero) {
+    const plan = currentPortalPlan === 'premium' || isAdmin() || isTeacher() ? 'Premium' : 'Free';
+    const headline = completed
+      ? `Em đã hoàn thành ${formatStudentExamStat(completed)} đề online`
+      : 'Bắt đầu theo dõi tiến độ làm đề';
+    const detail = completed
+      ? `Điểm trung bình hiện tại là ${studentOnlinePercent(avg)}${latest ? ', lần gần nhất ' + studentOnlineDateTime(latest.submitted_at) : ''}.`
+      : 'Tải đề, mở đề và nộp bài online sẽ tạo thành lịch sử học tập riêng cho tài khoản này.';
+    hero.innerHTML = `
+      <span class="student-exam-overview-hero-kicker">${escapeHtml(plan)} dashboard</span>
+      <strong>${escapeHtml(headline)}</strong>
+      <p>${escapeHtml(detail)}</p>
+      <div class="student-exam-overview-hero-actions">
+        <button type="button" class="student-exam-overview-hero-btn primary" onclick="studentExamShowLibrary()">Vào kho tài liệu</button>
+        <button type="button" class="student-exam-overview-hero-btn" onclick="studentExamShowStats()">Xem thống kê</button>
+      </div>`;
+  }
+  if (focus) {
+    focus.innerHTML = `
+      <div class="student-exam-mini-head"><div><span>Kế hoạch nhanh</span><strong>Việc nên làm hôm nay</strong></div></div>
+      <div class="student-exam-focus-list">
+        ${studentExamOverviewFocusItems().map(item => `
+          <article class="student-exam-focus-item">
+            <span class="student-exam-focus-dot">${escapeHtml(item.icon)}</span>
+            <span><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.detail)}</span></span>
+          </article>`).join('')}
+      </div>`;
+  }
+  if (activity) {
+    const items = studentExamOverviewActivityItems();
+    activity.innerHTML = `
+      <div class="student-exam-mini-head"><div><span>Dòng hoạt động</span><strong>Gần đây nhất</strong></div></div>
+      <div class="student-exam-overview-activity-list">
+        ${items.length ? items.map(studentExamActivitySummaryCard).join('') : studentExamState('Chưa có hoạt động. Khi em tải đề, xem đề hoặc nộp bài online, dữ liệu sẽ hiện ở đây.')}
+      </div>`;
+  }
+}
+
+function studentExamStatsKpiItems() {
+  const summary = studentOnlineSummary();
+  const downloaded = studentExamDownloadedRows();
+  const opened = studentExamOpenedRows();
+  const best = studentExamBestOnlineAttempt();
+  const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
+  const attempts = Math.max(0, Number(summary.attempt_count || summary.latest_attempt_count || studentOnlineExamHistory.length || 0) || 0);
+  return [
+    { label: 'Đã tải', value: formatStudentExamStat(downloaded.length), detail: 'Tài liệu đã lưu về máy' },
+    { label: 'Đã mở', value: formatStudentExamStat(opened.length), detail: 'Đề đã xem trước trong portal' },
+    { label: 'Đã làm', value: formatStudentExamStat(completed), detail: 'Tính theo đề online mới nhất' },
+    { label: 'Lần nộp', value: formatStudentExamStat(attempts), detail: 'Tất cả lần nộp online' },
+    { label: 'Điểm TB', value: studentOnlinePercent(summary.average_percent), detail: completed ? 'Theo lần mới nhất mỗi đề' : 'Chưa có điểm' },
+    { label: 'Cao nhất', value: best ? studentOnlinePercent(best.percent) : '0%', detail: best ? studentOnlineHistoryTitle(best) : 'Chưa có bài nộp' }
+  ];
+}
+
+function studentExamStatsInsightItems() {
+  const summary = studentOnlineSummary();
+  const avg = Number(summary.average_percent || 0) || 0;
+  const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
+  const downloaded = studentExamDownloadedRows().length;
+  const opened = studentExamOpenedRows().length;
+  const onlineCount = studentExamPublishedOnlineCount();
+  const items = [];
+  if (!completed) {
+    items.push({ icon: '1', title: 'Nộp bài online đầu tiên', detail: 'Làm dở rồi thoát sẽ không tính; chỉ khi bấm Nộp bài mới ghi điểm.' });
+  } else if (avg < 50) {
+    items.push({ icon: '1', title: 'Ưu tiên xem lại bài điểm thấp', detail: `Điểm TB hiện là ${studentOnlinePercent(avg)}. Nên xem lại đáp án sau khi nộp.` });
+  } else {
+    items.push({ icon: '1', title: 'Duy trì nhịp luyện đề', detail: `Điểm TB ${studentOnlinePercent(avg)}. Có thể làm thêm đề mới để tăng độ ổn định.` });
+  }
+  if (onlineCount > completed) {
+    items.push({ icon: '2', title: 'Còn đề online chưa hoàn thành', detail: `${formatStudentExamStat(onlineCount - completed)} đề online đang mở chưa được tính vào lịch sử.` });
+  }
+  if (downloaded > opened) {
+    items.push({ icon: '3', title: 'Mở lại đề đã tải', detail: `${formatStudentExamStat(downloaded)} đề đã tải, ${formatStudentExamStat(opened)} đề đã mở trong portal.` });
+  } else {
+    items.push({ icon: '3', title: 'Tìm thêm nguồn đề', detail: 'Dùng bộ lọc nguồn/năm để tạo danh sách ôn tập sát mục tiêu hơn.' });
+  }
+  return items.slice(0, 4);
+}
+
+function studentExamOnlineAttemptRow(row) {
+  const id = escapeHtml(String(row?.exam_file_id || ''));
+  const title = escapeHtml(studentOnlineHistoryTitle(row));
+  const score = `${Math.max(0, Number(row?.score || 0) || 0)}/${Math.max(0, Number(row?.total || 0) || 0)}`;
+  return `<article class="student-exam-stats-row">
+    <span class="student-exam-stats-row-icon online" aria-hidden="true">${studentExamActivityIcon('online')}</span>
+    <span>
+      <strong class="student-exam-stats-row-title">${title}</strong>
+      <span class="student-exam-stats-row-meta">${escapeHtml(studentOnlineDateTime(row?.submitted_at))} · ${escapeHtml(studentOnlineDuration(row?.duration_seconds))}</span>
+    </span>
+    <span class="student-exam-stats-row-value">${escapeHtml(score)} · ${escapeHtml(studentOnlinePercent(row?.percent))}</span>
+  </article>`;
+}
+
+function renderStudentExamStatsPanel() {
+  const kpi = document.getElementById('student-exam-stats-kpi-grid');
+  const activity = document.getElementById('student-exam-stats-activity-list');
+  const downloads = document.getElementById('student-exam-stats-download-list');
+  const online = document.getElementById('student-exam-stats-online-list');
+  const insights = document.getElementById('student-exam-stats-insights');
+  if (kpi) {
+    kpi.innerHTML = studentExamStatsKpiItems().map(item => `
+      <article class="student-exam-stats-kpi">
+        <span>${escapeHtml(item.label)}</span>
+        <strong>${escapeHtml(item.value)}</strong>
+        <small>${escapeHtml(item.detail)}</small>
+      </article>`).join('');
+  }
+  if (activity) {
+    const items = studentExamRecentActivityItems().slice(0, 8);
+    activity.innerHTML = items.length
+      ? items.map(studentExamActivitySummaryCard).join('')
+      : studentExamState('Chưa có hoạt động gần đây.');
+  }
+  if (downloads) {
+    const rows = studentExamDownloadedRows(5).map(row => ({
+      kind: 'download',
+      at: studentExamActivityFor(row)?.last_downloaded_at,
+      row,
+      exam_file_id: row.id,
+      meta: (Math.max(1, Number(studentExamActivityFor(row)?.download_count || 0) || 1)) + ' lần tải'
+    }));
+    downloads.innerHTML = rows.length
+      ? rows.map(studentExamActivitySummaryCard).join('')
+      : studentExamState('Các đề đã tải sẽ hiện ở đây.');
+  }
+  if (online) {
+    const rows = (studentOnlineExamHistory || []).slice(0, 6);
+    online.innerHTML = rows.length
+      ? rows.map(studentExamOnlineAttemptRow).join('')
+      : studentExamState('Chưa có bài online nào được nộp.');
+  }
+  if (insights) {
+    insights.innerHTML = studentExamStatsInsightItems().map(item => `
+      <article class="student-exam-stats-insight">
+        <span class="student-exam-stats-insight-dot">${escapeHtml(item.icon)}</span>
+        <span><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.detail)}</span></span>
+      </article>`).join('');
+  }
 }
 
 function studentExamShowOverview() {
@@ -21522,6 +22138,7 @@ function studentExamShowStats() {
   studentExamSetView('library');
   studentExamSetPortalPage('stats');
   renderStudentExamPersonalSections();
+  renderStudentExamStatsPanel();
   studentExamSetOverviewPanel(false);
   studentExamSetStatsPanel(true);
   studentExamSetSidebarActive('stats');
@@ -23339,6 +23956,7 @@ function renderStudentOnlineExamHistory() {
       <div><span>Lần nộp</span><strong>${escapeHtml(String(attemptCount || latestCount))}</strong></div>`;
   }
   renderStudentExamSavedRecentPanel();
+  renderStudentExamStatsPanel();
   const list = document.getElementById('student-online-history-list');
   if (!list) return;
   if (studentOnlineExamHistoryLoading) {
@@ -23434,6 +24052,8 @@ async function trackStudentExamPortalEvent(examId, eventName) {
       });
     }
     renderStudentExamSavedRecentPanel();
+    renderStudentExamOverviewPanel();
+    renderStudentExamStatsPanel();
   } catch (e) {}
 }
 
@@ -23818,6 +24438,7 @@ function renderStudentExamPersonalSections() {
   };
   setCount('student-exam-download-history-count', downloaded.length);
   renderStudentExamSavedRecentPanel();
+  renderStudentExamStatsPanel();
   renderStudentOnlineExamHistory();
 }
 
@@ -23909,6 +24530,7 @@ function renderStudentExamPortal() {
   updateStudentExamDownloadQuota();
   renderStudentExamDataOverview();
   renderStudentExamOverviewPanel();
+  renderStudentExamStatsPanel();
   renderStudentExamNotifications();
   if (studentExamLoading) {
     ['student-exam-download-history-list', 'student-exam-list'].forEach(id => {
