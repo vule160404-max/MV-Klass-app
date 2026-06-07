@@ -44,7 +44,13 @@ test('student portal premium card uses custom crown svg and fixed desktop sideba
   const html = readPortal();
 
   assert.match(html, /class="student-premium-crown-svg"/);
+  assert.match(html, /id="student-exam-sidebar-premium-copy"/);
+  assert.match(html, /id="student-exam-sidebar-premium-action"/);
+  assert.match(html, /function renderStudentExamSidebarPremiumCard\(\)/);
+  assert.match(html, /ÄÃ£ kÃ­ch hoáº¡t|Đã kích hoạt/);
+  assert.match(html, /NÃ¢ng cáº¥p ngay|Nâng cấp ngay/);
   assert.match(html, /\.student-exam-sidebar-premium-title::before\{[\s\S]*content:none !important;[\s\S]*display:none !important;/);
+  assert.match(html, /student-exam-sidebar-premium-action\.is-active/);
   assert.match(html, /@media \(min-width:1180px\)\{[\s\S]*#student-exam-portal \.student-exam-sidebar\{[\s\S]*position:fixed !important;[\s\S]*height:100dvh !important;[\s\S]*overflow-y:auto !important;/);
 });
 

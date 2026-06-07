@@ -13203,6 +13203,22 @@ a:focus-visible,
   content:none !important;
   display:none !important;
 }
+#student-exam-portal .student-exam-sidebar-premium.is-active{
+  background:linear-gradient(145deg,#0f1f3d 0%,#143f6f 54%,#0f766e 100%) !important;
+  border:1px solid rgba(134,239,172,.20) !important;
+  box-shadow:0 18px 34px rgba(15,31,61,.18), inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+#student-exam-portal .student-exam-sidebar-premium-action.is-active,
+#student-exam-portal .student-exam-sidebar-premium-action.is-loading{
+  background:rgba(255,255,255,.12) !important;
+  color:#ecfdf5 !important;
+  border:1px solid rgba(187,247,208,.34) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14) !important;
+  cursor:default !important;
+}
+#student-exam-portal .student-exam-sidebar-premium-action:disabled{
+  opacity:1 !important;
+}
 .student-exam-header-popover-wrap{
   position:relative;
   display:inline-grid;
@@ -15790,8 +15806,8 @@ button[data-bank-inspect-confirm-not]:hover,
             </svg>
             <span>Premium</span>
           </div>
-          <p>Mở toàn bộ kho đề và tài liệu chuyên sâu.</p>
-          <button type="button" onclick="studentExamSetView('premium')">Nâng cấp ngay</button>
+          <p id="student-exam-sidebar-premium-copy">Mở toàn bộ kho đề và tài liệu chuyên sâu.</p>
+          <button type="button" class="student-exam-sidebar-premium-action" id="student-exam-sidebar-premium-action" onclick="studentExamSetView('premium')">Nâng cấp ngay</button>
         </div>
       </aside>
       <main class="student-exam-main">
@@ -21216,7 +21232,70 @@ function renderStudentExamPlanState() {
       : '';
     approvalNote.classList.toggle('show', status === 'pending');
   }
+  renderStudentExamSidebarPremiumCard();
   updateStudentExamDownloadQuota();
+}
+
+function renderStudentExamSidebarPremiumCard() {
+  const card = document.querySelector('#student-exam-portal .student-exam-sidebar-premium');
+  const copy = document.getElementById('student-exam-sidebar-premium-copy');
+  const action = document.getElementById('student-exam-sidebar-premium-action');
+  if (!card || !copy || !action) return;
+  const status = currentPortalStatus || 'active';
+  const ownedPremiumKeys = portalPremiumOwnedProductKeys();
+  const hasPackagePremium = ownedPremiumKeys && ownedPremiumKeys.size > 0;
+  const hasFullPremium = currentPortalPlan === 'premium' || isAdmin() || isTeacher();
+  const hasPremium = hasFullPremium || hasPackagePremium;
+  const premiumPending = status === 'active' && currentPortalPlan !== 'premium' && !isAdmin() && !isTeacher() && !portalPremiumLoaded;
+  card.classList.toggle('is-active', hasPremium && status === 'active' && !premiumPending);
+  card.classList.toggle('is-loading', premiumPending);
+  action.classList.toggle('is-active', hasPremium && status === 'active' && !premiumPending);
+  action.classList.toggle('is-loading', premiumPending);
+
+  if (status === 'pending') {
+    copy.textContent = 'Tài khoản đang chờ duyệt. Sau khi được duyệt, em sẽ truy cập kho tài liệu theo gói hiện có.';
+    action.textContent = 'Chờ duyệt';
+    action.disabled = true;
+    action.setAttribute('aria-disabled', 'true');
+    action.onclick = null;
+    return;
+  }
+  if (status === 'blocked') {
+    copy.textContent = 'Tài khoản đang bị khóa quyền truy cập. Em liên hệ thầy/cô để được hỗ trợ.';
+    action.textContent = 'Đang khóa';
+    action.disabled = true;
+    action.setAttribute('aria-disabled', 'true');
+    action.onclick = null;
+    return;
+  }
+  if (premiumPending) {
+    copy.textContent = 'Đang kiểm tra gói Premium đã đăng ký cho tài khoản này.';
+    action.textContent = 'Đang kiểm tra';
+    action.disabled = true;
+    action.setAttribute('aria-disabled', 'true');
+    action.onclick = null;
+    return;
+  }
+  if (hasPremium) {
+    const labels = Array.from(ownedPremiumKeys || [])
+      .map(key => studentExamPremiumGroupNoticeLabel(portalPremiumProductByKey(key)?.portal_free_group || key))
+      .filter(Boolean);
+    const packageText = Array.from(new Set(labels)).join(', ');
+    copy.textContent = hasFullPremium
+      ? 'Tài khoản Premium đang hoạt động. Toàn bộ kho đề và tài liệu chuyên sâu đã sẵn sàng.'
+      : `Tài khoản đã kích hoạt ${packageText || 'gói Premium'}. Các đề thuộc gói đã sẵn sàng.`;
+    action.textContent = 'Đã kích hoạt';
+    action.disabled = true;
+    action.setAttribute('aria-disabled', 'true');
+    action.onclick = null;
+    return;
+  }
+
+  copy.textContent = 'Mở toàn bộ kho đề và tài liệu chuyên sâu.';
+  action.textContent = 'Nâng cấp ngay';
+  action.disabled = false;
+  action.setAttribute('aria-disabled', 'false');
+  action.onclick = () => studentExamSetView('premium');
 }
 
 function studentExamActivatedPremiumNotice(keys) {
