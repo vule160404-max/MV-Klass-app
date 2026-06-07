@@ -6676,6 +6676,20 @@
     .student-exam-recent-btn{min-height:34px;border-radius:11px;border:1px solid rgba(18,33,61,.10);background:#fff;color:#102858;padding:0 10px;font-size:11.5px;font-weight:950;cursor:pointer;white-space:nowrap}
     .student-exam-recent-btn.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}
     .student-exam-recent-btn:disabled{opacity:.48;cursor:not-allowed}
+    .student-exam-saved-recent-panel{margin:18px 0 0;padding:14px;border-radius:22px;background:linear-gradient(180deg,#fff,rgba(248,251,255,.96));border:1px solid rgba(18,33,61,.10);box-shadow:0 14px 30px rgba(18,33,61,.07)}
+    .student-exam-activity-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .student-exam-activity-title{display:grid;gap:2px}.student-exam-activity-title strong{color:#0b234d;font-size:15px;font-weight:950}.student-exam-activity-title span{color:#66748d;font-size:11.5px;font-weight:800}
+    .student-exam-activity-tabs{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:#eef4fb;border:1px solid rgba(18,33,61,.07)}
+    .student-exam-activity-tab{min-height:32px;border:0;border-radius:999px;background:transparent;color:#51617a;padding:0 13px;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap}
+    .student-exam-activity-tab.active{background:#fff;color:#0f1f3d;box-shadow:0 8px 18px rgba(18,33,61,.08)}
+    .student-exam-activity-pane{display:none}.student-exam-activity-pane.active{display:block}
+    .student-exam-activity-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .student-exam-activity-card{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:start;min-height:112px;padding:12px;border-radius:16px;background:#fff;border:1px solid rgba(18,33,61,.08);box-shadow:0 8px 18px rgba(18,33,61,.045)}
+    .student-exam-activity-icon{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:#eef6ff;color:#1d4ed8}.student-exam-activity-icon.download{background:#eef6ff;color:#1d4ed8}.student-exam-activity-icon.open{background:#fff7e6;color:#b26006}.student-exam-activity-icon.online{background:#eaf7ef;color:#17663c}.student-exam-activity-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .student-exam-activity-body{min-width:0;display:grid;gap:7px}.student-exam-activity-label{color:#66748d;font-size:10.5px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-activity-name{color:#0b234d;font-size:13px;font-weight:950;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.student-exam-activity-meta{color:#66748d;font-size:11px;font-weight:800;line-height:1.35}
+    .student-exam-activity-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}.student-exam-activity-btn{min-height:32px;border-radius:11px;border:1px solid rgba(18,33,61,.10);background:#fff;color:#102858;padding:0 10px;font-size:11px;font-weight:950;cursor:pointer}.student-exam-activity-btn.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-activity-btn.online{background:#eafaf0;border-color:rgba(22,163,74,.18);color:#17663c}.student-exam-activity-btn:disabled{opacity:.45;cursor:not-allowed}
+    @media (max-width:1180px){.student-exam-activity-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:699px){.student-exam-saved-recent-panel{margin-top:12px;padding:11px;border-radius:18px}.student-exam-activity-head{display:grid;gap:10px}.student-exam-activity-tabs{width:100%;display:grid;grid-template-columns:1fr 1fr}.student-exam-activity-list{grid-template-columns:1fr}.student-exam-activity-card{min-height:auto}.student-exam-activity-actions{justify-content:stretch}.student-exam-activity-btn{flex:1 1 auto}}
     .student-exam-preview-modal{position:fixed;inset:0;z-index:4000;display:none;padding:14px;background:rgba(8,18,38,.62);backdrop-filter:blur(10px)}.student-exam-preview-modal.open{display:grid;place-items:center}.student-exam-preview-dialog{width:min(1180px,96vw);max-height:min(92vh,900px);display:grid;grid-template-rows:auto minmax(260px,1fr) auto;overflow:hidden;border-radius:22px;background:#fff;box-shadow:0 28px 80px rgba(0,0,0,.32)}.student-exam-preview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(18,33,61,.08)}.student-exam-preview-head strong{display:block;color:#12213d;font-size:15px;line-height:1.3}.student-exam-preview-head span{display:block;margin-top:3px;color:#748096;font-size:12px;font-weight:700}.student-exam-preview-close{width:36px;height:36px;border:0;border-radius:12px;background:#eef3f9;color:#12213d;font-size:20px;cursor:pointer}.student-exam-preview-body{min-height:320px;background:#edf2f8;overflow:auto}.student-exam-preview-frame{width:100%;height:100%;min-height:68vh;border:0;display:block;background:#fff}.student-exam-pdf-pages{display:grid;gap:14px;justify-items:center;padding:16px;background:#edf2f8}.student-exam-pdf-page{width:min(100%,1040px);height:auto;background:#fff;border-radius:10px;box-shadow:0 10px 24px rgba(18,33,61,.14)}.student-exam-preview-fallback{min-height:300px;display:grid;place-items:center;padding:24px;color:#52627c;text-align:center;font-weight:800;line-height:1.5}.student-exam-preview-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(18,33,61,.08)}
     @media (min-width:700px){.student-exam-shell{padding:18px 22px 54px}.student-exam-header{margin-left:-22px;margin-right:-22px;padding-left:22px;padding-right:22px}.student-exam-hello{display:block}.student-premium-entry{margin-bottom:18px}.student-premium-entry-btn{min-width:220px}.student-exam-history-btn{min-width:260px}.student-exam-hero{padding:34px 30px}.student-premium-head{padding:32px 82px 30px 32px}.student-premium-body{padding:24px}.student-premium-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.student-exam-data-columns{grid-template-columns:repeat(3,minmax(0,1fr))}.student-exam-filter-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.student-exam-list{grid-template-columns:repeat(2,minmax(0,1fr))}.student-exam-feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media (min-width:1040px){.student-exam-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -13510,10 +13524,12 @@ a:focus-visible,
 #student-exam-portal.student-page-overview .student-exam-page-head,
 #student-exam-portal.student-page-overview .student-exam-filters,
 #student-exam-portal.student-page-overview .student-exam-category-tabs,
+#student-exam-portal.student-page-overview .student-exam-saved-recent-panel,
 #student-exam-portal.student-page-overview .student-exam-section,
 #student-exam-portal.student-page-stats .student-exam-page-head,
 #student-exam-portal.student-page-stats .student-exam-filters,
 #student-exam-portal.student-page-stats .student-exam-category-tabs,
+#student-exam-portal.student-page-stats .student-exam-saved-recent-panel,
 #student-exam-portal.student-page-stats .student-exam-section{
   display:none !important;
 }
@@ -16018,6 +16034,21 @@ button[data-bank-inspect-confirm-not]:hover,
       </section>
     </div>
 
+    <section class="student-exam-saved-recent-panel" id="student-exam-saved-recent-panel" aria-label="Đã lưu và gần đây">
+      <div class="student-exam-activity-head">
+        <div class="student-exam-activity-title">
+          <strong>Đã lưu / Gần đây</strong>
+          <span>Truy cập nhanh các đề đã tải, đã mở và đã làm online.</span>
+        </div>
+        <div class="student-exam-activity-tabs" role="tablist" aria-label="Đề cá nhân">
+          <button type="button" class="student-exam-activity-tab active" role="tab" aria-selected="true" data-student-activity-tab="saved" onclick="studentExamSetActivityTab('saved')">Đã lưu</button>
+          <button type="button" class="student-exam-activity-tab" role="tab" aria-selected="false" data-student-activity-tab="recent" onclick="studentExamSetActivityTab('recent')">Gần đây</button>
+        </div>
+      </div>
+      <div class="student-exam-activity-pane active" id="student-exam-saved-list" role="tabpanel" aria-label="Đề đã lưu"></div>
+      <div class="student-exam-activity-pane" id="student-exam-recent-list" role="tabpanel" aria-label="Đề gần đây"></div>
+    </section>
+
     <div id="student-exam-download-history-modal" class="student-exam-history-modal" aria-hidden="true" onclick="if(event.target===this) closeStudentExamDownloadHistory()">
       <div class="student-exam-history-dialog" role="dialog" aria-modal="true" aria-labelledby="student-exam-download-history-title">
         <div class="student-exam-history-head">
@@ -18126,8 +18157,10 @@ let studentOnlineExamHistoryError = '';
 let studentExamLoading = false;
 let studentExamError = '';
 let studentExamDownloadQuota = null;
+let studentExamActivityTab = 'saved';
 const STUDENT_EXAM_PAGE_SIZE = 12;
 const STUDENT_EXAM_SETTINGS_KEY = 'mvk_student_portal_settings_v1';
+const STUDENT_EXAM_NOTIFICATIONS_SEEN_KEY = 'mvk_student_notifications_seen_v1';
 function studentExamDefaultSettings() {
   return { pageSize: STUDENT_EXAM_PAGE_SIZE, sort: 'code', onlineOnly: false, displayName: '', density: 'comfortable' };
 }
@@ -21951,7 +21984,34 @@ function studentExamQuotaInfo() {
   return { used, limit, remaining, hasPremiumPackage };
 }
 
-function studentExamNotificationItems() {
+function studentExamFreeAccessibleCount() {
+  return (studentExamRows || []).filter(row => {
+    if (!studentExamIsExamDocumentRow(row)) return false;
+    if (studentExamAccessTier(row) === 'premium') return false;
+    return studentExamCanAccess(row) !== false;
+  }).length;
+}
+
+function studentExamNotificationSignature(items) {
+  return (items || []).map(item => [
+    item.id || '',
+    item.tone || '',
+    item.title || '',
+    item.detail || '',
+    item.action || ''
+  ].join('|')).join('::');
+}
+
+function studentExamMarkNotificationsSeen() {
+  const signature = studentExamNotificationSignature(studentExamNotificationItems());
+  try {
+    if (signature) localStorage.setItem(STUDENT_EXAM_NOTIFICATIONS_SEEN_KEY, signature);
+    else localStorage.removeItem(STUDENT_EXAM_NOTIFICATIONS_SEEN_KEY);
+  } catch (e) {}
+  renderStudentExamNotifications();
+}
+
+function studentExamNotificationItemsLegacy() {
   const summary = studentOnlineSummary();
   const onlineCount = studentExamPublishedOnlineCount();
   const quota = studentExamQuotaInfo();
@@ -21990,6 +22050,56 @@ function studentExamNotificationItems() {
   return items;
 }
 
+function studentExamNotificationItems() {
+  const quota = studentExamQuotaInfo();
+  const isFreeLike = !isAdmin() && !isTeacher() && currentPortalPlan !== 'premium' && !quota.hasPremiumPackage;
+  const isPremiumLike = !isAdmin() && !isTeacher() && !isFreeLike && currentPortalStatus !== 'blocked';
+  const items = [];
+  if (currentPortalStatus === 'blocked') {
+    items.push({
+      id: 'account-blocked',
+      tone: 'danger',
+      title: 'Tài khoản bị khóa',
+      detail: 'Tài khoản hiện chưa thể tải hoặc mở tài liệu. Em liên hệ thầy/cô để kiểm tra lại quyền truy cập.'
+    });
+  }
+  if (isFreeLike && Number.isFinite(quota.limit)) {
+    const freeCount = studentExamFreeAccessibleCount();
+    items.push({
+      id: 'free-access-' + freeCount + '-' + quota.limit,
+      tone: 'info',
+      title: `Tài khoản Free hiện truy cập được ${formatStudentExamStat(freeCount)} đề Free`,
+      detail: `Mỗi ngày được ${formatStudentExamStat(quota.limit)} lượt tải miễn phí.`
+    });
+    if (quota.remaining <= 0) {
+      items.push({
+        id: 'free-quota-empty-' + quota.used + '-' + quota.limit,
+        tone: 'danger',
+        title: 'Đã hết lượt tải Free',
+        detail: 'Đăng ký Premium để tăng lượt tải và mở thêm kho đề.',
+        action: 'premium',
+        actionLabel: 'Đăng ký Premium'
+      });
+    } else if (quota.remaining <= 1) {
+      items.push({
+        id: 'free-quota-low-' + quota.remaining + '-' + quota.limit,
+        tone: 'warn',
+        title: 'Gần hết lượt tải Free',
+        detail: `Còn ${formatStudentExamStat(quota.remaining)}/${formatStudentExamStat(quota.limit)} lượt tải miễn phí hôm nay.`
+      });
+    }
+  }
+  if (isPremiumLike) {
+    items.push({
+      id: 'premium-active-' + currentPortalPlan,
+      tone: 'info',
+      title: 'Đăng ký Premium thành công',
+      detail: 'Tài khoản Premium đang hoạt động. Em có thể mở thêm kho đề và tăng lượt tải mỗi ngày.'
+    });
+  }
+  return items;
+}
+
 function renderStudentExamNotifications() {
   const list = document.getElementById('student-exam-notification-list');
   if (!list) return;
@@ -21997,8 +22107,13 @@ function renderStudentExamNotifications() {
   const badge = document.getElementById('student-exam-notification-badge');
   const button = document.getElementById('student-exam-notification-button');
   const count = items.length;
+  const signature = studentExamNotificationSignature(items);
+  let seenSignature = '';
+  try {
+    seenSignature = localStorage.getItem(STUDENT_EXAM_NOTIFICATIONS_SEEN_KEY) || '';
+  } catch (e) {}
   if (badge) {
-    badge.hidden = count <= 0;
+    badge.hidden = count <= 0 || signature === seenSignature;
     badge.textContent = count > 9 ? '9+' : String(count);
   }
   if (button) button.setAttribute('aria-label', count > 0 ? `Thông báo (${count})` : 'Thông báo');
@@ -22096,6 +22211,7 @@ function toggleStudentExamHeaderPanel(kind, event) {
   popover.classList.toggle('open', nextOpen);
   popover.setAttribute('aria-hidden', nextOpen ? 'false' : 'true');
   button.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  if (key === 'notification' && nextOpen) studentExamMarkNotificationsSeen();
 }
 
 function toggleStudentExamUserMenu(event) {
@@ -23222,6 +23338,7 @@ function renderStudentOnlineExamHistory() {
       <div><span>Điểm TB</span><strong>${escapeHtml(studentOnlinePercent(summary.average_percent))}</strong></div>
       <div><span>Lần nộp</span><strong>${escapeHtml(String(attemptCount || latestCount))}</strong></div>`;
   }
+  renderStudentExamSavedRecentPanel();
   const list = document.getElementById('student-online-history-list');
   if (!list) return;
   if (studentOnlineExamHistoryLoading) {
@@ -23316,6 +23433,7 @@ async function trackStudentExamPortalEvent(examId, eventName) {
         updated_at: now
       });
     }
+    renderStudentExamSavedRecentPanel();
   } catch (e) {}
 }
 
@@ -23581,6 +23699,108 @@ function setStudentExamRecentDownloadList(id, rows, emptyText) {
   el.innerHTML = rows.length ? rows.map(studentExamRecentDownloadCard).join('') : studentExamState(emptyText);
 }
 
+function studentExamDownloadedRows(limit) {
+  const rows = studentExamSortRows(studentExamRows || [])
+    .filter(row => !!studentExamActivityFor(row)?.last_downloaded_at)
+    .sort((a, b) => new Date(studentExamActivityFor(b)?.last_downloaded_at || 0) - new Date(studentExamActivityFor(a)?.last_downloaded_at || 0));
+  return Number.isFinite(Number(limit)) ? rows.slice(0, Number(limit)) : rows;
+}
+
+function studentExamActivityIcon(kind) {
+  if (kind === 'online') return '<svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M8 17V9"></path><path d="M12 17V7"></path><path d="M16 17v-5"></path><path d="M20 19H4"></path></svg>';
+  if (kind === 'open') return '<svg viewBox="0 0 24 24"><path d="M3 5h18v14H3z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>';
+  return '<svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>';
+}
+
+function studentExamActivityCard(item) {
+  const row = item?.row || null;
+  const id = escapeHtml(String(item?.exam_file_id || row?.id || ''));
+  const title = escapeHtml(String(item?.title || (row ? studentExamDisplayTitle(row) : 'Đề online')).trim());
+  const kind = String(item?.kind || 'download');
+  const label = kind === 'online' ? 'Đã làm online' : (kind === 'open' ? 'Đã mở gần đây' : 'Đã tải/lưu');
+  const time = studentExamRecentTimeLabel(item?.at);
+  const meta = escapeHtml([time, item?.meta || '', row ? studentExamAccessTier(row) === 'premium' ? 'Premium' : 'Free' : ''].filter(Boolean).join(' · '));
+  const canAccess = row && studentExamCanAccess(row);
+  const hasFile = row && studentExamHasFile(row, 'file');
+  const hasOnline = row && studentExamHasPublishedOnline(row);
+  return `<article class="student-exam-activity-card" data-exam-id="${id}">
+    <span class="student-exam-activity-icon ${escapeHtml(kind)}" aria-hidden="true">${studentExamActivityIcon(kind)}</span>
+    <span class="student-exam-activity-body">
+      <span class="student-exam-activity-label">${escapeHtml(label)}</span>
+      <strong class="student-exam-activity-name">${title}</strong>
+      <span class="student-exam-activity-meta">${meta || 'Chưa rõ thời gian'}</span>
+    </span>
+    <span class="student-exam-activity-actions">
+      <button type="button" class="student-exam-activity-btn" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Xem đề</button>
+      <button type="button" class="student-exam-activity-btn online" data-exam-online="${id}" ${hasOnline && canAccess ? '' : 'disabled'}>Làm online</button>
+      <button type="button" class="student-exam-activity-btn primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Tải lại</button>
+    </span>
+  </article>`;
+}
+
+function studentExamRecentActivityItems() {
+  const items = [];
+  (studentExamRows || []).forEach(row => {
+    const activity = studentExamActivityFor(row);
+    if (!activity) return;
+    if (activity.last_downloaded_at) {
+      const count = Math.max(1, Number(activity.download_count || 0) || 1);
+      items.push({ kind: 'download', at: activity.last_downloaded_at, row, exam_file_id: row.id, meta: count + ' lần tải' });
+    }
+    if (activity.last_opened_at) {
+      const count = Math.max(1, Number(activity.open_count || 0) || 1);
+      items.push({ kind: 'open', at: activity.last_opened_at, row, exam_file_id: row.id, meta: count + ' lần mở' });
+    }
+  });
+  (studentOnlineExamHistory || []).forEach(attempt => {
+    const id = String(attempt?.exam_file_id || '').trim();
+    const row = id ? studentExamFind(id) : null;
+    const percent = Number(attempt?.percent);
+    items.push({
+      kind: 'online',
+      at: attempt?.submitted_at,
+      row,
+      exam_file_id: id,
+      title: attempt?.title || (row ? studentExamDisplayTitle(row) : 'Đề online'),
+      meta: Number.isFinite(percent) ? 'Điểm ' + studentOnlinePercent(percent) : ''
+    });
+  });
+  return items
+    .filter(item => item.at)
+    .sort((a, b) => new Date(b.at || 0) - new Date(a.at || 0))
+    .slice(0, 12);
+}
+
+function studentExamSetActivityTab(tab) {
+  studentExamActivityTab = tab === 'recent' ? 'recent' : 'saved';
+  renderStudentExamSavedRecentPanel();
+}
+
+function renderStudentExamSavedRecentPanel() {
+  const savedPane = document.getElementById('student-exam-saved-list');
+  const recentPane = document.getElementById('student-exam-recent-list');
+  if (!savedPane && !recentPane) return;
+  document.querySelectorAll('[data-student-activity-tab]').forEach(btn => {
+    const active = btn.getAttribute('data-student-activity-tab') === studentExamActivityTab;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  if (savedPane) savedPane.classList.toggle('active', studentExamActivityTab === 'saved');
+  if (recentPane) recentPane.classList.toggle('active', studentExamActivityTab === 'recent');
+  const savedRows = studentExamDownloadedRows(8);
+  if (savedPane) {
+    savedPane.innerHTML = savedRows.length
+      ? '<div class="student-exam-activity-list">' + savedRows.map(row => studentExamActivityCard({ kind: 'download', at: studentExamActivityFor(row)?.last_downloaded_at, row, exam_file_id: row.id, meta: (Math.max(1, Number(studentExamActivityFor(row)?.download_count || 0) || 1)) + ' lần tải' })).join('') + '</div>'
+      : studentExamState(studentExamActivityError || 'Các đề đã tải/lưu về máy sẽ hiện ở đây để mở lại nhanh.');
+  }
+  const recentItems = studentExamRecentActivityItems();
+  if (recentPane) {
+    recentPane.innerHTML = recentItems.length
+      ? '<div class="student-exam-activity-list">' + recentItems.map(studentExamActivityCard).join('') + '</div>'
+      : studentExamState('Khi em tải đề, xem đề hoặc nộp bài online, hoạt động gần đây sẽ hiện ở đây.');
+  }
+}
+
 function renderStudentExamPersonalSections() {
   const allRows = studentExamSortRows(studentExamRows || []);
   const downloaded = allRows
@@ -23597,6 +23817,7 @@ function renderStudentExamPersonalSections() {
     if (el) el.textContent = String(n) + ' đề';
   };
   setCount('student-exam-download-history-count', downloaded.length);
+  renderStudentExamSavedRecentPanel();
   renderStudentOnlineExamHistory();
 }
 
