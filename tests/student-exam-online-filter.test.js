@@ -20,6 +20,26 @@ test('student portal has a desktop online-only filter toggle', () => {
   assert.match(html, /@media \(min-width:1180px\)\{[\s\S]*\.student-exam-filter-toggle,\s*\.student-exam-filter-group-title\{display:none\}/);
 });
 
+test('student portal filter dropdown defaults use compact labels', () => {
+  const html = readPortal();
+  const sectionStart = html.indexOf('<section class="student-exam-filters"');
+  assert.notEqual(sectionStart, -1, 'student exam filter section exists');
+  const sectionEnd = html.indexOf('<nav class="student-exam-category-tabs"', sectionStart);
+  assert.notEqual(sectionEnd, -1, 'student exam category tabs follow filters');
+  const filterSection = html.slice(sectionStart, sectionEnd);
+
+  assert.match(filterSection, /<option value="all">Mọi cấp<\/option>/);
+  assert.match(filterSection, /<option value="all">Mọi nguồn<\/option>/);
+  assert.match(filterSection, /<option value="all">Mọi năm<\/option>/);
+  assert.match(filterSection, /<option value="code">Mã đề tăng<\/option>/);
+  assert.doesNotMatch(filterSection, />Tất cả cấp học<\/option>/);
+  assert.doesNotMatch(filterSection, />Tất cả nguồn\/bộ đề<\/option>/);
+  assert.doesNotMatch(filterSection, />Tất cả năm<\/option>/);
+  assert.doesNotMatch(filterSection, />Theo số đề tăng dần<\/option>/);
+  assert.match(html, /yearEl\.innerHTML = '<option value="all">Mọi năm<\/option>'/);
+  assert.match(html, /sourceEl\.innerHTML = '<option value="all">Mọi nguồn<\/option>'/);
+});
+
 test('student portal online-only filter uses published online exam state', () => {
   const html = readPortal();
 

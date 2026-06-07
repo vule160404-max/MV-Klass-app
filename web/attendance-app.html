@@ -15882,7 +15882,7 @@ button[data-bank-inspect-confirm-not]:hover,
             <label>
               <span>Sắp xếp mặc định</span>
               <select id="student-setting-sort" aria-label="Sắp xếp mặc định">
-                <option value="code">Theo số đề tăng dần</option>
+                <option value="code">Mã đề tăng</option>
                 <option value="newest">Mới upload</option>
                 <option value="popular">Tải nhiều</option>
               </select>
@@ -16040,8 +16040,8 @@ button[data-bank-inspect-confirm-not]:hover,
           <label class="student-exam-filter-field is-primary" for="student-exam-level">
             <span>Cấp học</span>
             <select id="student-exam-level" aria-label="Lọc cấp học">
-              <option value="all">Tất cả cấp học</option>
-              <option value="entrance_10">Thi vào 10</option>
+              <option value="all">Mọi cấp</option>
+              <option value="entrance_10">Vào 10</option>
               <option value="university">THPT QG</option>
               <option value="ielts">IELTS</option>
             </select>
@@ -16049,7 +16049,7 @@ button[data-bank-inspect-confirm-not]:hover,
           <label class="student-exam-filter-field is-primary" for="student-exam-source">
             <span>Nguồn</span>
             <select id="student-exam-source" aria-label="Lọc nguồn, bộ đề hoặc thầy cô">
-              <option value="all">Tất cả nguồn/bộ đề</option>
+              <option value="all">Mọi nguồn</option>
             </select>
           </label>
           <button type="button" class="student-exam-filter-toggle" id="student-exam-filter-toggle" aria-expanded="false" aria-controls="student-exam-advanced-filters">Lọc chi tiết</button>
@@ -16062,13 +16062,13 @@ button[data-bank-inspect-confirm-not]:hover,
           <label class="student-exam-filter-field" for="student-exam-year">
             <span>Năm</span>
             <select id="student-exam-year" aria-label="Lọc năm">
-              <option value="all">Tất cả năm</option>
+              <option value="all">Mọi năm</option>
             </select>
           </label>
           <label class="student-exam-filter-field" for="student-exam-sort">
             <span>Sắp xếp</span>
             <select id="student-exam-sort" aria-label="Sắp xếp đề thi">
-              <option value="code">Theo số đề tăng dần</option>
+              <option value="code">Mã đề tăng</option>
               <option value="newest">Mới upload</option>
               <option value="popular">Tải nhiều</option>
             </select>
@@ -23316,12 +23316,12 @@ function renderStudentExamSelectOptions() {
   const sourceEl = document.getElementById('student-exam-source');
   if (yearEl) {
     const cur = yearEl.value || 'all';
-    yearEl.innerHTML = '<option value="all">Tất cả năm</option>' + years.map(y => `<option value="${escapeHtml(String(y))}">${escapeHtml(String(y))}</option>`).join('');
+    yearEl.innerHTML = '<option value="all">Mọi năm</option>' + years.map(y => `<option value="${escapeHtml(String(y))}">${escapeHtml(String(y))}</option>`).join('');
     yearEl.value = years.map(String).includes(cur) ? cur : 'all';
   }
   if (sourceEl) {
     const cur = sourceEl.value || 'all';
-    sourceEl.innerHTML = '<option value="all">Tất cả nguồn/bộ đề</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
+    sourceEl.innerHTML = '<option value="all">Mọi nguồn</option>' + sources.map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`).join('');
     sourceEl.value = sources.some(([key]) => key === cur) ? cur : 'all';
   }
 }
