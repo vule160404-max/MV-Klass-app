@@ -3464,7 +3464,7 @@
       margin:0;
       font-size:18px;
       line-height:1.25;
-      letter-spacing:-.015em;
+      letter-spacing:0;
       color:#0f2447;
     }
     #app-confirm-modal .app-confirm-body{
@@ -34990,12 +34990,12 @@ async function removeStudent(id) {
   }
   const debt = await getStudentTuitionDebtSummaryFresh(sid);
   const confirmMsg = debt.hasDebt
-    ? `H?c viên này còn n? h?c phí (${debt.pendingSessions} bu?i chua thu, kho?ng ${formatVnd(debt.owedVnd)}).\n\nXóa s? g? vinh vi?n h?c viên cùng di?m danh và d? li?u h?c phí liên quan. B?n có ch?c mu?n xóa?`
-    : 'Xóa h?c viên này? Các b?n ghi di?m danh các ngày tru?c cung s? b? xóa.';
+    ? `Học viên này còn nợ học phí (${debt.pendingSessions} buổi chưa thu, khoảng ${formatVnd(debt.owedVnd)}).\n\nXóa sẽ gỡ vĩnh viễn học viên cùng điểm danh và dữ liệu học phí liên quan. Bạn có chắc muốn xóa?`
+    : 'Xóa học viên này? Các bản ghi điểm danh các ngày trước cũng sẽ bị xóa.';
   const okDel = await confirmApp(confirmMsg, {
-    title: debt.hasDebt ? 'H?c viên còn n? h?c phí' : 'Xóa h?c viên',
+    title: debt.hasDebt ? 'Học viên còn nợ học phí' : 'Xóa học viên',
     okLabel: debt.hasDebt ? 'Có' : 'Xóa',
-    cancelLabel: debt.hasDebt ? 'Không' : 'H?y'
+    cancelLabel: debt.hasDebt ? 'Không' : 'Hủy'
   });
   if (!okDel) return;
   const delTuition = await deleteStudentRelatedTuitionAndRefs(sid);
