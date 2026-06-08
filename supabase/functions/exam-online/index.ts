@@ -1063,44 +1063,65 @@ function parseOpenAiExamJson(text: string) {
 }
 
 async function generateExamJsonWithNvidia(nvidiaKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {
-  const model = (Deno.env.get("NVIDIA_EXAM_JSON_MODEL") || "nvidia/llama-3.3-nemotron-super-49b-v1.5").trim();
+  const model = (Deno.env.get("NVIDIA_EXAM_JSON_MODEL") || "openai/gpt-oss-120b").trim();
   const maxTokens = Number(Deno.env.get("NVIDIA_EXAM_JSON_MAX_TOKENS") || "8192");
   const pdfText = pdfFiles.map((file) => {
     const text = extractPdfTextForAi(file.bytes);
     return `===== ${file.filename} =====\n${text || "[Khong trich xuat duoc chu tu PDF]"}`;
   }).join("\n\n");
-  const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${nvidiaKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        {
-          role: "system",
-          content: "You convert Vietnamese exam PDFs and answer keys into valid JSON. Return only JSON, no markdown.",
-        },
-        {
-          role: "user",
-          content: `${prompt}\n\nNOI DUNG FILE DE VA DAP AN DA TRICH XUAT:\n${pdfText}\n\nChi tra ve JSON hop le theo schema trong prompt.`,
-        },
-      ],
-      temperature: 0.1,
-      max_tokens: Number.isFinite(maxTokens) && maxTokens > 0 ? maxTokens : 8192,
-      stream: false,
-    }),
-    signal: AbortSignal.timeout(180000),
-  });
-  const data = await response.json().catch(() => null);
-  if (!response.ok) {
-    const message = String(data?.error?.message || data?.error || `NVIDIA_HTTP_${response.status}`).slice(0, 240);
-    throw new Error(`NVIDIA_REQUEST_FAILED: ${message}`);
+  const schemaInstruction = [
+    "Return exactly one valid JSON object.",
+    "The root object MUST include a non-empty questions array.",
+    "Each question MUST include: id, type, question, answer.",
+    "Allowed type values: multiple_choice, fill_blank, sentence_rewrite.",
+    "For multiple_choice, include at least 4 options when available.",
+    "For fill_blank, include blank_id.",
+    "For sentence_rewrite, include prompt.",
+    "Do not return summaries, metadata-only JSON, markdown, or comments.",
+  ].join("\n");
+  let lastSchemaError = "";
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${nvidiaKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: "system",
+            content: "You convert Vietnamese exam PDFs and answer keys into valid exam JSON. Return only JSON, no markdown.",
+          },
+          {
+            role: "user",
+            content: `${prompt}\n\n${schemaInstruction}\n\nNOI DUNG FILE DE VA DAP AN DA TRICH XUAT:\n${pdfText}\n\n${attempt > 1 ? `Lan truoc JSON khong hop le: ${lastSchemaError}. Hay tao lai day du mang questions tu noi dung de va dap an.` : "Hay tao day du mang questions tu noi dung de va dap an."}`,
+          },
+        ],
+        temperature: 0.1,
+        max_tokens: Number.isFinite(maxTokens) && maxTokens > 0 ? maxTokens : 8192,
+        stream: false,
+      }),
+      signal: AbortSignal.timeout(180000),
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      const message = String(data?.error?.message || data?.error || `NVIDIA_HTTP_${response.status}`).slice(0, 240);
+      throw new Error(`NVIDIA_REQUEST_FAILED: ${message}`);
+    }
+    const text = String(data?.choices?.[0]?.message?.content || "").trim();
+    if (!text) throw new Error("NVIDIA_RESPONSE_EMPTY");
+    const parsed = parseOpenAiExamJson(text);
+    try {
+      return validateExamJson(parsed);
+    } catch (err) {
+      lastSchemaError = String(err && err.message || err || "NVIDIA_SCHEMA_INVALID").slice(0, 120);
+      if (attempt < 2 && /QUESTIONS_REQUIRED/i.test(lastSchemaError)) continue;
+      throw new Error(`NVIDIA_RESPONSE_SCHEMA_INVALID: ${lastSchemaError}`);
+    }
   }
-  const text = String(data?.choices?.[0]?.message?.content || "").trim();
-  if (!text) throw new Error("NVIDIA_RESPONSE_EMPTY");
-  return parseOpenAiExamJson(text);
+  throw new Error(`NVIDIA_RESPONSE_SCHEMA_INVALID: ${lastSchemaError || "UNKNOWN"}`);
 }
 
 async function generateExamJsonWithOpenAi(openAiKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {

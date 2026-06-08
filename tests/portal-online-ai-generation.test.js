@@ -122,7 +122,11 @@ test('NVIDIA API key is preferred and uses chat completions with extracted PDF t
   assert.match(source, /function extractPdfTextForAi/);
   assert.match(nvidiaFn, /https:\/\/integrate\.api\.nvidia\.com\/v1\/chat\/completions/);
   assert.match(nvidiaFn, /NVIDIA_EXAM_JSON_MODEL/);
+  assert.match(nvidiaFn, /openai\/gpt-oss-120b/);
   assert.match(nvidiaFn, /pdfFiles\.map/);
   assert.match(nvidiaFn, /extractPdfTextForAi\(file\.bytes\)/);
+  assert.match(nvidiaFn, /validateExamJson\(parsed\)/);
+  assert.match(nvidiaFn, /QUESTIONS_REQUIRED/);
+  assert.match(nvidiaFn, /attempt < 2/);
   assert.doesNotMatch(nvidiaFn, /type:\s*"input_file"/);
 });
