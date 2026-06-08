@@ -16506,7 +16506,7 @@ button[data-bank-inspect-confirm-not]:hover,
               <strong id="student-exam-menu-name">Tài khoản học sinh</strong>
               <span id="student-exam-download-credit">Tải: 0/5 hôm nay</span>
             </div>
-            <button type="button" class="student-exam-menu-item student-exam-admin-link" id="student-exam-admin-switch" onclick="closeStudentExamUserMenu();openAdminDashboardModule()" role="menuitem" style="display:none">
+            <button type="button" class="student-exam-menu-item student-exam-admin-link" id="student-exam-admin-switch" role="menuitem" hidden disabled>
               Đi tới trang quản trị
             </button>
             <button type="button" class="student-exam-menu-item is-danger" onclick="closeStudentExamUserMenu();signOutUser()" role="menuitem">Đăng xuất</button>
@@ -21909,8 +21909,7 @@ function showStudentExamPortalUI() {
     closeSidebarMenu();
     studentExamApplyVisualSettings();
     studentExamRefreshIdentityUi();
-    const adminSwitch = document.getElementById('student-exam-admin-switch');
-    if (adminSwitch) adminSwitch.style.display = (isAdmin() || isTeacher()) ? 'inline-flex' : 'none';
+    syncStudentExamAdminSwitch();
     startStudentPortalPresenceHeartbeat();
     renderStudentExamPlanState();
     studentExamSetPortalPage('library');
@@ -21919,7 +21918,23 @@ function showStudentExamPortalUI() {
   });
 }
 
+function syncStudentExamAdminSwitch() {
+  const adminSwitch = document.getElementById('student-exam-admin-switch');
+  if (!adminSwitch) return;
+  const allowed = currentRole === 'admin' || currentRole === 'teacher';
+  adminSwitch.hidden = !allowed;
+  adminSwitch.disabled = !allowed;
+  adminSwitch.style.display = allowed ? 'inline-flex' : 'none';
+  adminSwitch.onclick = allowed
+    ? async () => {
+        closeStudentExamUserMenu();
+        await openAdminDashboardModule();
+      }
+    : null;
+}
+
 function renderStudentExamPlanState() {
+  syncStudentExamAdminSwitch();
   const status = currentPortalStatus || 'active';
   const ownedPremiumKeys = portalPremiumOwnedProductKeys();
   const hasPackagePremium = ownedPremiumKeys && ownedPremiumKeys.size > 0;
@@ -25421,6 +25436,14 @@ async function openAdminDashboardModule() {
     showLoginUI();
     return;
   }
+  const verifiedRole = await verifyAdminRole().catch(() => null);
+  if (verifiedRole !== 'admin' && verifiedRole !== 'teacher') {
+    currentRole = verifiedRole || 'student';
+    syncStudentExamAdminSwitch();
+    await bootStudentExamPortal().catch(() => showLoginUI());
+    return;
+  }
+  currentRole = verifiedRole;
   rememberWorkspaceModule('admin');
   const chooser = document.getElementById('module-choice-screen');
   if (chooser) chooser.style.display = 'none';
