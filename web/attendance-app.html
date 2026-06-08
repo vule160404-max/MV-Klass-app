@@ -25499,7 +25499,7 @@ async function signInWithPassword() {
   try { data = await r.json(); } catch (e) {}
   if (!r.ok) {
     setLoginSubmitBusy(false);
-    errEl.textContent = data.error_description || data.msg || data.message || data.error || 'Đăng nhập thất bại';
+    errEl.textContent = await loginErrorMessageForResponse(email, data);
     return;
   }
   currentSession = {
@@ -25545,6 +25545,39 @@ async function signInWithPassword() {
   adminShellBooted = false;
   showModuleChoiceUI();
   setLoginSubmitBusy(false);
+}
+
+async function loginEmailExists(email) {
+  const normalized = String(email || '').trim().toLowerCase();
+  if (!normalized) return false;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=id&email=eq.' + encodeURIComponent(normalized) + '&limit=1', {
+      headers: { apikey: KEY },
+      cache: 'no-store'
+    });
+    if (!r.ok) return null;
+    const rows = await r.json().catch(() => []);
+    return Array.isArray(rows) && rows.length > 0;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function loginErrorMessageForResponse(email, data) {
+  const raw = String(
+    (data && (data.error_description || data.msg || data.message || data.error)) || ''
+  ).trim();
+  const lower = raw.toLowerCase();
+  if (/email.*(not.*confirm|confirm)|not.*confirm.*email|email_not_confirmed/.test(lower)) {
+    return 'Bạn cần xác minh email trước khi đăng nhập.';
+  }
+  if (/invalid login credentials|invalid.*credentials|invalid.*grant|email not found|user not found/.test(lower)) {
+    const exists = await loginEmailExists(email);
+    if (exists === true) return 'Mật khẩu sai.';
+    if (exists === false) return 'Tài khoản không tồn tại.';
+    return 'Tài khoản hoặc mật khẩu không đúng.';
+  }
+  return raw || 'Đăng nhập thất bại.';
 }
 
 function setLoginAuthMode(mode) {
@@ -25623,7 +25656,7 @@ async function rejectUnconfirmedEmailLogin(errEl, accessToken) {
   currentPortalFreeGroup = 'entrance_10';
   resetPortalPremiumState();
   clearAuthSessionStorage();
-  if (errEl) errEl.textContent = 'Email chưa được xác nhận. Em mở email Supabase gửi và bấm xác nhận trước khi đăng nhập.';
+  if (errEl) errEl.textContent = 'Bạn cần xác minh email trước khi đăng nhập.';
 }
 
 function applySignupLoginNotice() {
