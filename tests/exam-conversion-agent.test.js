@@ -3,7 +3,9 @@ const assert = require('node:assert/strict');
 
 const {
   buildGeminiRequestBody,
+  callGemini,
   evaluateQualityGate,
+  examFileRefs,
   extractAnswerKeys,
   filterConversionCandidates,
   inferThanhHoaExamNumber,
@@ -85,6 +87,55 @@ test('answer parser extracts numbered Thanh Hoa answer keys', () => {
   assert.equal(keys.has(51), false);
 });
 
+test('file refs support Supabase Storage rows when R2 keys are missing', () => {
+  const refs = examFileRefs({
+    storage_provider: 'supabase',
+    object_key: '',
+    storage_path: 'vao-10/De 010 Vao 10 Thanh Hoa 2025.pdf',
+    answer_object_key: '',
+    answer_path: 'vao-10/Dap an De 010 Vao 10 Thanh Hoa 2025.pdf'
+  });
+
+  assert.deepEqual(refs.exam, { source: 'supabase', ref: 'vao-10/De 010 Vao 10 Thanh Hoa 2025.pdf' });
+  assert.deepEqual(refs.answer, { source: 'supabase', ref: 'vao-10/Dap an De 010 Vao 10 Thanh Hoa 2025.pdf' });
+});
+
+test('file refs prefer R2 object keys when both storage locations exist', () => {
+  const refs = examFileRefs({
+    object_key: 'r2/exam.pdf',
+    storage_path: 'supabase/exam.pdf',
+    answer_object_key: 'r2/answer.pdf',
+    answer_path: 'supabase/answer.pdf'
+  });
+
+  assert.deepEqual(refs.exam, { source: 'r2', ref: 'r2/exam.pdf' });
+  assert.deepEqual(refs.answer, { source: 'r2', ref: 'r2/answer.pdf' });
+});
+
+test('dry-run report normalizes mojibake titles', async () => {
+  const report = await runBatch({
+    source: 'Thanh Hoa',
+    level: 'vao10',
+    limit: 1,
+    mode: 'dry-run',
+    expectedQuestionCount: 4,
+    now: () => new Date('2026-06-09T00:00:00Z')
+  }, {
+    listCandidates: async () => [{ id: 'exam-001', title: 'Äá» 001 VÃ o 10 Thanh HÃ³a 2025', province: 'Thanh Hoa', exam_code: '001' }],
+    loadPromptTemplate: async () => 'Prompt __EXAM_TITLE__',
+    readExamPairText: async () => ({ examText: 'Noi dung de day du', answerText: '1 A\n2 B\n3 goes\n4 although it rained, we went out', answerKeys: new Map([[1, 'A'], [2, 'B'], [3, 'goes'], [4, 'although it rained, we went out']]) }),
+    convertWithGemini: async (payload) => {
+      assert.match(payload.prompt, /Đề 001 Vào 10 Thanh Hóa 2025/);
+      return validExam();
+    },
+    saveDraft: async () => { throw new Error('should not save in dry-run'); },
+    publishExam: async () => { throw new Error('should not publish in dry-run'); },
+    writeArtifacts: async () => {}
+  });
+
+  assert.equal(report.rows[0].title, 'Đề 001 Vào 10 Thanh Hóa 2025');
+});
+
 test('candidate filter skips already published online exams', () => {
   const rows = [
     { id: 'published', title: 'De TH 001 Vao 10 Thanh Hoa 2025', province: 'Thanh Hoa', exam_code: 'TH 001' },
@@ -144,8 +195,109 @@ test('Gemini request body uses Gemini 2.5 Flash structured JSON output', () => {
   });
 
   assert.match(body.contents[0].parts[0].text, /Convert this exam/);
-  assert.equal(body.generationConfig.responseFormat.text.mimeType, 'application/json');
-  assert.equal(body.generationConfig.responseFormat.text.schema.type, 'object');
+  assert.equal(body.generationConfig.responseMimeType, 'application/json');
+  assert.equal(body.generationConfig.responseSchema.type, 'object');
+  assert.equal(body.generationConfig.responseFormat, undefined);
+});
+
+test('Gemini caller retries transient high-demand responses', async () => {
+  let calls = 0;
+  const result = await callGemini({
+    apiKey: 'test-key',
+    model: 'gemini-2.5-flash',
+    prompt: 'Convert this exam.',
+    sleep: async () => {},
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) {
+        return {
+          ok: false,
+          status: 503,
+          json: async () => ({
+            error: {
+              message: 'This model is currently experiencing high demand.'
+            }
+          })
+        };
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          candidates: [{
+            content: {
+              parts: [{ text: JSON.stringify({ exam_id: 'exam-001', title: 'Draft', pages: [], questions: [] }) }]
+            }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.equal(calls, 2);
+  assert.equal(result.exam_id, 'exam-001');
+});
+
+test('Gemini caller retries transient fetch failures', async () => {
+  let calls = 0;
+  const result = await callGemini({
+    apiKey: 'test-key',
+    model: 'gemini-2.5-flash',
+    prompt: 'Convert this exam.',
+    sleep: async () => {},
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) throw new Error('fetch failed');
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          candidates: [{
+            content: {
+              parts: [{ text: JSON.stringify({ exam_id: 'exam-002', title: 'Draft', pages: [], questions: [] }) }]
+            }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.equal(calls, 2);
+  assert.equal(result.exam_id, 'exam-002');
+});
+
+test('Gemini caller retries empty successful responses', async () => {
+  let calls = 0;
+  const result = await callGemini({
+    apiKey: 'test-key',
+    model: 'gemini-2.5-flash',
+    prompt: 'Convert this exam.',
+    sleep: async () => {},
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ candidates: [] })
+        };
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          candidates: [{
+            content: {
+              parts: [{ text: JSON.stringify({ exam_id: 'exam-003', title: 'Draft', pages: [], questions: [] }) }]
+            }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.equal(calls, 2);
+  assert.equal(result.exam_id, 'exam-003');
 });
 
 test('dry-run batch creates report without saving or publishing', async () => {

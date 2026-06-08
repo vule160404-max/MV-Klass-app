@@ -93,6 +93,10 @@ function maybeRepairMojibake(value) {
   }
 }
 
+function displayTitle(row) {
+  return maybeRepairMojibake(row && (row.title || row.id) || 'exam').trim();
+}
+
 function normalizeSourceText(value) {
   return normalizeText(maybeRepairMojibake(value))
     .toLowerCase()
@@ -344,12 +348,8 @@ function buildGeminiRequestBody({ prompt }) {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
       temperature: 0.1,
-      responseFormat: {
-        text: {
-          mimeType: 'application/json',
-          schema: EXAM_JSON_SCHEMA
-        }
-      }
+      responseMimeType: 'application/json',
+      responseSchema: EXAM_JSON_SCHEMA
     }
   };
 }
@@ -377,29 +377,63 @@ function parseJsonText(text) {
   }
 }
 
-async function callGemini({ apiKey, model, prompt, fetchImpl = fetch }) {
+function sleepMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableGeminiError(status, message) {
+  const text = String(message || '').toLowerCase();
+  return status === 429 || status === 500 || status === 502 || status === 503 || status === 504 || text.includes('high demand');
+}
+
+async function callGemini({ apiKey, model, prompt, fetchImpl = fetch, sleep = sleepMs, maxAttempts = 3 }) {
   if (!apiKey) throw new Error('GEMINI_API_KEY_REQUIRED');
   const cleanModel = String(model || DEFAULT_MODEL).trim();
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cleanModel)}:generateContent`;
-  const response = await fetchImpl(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey
-    },
-    body: JSON.stringify(buildGeminiRequestBody({ prompt, model: cleanModel }))
-  });
-  const data = await response.json().catch(() => null);
-  if (!response.ok) {
-    const message = String((data && data.error && data.error.message) || `GEMINI_HTTP_${response.status}`).slice(0, 240);
-    throw new Error(`GEMINI_REQUEST_FAILED: ${message}`);
+  const attempts = Math.max(1, Number(maxAttempts) || 1);
+  let lastMessage = '';
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    let response;
+    try {
+      response = await fetchImpl(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
+        body: JSON.stringify(buildGeminiRequestBody({ prompt, model: cleanModel }))
+      });
+    } catch (err) {
+      lastMessage = String(err && err.message || err || 'fetch failed').slice(0, 240);
+      if (attempt < attempts) {
+        await sleep(1200 * attempt);
+        continue;
+      }
+      throw new Error(`GEMINI_REQUEST_FAILED: ${lastMessage}`);
+    }
+    const data = await response.json().catch(() => null);
+    if (response.ok) {
+      const text = responseTextFromGemini(data);
+      if (!text && attempt < attempts) {
+        lastMessage = 'GEMINI_EMPTY_JSON';
+        await sleep(1200 * attempt);
+        continue;
+      }
+      return parseJsonText(text);
+    }
+    lastMessage = String((data && data.error && data.error.message) || `GEMINI_HTTP_${response.status}`).slice(0, 240);
+    if (attempt < attempts && isRetryableGeminiError(response.status, lastMessage)) {
+      await sleep(1200 * attempt);
+      continue;
+    }
+    throw new Error(`GEMINI_REQUEST_FAILED: ${lastMessage}`);
   }
-  return parseJsonText(responseTextFromGemini(data));
+  throw new Error(`GEMINI_REQUEST_FAILED: ${lastMessage || 'UNKNOWN'}`);
 }
 
 function renderAgentPrompt(templateText, row, pair) {
   const id = String(row && row.id || '').trim();
-  const title = String(row && row.title || 'De online').trim();
+  const title = displayTitle(row) || 'De online';
   const base = String(templateText || '')
     .replaceAll('__EXAM_ID__', id)
     .replaceAll('__EXAM_TITLE__', title)
@@ -474,6 +508,51 @@ async function getR2ObjectBytes(objectKey, env = process.env, fetchImpl = fetch)
   const response = await fetchImpl(signR2Url('GET', objectKey, env));
   if (!response.ok) throw new Error(`R2_GET_FAILED_${response.status}`);
   return Buffer.from(await response.arrayBuffer());
+}
+
+function supabaseStorageLocation(pathValue, env = process.env) {
+  const raw = String(pathValue || '').trim().replace(/^\/+/, '');
+  const defaultBucket = (env.SUPABASE_EXAM_BUCKET || 'exam-files').trim();
+  const parts = raw.split('/').filter(Boolean);
+  if (parts.length > 1 && /^(exam-files|exam_files|mvklass-exam-files|documents|public)$/i.test(parts[0])) {
+    return { bucket: parts[0], path: parts.slice(1).join('/') };
+  }
+  return { bucket: defaultBucket, path: raw };
+}
+
+async function getSupabaseStorageBytes(pathValue, env = process.env, fetchImpl = fetch) {
+  const { url, key } = supabaseEnv(env);
+  const { bucket, path: objectPath } = supabaseStorageLocation(pathValue, env);
+  if (!bucket || !objectPath) throw new Error('SUPABASE_STORAGE_PATH_REQUIRED');
+  const response = await fetchImpl(`${url}/storage/v1/object/${encodePath(bucket)}/${encodePath(objectPath)}`, {
+    headers: {
+      apikey: key,
+      authorization: `Bearer ${key}`
+    }
+  });
+  if (!response.ok) throw new Error(`SUPABASE_STORAGE_GET_FAILED_${response.status}`);
+  return Buffer.from(await response.arrayBuffer());
+}
+
+function examFileRefs(row) {
+  const examObjectKey = String(row && row.object_key || '').trim().replace(/^\/+/, '');
+  const answerObjectKey = String(row && row.answer_object_key || '').trim().replace(/^\/+/, '');
+  const examStoragePath = String(row && row.storage_path || '').trim().replace(/^\/+/, '');
+  const answerStoragePath = String(row && row.answer_path || '').trim().replace(/^\/+/, '');
+  return {
+    exam: examObjectKey
+      ? { source: 'r2', ref: examObjectKey }
+      : (examStoragePath ? { source: 'supabase', ref: examStoragePath } : null),
+    answer: answerObjectKey
+      ? { source: 'r2', ref: answerObjectKey }
+      : (answerStoragePath ? { source: 'supabase', ref: answerStoragePath } : null)
+  };
+}
+
+async function getExamFileBytes(fileRef, env = process.env, fetchImpl = fetch) {
+  if (!fileRef || !fileRef.ref) throw new Error('FILE_REF_REQUIRED');
+  if (fileRef.source === 'supabase') return await getSupabaseStorageBytes(fileRef.ref, env, fetchImpl);
+  return await getR2ObjectBytes(fileRef.ref, env, fetchImpl);
 }
 
 function decodePdfLiteralText(value) {
@@ -652,12 +731,11 @@ async function loadPromptTemplateFromSupabase(row, options, deps = {}) {
 }
 
 async function readExamPairTextFromR2(row, options, deps = {}) {
-  const examKey = row && row.object_key;
-  const answerKey = row && row.answer_object_key;
-  if (!examKey) throw new Error('EXAM_PDF_NOT_FOUND');
-  if (!answerKey) throw new Error('ANSWER_PDF_NOT_FOUND');
-  const examBytes = await getR2ObjectBytes(examKey, deps.env || process.env, deps.fetchImpl || fetch);
-  const answerBytes = await getR2ObjectBytes(answerKey, deps.env || process.env, deps.fetchImpl || fetch);
+  const refs = examFileRefs(row);
+  if (!refs.exam) throw new Error('EXAM_PDF_NOT_FOUND');
+  if (!refs.answer) throw new Error('ANSWER_PDF_NOT_FOUND');
+  const examBytes = await getExamFileBytes(refs.exam, deps.env || process.env, deps.fetchImpl || fetch);
+  const answerBytes = await getExamFileBytes(refs.answer, deps.env || process.env, deps.fetchImpl || fetch);
   const examText = extractPdfText(examBytes);
   const answerText = extractPdfText(answerBytes);
   if (examText.length < Number(options.minExamTextChars || MIN_EXAM_TEXT_CHARS)) throw new Error(`EXAM_TEXT_TOO_SHORT:${examText.length}`);
@@ -712,7 +790,7 @@ async function publishExamToSupabase(row, _exam, _gate, _options, deps = {}) {
 
 function safeArtifactName(row) {
   const number = inferThanhHoaExamNumber(row);
-  const title = String(row && row.title || row && row.id || 'exam')
+  const title = displayTitle(row)
     .replace(/[^\w.-]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .slice(0, 90);
@@ -781,7 +859,7 @@ async function runBatch(options = {}, deps = {}) {
   for (const row of candidates) {
     const item = {
       exam_file_id: row.id,
-      title: row.title,
+      title: displayTitle(row),
       exam_code: row.exam_code || null,
       status: 'pending',
       errors: [],
@@ -855,6 +933,7 @@ module.exports = {
   buildGeminiRequestBody,
   callGemini,
   evaluateQualityGate,
+  examFileRefs,
   extractAnswerKeys,
   extractPdfText,
   filterConversionCandidates,
