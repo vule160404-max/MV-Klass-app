@@ -1603,21 +1603,25 @@
       .teacher-class-checkin-note{
         margin-top:3px;
       }
+      #tab-work .admin-chk-table.work-checkin-table,
       #tab-work .admin-chk-table.work-payroll-table,
       #tab-work .admin-chk-table.work-substitution-table{
         display:block;
         width:100%;
         border-spacing:0;
       }
+      #tab-work .work-checkin-table thead,
       #tab-work .work-payroll-table thead,
       #tab-work .work-substitution-table thead{
         display:none;
       }
+      #tab-work .work-checkin-table tbody,
       #tab-work .work-payroll-table tbody,
       #tab-work .work-substitution-table tbody{
         display:grid;
         gap:8px;
       }
+      #tab-work .work-checkin-table tr,
       #tab-work .work-payroll-table tr,
       #tab-work .work-substitution-table tr{
         display:grid;
@@ -1628,6 +1632,7 @@
         background:#fff;
         box-shadow:0 8px 18px rgba(15,31,61,0.05);
       }
+      #tab-work .work-checkin-table td,
       #tab-work .work-payroll-table td,
       #tab-work .work-substitution-table td{
         display:flex;
@@ -1639,14 +1644,17 @@
         line-height:1.35;
         min-width:0;
       }
+      #tab-work .work-checkin-table td[colspan],
       #tab-work .work-payroll-table td[colspan],
       #tab-work .work-substitution-table td[colspan]{
         display:block;
       }
+      #tab-work .work-checkin-table td[colspan]::before,
       #tab-work .work-payroll-table td[colspan]::before,
       #tab-work .work-substitution-table td[colspan]::before{
         content:none;
       }
+      #tab-work .work-checkin-table td::before,
       #tab-work .work-payroll-table td::before,
       #tab-work .work-substitution-table td::before{
         flex:0 0 auto;
@@ -1665,6 +1673,27 @@
       #tab-work .work-substitution-table td:nth-child(3)::before{ content:'GV nghỉ'; }
       #tab-work .work-substitution-table td:nth-child(4)::before{ content:'Dạy thay'; }
       #tab-work .work-substitution-table td:nth-child(5)::before{ content:'Ghi chú'; }
+      #tab-work .work-checkin-table td:nth-child(1)::before{ content:'Check-in'; }
+      #tab-work .work-checkin-table td:nth-child(2)::before{ content:'Giáo viên'; }
+      #tab-work .work-checkin-table td:nth-child(3)::before{ content:'Lớp'; }
+      #tab-work .work-checkin-table td:nth-child(4)::before{ content:'Trạng thái'; }
+      #tab-work .work-checkin-table td:nth-child(5){
+        display:grid;
+        grid-template-columns:1fr;
+        gap:7px;
+        padding-top:3px;
+      }
+      #tab-work .work-checkin-table td:nth-child(5)::before{ content:none; }
+      #tab-work .work-checkin-table .admin-chk-actions{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:7px;
+        width:100%;
+      }
+      #tab-work .work-checkin-table .admin-chk-actions .btn-sm{
+        width:100%;
+        min-height:38px;
+      }
       #tab-work .work-substitution-table td:nth-child(6){
         display:block;
         padding-top:4px;
@@ -4897,6 +4926,15 @@
     @media (max-width:900px){ .portal-curation-premium-grid{ grid-template-columns:1fr; } .portal-free-tabs{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; margin-bottom:8px; } .portal-free-tabs .btn-sm{ min-height:36px; height:36px; padding:7px 8px; font-size:11.5px; border-radius:11px; } .portal-free-toolbar{ align-items:center; flex-direction:row; margin-bottom:8px; } .portal-free-toolbar-note{ font-size:10.5px; line-height:1.25; } .portal-free-add-btn{ flex:0 0 auto; min-height:34px; height:34px; padding:7px 10px; border-radius:11px; font-size:11px; } .portal-free-list{ min-height:0; max-height:230px; gap:5px; padding:5px; border-radius:13px; } .portal-free-slot{ grid-template-columns:28px minmax(0,1fr) auto; gap:7px; padding:6px 7px; border-radius:11px; } .portal-free-slot-num{ width:28px; height:26px; border-radius:9px; font-size:10.5px; } .portal-free-title{ font-size:11.5px; line-height:1.18; } .portal-free-meta{ font-size:9.8px; line-height:1.15; } .portal-free-actions{ grid-column:auto; gap:4px; justify-content:flex-end; } .portal-free-actions .btn-sm{ min-height:28px; height:28px; padding:5px 7px; border-radius:9px; font-size:10.5px; } .portal-picker{ padding:12px; align-items:center; } .portal-picker-card{ width:min(760px, calc(100vw - 24px)); max-height:calc(100dvh - 24px); border-radius:16px; } .portal-picker-head{ grid-template-columns:1fr auto; } .portal-picker-filters{ grid-template-columns:1fr; } .portal-picker-actionbar{ align-items:stretch; flex-direction:column; } .portal-picker-actions{ display:grid; grid-template-columns:1fr; } .portal-picker-bulk{ width:100%; } .portal-r2-upload-top{ grid-template-columns:1fr; } .portal-r2-upload-btn{ width:100%; min-height:46px; } .portal-r2-dropzone{ min-height:68px; } }
     @media (max-width:900px){ .portal-free-compact .portal-panel-head{ padding:11px 12px 8px; } .portal-free-compact .portal-panel-body{ padding:8px 10px 10px; } .portal-free-compact .portal-panel-sub{ display:none; } }
     @media (max-width:520px){ .portal-curation-shell{ gap:8px; } .portal-free-tabs{ grid-template-columns:repeat(3,minmax(0,1fr)); } .portal-free-tabs .btn-sm{ min-height:32px; height:32px; padding:6px 5px; font-size:10.5px; } .portal-free-toolbar{ align-items:stretch; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:7px; } .portal-free-toolbar-note{ align-self:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .portal-free-add-btn{ width:auto; padding-inline:9px; } .portal-free-list{ max-height:210px; } .portal-free-slot{ grid-template-columns:26px minmax(0,1fr) auto; padding:6px; } .portal-free-slot-num{ width:26px; height:24px; border-radius:8px; } .portal-free-actions .btn-sm{ width:34px; padding:0; font-size:0; } .portal-free-actions .btn-sm:first-child::before{ content:"Đổi"; font-size:10.5px; } .portal-free-actions .btn-sm:last-child::before{ content:"Bỏ"; font-size:10.5px; } }
+    @media (max-width:520px){
+      .portal-free-list{ padding:6px; }
+      .portal-free-slot{ grid-template-columns:26px minmax(0,1fr) 50px; gap:6px; align-items:center; }
+      .portal-free-title{ font-size:11px; line-height:1.22; white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+      .portal-free-meta{ font-size:9.5px; line-height:1.2; }
+      .portal-free-actions{ display:grid; grid-template-columns:1fr; gap:5px; width:50px; }
+      .portal-free-actions .btn-sm{ width:100%; min-width:0; min-height:30px; height:30px; padding:0 6px; font-size:10.5px; line-height:1; }
+      .portal-free-actions .btn-sm::before{ content:none !important; }
+    }
     @media (max-width:900px){ .portal-exam-manager{ padding:12px; align-items:center; } .portal-exam-manager-card{ width:calc(100vw - 24px); max-height:calc(100dvh - 24px); border-radius:12px; } .portal-exam-manager-head{ grid-template-columns:1fr auto; } .portal-exam-manager-toolbar{ grid-template-columns:1fr; } .portal-exam-manager-bulk{ grid-template-columns:1fr; } .portal-exam-manager-bulk-actions{ justify-content:flex-start; } .portal-exam-manager-row{ grid-template-columns:24px 38px minmax(0,1fr); } .portal-exam-manager-mark{ width:38px; height:38px; } .portal-exam-manager-actions{ grid-column:1/-1; justify-content:flex-start; max-width:none; } .portal-exam-preview{ padding:10px; } .portal-exam-preview-card{ width:calc(100vw - 20px); height:calc(100dvh - 20px); border-radius:12px; } .portal-exam-preview-title,.portal-exam-preview-sub{ white-space:normal; } .portal-exam-preview-frame{ min-height:420px; } .portal-exam-preview-foot{ align-items:stretch; flex-direction:column; } .portal-exam-preview-actions{ display:grid; grid-template-columns:1fr 1fr; width:100%; } .portal-exam-preview-actions .btn-sm{ width:100%; } }
     @media (max-width:900px){
       .portal-user-tools{ grid-template-columns:1fr; }
@@ -19941,7 +19979,7 @@ function renderAdminWorkPanel() {
         ${filterSelect}
         ${kpiHtml}
         <div style="overflow-x:auto">
-          <table class="admin-chk-table">
+          <table class="admin-chk-table work-checkin-table">
             <thead><tr><th>Thời gian check-in</th><th>Giáo viên</th><th>Lớp</th><th>Trạng thái</th><th>Duyệt / xóa</th></tr></thead>
             <tbody>${tbody}</tbody>
           </table>
