@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const http = require('node:http');
+const path = require('node:path');
 
 const { createServer } = require('../scripts/exam-agent-ui.js');
 
@@ -44,6 +46,21 @@ async function withServer(handler) {
   }
 }
 
+function validExam(id = 'preview-001') {
+  return {
+    exam_id: id,
+    title: 'De preview',
+    pages: [{ id: 'page-1', title: 'Page 1', question_ids: [1] }],
+    questions: [{
+      id: 1,
+      type: 'multiple_choice',
+      question: 'Choose the best answer.',
+      options: ['A. one', 'B. two', 'C. three', 'D. four'],
+      answer: 'A'
+    }]
+  };
+}
+
 test('local exam agent UI health endpoint is localhost admin tooling', async () => {
   await withServer(async server => {
     const res = await request(server, 'GET', '/api/health');
@@ -75,5 +92,40 @@ test('local exam agent UI rejects publish mode', async () => {
     assert.equal(res.status, 400);
     assert.equal(res.body.ok, false);
     assert.match(res.body.error, /dry-run|draft/);
+  });
+});
+
+test('local exam agent preview endpoint reads generated draft JSON', async () => {
+  const runId = `test-preview-${Date.now()}`;
+  const filePath = path.resolve('_exam_agent_runs', 'local-jobs', runId, 'draft', '001_preview.json');
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify({
+    row: { title: 'De preview' },
+    exam: validExam(),
+    errors: [],
+    warnings: []
+  }), 'utf8');
+
+  try {
+    await withServer(async server => {
+      const res = await request(server, 'GET', `/api/preview-json?run=${encodeURIComponent(runId)}&file=${encodeURIComponent('draft/001_preview.json')}`);
+
+      assert.equal(res.status, 200);
+      assert.equal(res.body.ok, true);
+      assert.equal(res.body.exam.exam_id, 'preview-001');
+      assert.deepEqual(res.body.errors, []);
+    });
+  } finally {
+    fs.rmSync(path.resolve('_exam_agent_runs', 'local-jobs', runId), { recursive: true, force: true });
+  }
+});
+
+test('local exam agent preview endpoint blocks path traversal', async () => {
+  await withServer(async server => {
+    const res = await request(server, 'GET', '/api/preview-json?run=..&file=draft%2Fsecret.json');
+
+    assert.equal(res.status, 400);
+    assert.equal(res.body.ok, false);
+    assert.match(res.body.error, /PREVIEW/);
   });
 });

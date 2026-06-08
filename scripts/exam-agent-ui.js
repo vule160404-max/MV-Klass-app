@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 const http = require('http');
+const fs = require('fs');
 const path = require('path');
 
 const {
   scanLocalExamFolder,
   runLocalBatch
 } = require('./exam-local-batch.js');
+const { validateExamJson } = require('../web/eng10-online-exam.js');
 
 const DEFAULT_PORT = 4050;
 
@@ -26,6 +28,16 @@ function sendHtml(res, html) {
     'Cache-Control': 'no-store'
   });
   res.end(html);
+}
+
+function sendText(res, status, contentType, text) {
+  const body = String(text || '');
+  res.writeHead(status, {
+    'Content-Type': contentType,
+    'Cache-Control': 'no-store',
+    'Content-Length': Buffer.byteLength(body)
+  });
+  res.end(body);
 }
 
 function readJsonBody(req) {
@@ -49,6 +61,50 @@ function readJsonBody(req) {
     });
     req.on('error', reject);
   });
+}
+
+function localJobRoot() {
+  return path.resolve(process.cwd(), '_exam_agent_runs', 'local-jobs');
+}
+
+function resolvePreviewFile(run, file) {
+  const runId = String(run || '').trim();
+  if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/.test(runId) || runId.includes('..')) {
+    throw new Error('PREVIEW_RUN_INVALID');
+  }
+  const normalizedFile = String(file || '').replace(/\\/g, '/').trim();
+  if (!/^(draft|needs-review)\/[^/]+\.json$/i.test(normalizedFile) || normalizedFile.includes('..')) {
+    throw new Error('PREVIEW_FILE_INVALID');
+  }
+  const root = localJobRoot();
+  const runRoot = path.resolve(root, runId);
+  const filePath = path.resolve(runRoot, ...normalizedFile.split('/'));
+  if (filePath !== runRoot && !filePath.startsWith(runRoot + path.sep)) {
+    throw new Error('PREVIEW_PATH_OUTSIDE_RUN');
+  }
+  return filePath;
+}
+
+function readPreviewPayload(searchParams) {
+  const filePath = resolvePreviewFile(searchParams.get('run'), searchParams.get('file'));
+  if (!fs.existsSync(filePath)) throw new Error('PREVIEW_JSON_NOT_FOUND');
+  let payload;
+  try {
+    payload = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (_err) {
+    throw new Error('PREVIEW_JSON_INVALID');
+  }
+  const exam = validateExamJson(payload.exam || payload.exam_json || payload);
+  return {
+    row: payload.row || {},
+    exam,
+    errors: Array.isArray(payload.errors) ? payload.errors : [],
+    warnings: Array.isArray(payload.warnings) ? payload.warnings : [],
+    file: {
+      run: String(searchParams.get('run') || ''),
+      name: String(searchParams.get('file') || '')
+    }
+  };
 }
 
 function cleanNumber(value, fallback, min, max) {
@@ -145,8 +201,18 @@ function createServer(deps = {}) {
       if (req.method === 'GET' && url.pathname === '/') {
         return sendHtml(res, renderHtml());
       }
+      if (req.method === 'GET' && url.pathname === '/preview') {
+        return sendHtml(res, renderPreviewHtml());
+      }
+      if (req.method === 'GET' && url.pathname === '/assets/eng10-online-exam.js') {
+        const scriptPath = path.resolve(__dirname, '..', 'web', 'eng10-online-exam.js');
+        return sendText(res, 200, 'application/javascript; charset=utf-8', fs.readFileSync(scriptPath, 'utf8'));
+      }
       if (req.method === 'GET' && url.pathname === '/api/health') {
         return sendJson(res, 200, { ok: true, tool: 'exam-agent-ui', public: false });
+      }
+      if (req.method === 'GET' && url.pathname === '/api/preview-json') {
+        return sendJson(res, 200, { ok: true, ...readPreviewPayload(url.searchParams) });
       }
       if (req.method === 'POST' && url.pathname === '/api/scan') {
         const body = await readJsonBody(req);
@@ -241,6 +307,9 @@ function renderHtml() {
     .status.local_ready,.status.warning{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
     .status.error,.status.needs_review,.status.missing_answer,.status.missing_exam{background:#fff1f2;color:#be123c;border-color:#fecdd3}
     .mono{font-family:Consolas,ui-monospace,monospace;font-size:12px;color:#52627a;overflow-wrap:anywhere}
+    .mini-link{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;border:1px solid #b9d8ff;border-radius:10px;background:#eaf3ff;color:#155eaa;text-decoration:none;font-weight:950;white-space:nowrap}
+    .mini-link:hover{background:#dbeafe}
+    .muted-mini{color:#94a3b8;font-weight:900}
     .log{height:360px;overflow:auto;background:#0b1730;color:#dbeafe;padding:14px;border-radius:14px;font:12px/1.55 Consolas,ui-monospace,monospace;white-space:pre-wrap}
     .empty{padding:22px;text-align:center;color:#74839a;font-weight:850}
     .notice{padding:10px 12px;border-radius:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-weight:850;line-height:1.4}
@@ -306,6 +375,7 @@ function renderHtml() {
     const $ = id => document.getElementById(id);
     let pollTimer = null;
     let lastScanRows = [];
+    let activeReport = null;
 
     function html(value){return String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
     async function api(path, options = {}) {
@@ -332,12 +402,23 @@ function renderHtml() {
       $('m-review').textContent = summary.needs_review || 0;
       $('m-error').textContent = summary.errors || 0;
     }
+    function runIdFromReport(report) {
+      if (!report) return '';
+      if (report.run_id) return String(report.run_id);
+      return String(report.artifact_dir || '').split(/[\\\\/]/).filter(Boolean).pop() || '';
+    }
+    function previewHref(row) {
+      const runId = runIdFromReport(activeReport);
+      const file = row && row.preview_file;
+      if (!runId || !file) return '';
+      return '/preview?run=' + encodeURIComponent(runId) + '&file=' + encodeURIComponent(file);
+    }
     function renderRows(rows) {
       if (!rows || !rows.length) {
         $('table').innerHTML = '<div class="empty">Không có đề để hiển thị.</div>';
         return;
       }
-      $('table').innerHTML = '<table><thead><tr><th>Mã</th><th>Đề</th><th>Đáp án</th><th>Trạng thái</th><th>Thông tin</th></tr></thead><tbody>' + rows.map(row => {
+      $('table').innerHTML = '<table><thead><tr><th>Mã</th><th>Đề</th><th>Đáp án</th><th>Trạng thái</th><th>Test</th><th>Thông tin</th></tr></thead><tbody>' + rows.map(row => {
         const status = row.status || 'ready';
         const info = [
           row.question_count ? row.question_count + ' câu' : '',
@@ -346,7 +427,9 @@ function renderHtml() {
           row.errors && row.errors.length ? row.errors.join('; ') : '',
           row.warnings && row.warnings.length ? row.warnings.join('; ') : ''
         ].filter(Boolean).join(' · ');
-        return '<tr><td><strong>' + html(row.examCode || row.exam_code || '') + '</strong></td><td>' + html(row.title || row.examFileName || '') + '<div class="mono">' + html(row.examPath || '') + '</div></td><td>' + html(row.answerFileName || '') + '<div class="mono">' + html(row.answerPath || '') + '</div></td><td><span class="status ' + html(status) + '">' + html(status) + '</span></td><td>' + html(info || (row.issues || []).join(' · ')) + '</td></tr>';
+        const href = previewHref(row);
+        const preview = href ? '<a class="mini-link" href="' + html(href) + '" target="_blank" rel="noopener">Test</a>' : '<span class="muted-mini">-</span>';
+        return '<tr><td><strong>' + html(row.examCode || row.exam_code || '') + '</strong></td><td>' + html(row.title || row.examFileName || '') + '<div class="mono">' + html(row.examPath || '') + '</div></td><td>' + html(row.answerFileName || '') + '<div class="mono">' + html(row.answerPath || '') + '</div></td><td><span class="status ' + html(status) + '">' + html(status) + '</span></td><td>' + preview + '</td><td>' + html(info || (row.issues || []).join(' · ')) + '</td></tr>';
       }).join('') + '</tbody></table>';
     }
     function renderJob(job) {
@@ -354,6 +437,7 @@ function renderHtml() {
       $('server-status').textContent = job.status + (job.paused ? ' · paused' : '');
       $('server-status').className = 'status ' + job.status;
       if (job.report) {
+        activeReport = job.report;
         setMetrics(job.report.summary);
         renderRows(job.report.rows);
       }
@@ -376,6 +460,7 @@ function renderHtml() {
       try {
         const data = await api('/api/scan', {method:'POST', body:JSON.stringify({folder:$('folder').value.trim()})});
         lastScanRows = data.scan.pairs || [];
+        activeReport = null;
         setMetrics({total:data.scan.readyPairs.length});
         renderRows(lastScanRows);
         $('log').textContent = 'Đã quét ' + (data.scan.totalFiles || data.scan.totalPdf || 0) + ' file hỗ trợ. Sẵn sàng: ' + data.scan.readyPairs.length + ' cặp.';
@@ -398,6 +483,94 @@ function renderHtml() {
     $('resume-btn').onclick = async () => renderJob((await api('/api/jobs/resume', {method:'POST'})).job);
     $('stop-btn').onclick = async () => renderJob((await api('/api/jobs/stop', {method:'POST'})).job);
     api('/api/health').then(() => {$('server-status').textContent='Localhost ready';}).catch(err => {$('server-status').textContent=err.message;});
+  </script>
+</body>
+</html>`;
+}
+
+function renderPreviewHtml() {
+  return `<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MV Klass - Preview đề online</title>
+  <style>
+    :root{--navy:#0f2a55;--ink:#102033;--muted:#687894;--line:#dce7f5;--soft:#f4f8fc;--white:#fff;--blue:#2563eb;--amber:#f59e0b;--red:#dc2626;--shadow:0 18px 44px rgba(15,42,85,.10)}
+    *{box-sizing:border-box}
+    body{margin:0;background:#eaf1f9;color:var(--ink);font-family:Segoe UI,system-ui,sans-serif;font-size:14px}
+    button{font:inherit}
+    .preview-bar{height:62px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 8px 26px rgba(15,42,85,.08);position:sticky;top:0;z-index:5}
+    .preview-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#6b7d98;font-weight:900}
+    .preview-title{margin-top:2px;color:var(--navy);font-size:16px;font-weight:950}
+    .preview-actions{display:flex;align-items:center;gap:8px}
+    .preview-pill{display:inline-flex;align-items:center;min-height:32px;padding:7px 10px;border-radius:999px;border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;font-size:12px;font-weight:950;white-space:nowrap}
+    .preview-back{height:38px;border:1px solid #b9d8ff;border-radius:12px;background:#eaf3ff;color:#155eaa;font-weight:950;padding:0 14px;cursor:pointer}
+    .preview-error{width:min(720px,calc(100vw - 32px));margin:80px auto;padding:18px;border:1px solid #fecdd3;border-radius:16px;background:#fff1f2;color:#991b1b;font-weight:850;line-height:1.5}
+    #runner{min-height:calc(100vh - 62px)}
+    .eng10-online-shell{min-height:calc(100vh - 62px);display:flex;flex-direction:column}
+    .eng10-online-head{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#fff;border-bottom:1px solid var(--line)}
+    .eng10-online-icon-btn{width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font-size:24px;line-height:1;cursor:pointer}
+    .eng10-online-kicker{font-size:11px;text-transform:uppercase;color:#6b7d98;font-weight:900}
+    .eng10-online-head h2{margin:2px 0 0;color:var(--navy);font-size:18px;line-height:1.25}
+    .eng10-online-progress{margin-left:auto;min-width:76px;text-align:center;border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;border-radius:999px;padding:8px 10px;font-weight:950}
+    .eng10-online-main{flex:1;display:grid;grid-template-columns:minmax(280px,.75fr) minmax(420px,1fr);gap:14px;padding:14px;background:#eaf1f9}
+    .eng10-online-source,.eng10-online-paper{border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:var(--shadow);overflow:auto}
+    .eng10-online-source{padding:16px;color:#53657f;font-weight:800;line-height:1.6}
+    .eng10-online-page-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:#f8fbff;color:var(--navy)}
+    .eng10-online-q-card{margin:12px 14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .eng10-online-q-num{color:#6b7d98;font-size:12px;font-weight:950;text-transform:uppercase;margin-bottom:8px}
+    .eng10-online-q-text{color:var(--navy);font-weight:900;line-height:1.5;margin-bottom:10px}
+    .eng10-online-options{display:grid;gap:8px}
+    .eng10-online-option{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;background:#f8fbff;padding:10px;cursor:pointer;font-weight:850}
+    .eng10-online-input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:800;outline:none}
+    .eng10-online-rewrite-prompt{margin:10px 0;padding:10px 12px;border-radius:12px;background:#f8fbff;border:1px solid var(--line);color:#52627a;font-weight:850}
+    .eng10-online-word-bank{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .eng10-online-word-bank button,.eng10-online-source button{border:1px solid #b9d8ff;background:#eaf3ff;color:#155eaa;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}
+    .eng10-online-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 16px;background:#fff;border-top:1px solid var(--line)}
+    .eng10-online-foot button,.eng10-online-result-actions button{height:42px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font-weight:950;padding:0 16px;cursor:pointer}
+    .eng10-online-foot button.primary,.eng10-online-result-actions button.primary{background:#102858;color:#fff;border-color:#102858}
+    .eng10-online-foot button:disabled{opacity:.45;cursor:not-allowed}
+    .eng10-online-result,.eng10-online-submit-state{position:fixed;inset:0;z-index:20;background:rgba(15,42,85,.34);display:grid;place-items:center;padding:16px}
+    .eng10-online-result-card,.eng10-online-submit-panel{width:min(420px,100%);border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:22px;text-align:center}
+    .eng10-online-score{font-size:48px;color:var(--navy);font-weight:950}.eng10-online-score span{font-size:24px;color:#6b7d98}
+    .eng10-online-result-label,.eng10-online-result-text,.eng10-online-result-note{color:#6b7d98;font-weight:850}.eng10-online-result-actions{display:flex;justify-content:center;gap:10px;margin-top:16px}
+    @media (max-width:900px){.eng10-online-main{grid-template-columns:1fr}.eng10-online-source{max-height:280px}.preview-bar{height:auto;align-items:flex-start;padding:12px 14px;display:grid}.preview-actions{justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <header class="preview-bar">
+    <div>
+      <div class="preview-kicker">Local preview</div>
+      <div id="preview-title" class="preview-title">Đang tải JSON...</div>
+    </div>
+    <div class="preview-actions">
+      <span class="preview-pill">Không publish</span>
+      <button class="preview-back" type="button" id="back-btn">Quay lại tool</button>
+    </div>
+  </header>
+  <main id="runner"></main>
+  <script src="/assets/eng10-online-exam.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const runner = document.getElementById('runner');
+    const back = () => { if (history.length > 1) history.back(); else location.href = '/'; };
+    document.getElementById('back-btn').onclick = back;
+    function showError(message) {
+      runner.innerHTML = '<div class="preview-error">' + String(message || 'Không đọc được JSON preview.').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) + '</div>';
+    }
+    fetch('/api/preview-json?' + params.toString(), { cache: 'no-store' })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok || data.ok === false) throw new Error(data.error || 'PREVIEW_LOAD_FAILED');
+        document.getElementById('preview-title').textContent = data.exam.title || data.row.title || 'Preview đề online';
+        window.Eng10OnlineExam.createRunner({
+          container: runner,
+          exam: data.exam,
+          onClose: back
+        });
+      })
+      .catch(err => showError(err.message));
   </script>
 </body>
 </html>`;

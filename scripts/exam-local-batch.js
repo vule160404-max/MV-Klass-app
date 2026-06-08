@@ -530,6 +530,7 @@ async function runLocalBatch(options = {}, deps = {}) {
   const artifactRoot = path.resolve(opts.runDir, startedAt.replace(/[:.]/g, '-'));
   ensureRunDirs(artifactRoot);
   const report = createLocalJobReport({ ...opts, startedAt });
+  report.run_id = path.basename(artifactRoot);
   report.artifact_dir = artifactRoot;
   report.scan = {
     totalFiles: scan.totalFiles || scan.totalPdf || 0,
@@ -565,6 +566,7 @@ async function runLocalBatch(options = {}, deps = {}) {
       answer_key_count: 0,
       exam_text_chars: 0,
       answer_text_chars: 0,
+      preview_file: '',
       errors: [],
       warnings: matchedRow ? [] : ['NO_EXAM_FILE_MATCH']
     };
@@ -602,9 +604,12 @@ async function runLocalBatch(options = {}, deps = {}) {
         item.status = 'dry_run_ready';
         report.summary.dry_run_ready += 1;
       }
+      const artifactFileName = safeFileName(pair);
+      const artifactStatus = item.status === 'needs_review' ? 'needs_review' : 'draft';
+      item.preview_file = `${artifactStatus === 'needs_review' ? 'needs-review' : 'draft'}/${artifactFileName}`;
       artifacts.push({
-        status: item.status === 'needs_review' ? 'needs_review' : 'draft',
-        fileName: safeFileName(pair),
+        status: artifactStatus,
+        fileName: artifactFileName,
         payload: { row: item, exam: gate.exam, errors: item.errors, warnings: item.warnings }
       });
     } catch (err) {

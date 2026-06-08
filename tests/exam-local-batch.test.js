@@ -335,6 +335,7 @@ test('runLocalBatch creates local draft artifacts without saving to Supabase in 
   assert.equal(report.summary.dry_run_ready, 1);
   assert.equal(report.summary.draft_saved, 0);
   assert.equal(calls.length, 0);
+  assert.equal(report.rows[0].preview_file, 'draft/001_De_001_Vao_10_Thanh_Hoa_2025.json');
   assert.ok(fs.existsSync(path.join(report.artifact_dir, 'draft', '001_De_001_Vao_10_Thanh_Hoa_2025.json')));
 });
 
