@@ -12,6 +12,7 @@ const CORS_HEADERS = {
 
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const MAX_AI_PDF_BYTES = 50 * 1024 * 1024;
 const SIGNED_URL_TTL_SECONDS = 900;
 
 function json(data: unknown, status = 200) {
@@ -48,6 +49,19 @@ function bytesToHex(buf: ArrayBuffer) {
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+function bytesToBase64(bytes: Uint8Array) {
+  const chunkSize = 0x8000;
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+function looksLikePdf(bytes: Uint8Array) {
+  return bytes.length >= 4 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46;
 }
 
 async function sha256Hex(value: string) {
@@ -797,6 +811,111 @@ async function saveGeneratedExamJsonDraft(service: any, actor: any, examFileId: 
   return { online_exam: data, warnings };
 }
 
+function examPdfObjectCandidates(row: any) {
+  const values = [
+    { key: row?.object_key || row?.storage_path, kind: "exam" },
+    { key: row?.answer_object_key || row?.answer_path, kind: "answer" },
+  ];
+  const seen = new Set<string>();
+  return values
+    .map((item) => ({ key: String(item.key || "").trim().replace(/^\/+/, ""), kind: item.kind }))
+    .filter((item) => {
+      if (!item.key || seen.has(item.key)) return false;
+      seen.add(item.key);
+      return true;
+    });
+}
+
+function aiPdfFileName(row: any, kind: string, index: number) {
+  const title = cleanFileName(String(row?.title || row?.exam_code || row?.id || "exam"));
+  const suffix = kind === "answer" ? "answer" : "exam";
+  return `${title || "exam"}-${suffix}-${index + 1}.pdf`;
+}
+
+async function fetchExamPdfForAi(row: any) {
+  const candidates = examPdfObjectCandidates(row);
+  if (!candidates.length) throw new Error("EXAM_PDF_NOT_FOUND");
+  const files: Array<{ filename: string; bytes: Uint8Array }> = [];
+  let totalBytes = 0;
+  for (let i = 0; i < candidates.length; i += 1) {
+    const item = candidates[i];
+    const url = await createR2SignedGetUrl(item.key, 300);
+    const response = await fetch(url, { signal: AbortSignal.timeout(60000) });
+    if (!response.ok) throw new Error("EXAM_PDF_FETCH_FAILED");
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (!bytes.length) throw new Error("EXAM_PDF_EMPTY");
+    if (!looksLikePdf(bytes)) throw new Error("EXAM_PDF_SIGNATURE_INVALID");
+    totalBytes += bytes.length;
+    if (totalBytes > MAX_AI_PDF_BYTES) throw new Error("EXAM_PDF_TOO_LARGE");
+    files.push({ filename: aiPdfFileName(row, item.kind, i), bytes });
+  }
+  return files;
+}
+
+function responseOutputText(data: any) {
+  if (typeof data?.output_text === "string") return data.output_text;
+  const parts: string[] = [];
+  for (const item of Array.isArray(data?.output) ? data.output : []) {
+    for (const content of Array.isArray(item?.content) ? item.content : []) {
+      const text = typeof content?.text === "string" ? content.text : "";
+      if (text) parts.push(text);
+    }
+  }
+  return parts.join("\n").trim();
+}
+
+function parseOpenAiExamJson(text: string) {
+  const raw = String(text || "").trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+  if (!raw) throw new Error("OPENAI_RESPONSE_EMPTY");
+  try {
+    return JSON.parse(raw);
+  } catch (_err) {
+    const start = raw.indexOf("{");
+    const end = raw.lastIndexOf("}");
+    if (start >= 0 && end > start) return JSON.parse(raw.slice(start, end + 1));
+    throw new Error("OPENAI_RESPONSE_INVALID_JSON");
+  }
+}
+
+async function generateExamJsonWithOpenAi(openAiKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {
+  const model = (Deno.env.get("OPENAI_EXAM_JSON_MODEL") || "gpt-4o").trim();
+  const content = [
+    {
+      type: "input_text",
+      text: `${prompt}\n\nHãy đọc các file PDF đính kèm và trả về duy nhất JSON hợp lệ theo schema trong prompt.`,
+    },
+    ...pdfFiles.map((file) => ({
+      type: "input_file",
+      filename: file.filename,
+      file_data: `data:application/pdf;base64,${bytesToBase64(file.bytes)}`,
+    })),
+  ];
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${openAiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      input: [{ role: "user", content }],
+      text: { format: { type: "json_object" } },
+      temperature: 0.1,
+    }),
+    signal: AbortSignal.timeout(180000),
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message = String(data?.error?.message || data?.error || `OPENAI_HTTP_${response.status}`).slice(0, 240);
+    throw new Error(`OPENAI_REQUEST_FAILED: ${message}`);
+  }
+  const text = responseOutputText(data);
+  return parseOpenAiExamJson(text);
+}
+
 async function adminList(service: any) {
   const { data: exams, error: examErr } = await service
     .from("exam_files")
@@ -1160,7 +1279,7 @@ Deno.serve(async (req) => {
       const examFileId = cleanUuid(body.exam_file_id || body.examFileId);
       const { data: row, error } = await service
         .from("exam_files")
-        .select("id,title,level,year,province,exam_code,object_key,storage_path,storage_provider")
+        .select("id,title,level,year,province,exam_code,object_key,storage_path,answer_object_key,answer_path,storage_provider")
         .eq("id", examFileId)
         .maybeSingle();
       if (error) throw new Error(error.message || "EXAM_LOOKUP_FAILED");
@@ -1176,8 +1295,12 @@ Deno.serve(async (req) => {
       const prompt = renderPromptTemplate(template, row);
       const openAiKey = Deno.env.get("OPENAI_API_KEY") || "";
       if (!openAiKey) return json({ ok: false, error: "OPENAI_API_KEY_NOT_CONFIGURED" }, 500);
-      void prompt;
-      return json({ ok: false, error: "AI_GENERATION_NOT_READY" }, 501);
+      const pdfFiles = await fetchExamPdfForAi(row);
+      const examJson = await generateExamJsonWithOpenAi(openAiKey, prompt, pdfFiles);
+      return json({
+        ok: true,
+        ...(await saveGeneratedExamJsonDraft(service, actor, examFileId, examJson)),
+      });
     }
 
     if (action === "save_json") {
