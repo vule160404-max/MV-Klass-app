@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { PutObjectCommand, S3Client } from "npm:@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "npm:@aws-sdk/client-s3";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -153,6 +153,61 @@ async function putR2Object(objectKey: string, bytes: Uint8Array, contentType: st
     Body: bytes,
     ContentType: contentType,
   }));
+}
+
+async function streamToBytes(stream: ReadableStream<Uint8Array>) {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    if (value) {
+      chunks.push(value);
+      size += value.byteLength;
+    }
+  }
+  const out = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out;
+}
+
+async function r2BodyToBytes(body: any) {
+  if (!body) throw new Error("EXAM_PDF_EMPTY");
+  if (body instanceof Uint8Array) return body;
+  if (body instanceof ArrayBuffer) return new Uint8Array(body);
+  if (typeof body.transformToByteArray === "function") return new Uint8Array(await body.transformToByteArray());
+  if (typeof body.arrayBuffer === "function") return new Uint8Array(await body.arrayBuffer());
+  if (typeof body.getReader === "function") return await streamToBytes(body);
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for await (const chunk of body) {
+    const bytes = chunk instanceof Uint8Array ? chunk : new TextEncoder().encode(String(chunk));
+    chunks.push(bytes);
+    size += bytes.byteLength;
+  }
+  const out = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out;
+}
+
+async function getR2ObjectBytes(objectKey: string) {
+  const { bucket } = r2Env();
+  const client = r2Client();
+  try {
+    const result = await client.send(new GetObjectCommand({ Bucket: bucket, Key: objectKey }));
+    return await r2BodyToBytes(result.Body);
+  } catch (_err) {
+    throw new Error("EXAM_PDF_FETCH_FAILED");
+  }
 }
 
 function authToken(req: Request) {
@@ -839,10 +894,7 @@ async function fetchExamPdfForAi(row: any) {
   let totalBytes = 0;
   for (let i = 0; i < candidates.length; i += 1) {
     const item = candidates[i];
-    const url = await createR2SignedGetUrl(item.key, 300);
-    const response = await fetch(url, { signal: AbortSignal.timeout(60000) });
-    if (!response.ok) throw new Error("EXAM_PDF_FETCH_FAILED");
-    const bytes = new Uint8Array(await response.arrayBuffer());
+    const bytes = await getR2ObjectBytes(item.key);
     if (!bytes.length) throw new Error("EXAM_PDF_EMPTY");
     if (!looksLikePdf(bytes)) throw new Error("EXAM_PDF_SIGNATURE_INVALID");
     totalBytes += bytes.length;

@@ -64,6 +64,8 @@ test('exam-online generate_json_ai is admin only and fails closed before publish
   assert.match(block, /saveGeneratedExamJsonDraft\(service, actor, examFileId, examJson\)/);
   assert.match(source, /function saveGeneratedExamJsonDraft/);
   assert.match(source, /async function fetchExamPdfForAi/);
+  assert.match(source, /GetObjectCommand/);
+  assert.match(source, /async function getR2ObjectBytes/);
   assert.match(source, /async function generateExamJsonWithOpenAi/);
   assert.match(source, /https:\/\/api\.openai\.com\/v1\/responses/);
   assert.match(source, /type:\s*"input_file"/);
@@ -74,4 +76,13 @@ test('exam-online generate_json_ai is admin only and fails closed before publish
   assert.doesNotMatch(block, /status:\s*"published"/);
   assert.doesNotMatch(block, /published_at:\s*new Date/);
   assert.doesNotMatch(block, /AI_GENERATION_NOT_READY/);
+});
+
+test('AI PDF reader uses server-side R2 object reads instead of signed fetch URLs', () => {
+  const source = read(edgePath);
+  const pdfReader = extractBetween(source, 'async function fetchExamPdfForAi', 'function responseOutputText');
+
+  assert.match(pdfReader, /getR2ObjectBytes\(item\.key\)/);
+  assert.doesNotMatch(pdfReader, /createR2SignedGetUrl/);
+  assert.doesNotMatch(pdfReader, /fetch\(url/);
 });
