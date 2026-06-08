@@ -13742,6 +13742,12 @@ a:focus-visible,
 #student-exam-stats-panel.is-open{
   display:grid !important;
 }
+#student-exam-portal .student-exam-saved-recent-panel{
+  display:none;
+}
+#student-exam-portal.student-page-saved .student-exam-saved-recent-panel{
+  display:block;
+}
 #student-exam-portal.student-page-overview .student-exam-page-head,
 #student-exam-portal.student-page-overview .student-exam-filters,
 #student-exam-portal.student-page-overview .student-exam-category-tabs,
@@ -13751,11 +13757,18 @@ a:focus-visible,
 #student-exam-portal.student-page-stats .student-exam-filters,
 #student-exam-portal.student-page-stats .student-exam-category-tabs,
 #student-exam-portal.student-page-stats .student-exam-saved-recent-panel,
-#student-exam-portal.student-page-stats .student-exam-section{
+#student-exam-portal.student-page-stats .student-exam-section,
+#student-exam-portal.student-page-saved .student-exam-page-head,
+#student-exam-portal.student-page-saved .student-exam-filters,
+#student-exam-portal.student-page-saved .student-exam-category-tabs,
+#student-exam-portal.student-page-saved .student-exam-section{
   display:none !important;
 }
 #student-exam-portal.student-page-library .student-exam-overview-panel,
-#student-exam-portal.student-page-library #student-exam-stats-panel{
+#student-exam-portal.student-page-library #student-exam-stats-panel,
+#student-exam-portal.student-page-library .student-exam-saved-recent-panel,
+#student-exam-portal.student-page-saved .student-exam-overview-panel,
+#student-exam-portal.student-page-saved #student-exam-stats-panel{
   display:none !important;
 }
 #student-exam-portal.student-density-compact .student-exam-card.student-document-card{
@@ -16392,6 +16405,10 @@ button[data-bank-inspect-confirm-not]:hover,
           <button type="button" class="student-exam-side-item active" data-student-nav="library" onclick="studentExamShowLibrary()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"></path><path d="M14 3v6h6"></path><path d="M10 13h7"></path><path d="M10 17h5"></path></svg>
             <span>Kho tài liệu</span>
+          </button>
+          <button type="button" class="student-exam-side-item" data-student-nav="saved" onclick="studentExamShowSaved()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v18l-6-3-6 3z"></path><path d="M9 8h6"></path><path d="M9 12h4"></path></svg>
+            <span>Đã lưu</span>
           </button>
           <button type="button" class="student-exam-side-item" data-student-nav="stats" onclick="studentExamShowStats()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9"></path><path d="M12 19V5"></path><path d="M19 19v-7"></path><path d="M4 19h17"></path></svg>
@@ -22024,12 +22041,13 @@ function studentExamSetSidebarActive(key) {
 }
 
 function studentExamSetPortalPage(page) {
-  const key = ['overview', 'library', 'stats'].includes(String(page || '')) ? String(page) : 'library';
+  const key = ['overview', 'library', 'saved', 'stats'].includes(String(page || '')) ? String(page) : 'library';
   const portal = document.getElementById('student-exam-portal');
   if (!portal) return;
   portal.dataset.studentPage = key;
   portal.classList.toggle('student-page-overview', key === 'overview');
   portal.classList.toggle('student-page-library', key === 'library');
+  portal.classList.toggle('student-page-saved', key === 'saved');
   portal.classList.toggle('student-page-stats', key === 'stats');
 }
 
@@ -22372,6 +22390,16 @@ function studentExamShowLibrary() {
   studentExamSetOverviewPanel(false);
   studentExamSetSidebarActive('library');
   document.getElementById('student-exam-filter-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function studentExamShowSaved() {
+  studentExamSetView('library');
+  studentExamSetPortalPage('saved');
+  renderStudentExamPersonalSections();
+  studentExamSetStatsPanel(false);
+  studentExamSetOverviewPanel(false);
+  studentExamSetSidebarActive('saved');
+  document.getElementById('student-exam-saved-recent-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function studentExamShowStats() {

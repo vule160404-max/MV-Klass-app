@@ -44,6 +44,12 @@ test('student portal has saved and recent tabs with quick actions', () => {
   const source = readSource();
 
   assert.match(source, /id="student-exam-saved-recent-panel"/);
+  assert.match(source, /data-student-nav="saved"/);
+  assert.match(source, /function studentExamShowSaved\(\)/);
+  assert.match(source, /student-page-saved/);
+  assert.match(source, /student-page-library[\s\S]*\.student-exam-saved-recent-panel/);
+  assert.match(source, /student-page-saved[\s\S]*\.student-exam-filters/);
+  assert.match(source, /student-page-saved[\s\S]*\.student-exam-section/);
   assert.match(source, /data-student-activity-tab="saved"/);
   assert.match(source, /data-student-activity-tab="recent"/);
   assert.match(source, /id="student-exam-saved-list"/);
