@@ -27934,6 +27934,8 @@ async function generatePortalOnlineJsonAi(examId) {
       showAppToast('Chưa đọc được file đáp án của đề này.', 'error');
     } else if (/EXAM_PDF_FETCH_FAILED|EXAM_PDF_EMPTY|EXAM_PDF_SIGNATURE_INVALID/i.test(msg)) {
       showAppToast('Chưa đọc được file PDF của đề này.', 'error');
+    } else if (/GENERATED_PLACEHOLDER|PLACEHOLDER/i.test(msg)) {
+      showAppToast('AI chỉ tạo dữ liệu mẫu, chưa đọc được nội dung đề thật. Hãy kiểm tra PDF/prompt nguồn rồi tạo lại.', 'error');
     } else if (/NVIDIA_RESPONSE_INVALID_JSON/i.test(msg)) {
       showAppToast('AI chưa trả về JSON đúng định dạng. Hãy thử tạo lại hoặc kiểm tra prompt nguồn.', 'error');
     } else if (/NVIDIA_RESPONSE_SCHEMA_INVALID/i.test(msg)) {

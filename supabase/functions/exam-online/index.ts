@@ -328,6 +328,26 @@ function safeQuestionId(value: unknown) {
   return String(value ?? "").trim();
 }
 
+function isGeneratedPlaceholderText(value: unknown) {
+  const text = normalizeText(value);
+  return text === "placeholder" ||
+    text.includes("khong co du lieu de") ||
+    text.includes("khong co du lieu") ||
+    /^option\s*\d+$/i.test(text);
+}
+
+function assertNoGeneratedPlaceholderExam(exam: any, questions: any[]) {
+  if (isGeneratedPlaceholderText(exam?.title)) throw new Error("GENERATED_PLACEHOLDER_TITLE");
+  if (questions.length === 1) {
+    const q = questions[0];
+    const optionText = (q.options || []).map((option: unknown) => normalizeText(String(option).replace(/^[A-D]\s*[.)-]?\s*/i, "")));
+    const allPlaceholderOptions = optionText.length >= 4 && optionText.every((option: string, index: number) =>
+      option === `option ${index + 1}` || /^option\s*\d+$/.test(option)
+    );
+    if (isGeneratedPlaceholderText(q.question) || allPlaceholderOptions) throw new Error("GENERATED_PLACEHOLDER_QUESTION");
+  }
+}
+
 function imageKeys(item: any) {
   return [item?.id, item?.image_id, item?.file_name, item?.filename, item?.name]
     .map((x) => String(x || "").trim())
@@ -400,6 +420,7 @@ function validateExamJson(input: any) {
       images: normalizeImages(raw.images || raw.image),
     };
   });
+  assertNoGeneratedPlaceholderExam(exam, questions);
   return {
     ...exam,
     title: String(exam.title || "Đề luyện thi online"),

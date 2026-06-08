@@ -94,6 +94,26 @@
       .trim();
   }
 
+  function isGeneratedPlaceholderText(value) {
+    const text = normalizeText(value);
+    return text === 'placeholder' ||
+      text.includes('khong co du lieu de') ||
+      text.includes('khong co du lieu') ||
+      /^option\s*\d+$/i.test(text);
+  }
+
+  function assertNoGeneratedPlaceholderExam(exam, questions) {
+    if (isGeneratedPlaceholderText(exam?.title)) throw new Error('Generated placeholder title is not a valid exam');
+    if (questions.length === 1) {
+      const q = questions[0];
+      const optionText = (q.options || []).map(option => normalizeText(String(option).replace(/^[A-D]\s*[.)-]?\s*/i, '')));
+      const allPlaceholderOptions = optionText.length >= 4 && optionText.every((option, index) => option === `option ${index + 1}` || /^option\s*\d+$/.test(option));
+      if (isGeneratedPlaceholderText(q.question) || allPlaceholderOptions) {
+        throw new Error('Generated placeholder question is not valid exam data');
+      }
+    }
+  }
+
   function questionKey(value) {
     return String(value ?? '').trim();
   }
@@ -211,6 +231,7 @@
         seenBlankIds.add(q.blank_id);
       }
     });
+    assertNoGeneratedPlaceholderExam(exam, questions);
     const pages = Array.isArray(exam.pages) ? exam.pages.map((page, index) => ({
       id: String(page?.id || `page_${index + 1}`),
       title: String(page?.title || `Phần ${index + 1}`),

@@ -25,6 +25,25 @@ test('validateExamJson rejects missing questions', () => {
   );
 });
 
+test('validateExamJson rejects generated placeholder content', () => {
+  assert.throws(
+    () => validateExamJson({
+      exam_id: 'demo',
+      title: 'Placeholder',
+      questions: [
+        {
+          id: 1,
+          type: 'multiple_choice',
+          question: '(Không có dữ liệu đề)',
+          options: ['A. Option 1', 'B. Option 2', 'C. Option 3', 'D. Option 4'],
+          answer: 'A'
+        }
+      ]
+    }),
+    /placeholder|không có dữ liệu|placeholder/i
+  );
+});
+
 test('validateExamJson accepts the ENG10 schema subset used by the portal', () => {
   const exam = validateExamJson({
     exam_id: 'demo',
