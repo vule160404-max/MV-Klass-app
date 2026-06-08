@@ -27,10 +27,12 @@ test('portal online row actions use a compact toolbar and separated publish stat
 
   const rowTemplate = extractBetween(source, 'function renderPortalOnlineRow(row)', 'function portalOnlineRowById');
   assert.match(rowTemplate, /class="website-online-action-tools"/);
+  assert.match(rowTemplate, /is-ai/);
+  assert.match(rowTemplate, /is-json/);
   assert.match(rowTemplate, />Prompt<\/button>/);
   assert.match(rowTemplate, />JSON<\/button>/);
-  assert.match(rowTemplate, />[^<]*nh<\/button>/);
   assert.match(rowTemplate, />Ngu[^<]*n<\/button>/);
+  assert.doesNotMatch(rowTemplate, /openPortalOnlineAssets/);
   assert.doesNotMatch(rowTemplate, />Prompt AI<\/button>/);
   assert.doesNotMatch(rowTemplate, />N[^<]*p JSON<\/button>/);
 });

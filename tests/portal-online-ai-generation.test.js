@@ -42,9 +42,12 @@ test('portal online rows expose AI JSON generation without auto publishing', () 
 
   const rowFn = extractBetween(source, 'function renderPortalOnlineRow(row)', 'function portalOnlineRowById');
   assert.match(rowFn, /portalOnlineGeneratingId === id/);
-  assert.match(rowFn, /Tạo JSON AI/);
+  assert.match(rowFn, /is-ai/);
+  assert.match(rowFn, /Tạo AI/);
+  assert.match(rowFn, /is-json/);
   assert.match(rowFn, /Đang tạo/);
   assert.match(rowFn, /generatePortalOnlineJsonAi/);
+  assert.doesNotMatch(rowFn, /openPortalOnlineAssets/);
 
   const generateFn = extractBetween(source, 'async function generatePortalOnlineJsonAi(examId)', 'function openPortalOnlineJson');
   assert.doesNotMatch(generateFn, /callExamOnline\('publish'/);

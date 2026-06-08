@@ -4583,13 +4583,15 @@
     .website-online-pill.published{ color:#166534; background:#ecfdf5; border-color:rgba(22,163,74,.18); }
     .website-online-pill.draft{ color:#7c2d12; background:#fff7ed; border-color:rgba(249,115,22,.20); }
     .website-online-path{ color:#7a879b; font-size:10.5px; line-height:1.35; font-weight:720; overflow-wrap:anywhere; }
-    .website-online-actions{ display:grid; justify-items:end; align-content:start; gap:6px; width:224px; max-width:100%; }
-    .website-online-action-tools{ width:100%; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px; padding:3px; border-radius:12px; border:1px solid rgba(99,138,218,.14); background:#f6f9ff; box-shadow:inset 0 1px 0 rgba(255,255,255,.88); }
-    .website-online-actions .btn-sm{ min-height:30px; height:30px; padding:5px 8px; border-radius:9px; font-size:10.5px; }
-    .website-online-action-tools .btn-sm{ width:100%; border:0; background:transparent; color:#52627a; box-shadow:none; font-weight:900; }
-    .website-online-action-tools .btn-sm:hover:not(:disabled){ background:#fff; color:#0f3f91; box-shadow:0 6px 14px rgba(17,42,100,.08); transform:none; }
-    .website-online-action-tools .btn-sm:disabled{ opacity:.38; background:transparent; box-shadow:none; cursor:not-allowed; }
-    .website-online-action-publish{ width:100%; border:1px solid transparent; font-weight:950; letter-spacing:0; box-shadow:0 8px 18px rgba(17,42,100,.08); }
+    .website-online-actions{ display:grid; justify-items:end; align-content:start; gap:8px; width:242px; max-width:100%; }
+    .website-online-action-tools{ width:100%; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; padding:7px; border-radius:14px; border:1px solid rgba(99,138,218,.16); background:linear-gradient(180deg,#f8fbff,#f2f7ff); box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 18px rgba(17,42,100,.05); }
+    .website-online-actions .btn-sm{ min-height:34px; height:34px; padding:6px 10px; border-radius:10px; font-size:11px; line-height:1.1; white-space:nowrap; }
+    .website-online-action-tools .btn-sm{ width:100%; border:1px solid rgba(99,138,218,.14); background:#fff; color:#40516b; box-shadow:0 4px 10px rgba(17,42,100,.04); font-weight:920; }
+    .website-online-action-tools .btn-sm:hover:not(:disabled){ border-color:rgba(79,142,247,.28); background:#fafdff; color:#0f3f91; box-shadow:0 8px 16px rgba(17,42,100,.08); transform:translateY(-1px); }
+    .website-online-action-tools .btn-sm.is-ai{ border-color:rgba(79,142,247,.28); background:linear-gradient(180deg,#eef6ff,#e8f1ff); color:#0f3f91; }
+    .website-online-action-tools .btn-sm.is-json{ border-color:rgba(22,163,74,.18); background:#f2fbf7; color:#166534; }
+    .website-online-action-tools .btn-sm:disabled{ opacity:.55; background:#eef3f9; color:#8a97aa; box-shadow:none; cursor:not-allowed; transform:none; }
+    .website-online-action-publish{ width:100%; min-height:38px; border:1px solid transparent; font-weight:950; letter-spacing:0; box-shadow:0 8px 18px rgba(17,42,100,.08); }
     .website-online-action-publish.is-publish{ background:#ecfdf5; color:#166534; border-color:rgba(22,163,74,.22); }
     .website-online-action-publish.is-unpublish{ background:#fff7ed; color:#9a3412; border-color:rgba(249,115,22,.24); }
     .website-online-action-publish.is-busy,.website-online-action-publish:disabled{ background:#f1f5f9; color:#8a97aa; border-color:rgba(99,138,218,.12); box-shadow:none; cursor:not-allowed; }
@@ -27793,9 +27795,8 @@ function renderPortalOnlineRow(row) {
     <div class="website-online-actions" aria-label="Thao tác đề online">
       <div class="website-online-action-tools">
         <button type="button" class="btn-sm website-online-action-btn" title="Tạo prompt AI" aria-label="Tạo prompt AI" onclick="openPortalOnlinePrompt('${escapeHtml(id)}')">Prompt</button>
-        <button type="button" class="btn-sm website-online-action-btn" title="Tạo JSON bằng AI" aria-label="Tạo JSON bằng AI" onclick="generatePortalOnlineJsonAi('${escapeHtml(id)}')" ${generating ? 'disabled' : ''}>${generating ? 'Đang tạo...' : 'Tạo JSON AI'}</button>
-        <button type="button" class="btn-sm website-online-action-btn" title="Dán hoặc upload JSON" aria-label="Dán hoặc upload JSON" onclick="openPortalOnlineJson('${escapeHtml(id)}')">JSON</button>
-        <button type="button" class="btn-sm website-online-action-btn" title="Upload ảnh theo đề" aria-label="Upload ảnh theo đề" onclick="openPortalOnlineAssets('${escapeHtml(id)}')" ${online ? '' : 'disabled'}>Ảnh</button>
+        <button type="button" class="btn-sm website-online-action-btn is-ai" title="Tạo JSON bằng AI" aria-label="Tạo JSON bằng AI" onclick="generatePortalOnlineJsonAi('${escapeHtml(id)}')" ${generating ? 'disabled' : ''}>${generating ? 'Đang tạo...' : 'Tạo AI'}</button>
+        <button type="button" class="btn-sm website-online-action-btn is-json" title="Dán hoặc upload JSON" aria-label="Dán hoặc upload JSON" onclick="openPortalOnlineJson('${escapeHtml(id)}')">JSON</button>
         <button type="button" class="btn-sm website-online-action-btn" title="Prompt nguồn" aria-label="Prompt nguồn" onclick="openPortalOnlineSourcePromptManager('${escapeHtml(id)}')">Nguồn</button>
       </div>
       <button type="button" class="btn-sm website-online-action-publish ${escapeHtml(publishTone)} ${busy ? 'is-busy' : ''}" onclick="togglePortalOnlinePublished('${escapeHtml(id)}')" ${online && !busy ? '' : 'disabled'}>${busy ? 'Đang lưu' : escapeHtml(publishLabel)}</button>
