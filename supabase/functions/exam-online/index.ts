@@ -1110,7 +1110,7 @@ Deno.serve(async (req) => {
       const examFileId = cleanUuid(body.exam_file_id || body.examFileId);
       const { data: row, error } = await service
         .from("exam_files")
-        .select("id,title,level,year,province,exam_code")
+        .select("id,title,level,year,province,exam_code,object_key,storage_path")
         .eq("id", examFileId)
         .maybeSingle();
       if (error) throw new Error(error.message || "EXAM_LOOKUP_FAILED");
