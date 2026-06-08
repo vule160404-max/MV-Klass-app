@@ -107,3 +107,19 @@ test('AI PDF reader requires both exam and answer PDFs with distinct errors', ()
   assert.match(pdfReader, /pdfErrorCode\(kind, "SIGNATURE_INVALID"\)/);
   assert.match(block, /fetchExamPdfForAi\(service, row\)/);
 });
+
+test('NVIDIA API key is preferred and uses chat completions with extracted PDF text', () => {
+  const source = read(edgePath);
+  const block = extractActionBlock(source, 'generate_json_ai');
+  const nvidiaFn = extractBetween(source, 'async function generateExamJsonWithNvidia', 'async function generateExamJsonWithOpenAi');
+
+  assert.match(block, /Deno\.env\.get\("NVIDIA_API_KEY"\)/);
+  assert.match(block, /generateExamJsonWithNvidia\(nvidiaKey, prompt, pdfFiles\)/);
+  assert.match(block, /generateExamJsonWithOpenAi\(openAiKey, prompt, pdfFiles\)/);
+  assert.match(source, /function extractPdfTextForAi/);
+  assert.match(nvidiaFn, /https:\/\/integrate\.api\.nvidia\.com\/v1\/chat\/completions/);
+  assert.match(nvidiaFn, /NVIDIA_EXAM_JSON_MODEL/);
+  assert.match(nvidiaFn, /pdfFiles\.map/);
+  assert.match(nvidiaFn, /extractPdfTextForAi\(file\.bytes\)/);
+  assert.doesNotMatch(nvidiaFn, /type:\s*"input_file"/);
+});

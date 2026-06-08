@@ -968,6 +968,84 @@ function responseOutputText(data: any) {
   return parts.join("\n").trim();
 }
 
+function decodePdfLiteralText(value: string) {
+  let out = "";
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i];
+    if (ch !== "\\") {
+      out += ch;
+      continue;
+    }
+    const next = value[++i] || "";
+    if (next === "n") out += "\n";
+    else if (next === "r") out += "\r";
+    else if (next === "t") out += "\t";
+    else if (next === "b") out += "\b";
+    else if (next === "f") out += "\f";
+    else if (/[0-7]/.test(next)) {
+      let octal = next;
+      for (let j = 0; j < 2 && /[0-7]/.test(value[i + 1] || ""); j++) octal += value[++i];
+      out += String.fromCharCode(parseInt(octal, 8));
+    } else {
+      out += next;
+    }
+  }
+  return out;
+}
+
+function decodePdfHexText(value: string) {
+  const clean = value.replace(/[^0-9a-f]/gi, "");
+  if (clean.length < 2 || clean.length % 2) return "";
+  const bytes: number[] = [];
+  for (let i = 0; i < clean.length; i += 2) bytes.push(parseInt(clean.slice(i, i + 2), 16));
+  const hasUtf16Be = bytes.length > 2 && bytes[0] === 0xfe && bytes[1] === 0xff;
+  if (hasUtf16Be) {
+    let text = "";
+    for (let i = 2; i + 1 < bytes.length; i += 2) text += String.fromCharCode((bytes[i] << 8) | bytes[i + 1]);
+    return text;
+  }
+  return String.fromCharCode(...bytes);
+}
+
+function normalizeExtractedPdfText(text: string) {
+  return String(text || "")
+    .replace(/\u0000/g, "")
+    .replace(/[^\S\r\n]+/g, " ")
+    .replace(/\s*\n\s*/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function latin1FromBytes(bytes: Uint8Array) {
+  const chunks: string[] = [];
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    chunks.push(String.fromCharCode(...bytes.slice(i, i + chunkSize)));
+  }
+  return chunks.join("");
+}
+
+function extractPdfTextForAi(bytes: Uint8Array) {
+  const source = latin1FromBytes(bytes);
+  const parts: string[] = [];
+  const literalRegex = /\((?:\\.|[^\\()]){2,}\)\s*(?:Tj|'|"|TJ)/g;
+  let literalMatch: RegExpExecArray | null;
+  while ((literalMatch = literalRegex.exec(source))) {
+    const raw = literalMatch[0].replace(/\)\s*(?:Tj|'|"|TJ)\s*$/, "").slice(1);
+    const decoded = decodePdfLiteralText(raw);
+    if (/[A-Za-z0-9\u00c0-\u1ef9]/.test(decoded)) parts.push(decoded);
+  }
+  const hexRegex = /<([0-9a-fA-F\s]{6,})>\s*(?:Tj|'|"|TJ)/g;
+  let hexMatch: RegExpExecArray | null;
+  while ((hexMatch = hexRegex.exec(source))) {
+    const decoded = decodePdfHexText(hexMatch[1]);
+    if (/[A-Za-z0-9\u00c0-\u1ef9]/.test(decoded)) parts.push(decoded);
+  }
+  const extracted = normalizeExtractedPdfText(parts.join("\n"));
+  if (extracted.length >= 80) return extracted.slice(0, 120000);
+  return normalizeExtractedPdfText(source.replace(/[^\x20-\x7e\u00c0-\u1ef9\r\n]+/g, " ")).slice(0, 120000);
+}
+
 function parseOpenAiExamJson(text: string) {
   const raw = String(text || "").trim()
     .replace(/^```(?:json)?\s*/i, "")
@@ -982,6 +1060,47 @@ function parseOpenAiExamJson(text: string) {
     if (start >= 0 && end > start) return JSON.parse(raw.slice(start, end + 1));
     throw new Error("OPENAI_RESPONSE_INVALID_JSON");
   }
+}
+
+async function generateExamJsonWithNvidia(nvidiaKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {
+  const model = (Deno.env.get("NVIDIA_EXAM_JSON_MODEL") || "nvidia/llama-3.1-nemotron-ultra-253b-v1").trim();
+  const maxTokens = Number(Deno.env.get("NVIDIA_EXAM_JSON_MAX_TOKENS") || "8192");
+  const pdfText = pdfFiles.map((file) => {
+    const text = extractPdfTextForAi(file.bytes);
+    return `===== ${file.filename} =====\n${text || "[Khong trich xuat duoc chu tu PDF]"}`;
+  }).join("\n\n");
+  const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${nvidiaKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content: "You convert Vietnamese exam PDFs and answer keys into valid JSON. Return only JSON, no markdown.",
+        },
+        {
+          role: "user",
+          content: `${prompt}\n\nNOI DUNG FILE DE VA DAP AN DA TRICH XUAT:\n${pdfText}\n\nChi tra ve JSON hop le theo schema trong prompt.`,
+        },
+      ],
+      temperature: 0.1,
+      max_tokens: Number.isFinite(maxTokens) && maxTokens > 0 ? maxTokens : 8192,
+      stream: false,
+    }),
+    signal: AbortSignal.timeout(180000),
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message = String(data?.error?.message || data?.error || `NVIDIA_HTTP_${response.status}`).slice(0, 240);
+    throw new Error(`NVIDIA_REQUEST_FAILED: ${message}`);
+  }
+  const text = String(data?.choices?.[0]?.message?.content || "").trim();
+  if (!text) throw new Error("NVIDIA_RESPONSE_EMPTY");
+  return parseOpenAiExamJson(text);
 }
 
 async function generateExamJsonWithOpenAi(openAiKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {
@@ -1397,10 +1516,13 @@ Deno.serve(async (req) => {
         }, 404);
       }
       const prompt = renderPromptTemplate(template, row);
+      const nvidiaKey = Deno.env.get("NVIDIA_API_KEY") || "";
       const openAiKey = Deno.env.get("OPENAI_API_KEY") || "";
-      if (!openAiKey) return json({ ok: false, error: "OPENAI_API_KEY_NOT_CONFIGURED" }, 500);
+      if (!nvidiaKey && !openAiKey) return json({ ok: false, error: "AI_API_KEY_NOT_CONFIGURED" }, 500);
       const pdfFiles = await fetchExamPdfForAi(service, row);
-      const examJson = await generateExamJsonWithOpenAi(openAiKey, prompt, pdfFiles);
+      const examJson = nvidiaKey
+        ? await generateExamJsonWithNvidia(nvidiaKey, prompt, pdfFiles)
+        : await generateExamJsonWithOpenAi(openAiKey, prompt, pdfFiles);
       return json({
         ok: true,
         ...(await saveGeneratedExamJsonDraft(service, actor, examFileId, examJson)),
