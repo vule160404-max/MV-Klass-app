@@ -1101,6 +1101,7 @@ async function generateExamJsonWithNvidia(nvidiaKey: string, prompt: string, pdf
         ],
         temperature: 0.1,
         max_tokens: Number.isFinite(maxTokens) && maxTokens > 0 ? maxTokens : 8192,
+        response_format: { type: "json_object" },
         stream: false,
       }),
       signal: AbortSignal.timeout(180000),
@@ -1112,12 +1113,16 @@ async function generateExamJsonWithNvidia(nvidiaKey: string, prompt: string, pdf
     }
     const text = String(data?.choices?.[0]?.message?.content || "").trim();
     if (!text) throw new Error("NVIDIA_RESPONSE_EMPTY");
-    const parsed = parseOpenAiExamJson(text);
+    let parsed: any;
     try {
+      parsed = parseOpenAiExamJson(text);
       return validateExamJson(parsed);
     } catch (err) {
       lastSchemaError = String(err && err.message || err || "NVIDIA_SCHEMA_INVALID").slice(0, 120);
-      if (attempt < 2 && /QUESTIONS_REQUIRED/i.test(lastSchemaError)) continue;
+      if (attempt < 2 && /OPENAI_RESPONSE_INVALID_JSON|QUESTIONS_REQUIRED/i.test(lastSchemaError)) continue;
+      if (/OPENAI_RESPONSE_INVALID_JSON/i.test(lastSchemaError)) {
+        throw new Error(`NVIDIA_RESPONSE_INVALID_JSON: ${lastSchemaError}`);
+      }
       throw new Error(`NVIDIA_RESPONSE_SCHEMA_INVALID: ${lastSchemaError}`);
     }
   }

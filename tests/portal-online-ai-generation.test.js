@@ -128,5 +128,8 @@ test('NVIDIA API key is preferred and uses chat completions with extracted PDF t
   assert.match(nvidiaFn, /validateExamJson\(parsed\)/);
   assert.match(nvidiaFn, /QUESTIONS_REQUIRED/);
   assert.match(nvidiaFn, /attempt < 2/);
+  assert.match(nvidiaFn, /NVIDIA_RESPONSE_INVALID_JSON/);
+  assert.match(nvidiaFn, /parseOpenAiExamJson\(text\)[\s\S]*catch \(err\)/);
+  assert.match(nvidiaFn, /response_format:\s*\{\s*type:\s*"json_object"\s*\}/);
   assert.doesNotMatch(nvidiaFn, /type:\s*"input_file"/);
 });
