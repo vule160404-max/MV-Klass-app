@@ -378,7 +378,7 @@ function renderHtml() {
         lastScanRows = data.scan.pairs || [];
         setMetrics({total:data.scan.readyPairs.length});
         renderRows(lastScanRows);
-        $('log').textContent = 'Đã quét ' + data.scan.totalPdf + ' file PDF. Sẵn sàng: ' + data.scan.readyPairs.length + ' cặp.';
+        $('log').textContent = 'Đã quét ' + (data.scan.totalFiles || data.scan.totalPdf || 0) + ' file hỗ trợ. Sẵn sàng: ' + data.scan.readyPairs.length + ' cặp.';
       } catch (err) {
         $('log').textContent = err.message;
       }

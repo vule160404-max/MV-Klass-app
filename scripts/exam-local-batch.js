@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 
 const {
   callGemini,
@@ -35,13 +36,117 @@ function normalizeMatchText(value) {
     .trim();
 }
 
-function isPdfFile(filePath) {
-  return /\.pdf$/i.test(filePath || '');
+function localFileKind(filePath) {
+  const ext = path.extname(filePath || '').toLowerCase();
+  if (ext === '.pdf') return 'pdf';
+  if (ext === '.docx') return 'docx';
+  return '';
 }
 
-function isAnswerPdf(filePath) {
+function isSupportedLocalFile(filePath) {
+  return Boolean(localFileKind(filePath));
+}
+
+function isAnswerFile(filePath) {
   const text = normalizeMatchText(path.basename(filePath || ''));
   return /\b(dap an|dapan|answer|key|loi giai|loigiai)\b/.test(text);
+}
+
+function readZipEntry(buffer, wantedName) {
+  const maxComment = Math.min(buffer.length, 0xffff + 22);
+  let eocdOffset = -1;
+  for (let i = buffer.length - 22; i >= buffer.length - maxComment; i -= 1) {
+    if (i >= 0 && buffer.readUInt32LE(i) === 0x06054b50) {
+      eocdOffset = i;
+      break;
+    }
+  }
+  if (eocdOffset < 0) throw new Error('DOCX_ZIP_EOCD_NOT_FOUND');
+  const entryCount = buffer.readUInt16LE(eocdOffset + 10);
+  const centralOffset = buffer.readUInt32LE(eocdOffset + 16);
+  let ptr = centralOffset;
+  for (let i = 0; i < entryCount; i += 1) {
+    if (buffer.readUInt32LE(ptr) !== 0x02014b50) throw new Error('DOCX_ZIP_CENTRAL_DIRECTORY_INVALID');
+    const method = buffer.readUInt16LE(ptr + 10);
+    const compressedSize = buffer.readUInt32LE(ptr + 20);
+    const fileNameLength = buffer.readUInt16LE(ptr + 28);
+    const extraLength = buffer.readUInt16LE(ptr + 30);
+    const commentLength = buffer.readUInt16LE(ptr + 32);
+    const localOffset = buffer.readUInt32LE(ptr + 42);
+    const name = buffer.slice(ptr + 46, ptr + 46 + fileNameLength).toString('utf8');
+    if (name === wantedName) {
+      if (buffer.readUInt32LE(localOffset) !== 0x04034b50) throw new Error('DOCX_ZIP_LOCAL_HEADER_INVALID');
+      const localNameLength = buffer.readUInt16LE(localOffset + 26);
+      const localExtraLength = buffer.readUInt16LE(localOffset + 28);
+      const dataOffset = localOffset + 30 + localNameLength + localExtraLength;
+      const compressed = buffer.slice(dataOffset, dataOffset + compressedSize);
+      if (method === 0) return compressed;
+      if (method === 8) return zlib.inflateRawSync(compressed);
+      throw new Error(`DOCX_ZIP_METHOD_UNSUPPORTED:${method}`);
+    }
+    ptr += 46 + fileNameLength + extraLength + commentLength;
+  }
+  throw new Error(`DOCX_ENTRY_NOT_FOUND:${wantedName}`);
+}
+
+function decodeXmlEntities(text) {
+  return String(text || '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, '&');
+}
+
+function extractDocxText(bytes) {
+  const xml = readZipEntry(Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes), 'word/document.xml').toString('utf8');
+  const textXml = xml
+    .replace(/<w:tab\b[^>]*\/>/g, '\t')
+    .replace(/<w:br\b[^>]*\/>/g, '\n')
+    .replace(/<\/w:tc>/g, '\t')
+    .replace(/<\/w:tr>/g, '\n')
+    .replace(/<\/w:p>/g, '\n')
+    .replace(/<[^>]+>/g, '');
+  return decodeXmlEntities(textXml)
+    .replace(/\u00a0/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function answerHeadingIndex(text) {
+  let offset = 0;
+  for (const line of String(text || '').split(/\r?\n/)) {
+    const normalized = normalizeMatchText(line);
+    const compactEnough = normalized.length > 0 && normalized.length <= 90;
+    const isHeading = compactEnough && (
+      /^dap an\b/.test(normalized) ||
+      /^answer key\b/.test(normalized) ||
+      /^answers\b/.test(normalized) ||
+      /^huong dan cham\b/.test(normalized) ||
+      /^huong dan giai\b/.test(normalized) ||
+      /^loi giai\b/.test(normalized)
+    );
+    if (isHeading) return offset;
+    offset += line.length + 1;
+  }
+  return -1;
+}
+
+function splitCombinedExamAnswerText(text) {
+  const idx = answerHeadingIndex(text);
+  if (idx < 0) throw new Error('COMBINED_ANSWER_SECTION_NOT_FOUND');
+  const examText = String(text || '').slice(0, idx).trim();
+  const answerText = String(text || '').slice(idx).trim();
+  return { examText, answerText, answerKeys: extractAnswerKeys(answerText) };
+}
+
+function docxContainsAnswerSection(filePath) {
+  try {
+    return answerHeadingIndex(extractDocxText(fs.readFileSync(filePath))) >= 0;
+  } catch (_err) {
+    return false;
+  }
 }
 
 function inferLocalExamNumber(filePath) {
@@ -58,7 +163,7 @@ function formatExamCode(number) {
   return String(Number(number) || 0).padStart(3, '0');
 }
 
-function walkPdfFiles(rootDir) {
+function walkLocalExamFiles(rootDir) {
   const root = path.resolve(rootDir || '');
   if (!fs.existsSync(root)) throw new Error(`LOCAL_FOLDER_NOT_FOUND:${root}`);
   if (!fs.statSync(root).isDirectory()) throw new Error(`LOCAL_FOLDER_NOT_DIRECTORY:${root}`);
@@ -70,7 +175,7 @@ function walkPdfFiles(rootDir) {
       const fullPath = path.join(current, entry.name);
       if (entry.isDirectory()) {
         if (!entry.name.startsWith('.') && entry.name !== '_exam_agent_runs') stack.push(fullPath);
-      } else if (entry.isFile() && isPdfFile(entry.name)) {
+      } else if (entry.isFile() && isSupportedLocalFile(entry.name)) {
         files.push(fullPath);
       }
     }
@@ -79,7 +184,7 @@ function walkPdfFiles(rootDir) {
 }
 
 function scanLocalExamFolder(rootDir) {
-  const files = walkPdfFiles(rootDir);
+  const files = walkLocalExamFiles(rootDir);
   const byCode = new Map();
   for (const filePath of files) {
     const number = inferLocalExamNumber(filePath);
@@ -87,7 +192,7 @@ function scanLocalExamFolder(rootDir) {
     if (!byCode.has(code)) {
       byCode.set(code, { examCode: code, examFiles: [], answerFiles: [] });
     }
-    const bucket = isAnswerPdf(filePath) ? 'answerFiles' : 'examFiles';
+    const bucket = isAnswerFile(filePath) ? 'answerFiles' : 'examFiles';
     byCode.get(code)[bucket].push(filePath);
   }
   const pairs = [...byCode.values()]
@@ -95,12 +200,14 @@ function scanLocalExamFolder(rootDir) {
     .sort((a, b) => Number(a.examCode) - Number(b.examCode))
     .map(group => {
       const examPath = group.examFiles[0] || '';
-      const answerPath = group.answerFiles[0] || '';
+      const combined = Boolean(examPath && !group.answerFiles.length && localFileKind(examPath) === 'docx' && docxContainsAnswerSection(examPath));
+      const answerPath = group.answerFiles[0] || (combined ? examPath : '');
       const issues = [];
-      if (!examPath) issues.push('MISSING_EXAM_PDF');
-      if (!answerPath) issues.push('MISSING_ANSWER_PDF');
-      if (group.examFiles.length > 1) issues.push('DUPLICATE_EXAM_PDF');
-      if (group.answerFiles.length > 1) issues.push('DUPLICATE_ANSWER_PDF');
+      if (!examPath) issues.push('MISSING_EXAM_FILE');
+      if (!answerPath) issues.push('MISSING_ANSWER_FILE');
+      if (combined) issues.push('COMBINED_EXAM_ANSWER_DOCX');
+      if (group.examFiles.length > 1) issues.push('DUPLICATE_EXAM_FILE');
+      if (group.answerFiles.length > 1) issues.push('DUPLICATE_ANSWER_FILE');
       return {
         examCode: group.examCode,
         title: examPath ? path.basename(examPath, path.extname(examPath)) : `Đề ${group.examCode}`,
@@ -108,13 +215,15 @@ function scanLocalExamFolder(rootDir) {
         answerPath,
         examFileName: examPath ? path.basename(examPath) : '',
         answerFileName: answerPath ? path.basename(answerPath) : '',
-        status: issues.length ? (examPath && answerPath ? 'warning' : (examPath ? 'missing_answer' : 'missing_exam')) : 'ready',
+        combined,
+        status: examPath && answerPath ? 'ready' : (examPath ? 'missing_answer' : 'missing_exam'),
         issues
       };
     });
   return {
     rootDir: path.resolve(rootDir || ''),
     totalPdf: files.length,
+    totalFiles: files.length,
     pairs,
     readyPairs: pairs.filter(pair => pair.examPath && pair.answerPath)
   };
@@ -171,16 +280,33 @@ function matchLocalPairToExamFile(pair, rows) {
   return bestScore >= 0 ? best : null;
 }
 
+function extractLocalTextFromFile(filePath) {
+  const kind = localFileKind(filePath);
+  const bytes = fs.readFileSync(filePath);
+  if (kind === 'pdf') return extractPdfText(bytes);
+  if (kind === 'docx') return extractDocxText(bytes);
+  throw new Error(`LOCAL_FILE_TYPE_UNSUPPORTED:${path.extname(filePath || '')}`);
+}
+
 async function readLocalPairText(pair, options = {}) {
-  const examBytes = fs.readFileSync(pair.examPath);
-  const answerBytes = fs.readFileSync(pair.answerPath);
-  const examText = extractPdfText(examBytes);
-  const answerText = extractPdfText(answerBytes);
+  let examText;
+  let answerText;
+  let answerKeys;
+  if (pair.combined || path.resolve(pair.examPath) === path.resolve(pair.answerPath)) {
+    const split = splitCombinedExamAnswerText(extractLocalTextFromFile(pair.examPath));
+    examText = split.examText;
+    answerText = split.answerText;
+    answerKeys = split.answerKeys;
+  } else {
+    examText = extractLocalTextFromFile(pair.examPath);
+    answerText = extractLocalTextFromFile(pair.answerPath);
+    answerKeys = extractAnswerKeys(answerText);
+  }
   const minExamTextChars = Number(options.minExamTextChars || 500);
   const minAnswerTextChars = Number(options.minAnswerTextChars || 20);
   if (examText.length < minExamTextChars) throw new Error(`EXAM_TEXT_TOO_SHORT:${examText.length}`);
   if (answerText.length < minAnswerTextChars) throw new Error(`ANSWER_TEXT_TOO_SHORT:${answerText.length}`);
-  return { examText, answerText, answerKeys: extractAnswerKeys(answerText) };
+  return { examText, answerText, answerKeys };
 }
 
 function createLocalJobReport(options = {}) {
@@ -387,8 +513,9 @@ async function runLocalBatch(options = {}, deps = {}) {
 
 module.exports = {
   createLocalJobReport,
+  extractDocxText,
   inferLocalExamNumber,
-  isAnswerPdf,
+  isAnswerFile,
   matchLocalPairToExamFile,
   readLocalPairText,
   runLocalBatch,

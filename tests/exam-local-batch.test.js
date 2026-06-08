@@ -6,6 +6,7 @@ const path = require('node:path');
 
 const {
   createLocalJobReport,
+  readLocalPairText,
   scanLocalExamFolder,
   matchLocalPairToExamFile,
   runLocalBatch
@@ -18,6 +19,117 @@ function makeTempDir() {
 function touch(filePath) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, 'pdf');
+}
+
+function crc32(buffer) {
+  let crc = -1;
+  for (const byte of buffer) {
+    crc ^= byte;
+    for (let i = 0; i < 8; i += 1) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+    }
+  }
+  return (crc ^ -1) >>> 0;
+}
+
+function writeUInt16(value) {
+  const out = Buffer.alloc(2);
+  out.writeUInt16LE(value);
+  return out;
+}
+
+function writeUInt32(value) {
+  const out = Buffer.alloc(4);
+  out.writeUInt32LE(value >>> 0);
+  return out;
+}
+
+function xmlEscape(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function makeDocxXml(text) {
+  const paragraphs = String(text).split(/\r?\n/).map(line => (
+    `<w:p><w:r><w:t>${xmlEscape(line)}</w:t></w:r></w:p>`
+  )).join('');
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${paragraphs}</w:body></w:document>`;
+}
+
+function writeSimpleDocx(filePath, text) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const entries = [
+    {
+      name: '[Content_Types].xml',
+      data: Buffer.from('<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>', 'utf8')
+    },
+    {
+      name: '_rels/.rels',
+      data: Buffer.from('<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>', 'utf8')
+    },
+    {
+      name: 'word/document.xml',
+      data: Buffer.from(makeDocxXml(text), 'utf8')
+    }
+  ];
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  for (const entry of entries) {
+    const name = Buffer.from(entry.name, 'utf8');
+    const crc = crc32(entry.data);
+    const local = Buffer.concat([
+      writeUInt32(0x04034b50),
+      writeUInt16(20),
+      writeUInt16(0x0800),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt32(crc),
+      writeUInt32(entry.data.length),
+      writeUInt32(entry.data.length),
+      writeUInt16(name.length),
+      writeUInt16(0),
+      name,
+      entry.data
+    ]);
+    localParts.push(local);
+    centralParts.push(Buffer.concat([
+      writeUInt32(0x02014b50),
+      writeUInt16(20),
+      writeUInt16(20),
+      writeUInt16(0x0800),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt32(crc),
+      writeUInt32(entry.data.length),
+      writeUInt32(entry.data.length),
+      writeUInt16(name.length),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt16(0),
+      writeUInt32(0),
+      writeUInt32(offset),
+      name
+    ]));
+    offset += local.length;
+  }
+  const central = Buffer.concat(centralParts);
+  const eocd = Buffer.concat([
+    writeUInt32(0x06054b50),
+    writeUInt16(0),
+    writeUInt16(0),
+    writeUInt16(entries.length),
+    writeUInt16(entries.length),
+    writeUInt32(central.length),
+    writeUInt32(offset),
+    writeUInt16(0)
+  ]);
+  fs.writeFileSync(filePath, Buffer.concat([...localParts, central, eocd]));
 }
 
 function validExam(id = 'exam-001') {
@@ -65,6 +177,51 @@ test('scanLocalExamFolder pairs local exam and answer PDFs by exam code', () => 
   assert.match(scan.pairs[0].answerPath, /Dap an De 001/);
   assert.equal(scan.pairs[2].status, 'missing_answer');
   assert.deepEqual(scan.readyPairs.map(pair => pair.examCode), ['001', '002']);
+});
+
+test('scanLocalExamFolder pairs local DOCX exam and answer files', () => {
+  const root = makeTempDir();
+  writeSimpleDocx(path.join(root, 'De 004 Vao 10 Thanh Hoa 2025.docx'), 'Question 1\nQuestion 2');
+  writeSimpleDocx(path.join(root, 'Dap an De 004 Vao 10 Thanh Hoa 2025.docx'), '1. A\n2. B');
+
+  const scan = scanLocalExamFolder(root);
+
+  assert.equal(scan.totalFiles, 2);
+  assert.equal(scan.readyPairs.length, 1);
+  assert.equal(scan.readyPairs[0].examCode, '004');
+  assert.match(scan.readyPairs[0].examPath, /\.docx$/);
+  assert.match(scan.readyPairs[0].answerPath, /\.docx$/);
+});
+
+test('scanLocalExamFolder detects one DOCX file containing both exam and answer key', () => {
+  const root = makeTempDir();
+  writeSimpleDocx(path.join(root, 'De 005 Vao 10 Thanh Hoa 2025.docx'), 'Question 1: Choose A B C D\nQuestion 2: Rewrite\n\nĐÁP ÁN\n1. A\n2. B');
+
+  const scan = scanLocalExamFolder(root);
+
+  assert.equal(scan.readyPairs.length, 1);
+  assert.equal(scan.readyPairs[0].examCode, '005');
+  assert.equal(scan.readyPairs[0].combined, true);
+  assert.equal(scan.readyPairs[0].answerPath, scan.readyPairs[0].examPath);
+});
+
+test('readLocalPairText extracts and splits a combined DOCX exam file', async () => {
+  const root = makeTempDir();
+  const file = path.join(root, 'De 006 Vao 10 Thanh Hoa 2025.docx');
+  writeSimpleDocx(file, 'Question 1: Choose A B C D\nQuestion 2: Rewrite this sentence.\n\nĐÁP ÁN VÀ HƯỚNG DẪN GIẢI\n1. A\n2. B');
+
+  const pairText = await readLocalPairText({
+    examCode: '006',
+    examPath: file,
+    answerPath: file,
+    combined: true
+  }, { minExamTextChars: 10, minAnswerTextChars: 3 });
+
+  assert.match(pairText.examText, /Question 1/);
+  assert.doesNotMatch(pairText.examText, /ĐÁP ÁN/);
+  assert.match(pairText.answerText, /1\. A/);
+  assert.equal(pairText.answerKeys.get(1), 'A');
+  assert.equal(pairText.answerKeys.get(2), 'B');
 });
 
 test('matchLocalPairToExamFile uses Thanh Hoa exam number first', () => {
