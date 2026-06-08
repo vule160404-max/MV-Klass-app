@@ -35093,11 +35093,35 @@ function renderMgrStudentCard(s, actionButtons) {
         <div class="c-row-name">${escapeHtml(s.name || 'Học viên')}</div>
         <div class="student-card-idline">${classes.length ? `${classes.length} lớp đang học` : 'Chưa xếp lớp'} · ${noteRaw ? 'Có nhận xét' : 'Chưa có nhận xét'}</div>
       </div>
-      ${actionButtons.replaceAll('__SID__', escapeHtml(sid))}
+      ${actionButtons
+        .replaceAll('__SID__', escapeHtml(sid))
+        .replaceAll('__ZALO_DISABLED__', normalizePhoneForZalo(s.phone) ? '' : 'disabled title="Học sinh chưa có SĐT phụ huynh"')}
     </div>
     <div class="student-card-contact">${contactItems}</div>
     <button type="button" class="${noteBtnClass}" data-student-id="${escapeHtml(sid)}">${noteBtnInner}</button>
   </div>`;
+}
+
+function studentParentZaloPhone(studentId) {
+  const sid = String(studentId || '').trim();
+  if (!sid) return '';
+  const st = (students || []).find(x => String(x && x.id || '').trim() === sid);
+  return st ? String(st.phone || st.parent_phone || st.parentPhone || '').trim() : '';
+}
+
+function openStudentParentZalo(studentId) {
+  const sid = String(studentId || '').trim();
+  const st = (students || []).find(x => String(x && x.id || '').trim() === sid);
+  if (!st) {
+    showAppToast('Không tìm thấy học sinh.');
+    return;
+  }
+  const phone = studentParentZaloPhone(sid);
+  if (!normalizePhoneForZalo(phone)) {
+    showAppToast('Học sinh này chưa có SĐT phụ huynh để mở Zalo.');
+    return;
+  }
+  void openZaloSmart(phone, tuitionZaloLinkForPhone(phone), '');
 }
 
 function clearMgrFilters() {
@@ -35131,6 +35155,7 @@ function renderMgr() {
   const actionButtons = isTeacher()
     ? ''
     : `<div class="c-row-actions">
+      <button type="button" class="btn-zalo mgr-zalo" data-student-id="__SID__" __ZALO_DISABLED__>Nhắn Zalo PH</button>
       <button type="button" class="btn-edit mgr-edit" data-student-id="__SID__">S?a thông tin</button>
       <button type="button" class="btn-del mgr-remove" data-student-id="__SID__" title="Xóa h?c viên">Xóa</button>
     </div>`;
@@ -40120,6 +40145,12 @@ document.getElementById('tab-students').addEventListener('click', e => {
   if (ed && ed.getAttribute('data-student-id')) {
     e.preventDefault();
     editStudent(ed.getAttribute('data-student-id'));
+    return;
+  }
+  const zl = e.target.closest('.mgr-zalo');
+  if (zl && zl.getAttribute('data-student-id')) {
+    e.preventDefault();
+    openStudentParentZalo(zl.getAttribute('data-student-id'));
     return;
   }
 });
