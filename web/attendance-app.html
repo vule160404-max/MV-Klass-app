@@ -2457,6 +2457,86 @@
     .class-mgr-action-mini.wide{
       grid-column: 1 / -1;
     }
+    .class-student-picker-summary{
+      color:#72809b;
+      font-size:12px;
+      font-weight:750;
+      line-height:1.45;
+      margin:-4px 0 10px;
+    }
+    .class-student-picker-search{
+      width:100%;
+      min-height:38px;
+      margin-bottom:10px;
+      border:1px solid rgba(191,219,254,.88);
+      border-radius:12px;
+      background:#fff;
+      padding:9px 12px;
+      font-size:13px;
+      font-weight:750;
+      color:#102858;
+      outline:none;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .class-student-picker-search:focus{
+      border-color:rgba(61,126,248,.62);
+      box-shadow:0 0 0 3px rgba(61,126,248,.12);
+    }
+    .class-student-picker-list{
+      display:grid;
+      gap:7px;
+      max-height:min(48vh,420px);
+      overflow:auto;
+      padding:2px 2px 2px 0;
+    }
+    .class-student-picker-item{
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr);
+      gap:10px;
+      align-items:center;
+      border:1px solid rgba(226,232,240,.92);
+      border-radius:12px;
+      background:linear-gradient(180deg,#fff,#f8fbff);
+      padding:9px 10px;
+      cursor:pointer;
+    }
+    .class-student-picker-item:hover{
+      border-color:rgba(61,126,248,.34);
+      background:#fff;
+    }
+    .class-student-picker-item input{
+      width:16px;
+      height:16px;
+      accent-color:#2563eb;
+    }
+    .class-student-picker-name{
+      color:#10213f;
+      font-size:13px;
+      font-weight:950;
+      line-height:1.2;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .class-student-picker-meta{
+      margin-top:3px;
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:750;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .class-student-picker-empty{
+      border:1px dashed rgba(148,163,184,.55);
+      border-radius:12px;
+      padding:18px 12px;
+      color:#64748b;
+      text-align:center;
+      font-size:13px;
+      font-weight:800;
+      background:#f8fafc;
+    }
     .class-mgr-switch{
       position: relative;
       display: block;
@@ -16195,6 +16275,22 @@ button[data-bank-inspect-confirm-not]:hover,
     <div class="class-action-grid" id="class-action-grid"></div>
     <div class="modal-actions">
       <button type="button" class="btn-sm" onclick="closeClassActionModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="class-student-picker-modal" onclick="if(event.target===this) closeClassStudentPicker()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="class-student-picker-title">
+    <div class="class-action-head">
+      <div class="class-action-title" id="class-student-picker-title">Chọn học sinh vào lớp</div>
+      <div class="class-action-sub" id="class-student-picker-sub"></div>
+    </div>
+    <input type="search" id="class-student-picker-search" class="class-student-picker-search" placeholder="Tìm học sinh, SĐT, phụ huynh..." autocomplete="new-password" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" oninput="renderClassStudentPickerList()"/>
+    <div class="class-student-picker-summary" id="class-student-picker-summary"></div>
+    <div class="class-student-picker-list" id="class-student-picker-list"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-sm" onclick="closeClassStudentPicker()">Hủy</button>
+      <button type="button" class="btn-save btn-sm" id="class-student-picker-save" onclick="saveClassStudentPicker()">Thêm vào lớp</button>
     </div>
   </div>
 </div>
@@ -33845,9 +33941,19 @@ function openClassTuition(encodedClassName) {
   if (typeof setTuitionClassFilter === 'function') setTuitionClassFilter(className);
 }
 
+let classStudentPickerClassName = '';
+const classStudentPickerSelected = new Set();
+
 function closeClassActionModal() {
   const modal = document.getElementById('class-action-modal');
   if (modal) modal.classList.remove('show');
+}
+
+function closeClassStudentPicker() {
+  const modal = document.getElementById('class-student-picker-modal');
+  if (modal) modal.classList.remove('show');
+  classStudentPickerClassName = '';
+  classStudentPickerSelected.clear();
 }
 
 function runClassAction(action, encodedClassName) {
@@ -33856,10 +33962,127 @@ function runClassAction(action, encodedClassName) {
   if (!enc) return;
   if (action === 'attendance') return openQuickAttendanceFromDashboard(enc, true);
   if (action === 'students') return openClassStudents(enc);
+  if (action === 'assign') return openClassStudentPicker(enc);
   if (action === 'tuition') return openClassTuition(enc);
   if (action === 'pause') return void toggleClassDashboardPause(enc);
   if (action === 'edit') return editClassDefinition(enc);
   if (action === 'delete') return deleteClassDefinition(enc);
+}
+
+function openClassStudentPicker(encodedClassName) {
+  const className = decodeURIComponent(String(encodedClassName || ''));
+  if (!className) return;
+  classStudentPickerClassName = className;
+  classStudentPickerSelected.clear();
+  const modal = document.getElementById('class-student-picker-modal');
+  const sub = document.getElementById('class-student-picker-sub');
+  const search = document.getElementById('class-student-picker-search');
+  if (sub) sub.textContent = displayClassVi(className);
+  if (search) search.value = '';
+  renderClassStudentPickerList();
+  if (modal) modal.classList.add('show');
+  setTimeout(() => { if (search) search.focus(); }, 80);
+}
+
+function classStudentPickerCandidates() {
+  const className = String(classStudentPickerClassName || '').trim();
+  const q = normalizeText(document.getElementById('class-student-picker-search')?.value || '');
+  const words = q.split(' ').filter(Boolean);
+  return (students || [])
+    .filter(st => !isStudentAssignedToClass(st, className))
+    .filter(st => {
+      if (!words.length) return true;
+      const hay = normalizeText([
+        st && st.name,
+        st && st.phone,
+        st && st.parent_name,
+        formatStudentClassDisplay(st),
+        st && st.birth_year
+      ].filter(Boolean).join(' '));
+      return words.every(w => hay.includes(w));
+    })
+    .sort((a, b) => String(a && a.name || '').localeCompare(String(b && b.name || ''), 'vi', { sensitivity: 'base', numeric: true }));
+}
+
+function renderClassStudentPickerList() {
+  const listEl = document.getElementById('class-student-picker-list');
+  const summaryEl = document.getElementById('class-student-picker-summary');
+  if (!listEl) return;
+  const rows = classStudentPickerCandidates();
+  if (summaryEl) {
+    summaryEl.textContent = `${classStudentPickerSelected.size} đã chọn · ${rows.length} học sinh có thể thêm`;
+  }
+  if (!rows.length) {
+    listEl.innerHTML = '<div class="class-student-picker-empty">Không còn học sinh phù hợp để thêm vào lớp này.</div>';
+    return;
+  }
+  listEl.innerHTML = rows.slice(0, 180).map(st => {
+    const sid = String(st && st.id || '');
+    const checked = classStudentPickerSelected.has(sid) ? 'checked' : '';
+    const meta = [st && st.phone, st && st.parent_name ? 'PH: ' + st.parent_name : '', formatStudentClassDisplay(st)].filter(Boolean).join(' · ');
+    return `<label class="class-student-picker-item">
+      <input type="checkbox" value="${escapeHtml(sid)}" ${checked} onchange="toggleClassStudentPickerSelection(this.value,this.checked)"/>
+      <span>
+        <span class="class-student-picker-name">${escapeHtml(st && st.name || 'Học sinh')}</span>
+        <span class="class-student-picker-meta">${escapeHtml(meta || 'Chưa có lớp')}</span>
+      </span>
+    </label>`;
+  }).join('');
+}
+
+function toggleClassStudentPickerSelection(studentId, checked) {
+  const sid = String(studentId || '').trim();
+  if (!sid) return;
+  if (checked) classStudentPickerSelected.add(sid);
+  else classStudentPickerSelected.delete(sid);
+  renderClassStudentPickerList();
+}
+
+async function saveClassStudentPicker() {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được gán học sinh vào lớp.');
+    return;
+  }
+  const className = String(classStudentPickerClassName || '').trim();
+  const ids = Array.from(classStudentPickerSelected);
+  if (!className || !ids.length) {
+    showAppToast('Chọn ít nhất 1 học sinh để thêm vào lớp.');
+    return;
+  }
+  const btn = document.getElementById('class-student-picker-save');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Đang thêm...';
+  }
+  try {
+    for (const sid of ids) {
+      const st = (students || []).find(x => String(x && x.id || '') === sid);
+      if (!st || isStudentAssignedToClass(st, className)) continue;
+      const nextClasses = Array.from(new Set([...getStudentClasses(st), className].map(x => String(x || '').trim()).filter(Boolean)));
+      const primary = nextClasses[0] || className;
+      const r = await fetch(SUPABASE_URL + '/rest/v1/students?id=eq.' + encodeURIComponent(sid), {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ class_name: primary, class_names: nextClasses })
+      });
+      if (!(r.ok || r.status === 204)) throw new Error('Không lưu được học sinh: ' + String(st.name || sid));
+    }
+    closeClassStudentPicker();
+    showAppToast(`Đã thêm ${ids.length} học sinh vào lớp.`);
+    await loadStudents();
+    renderClassManager();
+    renderStudentClassSelectors(
+      getSelectedClassValues(document.getElementById('new-class')),
+      getSelectedClassValues(document.getElementById('edit-class'))
+    );
+  } catch (e) {
+    showAppToast(e && e.message ? e.message : 'Không thêm được học sinh vào lớp.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Thêm vào lớp';
+    }
+  }
 }
 
 function openClassActionModal(encodedClassName) {
@@ -33914,9 +34137,10 @@ function renderClassManagerActionBar(className, def, paused) {
     <div class="class-mgr-action-row">
       ${attendanceBtn}
       <button type="button" class="btn-sm action-info class-mgr-action-mini" onclick="runClassAction('students','${encEsc}')">Học viên</button>
+      <button type="button" class="btn-sm action-info class-mgr-action-mini" onclick="runClassAction('assign','${encEsc}')">Thêm HS</button>
       <button type="button" class="btn-sm action-money class-mgr-action-mini" onclick="runClassAction('tuition','${encEsc}')">Học phí</button>
       ${editBtn || `<button type="button" class="btn-edit class-mgr-action-mini" disabled title="Lớp chưa có cấu hình">Sửa</button>`}
-      <button type="button" class="btn-del class-mgr-action-mini wide" onclick="runClassAction('delete','${encEsc}')">Xóa lớp</button>
+      <button type="button" class="btn-del class-mgr-action-mini" onclick="runClassAction('delete','${encEsc}')">Xóa</button>
     </div>
   </div>`;
 }
