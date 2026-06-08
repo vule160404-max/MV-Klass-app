@@ -2432,9 +2432,98 @@
       padding-top: 4px;
       border-top: 1px solid rgba(226,232,240,0.8);
     }
-    .class-mgr-action-open{
-      min-width: 110px;
-      justify-content: center;
+    .class-mgr-actionbar{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+      width: min(100%, 210px);
+    }
+    .class-mgr-action-row{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .class-mgr-action-mini{
+      min-height: 32px !important;
+      padding: 6px 8px !important;
+      border-radius: 9px !important;
+      font-size: 11.5px !important;
+      font-weight: 900 !important;
+      line-height: 1.1 !important;
+      justify-content: center !important;
+      white-space: nowrap;
+      box-shadow: 0 7px 15px rgba(15,31,61,.08), inset 0 1px 0 rgba(255,255,255,.84) !important;
+    }
+    .class-mgr-action-mini.wide{
+      grid-column: 1 / -1;
+    }
+    .class-mgr-switch{
+      position: relative;
+      display: block;
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid rgba(22,163,74,.30);
+      border-radius: 999px;
+      padding: 4px 10px 4px 38px;
+      background: linear-gradient(180deg,#f0fdf4,#dcfce7);
+      color: #166534;
+      font-size: 11.5px;
+      font-weight: 950;
+      line-height: 1;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(22,163,74,.10), inset 0 1px 0 rgba(255,255,255,.88);
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease;
+    }
+    .class-mgr-switch::before{
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 50%;
+      width: 24px;
+      height: 14px;
+      border-radius: 999px;
+      transform: translateY(-50%);
+      background: rgba(22,163,74,.28);
+      box-shadow: inset 0 1px 2px rgba(15,23,42,.12);
+    }
+    .class-mgr-switch::after{
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      transform: translateY(-50%);
+      background: #16a34a;
+      box-shadow: 0 2px 5px rgba(15,23,42,.22);
+      transition: left .18s ease, background .18s ease;
+    }
+    .class-mgr-switch.paused{
+      border-color: rgba(217,119,6,.34);
+      background: linear-gradient(180deg,#fffbeb,#fef3c7);
+      color: #92400e;
+      box-shadow: 0 8px 18px rgba(217,119,6,.10), inset 0 1px 0 rgba(255,255,255,.88);
+    }
+    .class-mgr-switch.paused::before{
+      background: rgba(217,119,6,.24);
+    }
+    .class-mgr-switch.paused::after{
+      left: 9px;
+      background: #d97706;
+    }
+    .class-mgr-switch:hover,
+    .class-mgr-action-mini:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+    .class-mgr-action-mini:disabled{
+      opacity: .52;
+      cursor: not-allowed;
+      transform: none !important;
+      filter: none !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.78) !important;
     }
     #class-action-modal{ z-index: 1006; }
     #class-action-modal .modal{ max-width: 440px; }
@@ -2547,13 +2636,8 @@
         border-top: 0;
         padding-top: 0;
       }
-      .class-mgr-actions .btn-sm,
-      .class-mgr-actions .btn-edit,
-      .class-mgr-actions .btn-del{
-        flex: 1 1 64px;
-        min-height: 32px;
-        padding: 6px 10px;
-        font-size: 12px;
+      .class-mgr-actionbar{
+        justify-self: end;
       }
       .class-mgr-row > .class-mgr-section:has(.class-mgr-roadmap){
         grid-column: 1 / -1;
@@ -2588,10 +2672,8 @@
       .class-mgr-actions{
         justify-content: stretch;
       }
-      .class-mgr-actions .btn-sm,
-      .class-mgr-actions .btn-edit,
-      .class-mgr-actions .btn-del{
-        flex: 1 1 auto;
+      .class-mgr-actionbar{
+        width: 100%;
       }
     }
     .class-roadmap-input{
@@ -33813,6 +33895,32 @@ function openClassActionModal(encodedClassName) {
   modal.classList.add('show');
 }
 
+function renderClassManagerActionBar(className, def, paused) {
+  const enc = encodeURIComponent(className);
+  const encEsc = escapeHtml(enc);
+  const statusLabel = paused ? 'Tạm dừng' : 'Đang mở';
+  const switchTitle = paused ? 'Bật lại lớp' : 'Tạm dừng lớp';
+  const attendanceBtn = paused
+    ? `<button type="button" class="btn-sm action-attendance class-mgr-action-mini" disabled title="Bật lại lớp để điểm danh">Điểm danh</button>`
+    : `<button type="button" class="btn-sm action-attendance class-mgr-action-mini" onclick="runClassAction('attendance','${encEsc}')">Điểm danh</button>`;
+  const switchBtn = isAdmin()
+    ? `<button type="button" class="class-mgr-switch${paused ? ' paused' : ''}" role="switch" aria-checked="${paused ? 'false' : 'true'}" title="${escapeHtml(switchTitle)}" onclick="runClassAction('pause','${encEsc}')">${escapeHtml(statusLabel)}</button>`
+    : `<span class="class-mgr-switch${paused ? ' paused' : ''}" role="status">${escapeHtml(statusLabel)}</span>`;
+  const editBtn = def
+    ? `<button type="button" class="btn-edit class-mgr-action-mini" onclick="runClassAction('edit','${encEsc}')">Sửa</button>`
+    : '';
+  return `<div class="class-mgr-actionbar">
+    ${switchBtn}
+    <div class="class-mgr-action-row">
+      ${attendanceBtn}
+      <button type="button" class="btn-sm action-info class-mgr-action-mini" onclick="runClassAction('students','${encEsc}')">Học viên</button>
+      <button type="button" class="btn-sm action-money class-mgr-action-mini" onclick="runClassAction('tuition','${encEsc}')">Học phí</button>
+      ${editBtn || `<button type="button" class="btn-edit class-mgr-action-mini" disabled title="Lớp chưa có cấu hình">Sửa</button>`}
+      <button type="button" class="btn-del class-mgr-action-mini wide" onclick="runClassAction('delete','${encEsc}')">Xóa lớp</button>
+    </div>
+  </div>`;
+}
+
 function renderClassManager() {
   const el = document.getElementById('class-mgr-list');
   if (!el) return;
@@ -33893,7 +34001,7 @@ function renderClassManager() {
       </div>
         ${roadmapHtml}
       <div class="class-mgr-actions">
-        <button type="button" class="btn-sm action-info class-mgr-action-open" onclick="openClassActionModal('${enc}')">Thao tác</button>
+        ${renderClassManagerActionBar(className, def, paused)}
       </div>
     </div>`;
   }).join('');
