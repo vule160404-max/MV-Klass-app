@@ -1,0 +1,4 @@
+_exam_agent_runs/
+supabase/.temp/
+.env.local
+.env.r2.local
