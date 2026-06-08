@@ -938,8 +938,12 @@ module.exports = {
   extractPdfText,
   filterConversionCandidates,
   inferThanhHoaExamNumber,
+  listCandidatesFromSupabase,
+  loadDefaultEnv,
+  loadPromptTemplateFromSupabase,
   parseArgs,
   renderAgentPrompt,
   runBatch,
+  saveDraftToSupabase,
   sourceMatchesThanhHoa
 };
