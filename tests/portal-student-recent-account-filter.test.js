@@ -28,7 +28,10 @@ test('student portal account list does not become empty when optional profile fi
   assert.match(source, /portal_class_label,last_seen_at,portal_presence_status,created_at/);
   assert.match(source, /id,email,display_name,role,portal_plan,portal_status,portal_free_group/);
   assert.match(source, /async function loadPortalProfilesForAnalytics\(\)/);
+  assert.match(source, /fetch\(SUPABASE_URL \+ '\/rest\/v1\/' \+ profilePath/);
+  assert.match(source, /if \(!r\.ok\) throw new Error\('profiles_' \+ r\.status\)/);
   assert.match(source, /catch \(e\) \{[\s\S]*portal_profiles_query_failed/);
   assert.match(source, /loadPortalProfilesForAnalytics\(\)/);
+  assert.doesNotMatch(source, /api\('GET', profilePath\)/);
   assert.doesNotMatch(source, /api\('GET', profilePath\)\.catch\(\(\) => \[\]\)/);
 });
