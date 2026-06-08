@@ -4,11 +4,14 @@ const assert = require('node:assert/strict');
 const {
   buildGeminiRequestBody,
   callGemini,
+  callNvidia,
+  convertWithAiDefault,
   evaluateQualityGate,
   examFileRefs,
   extractAnswerKeys,
   filterConversionCandidates,
   inferThanhHoaExamNumber,
+  parseArgs,
   runBatch,
   sourceMatchesThanhHoa
 } = require('../scripts/exam-conversion-agent.js');
@@ -314,6 +317,75 @@ test('Gemini caller retries empty successful responses', async () => {
 
   assert.equal(calls, 2);
   assert.equal(result.exam_id, 'exam-003');
+});
+
+test('NVIDIA caller uses OpenAI-compatible chat completions and parses JSON', async () => {
+  let request;
+  const result = await callNvidia({
+    apiKey: 'nvidia-test-key',
+    model: 'mistralai/mistral-medium-3.5-128b',
+    prompt: 'Convert this exam.',
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: JSON.stringify({ exam_id: 'exam-nvidia-001', title: 'Draft', pages: [], questions: [] })
+            }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.equal(request.url, 'https://integrate.api.nvidia.com/v1/chat/completions');
+  assert.equal(request.options.headers.Authorization, 'Bearer nvidia-test-key');
+  const body = JSON.parse(request.options.body);
+  assert.equal(body.model, 'mistralai/mistral-medium-3.5-128b');
+  assert.equal(body.response_format.type, 'json_object');
+  assert.equal(result.exam_id, 'exam-nvidia-001');
+});
+
+test('default AI converter chooses NVIDIA when NVIDIA_API_KEY is configured', async () => {
+  let nvidiaCalls = 0;
+  const result = await convertWithAiDefault({ prompt: 'Convert this exam.' }, {}, {
+    env: {
+      NVIDIA_API_KEY: 'nvidia-test-key',
+      GEMINI_API_KEY: 'gemini-test-key'
+    },
+    callNvidiaImpl: async ({ apiKey, model }) => {
+      nvidiaCalls += 1;
+      assert.equal(apiKey, 'nvidia-test-key');
+      assert.equal(model, 'mistralai/mistral-medium-3.5-128b');
+      return { exam_id: 'exam-provider-001', title: 'Draft', pages: [], questions: [] };
+    },
+    callGeminiImpl: async () => {
+      throw new Error('Gemini should not be called when NVIDIA key is configured');
+    }
+  });
+
+  assert.equal(nvidiaCalls, 1);
+  assert.equal(result.exam_id, 'exam-provider-001');
+});
+
+test('CLI provider flag defaults to the NVIDIA model when no model is configured', () => {
+  const oldProvider = process.env.EXAM_AGENT_PROVIDER;
+  const oldModel = process.env.EXAM_AGENT_MODEL;
+  delete process.env.EXAM_AGENT_PROVIDER;
+  delete process.env.EXAM_AGENT_MODEL;
+  try {
+    const options = parseArgs(['--provider', 'nvidia']);
+    assert.equal(options.provider, 'nvidia');
+    assert.equal(options.model, 'mistralai/mistral-medium-3.5-128b');
+  } finally {
+    if (oldProvider === undefined) delete process.env.EXAM_AGENT_PROVIDER;
+    else process.env.EXAM_AGENT_PROVIDER = oldProvider;
+    if (oldModel === undefined) delete process.env.EXAM_AGENT_MODEL;
+    else process.env.EXAM_AGENT_MODEL = oldModel;
+  }
 });
 
 test('dry-run batch creates report without saving or publishing', async () => {

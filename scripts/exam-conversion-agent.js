@@ -12,6 +12,9 @@ const {
 } = require('../web/eng10-online-exam.js');
 
 const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_GEMINI_MODEL = DEFAULT_MODEL;
+const DEFAULT_NVIDIA_MODEL = 'mistralai/mistral-medium-3.5-128b';
+const DEFAULT_NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1';
 const DEFAULT_RUN_DIR = '_exam_agent_runs';
 const DEFAULT_EXPECTED_QUESTION_COUNT = 50;
 const MAX_GEMINI_TEXT_CHARS = 180000;
@@ -46,20 +49,71 @@ function loadDefaultEnv() {
   loadEnvFile(path.join(process.cwd(), '.env.r2.local'));
 }
 
+function envValue(env, names) {
+  const source = env || process.env;
+  const list = Array.isArray(names) ? names : [names];
+  for (const name of list) {
+    if (source[name]) return source[name];
+  }
+  const entries = Object.entries(source);
+  for (const name of list) {
+    const wanted = String(name).toLowerCase();
+    const found = entries.find(([key, value]) => key.toLowerCase() === wanted && value);
+    if (found) return found[1];
+  }
+  return '';
+}
+
+function normalizeAiProvider(value) {
+  const provider = String(value || '').trim().toLowerCase();
+  if (['nvidia', 'nim'].includes(provider)) return 'nvidia';
+  if (['gemini', 'google'].includes(provider)) return 'gemini';
+  return '';
+}
+
+function detectAiProvider(env = process.env) {
+  const configured = normalizeAiProvider(envValue(env, 'EXAM_AGENT_PROVIDER'));
+  if (configured) return configured;
+  if (envValue(env, 'NVIDIA_API_KEY')) return 'nvidia';
+  return 'gemini';
+}
+
+function defaultModelForProvider(provider) {
+  return normalizeAiProvider(provider) === 'nvidia' ? DEFAULT_NVIDIA_MODEL : DEFAULT_GEMINI_MODEL;
+}
+
+function resolveAiProvider(options = {}, env = process.env) {
+  return normalizeAiProvider(options.provider) || detectAiProvider(env);
+}
+
+function resolveAiModel(provider, options = {}, env = process.env) {
+  const envModel = String(envValue(env, 'EXAM_AGENT_MODEL') || '').trim();
+  if (envModel) return envModel;
+  const optionModel = String(options.model || '').trim();
+  if (optionModel && !(normalizeAiProvider(provider) === 'nvidia' && optionModel === DEFAULT_GEMINI_MODEL)) {
+    return optionModel;
+  }
+  return defaultModelForProvider(provider);
+}
+
 function parseArgs(argv = process.argv.slice(2)) {
+  const provider = detectAiProvider(process.env);
+  const envModel = envValue(process.env, 'EXAM_AGENT_MODEL');
   const out = {
     source: 'Thanh Hoa',
     level: 'vao10',
     limit: 20,
     mode: 'dry-run',
     expectedQuestionCount: DEFAULT_EXPECTED_QUESTION_COUNT,
-    model: process.env.EXAM_AGENT_MODEL || DEFAULT_MODEL,
+    provider,
+    model: envModel || defaultModelForProvider(provider),
     runDir: DEFAULT_RUN_DIR,
     promptFile: '',
     examId: '',
     minExamTextChars: MIN_EXAM_TEXT_CHARS,
     minAnswerTextChars: MIN_ANSWER_TEXT_CHARS
   };
+  let modelFromArg = false;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (!arg.startsWith('--')) continue;
@@ -70,13 +124,18 @@ function parseArgs(argv = process.argv.slice(2)) {
     else if (key === 'limit') out.limit = Math.max(1, Number(next) || out.limit);
     else if (key === 'mode') out.mode = next;
     else if (key === 'expected-count') out.expectedQuestionCount = Math.max(0, Number(next) || 0);
-    else if (key === 'model') out.model = next;
+    else if (key === 'provider') out.provider = normalizeAiProvider(next) || next;
+    else if (key === 'model') {
+      out.model = next;
+      modelFromArg = true;
+    }
     else if (key === 'run-dir') out.runDir = next;
     else if (key === 'prompt-file') out.promptFile = next;
     else if (key === 'exam-id') out.examId = next;
     else if (key === 'min-exam-text') out.minExamTextChars = Math.max(0, Number(next) || 0);
     else if (key === 'min-answer-text') out.minAnswerTextChars = Math.max(0, Number(next) || 0);
   }
+  if (!modelFromArg && !envModel) out.model = defaultModelForProvider(out.provider);
   if (!['dry-run', 'draft', 'publish'].includes(out.mode)) {
     throw new Error('mode must be dry-run, draft, or publish');
   }
@@ -376,16 +435,16 @@ function responseTextFromGemini(data) {
   return parts.join('\n').trim();
 }
 
-function parseJsonText(text) {
+function parseJsonText(text, errorPrefix = 'AI') {
   const raw = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-  if (!raw) throw new Error('GEMINI_EMPTY_JSON');
+  if (!raw) throw new Error(`${errorPrefix}_EMPTY_JSON`);
   try {
     return JSON.parse(raw);
   } catch (_err) {
     const start = raw.indexOf('{');
     const end = raw.lastIndexOf('}');
     if (start >= 0 && end > start) return JSON.parse(raw.slice(start, end + 1));
-    throw new Error('GEMINI_INVALID_JSON');
+    throw new Error(`${errorPrefix}_INVALID_JSON`);
   }
 }
 
@@ -400,7 +459,7 @@ function isRetryableGeminiError(status, message) {
 
 async function callGemini({ apiKey, model, prompt, fetchImpl = fetch, sleep = sleepMs, maxAttempts = 3 }) {
   if (!apiKey) throw new Error('GEMINI_API_KEY_REQUIRED');
-  const cleanModel = String(model || DEFAULT_MODEL).trim();
+  const cleanModel = String(model || DEFAULT_GEMINI_MODEL).trim();
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cleanModel)}:generateContent`;
   const attempts = Math.max(1, Number(maxAttempts) || 1);
   let lastMessage = '';
@@ -431,7 +490,7 @@ async function callGemini({ apiKey, model, prompt, fetchImpl = fetch, sleep = sl
         await sleep(1200 * attempt);
         continue;
       }
-      return parseJsonText(text);
+      return parseJsonText(text, 'GEMINI');
     }
     lastMessage = String((data && data.error && data.error.message) || `GEMINI_HTTP_${response.status}`).slice(0, 240);
     if (attempt < attempts && isRetryableGeminiError(response.status, lastMessage)) {
@@ -441,6 +500,114 @@ async function callGemini({ apiKey, model, prompt, fetchImpl = fetch, sleep = sl
     throw new Error(`GEMINI_REQUEST_FAILED: ${lastMessage}`);
   }
   throw new Error(`GEMINI_REQUEST_FAILED: ${lastMessage || 'UNKNOWN'}`);
+}
+
+function buildNvidiaRequestBody({ prompt, model, responseFormat = true }) {
+  const body = {
+    model: String(model || DEFAULT_NVIDIA_MODEL).trim(),
+    messages: [
+      {
+        role: 'system',
+        content: 'Return exactly one valid JSON object that matches the requested exam schema. Do not include markdown, comments, or extra text.'
+      },
+      {
+        role: 'user',
+        content: String(prompt || '')
+      }
+    ],
+    temperature: 0.1,
+    max_tokens: 24000
+  };
+  if (responseFormat) body.response_format = { type: 'json_object' };
+  return body;
+}
+
+function responseTextFromNvidia(data) {
+  const parts = [];
+  for (const choice of Array.isArray(data && data.choices) ? data.choices : []) {
+    if (choice && choice.message && typeof choice.message.content === 'string') parts.push(choice.message.content);
+    else if (typeof (choice && choice.text) === 'string') parts.push(choice.text);
+  }
+  return parts.join('\n').trim();
+}
+
+function isRetryableNvidiaError(status, message) {
+  const text = String(message || '').toLowerCase();
+  return [408, 409, 429, 500, 502, 503, 504].includes(status)
+    || text.includes('high demand')
+    || text.includes('overload')
+    || text.includes('temporar')
+    || text.includes('timeout')
+    || text.includes('rate limit');
+}
+
+async function callNvidia({
+  apiKey,
+  model,
+  prompt,
+  baseUrl = DEFAULT_NVIDIA_BASE_URL,
+  fetchImpl = fetch,
+  sleep = sleepMs,
+  maxAttempts = 3
+}) {
+  if (!apiKey) throw new Error('NVIDIA_API_KEY_REQUIRED');
+  const cleanModel = String(model || DEFAULT_NVIDIA_MODEL).trim();
+  const root = String(baseUrl || DEFAULT_NVIDIA_BASE_URL).replace(/\/+$/, '');
+  const url = `${root}/chat/completions`;
+  const attempts = Math.max(1, Number(maxAttempts) || 1);
+  let lastMessage = '';
+  let useResponseFormat = true;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    let response;
+    try {
+      response = await fetchImpl(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(buildNvidiaRequestBody({
+          prompt,
+          model: cleanModel,
+          responseFormat: useResponseFormat
+        }))
+      });
+    } catch (err) {
+      lastMessage = String(err && err.message || err || 'fetch failed').slice(0, 240);
+      if (attempt < attempts) {
+        await sleep(1200 * attempt);
+        continue;
+      }
+      throw new Error(`NVIDIA_REQUEST_FAILED: ${lastMessage}`);
+    }
+
+    const data = await response.json().catch(() => null);
+    if (response.ok) {
+      const text = responseTextFromNvidia(data);
+      if (!text && attempt < attempts) {
+        lastMessage = 'NVIDIA_EMPTY_JSON';
+        await sleep(1200 * attempt);
+        continue;
+      }
+      return parseJsonText(text, 'NVIDIA');
+    }
+
+    lastMessage = String(
+      (data && data.error && (data.error.message || data.error)) ||
+      (data && data.message) ||
+      `NVIDIA_HTTP_${response.status}`
+    ).slice(0, 240);
+    if (useResponseFormat && response.status === 400 && /response_format|json_object|extra_forbidden|unsupported/i.test(lastMessage)) {
+      useResponseFormat = false;
+      if (attempt < attempts) continue;
+    }
+    if (attempt < attempts && isRetryableNvidiaError(response.status, lastMessage)) {
+      await sleep(1200 * attempt);
+      continue;
+    }
+    throw new Error(`NVIDIA_REQUEST_FAILED: ${lastMessage}`);
+  }
+  throw new Error(`NVIDIA_REQUEST_FAILED: ${lastMessage || 'UNKNOWN'}`);
 }
 
 function renderAgentPrompt(templateText, row, pair) {
@@ -757,10 +924,33 @@ async function readExamPairTextFromR2(row, options, deps = {}) {
 
 async function convertWithGeminiDefault(payload, options, deps = {}) {
   return await callGemini({
-    apiKey: (deps.env || process.env).GEMINI_API_KEY || '',
-    model: options.model || DEFAULT_MODEL,
+    apiKey: envValue(deps.env || process.env, 'GEMINI_API_KEY'),
+    model: options.model || DEFAULT_GEMINI_MODEL,
     prompt: payload.prompt,
     fetchImpl: deps.fetchImpl || fetch
+  });
+}
+
+async function convertWithAiDefault(payload, options = {}, deps = {}) {
+  const env = deps.env || process.env;
+  const provider = resolveAiProvider(options, env);
+  const model = resolveAiModel(provider, options, env);
+  if (provider === 'nvidia') {
+    return await (deps.callNvidiaImpl || callNvidia)({
+      apiKey: envValue(env, 'NVIDIA_API_KEY'),
+      model,
+      prompt: payload.prompt,
+      baseUrl: envValue(env, 'NVIDIA_BASE_URL') || DEFAULT_NVIDIA_BASE_URL,
+      fetchImpl: deps.fetchImpl || fetch,
+      sleep: deps.sleep || sleepMs
+    });
+  }
+  return await (deps.callGeminiImpl || callGemini)({
+    apiKey: envValue(env, 'GEMINI_API_KEY'),
+    model,
+    prompt: payload.prompt,
+    fetchImpl: deps.fetchImpl || fetch,
+    sleep: deps.sleep || sleepMs
   });
 }
 
@@ -839,20 +1029,26 @@ function reportSummary() {
 }
 
 async function runBatch(options = {}, deps = {}) {
+  const provider = resolveAiProvider(options, process.env);
   const opts = {
     source: 'Thanh Hoa',
     level: 'vao10',
     limit: 20,
     mode: 'dry-run',
     expectedQuestionCount: DEFAULT_EXPECTED_QUESTION_COUNT,
-    model: DEFAULT_MODEL,
+    provider,
+    model: resolveAiModel(provider, options, process.env),
     now: () => new Date(),
     ...options
   };
+  opts.provider = resolveAiProvider(opts, process.env);
+  if (!options.model && !envValue(process.env, 'EXAM_AGENT_MODEL')) {
+    opts.model = defaultModelForProvider(opts.provider);
+  }
   const listCandidates = deps.listCandidates || listCandidatesFromSupabase;
   const loadPromptTemplate = deps.loadPromptTemplate || loadPromptTemplateFromSupabase;
   const readExamPairText = deps.readExamPairText || readExamPairTextFromR2;
-  const convertWithGemini = deps.convertWithGemini || convertWithGeminiDefault;
+  const convertWithAi = deps.convertWithAi || deps.convertWithGemini || convertWithAiDefault;
   const saveDraft = deps.saveDraft || saveDraftToSupabase;
   const publishExam = deps.publishExam || publishExamToSupabase;
   const writeArtifacts = deps.writeRunArtifacts || writeRunArtifacts;
@@ -862,6 +1058,7 @@ async function runBatch(options = {}, deps = {}) {
     source: opts.source,
     level: opts.level,
     mode: opts.mode,
+    provider: opts.provider,
     model: opts.model,
     summary: reportSummary(),
     rows: []
@@ -882,7 +1079,7 @@ async function runBatch(options = {}, deps = {}) {
       const template = await loadPromptTemplate(row, opts);
       const pair = await readExamPairText(row, opts);
       const prompt = renderAgentPrompt(template, row, pair);
-      const generated = await convertWithGemini({ prompt, row, pair }, opts);
+      const generated = await convertWithAi({ prompt, row, pair }, opts);
       const gate = evaluateQualityGate(generated, {
         mode: opts.mode === 'publish' ? 'publish' : 'draft',
         expectedQuestionCount: opts.expectedQuestionCount,
@@ -944,11 +1141,15 @@ module.exports = {
   EXAM_JSON_SCHEMA,
   buildGeminiRequestBody,
   callGemini,
+  callNvidia,
+  convertWithAiDefault,
   evaluateQualityGate,
   examFileRefs,
   extractAnswerKeys,
   extractPdfText,
   filterConversionCandidates,
+  resolveAiProvider,
+  resolveAiModel,
   inferThanhHoaExamNumber,
   listCandidatesFromSupabase,
   loadDefaultEnv,

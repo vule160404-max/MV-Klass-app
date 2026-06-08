@@ -5,7 +5,7 @@ const { execFileSync } = require('child_process');
 const zlib = require('zlib');
 
 const {
-  callGemini,
+  convertWithAiDefault,
   evaluateQualityGate,
   extractAnswerKeys,
   extractPdfText,
@@ -498,11 +498,7 @@ async function defaultLoadPromptTemplate(row, options) {
 }
 
 async function defaultConvertWithGemini(payload, options) {
-  return await callGemini({
-    apiKey: process.env.GEMINI_API_KEY || '',
-    model: options.model || process.env.EXAM_AGENT_MODEL || 'gemini-2.5-flash',
-    prompt: payload.prompt
-  });
+  return await convertWithAiDefault(payload, options);
 }
 
 function wait(ms) {
