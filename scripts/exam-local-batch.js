@@ -1,5 +1,7 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const { execFileSync } = require('child_process');
 const zlib = require('zlib');
 
 const {
@@ -40,11 +42,17 @@ function localFileKind(filePath) {
   const ext = path.extname(filePath || '').toLowerCase();
   if (ext === '.pdf') return 'pdf';
   if (ext === '.docx') return 'docx';
+  if (ext === '.doc') return 'doc';
   return '';
 }
 
 function isSupportedLocalFile(filePath) {
   return Boolean(localFileKind(filePath));
+}
+
+function unsupportedFileReason(filePath) {
+  const ext = path.extname(filePath || '').toLowerCase();
+  return '';
 }
 
 function isAnswerFile(filePath) {
@@ -114,6 +122,62 @@ function extractDocxText(bytes) {
     .trim();
 }
 
+function decodeTextBuffer(buffer) {
+  if (buffer.length >= 2 && buffer[0] === 0xff && buffer[1] === 0xfe) return buffer.slice(2).toString('utf16le');
+  if (buffer.length >= 3 && buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf) return buffer.slice(3).toString('utf8');
+  return buffer.toString('utf8');
+}
+
+function extractLegacyDocText(filePath, options = {}) {
+  if (typeof options.legacyDocTextExtractor === 'function') {
+    return String(options.legacyDocTextExtractor(filePath));
+  }
+  const inputPath = path.resolve(filePath);
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'mvklass-doc-'));
+  const outputPath = path.join(tempRoot, `${path.basename(filePath, path.extname(filePath))}.txt`);
+  const inputB64 = Buffer.from(inputPath, 'utf8').toString('base64');
+  const outputB64 = Buffer.from(outputPath, 'utf8').toString('base64');
+  const script = `
+$ErrorActionPreference = 'Stop'
+$inputPath = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${inputB64}'))
+$outputPath = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${outputB64}'))
+$word = $null
+$doc = $null
+try {
+  $word = New-Object -ComObject Word.Application
+  $word.Visible = $false
+  $word.DisplayAlerts = 0
+  $doc = $word.Documents.Open($inputPath, $false, $true)
+  $doc.SaveAs2([ref]$outputPath, [ref]7)
+} finally {
+  if ($doc -ne $null) { $doc.Close([ref]$false) | Out-Null }
+  if ($word -ne $null) { $word.Quit() | Out-Null }
+}
+`;
+  try {
+    execFileSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', script], {
+      windowsHide: true,
+      timeout: Number(options.legacyDocTimeoutMs || 90000),
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+    if (!fs.existsSync(outputPath)) throw new Error('DOC_TEXT_OUTPUT_NOT_CREATED');
+    return decodeTextBuffer(fs.readFileSync(outputPath))
+      .replace(/\u00a0/g, ' ')
+      .replace(/\r\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  } catch (err) {
+    const detail = String(err && err.stderr ? err.stderr.toString('utf8') : err && err.message || err).trim().slice(0, 240);
+    throw new Error(`DOC_TEXT_EXTRACTION_FAILED:${detail || 'UNKNOWN'}`);
+  } finally {
+    try {
+      fs.rmSync(tempRoot, { recursive: true, force: true });
+    } catch (_err) {
+      // Temp cleanup failure should not hide the extraction result.
+    }
+  }
+}
+
 function answerHeadingIndex(text) {
   let offset = 0;
   for (const line of String(text || '').split(/\r?\n/)) {
@@ -133,8 +197,27 @@ function answerHeadingIndex(text) {
   return -1;
 }
 
+function compactAnswerKeyIndex(text) {
+  const lines = String(text || '').split(/\r?\n/);
+  let offset = 0;
+  const minOffset = Math.floor(String(text || '').length * 0.35);
+  for (const line of lines) {
+    const raw = String(line || '');
+    const compactAnswerLine = /\b1\s*[\.\)]?\s*[A-D]\b[\s\t,;]+2\s*[\.\)]?\s*[A-D]\b/i.test(raw)
+      || /\b26\s*[\.\)]?\s*[\w-]+\b[\s\t,;]+27\s*[\.\)]?\s*[\w-]+\b/i.test(raw)
+      || /\b31\s*[\.\)]?\s*[A-D]\b[\s\t,;]+32\s*[\.\)]?\s*[A-D]\b/i.test(raw);
+    const questionLikeLine = /\bA\.\s+\S+.*\bB\.\s+\S+/i.test(raw);
+    if (offset >= minOffset && compactAnswerLine && !questionLikeLine) {
+      return offset;
+    }
+    offset += raw.length + 1;
+  }
+  return -1;
+}
+
 function splitCombinedExamAnswerText(text) {
-  const idx = answerHeadingIndex(text);
+  let idx = answerHeadingIndex(text);
+  if (idx < 0) idx = compactAnswerKeyIndex(text);
   if (idx < 0) throw new Error('COMBINED_ANSWER_SECTION_NOT_FOUND');
   const examText = String(text || '').slice(0, idx).trim();
   const answerText = String(text || '').slice(idx).trim();
@@ -168,6 +251,7 @@ function walkLocalExamFiles(rootDir) {
   if (!fs.existsSync(root)) throw new Error(`LOCAL_FOLDER_NOT_FOUND:${root}`);
   if (!fs.statSync(root).isDirectory()) throw new Error(`LOCAL_FOLDER_NOT_DIRECTORY:${root}`);
   const files = [];
+  const unsupportedFiles = [];
   const stack = [root];
   while (stack.length) {
     const current = stack.pop();
@@ -175,16 +259,33 @@ function walkLocalExamFiles(rootDir) {
       const fullPath = path.join(current, entry.name);
       if (entry.isDirectory()) {
         if (!entry.name.startsWith('.') && entry.name !== '_exam_agent_runs') stack.push(fullPath);
-      } else if (entry.isFile() && isSupportedLocalFile(entry.name)) {
-        files.push(fullPath);
+      } else if (entry.isFile()) {
+        if (isSupportedLocalFile(entry.name)) {
+          files.push(fullPath);
+        } else {
+          const reason = unsupportedFileReason(entry.name);
+          if (reason) {
+            unsupportedFiles.push({
+              filePath: fullPath,
+              fileName: entry.name,
+              extension: path.extname(entry.name).toLowerCase(),
+              reason
+            });
+          }
+        }
       }
     }
   }
-  return files.sort((a, b) => a.localeCompare(b, 'vi'));
+  return {
+    files: files.sort((a, b) => a.localeCompare(b, 'vi')),
+    unsupportedFiles: unsupportedFiles.sort((a, b) => a.filePath.localeCompare(b.filePath, 'vi'))
+  };
 }
 
 function scanLocalExamFolder(rootDir) {
-  const files = walkLocalExamFiles(rootDir);
+  const walked = walkLocalExamFiles(rootDir);
+  const files = walked.files;
+  const unsupportedFiles = walked.unsupportedFiles;
   const byCode = new Map();
   for (const filePath of files) {
     const number = inferLocalExamNumber(filePath);
@@ -200,7 +301,11 @@ function scanLocalExamFolder(rootDir) {
     .sort((a, b) => Number(a.examCode) - Number(b.examCode))
     .map(group => {
       const examPath = group.examFiles[0] || '';
-      const combined = Boolean(examPath && !group.answerFiles.length && localFileKind(examPath) === 'docx' && docxContainsAnswerSection(examPath));
+      const examKind = localFileKind(examPath);
+      const combined = Boolean(examPath && !group.answerFiles.length && (
+        examKind === 'doc' ||
+        (examKind === 'docx' && docxContainsAnswerSection(examPath))
+      ));
       const answerPath = group.answerFiles[0] || (combined ? examPath : '');
       const issues = [];
       if (!examPath) issues.push('MISSING_EXAM_FILE');
@@ -224,6 +329,8 @@ function scanLocalExamFolder(rootDir) {
     rootDir: path.resolve(rootDir || ''),
     totalPdf: files.length,
     totalFiles: files.length,
+    totalUnsupported: unsupportedFiles.length,
+    unsupportedFiles,
     pairs,
     readyPairs: pairs.filter(pair => pair.examPath && pair.answerPath)
   };
@@ -280,11 +387,12 @@ function matchLocalPairToExamFile(pair, rows) {
   return bestScore >= 0 ? best : null;
 }
 
-function extractLocalTextFromFile(filePath) {
+function extractLocalTextFromFile(filePath, options = {}) {
   const kind = localFileKind(filePath);
   const bytes = fs.readFileSync(filePath);
   if (kind === 'pdf') return extractPdfText(bytes);
   if (kind === 'docx') return extractDocxText(bytes);
+  if (kind === 'doc') return extractLegacyDocText(filePath, options);
   throw new Error(`LOCAL_FILE_TYPE_UNSUPPORTED:${path.extname(filePath || '')}`);
 }
 
@@ -293,13 +401,13 @@ async function readLocalPairText(pair, options = {}) {
   let answerText;
   let answerKeys;
   if (pair.combined || path.resolve(pair.examPath) === path.resolve(pair.answerPath)) {
-    const split = splitCombinedExamAnswerText(extractLocalTextFromFile(pair.examPath));
+    const split = splitCombinedExamAnswerText(extractLocalTextFromFile(pair.examPath, options));
     examText = split.examText;
     answerText = split.answerText;
     answerKeys = split.answerKeys;
   } else {
-    examText = extractLocalTextFromFile(pair.examPath);
-    answerText = extractLocalTextFromFile(pair.answerPath);
+    examText = extractLocalTextFromFile(pair.examPath, options);
+    answerText = extractLocalTextFromFile(pair.answerPath, options);
     answerKeys = extractAnswerKeys(answerText);
   }
   const minExamTextChars = Number(options.minExamTextChars || 500);
@@ -317,6 +425,13 @@ function createLocalJobReport(options = {}) {
     mode: options.mode || 'dry-run',
     folder: options.folder || '',
     artifact_dir: '',
+    scan: {
+      totalFiles: 0,
+      totalUnsupported: 0,
+      unsupportedFiles: [],
+      pairCount: 0,
+      readyPairCount: 0
+    },
     summary: {
       total: 0,
       running: 0,
@@ -420,6 +535,13 @@ async function runLocalBatch(options = {}, deps = {}) {
   ensureRunDirs(artifactRoot);
   const report = createLocalJobReport({ ...opts, startedAt });
   report.artifact_dir = artifactRoot;
+  report.scan = {
+    totalFiles: scan.totalFiles || scan.totalPdf || 0,
+    totalUnsupported: scan.totalUnsupported || 0,
+    unsupportedFiles: scan.unsupportedFiles || [],
+    pairCount: Array.isArray(scan.pairs) ? scan.pairs.length : 0,
+    readyPairCount: Array.isArray(scan.readyPairs) ? scan.readyPairs.length : 0
+  };
   const artifacts = [];
   const pairs = scan.readyPairs.slice(0, Math.max(1, Number(opts.limit || 20)));
   const remoteRows = await (deps.loadRemoteExamFiles || defaultLoadRemoteExamFiles)(opts);
@@ -514,6 +636,7 @@ async function runLocalBatch(options = {}, deps = {}) {
 module.exports = {
   createLocalJobReport,
   extractDocxText,
+  extractLegacyDocText,
   inferLocalExamNumber,
   isAnswerFile,
   matchLocalPairToExamFile,

@@ -157,6 +157,18 @@ function extractAnswerKeys(text) {
     if (index >= 1 && index <= 50 && !keys.has(index)) keys.set(index, match[2].toUpperCase());
   }
   for (const line of normalized.split(/\n+/)) {
+    const markers = [...line.matchAll(/(?:^|[\t ]+)0*([1-9]\d?)\s*[:.)]\s*/g)];
+    if (markers.length > 1) {
+      for (let i = 0; i < markers.length; i += 1) {
+        const index = Number(markers[i][1]);
+        if (index < 1 || index > 50 || keys.has(index)) continue;
+        const start = markers[i].index + markers[i][0].length;
+        const end = i + 1 < markers.length ? markers[i + 1].index : line.length;
+        const value = cleanAnswerValue(line.slice(start, end));
+        if (value && !/^(part|section|page)\b/i.test(value)) keys.set(index, value);
+      }
+      continue;
+    }
     const clean = line.trim();
     if (!clean) continue;
     const textMatch = clean.match(/^(?:c[aâ]u\s*)?0*([1-9]\d?)\s*[:.)-]\s*(.{2,160})$/i);

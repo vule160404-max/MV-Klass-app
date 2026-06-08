@@ -87,6 +87,22 @@ test('answer parser extracts numbered Thanh Hoa answer keys', () => {
   assert.equal(keys.has(51), false);
 });
 
+test('answer parser extracts multiple text answers from one line', () => {
+  const keys = extractAnswerKeys([
+    '6. are always made\t7. watching\t8. were waiting',
+    "9. has been done\t10. doesn't snow",
+    '11. imaginative\t        12. compulsory                     13. officially',
+    '14. Environmentalists             15. overweight'
+  ].join('\n'));
+
+  assert.equal(keys.get(6), 'are always made');
+  assert.equal(keys.get(7), 'watching');
+  assert.equal(keys.get(8), 'were waiting');
+  assert.equal(keys.get(10), "doesn't snow");
+  assert.equal(keys.get(12), 'compulsory');
+  assert.equal(keys.get(15), 'overweight');
+});
+
 test('file refs support Supabase Storage rows when R2 keys are missing', () => {
   const refs = examFileRefs({
     storage_provider: 'supabase',

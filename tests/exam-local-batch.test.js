@@ -193,6 +193,21 @@ test('scanLocalExamFolder pairs local DOCX exam and answer files', () => {
   assert.match(scan.readyPairs[0].answerPath, /\.docx$/);
 });
 
+test('scanLocalExamFolder treats legacy DOC files as combined exam-answer candidates', () => {
+  const root = makeTempDir();
+  touch(path.join(root, 'MÃ ĐỀ 002.doc'));
+  touch(path.join(root, 'MÃ ĐỀ 003.doc'));
+
+  const scan = scanLocalExamFolder(root);
+
+  assert.equal(scan.totalFiles, 2);
+  assert.equal(scan.totalUnsupported, 0);
+  assert.equal(scan.readyPairs.length, 2);
+  assert.equal(scan.readyPairs[0].combined, true);
+  assert.match(scan.readyPairs[0].examPath, /\.doc$/);
+  assert.equal(scan.readyPairs[0].answerPath, scan.readyPairs[0].examPath);
+});
+
 test('scanLocalExamFolder detects one DOCX file containing both exam and answer key', () => {
   const root = makeTempDir();
   writeSimpleDocx(path.join(root, 'De 005 Vao 10 Thanh Hoa 2025.docx'), 'Question 1: Choose A B C D\nQuestion 2: Rewrite\n\nĐÁP ÁN\n1. A\n2. B');
@@ -203,6 +218,63 @@ test('scanLocalExamFolder detects one DOCX file containing both exam and answer 
   assert.equal(scan.readyPairs[0].examCode, '005');
   assert.equal(scan.readyPairs[0].combined, true);
   assert.equal(scan.readyPairs[0].answerPath, scan.readyPairs[0].examPath);
+});
+
+test('readLocalPairText extracts and splits a combined legacy DOC exam file through converter', async () => {
+  const root = makeTempDir();
+  const file = path.join(root, 'MÃ ĐỀ 002.doc');
+  touch(file);
+
+  const pairText = await readLocalPairText({
+    examCode: '002',
+    examPath: file,
+    answerPath: file,
+    combined: true
+  }, {
+    minExamTextChars: 10,
+    minAnswerTextChars: 3,
+    legacyDocTextExtractor: () => 'Question 1: Choose A B C D\nQuestion 2: Rewrite\n\nĐÁP ÁN\n1. A\n2. B'
+  });
+
+  assert.match(pairText.examText, /Question 1/);
+  assert.doesNotMatch(pairText.examText, /ĐÁP ÁN/);
+  assert.equal(pairText.answerKeys.get(1), 'A');
+  assert.equal(pairText.answerKeys.get(2), 'B');
+});
+
+test('readLocalPairText splits a legacy DOC when answer key has no explicit heading', async () => {
+  const root = makeTempDir();
+  const file = path.join(root, 'MÃ ĐỀ 007.doc');
+  touch(file);
+
+  const pairText = await readLocalPairText({
+    examCode: '007',
+    examPath: file,
+    answerPath: file,
+    combined: true
+  }, {
+    minExamTextChars: 10,
+    minAnswerTextChars: 3,
+    legacyDocTextExtractor: () => [
+      'PHAN A: NGU AM',
+      '1. A. different B. world C. practiced D. disaster',
+      '2. A. pollute B. receipt C. species D. accept',
+      'PHAN D: VIET',
+      '50. Rewrite the sentence.',
+      '',
+      'PHAN A: NGU AM',
+      '1. C\t2. B\t3. B',
+      '4. C\t5. B',
+      'PHAN B: NGU PHAP',
+      '6. are made\t7. watching'
+    ].join('\n')
+  });
+
+  assert.match(pairText.examText, /different/);
+  assert.doesNotMatch(pairText.examText, /1\. C\t2\. B/);
+  assert.match(pairText.answerText, /1\. C/);
+  assert.equal(pairText.answerKeys.get(1), 'C');
+  assert.equal(pairText.answerKeys.get(5), 'B');
 });
 
 test('readLocalPairText extracts and splits a combined DOCX exam file', async () => {
