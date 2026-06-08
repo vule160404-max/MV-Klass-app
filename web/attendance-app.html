@@ -26036,6 +26036,13 @@ let portalStudentSort = 'priority';
 let portalStudentPage = 1;
 let portalStudentPageSize = 25;
 const PORTAL_RECENT_ACCOUNT_WINDOW_DAYS = 7;
+const PORTAL_PROFILE_FIELD_SETS = [
+  'id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label,last_seen_at,portal_presence_status,created_at',
+  'id,email,display_name,role,portal_plan,portal_status,portal_free_group,last_seen_at,portal_presence_status,created_at',
+  'id,email,display_name,role,portal_plan,portal_status,portal_free_group,created_at',
+  'id,email,display_name,role,portal_plan,portal_status,portal_free_group',
+  'id,email,display_name,role'
+];
 /** YYYY-MM; rỗng = tháng hiện tại (local), cho tab Thống kê điểm danh */
 let analyticsAttMonthFilter = '';
 let analyticsSubtab = 'att';
@@ -28118,19 +28125,33 @@ async function togglePortalOnlinePublished(examId) {
   }
 }
 
+async function loadPortalProfilesForAnalytics() {
+  let lastError = null;
+  for (const fields of PORTAL_PROFILE_FIELD_SETS) {
+    const profilePath = 'profiles?select=' + fields + '&limit=5000';
+    try {
+      const rows = await api('GET', profilePath);
+      return Array.isArray(rows) ? rows : [];
+    } catch (e) {
+      lastError = e;
+      console.warn('portal_profiles_query_failed', fields, e);
+    }
+  }
+  throw lastError || new Error('portal_profiles_unavailable');
+}
+
 async function fetchPortalAnalyticsData() {
   const activityPath =
     'student_exam_activity?select=user_id,exam_file_id,last_opened_at,open_count,last_downloaded_at,download_count,updated_at&order=updated_at.desc&limit=5000';
   const examPath =
     'exam_files?select=id,title,level,subject,year,province,exam_code,exam_sort_order,category,storage_path,storage_provider,object_key,access_tier,free_rank,free_group,group_free_rank,description,download_count,created_at,is_published&is_published=eq.true&order=download_count.desc.nullslast,created_at.desc&limit=1000';
-  const profilePath = 'profiles?select=id,email,display_name,role,portal_plan,portal_status,portal_free_group,portal_class_label,last_seen_at,portal_presence_status,created_at&limit=5000';
   const auditPath = 'portal_account_audit?select=actor_id,target_user_id,action,old_portal_plan,new_portal_plan,old_portal_status,new_portal_status,note,created_at&order=created_at.desc&limit=80';
   const premiumOrdersPath = 'portal_premium_orders?select=id,user_id,product_key,amount_vnd,status,paid_at,created_at,expires_at,ref_code&order=created_at.desc&limit=200';
   const premiumEntitlementsPath = 'portal_premium_entitlements?select=user_id,product_key,portal_free_group,status,activated_at,expires_at&status=eq.active&limit=5000';
   const [activityRows, examRows, profileRows, auditRows, premiumProductsRows, premiumOrderRows, premiumEntitlementRows, emailVerificationRows] = await Promise.all([
     api('GET', activityPath),
     api('GET', examPath),
-    api('GET', profilePath).catch(() => []),
+    loadPortalProfilesForAnalytics(),
     api('GET', auditPath).catch(() => []),
     fetch(SUPABASE_URL + '/rest/v1/rpc/list_portal_premium_products', {
       method: 'POST',
