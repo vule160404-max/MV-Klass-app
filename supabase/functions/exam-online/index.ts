@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { GetObjectCommand, PutObjectCommand, S3Client } from "npm:@aws-sdk/client-s3";
+import * as pdfjsLib from "npm:pdfjs-dist@3.11.174/legacy/build/pdf.js";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -1025,7 +1026,7 @@ function latin1FromBytes(bytes: Uint8Array) {
   return chunks.join("");
 }
 
-function extractPdfTextForAi(bytes: Uint8Array) {
+function extractPdfTextFallbackForAi(bytes: Uint8Array) {
   const source = latin1FromBytes(bytes);
   const parts: string[] = [];
   const literalRegex = /\((?:\\.|[^\\()]){2,}\)\s*(?:Tj|'|"|TJ)/g;
@@ -1044,6 +1045,38 @@ function extractPdfTextForAi(bytes: Uint8Array) {
   const extracted = normalizeExtractedPdfText(parts.join("\n"));
   if (extracted.length >= 80) return extracted.slice(0, 120000);
   return normalizeExtractedPdfText(source.replace(/[^\x20-\x7e\u00c0-\u1ef9\r\n]+/g, " ")).slice(0, 120000);
+}
+
+async function extractPdfTextForAi(bytes: Uint8Array) {
+  try {
+    const loadingTask = pdfjsLib.getDocument({
+      data: bytes.slice(),
+      disableWorker: true,
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      disableFontFace: true,
+    });
+    const pdf = await loadingTask.promise;
+    const pages: string[] = [];
+    for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+      const page = await pdf.getPage(pageNo);
+      const content = await page.getTextContent({ disableCombineTextItems: false });
+      const text = (content.items || [])
+        .map((item: any) => String(item?.str || "").trim())
+        .filter(Boolean)
+        .join(" ");
+      if (text) pages.push(text);
+      if (pages.join("\n").length > 120000) break;
+    }
+    if (typeof pdf.destroy === "function") {
+      try { await pdf.destroy(); } catch (_err) {}
+    }
+    const extracted = normalizeExtractedPdfText(pages.join("\n\n"));
+    if (extracted.length >= 80) return extracted.slice(0, 120000);
+  } catch (_err) {
+    // Fall through to the lightweight parser for PDFs that PDF.js cannot load in Edge.
+  }
+  return extractPdfTextFallbackForAi(bytes);
 }
 
 function parseOpenAiExamJson(text: string) {
@@ -1065,10 +1098,10 @@ function parseOpenAiExamJson(text: string) {
 async function generateExamJsonWithNvidia(nvidiaKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {
   const model = (Deno.env.get("NVIDIA_EXAM_JSON_MODEL") || "openai/gpt-oss-120b").trim();
   const maxTokens = Number(Deno.env.get("NVIDIA_EXAM_JSON_MAX_TOKENS") || "8192");
-  const pdfText = pdfFiles.map((file) => {
-    const text = extractPdfTextForAi(file.bytes);
+  const pdfText = (await Promise.all(pdfFiles.map(async (file) => {
+    const text = await extractPdfTextForAi(file.bytes);
     return `===== ${file.filename} =====\n${text || "[Khong trich xuat duoc chu tu PDF]"}`;
-  }).join("\n\n");
+  }))).join("\n\n");
   const schemaInstruction = [
     "Return exactly one valid JSON object.",
     "The root object MUST include a non-empty questions array.",
