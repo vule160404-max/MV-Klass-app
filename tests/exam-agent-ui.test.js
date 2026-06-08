@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 
-const { createServer } = require('../scripts/exam-agent-ui.js');
+const { createServer, jobProgress, sanitizeJobOptions } = require('../scripts/exam-agent-ui.js');
 
 function request(server, method, route, body) {
   return new Promise((resolve, reject) => {
@@ -93,6 +93,33 @@ test('local exam agent UI rejects publish mode', async () => {
     assert.equal(res.body.ok, false);
     assert.match(res.body.error, /dry-run|draft/);
   });
+});
+
+test('local exam agent UI accepts a manual source prompt override', () => {
+  const options = sanitizeJobOptions({
+    folder: 'C:/DeThi/ThanhHoa',
+    mode: 'dry-run',
+    promptText: '  Prompt nguồn Thanh Hóa  '
+  });
+
+  assert.equal(options.promptText, 'Prompt nguồn Thanh Hóa');
+});
+
+test('local exam agent UI progress reports running percent from batch rows', () => {
+  const progress = jobProgress({
+    status: 'running',
+    report: {
+      summary: { total: 4 },
+      rows: [
+        { status: 'dry_run_ready' },
+        { status: 'running', examCode: '002', title: 'Đề 002' }
+      ]
+    }
+  });
+
+  assert.equal(progress.percent, 25);
+  assert.equal(progress.running, true);
+  assert.match(progress.label, /002/);
 });
 
 test('local exam agent preview endpoint reads generated draft JSON', async () => {

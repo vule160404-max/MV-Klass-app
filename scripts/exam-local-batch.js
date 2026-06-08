@@ -494,6 +494,7 @@ async function defaultLoadRemoteExamFiles(options) {
 }
 
 async function defaultLoadPromptTemplate(row, options) {
+  if (String(options.promptText || '').trim()) return String(options.promptText || '').trim();
   return await loadPromptTemplateFromSupabase(row, options);
 }
 

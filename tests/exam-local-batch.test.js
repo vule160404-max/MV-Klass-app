@@ -393,6 +393,48 @@ test('runLocalBatch does not save draft when local pair has no exam_file match',
   assert.match(report.rows[0].warnings.join(' '), /NO_EXAM_FILE_MATCH/);
 });
 
+test('runLocalBatch continues with later exams after one exam fails and uses manual prompt text', async () => {
+  const root = makeTempDir();
+  touch(path.join(root, 'De 001 Vao 10 Thanh Hoa 2025.pdf'));
+  touch(path.join(root, 'Dap an De 001 Vao 10 Thanh Hoa 2025.pdf'));
+  touch(path.join(root, 'De 002 Vao 10 Thanh Hoa 2025.pdf'));
+  touch(path.join(root, 'Dap an De 002 Vao 10 Thanh Hoa 2025.pdf'));
+  const prompts = [];
+
+  const report = await runLocalBatch({
+    folder: root,
+    source: 'Thanh Hoa',
+    level: 'vao10',
+    mode: 'dry-run',
+    limit: 2,
+    expectedQuestionCount: 2,
+    delayMs: 0,
+    promptText: 'Manual prompt __EXAM_ID__',
+    runDir: path.join(root, 'runs'),
+    now: () => new Date('2026-06-09T00:00:00Z')
+  }, {
+    loadRemoteExamFiles: async () => [
+      { id: 'exam-file-001', title: 'De 001 Vao 10 Thanh Hoa 2025', province: 'Thanh Hoa', exam_code: '001' },
+      { id: 'exam-file-002', title: 'De 002 Vao 10 Thanh Hoa 2025', province: 'Thanh Hoa', exam_code: '002' }
+    ],
+    readPairText: async () => ({ examText: 'Question text from PDF', answerText: '1 A\n2 B', answerKeys: new Map([[1, 'A'], [2, 'B']]) }),
+    convertWithGemini: async (payload, options) => {
+      prompts.push({ prompt: payload.prompt, examCode: payload.pair.examCode, promptText: options.promptText });
+      if (payload.pair.examCode === '001') throw new Error('MODEL_FAILED_FOR_001');
+      return validExam('exam-file-002');
+    }
+  });
+
+  assert.equal(report.summary.total, 2);
+  assert.equal(report.summary.errors, 1);
+  assert.equal(report.summary.dry_run_ready, 1);
+  assert.deepEqual(report.rows.map(row => row.status), ['error', 'dry_run_ready']);
+  assert.match(report.rows[0].errors.join(' '), /MODEL_FAILED_FOR_001/);
+  assert.equal(prompts.length, 2);
+  assert.ok(prompts.every(item => item.prompt.includes('Manual prompt')));
+  assert.ok(prompts.every(item => item.promptText === 'Manual prompt __EXAM_ID__'));
+});
+
 test('createLocalJobReport is safe for UI polling', () => {
   const report = createLocalJobReport({
     source: 'Thanh Hoa',

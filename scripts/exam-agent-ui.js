@@ -113,6 +113,10 @@ function cleanNumber(value, fallback, min, max) {
   return Math.min(max, Math.max(min, Math.floor(number)));
 }
 
+function cleanPromptText(value) {
+  return String(value || '').replace(/\r\n/g, '\n').trim().slice(0, 300000);
+}
+
 function sanitizeJobOptions(body) {
   const mode = String(body.mode || 'dry-run').trim();
   if (!['dry-run', 'draft'].includes(mode)) throw new Error('Tool local chỉ hỗ trợ dry-run hoặc draft, không hỗ trợ publish hàng loạt.');
@@ -126,8 +130,43 @@ function sanitizeJobOptions(body) {
     limit: cleanNumber(body.limit, 20, 1, 9999),
     expectedQuestionCount: cleanNumber(body.expectedQuestionCount, 50, 0, 200),
     delayMs: cleanNumber(body.delayMs, 12000, 0, 120000),
-    runDir: String(body.runDir || path.join('_exam_agent_runs', 'local-jobs')).trim()
+    runDir: String(body.runDir || path.join('_exam_agent_runs', 'local-jobs')).trim(),
+    promptText: cleanPromptText(body.promptText)
   };
+}
+
+function publicOptions(options = {}) {
+  const out = { ...options };
+  if (out.promptText) out.promptText = `[manual prompt ${out.promptText.length} chars]`;
+  return out;
+}
+
+function isFinishedRow(row) {
+  const status = String(row && row.status || '');
+  return Boolean(status && !['pending', 'running'].includes(status));
+}
+
+function jobProgress(job) {
+  const report = job && job.report;
+  const rows = Array.isArray(report && report.rows) ? report.rows : [];
+  const total = Math.max(0, Number(report && report.summary && report.summary.total || 0) || rows.length || 0);
+  const completed = rows.filter(isFinishedRow).length;
+  const runningRow = rows.find(row => String(row.status || '') === 'running') || null;
+  const running = Boolean(job && job.status === 'running');
+  let percent = total ? Math.floor((completed / total) * 100) : 0;
+  if (job && job.status === 'completed' && total > 0) percent = 100;
+  if (running && percent >= 100) percent = 99;
+  const currentExam = runningRow ? String(runningRow.examCode || runningRow.title || '') : '';
+  const label = running
+    ? (currentExam ? `Đang chạy ${percent}% · Đề ${currentExam}` : `Đang chạy ${percent}%`)
+    : job && job.status === 'completed'
+      ? 'Hoàn tất 100%'
+      : job && job.status === 'stopped'
+        ? `Đã dừng ${percent}%`
+        : job && job.status === 'error'
+          ? 'Batch lỗi'
+          : 'Chưa chạy';
+  return { total, completed, percent, running, currentExam, label };
 }
 
 function publicJob(job) {
@@ -139,7 +178,8 @@ function publicJob(job) {
     stopAfterCurrent: job.stopAfterCurrent,
     startedAt: job.startedAt,
     finishedAt: job.finishedAt || '',
-    options: job.options,
+    options: publicOptions(job.options),
+    progress: jobProgress(job),
     logs: job.logs.slice(-120),
     error: job.error || '',
     report: job.report || null
@@ -270,7 +310,7 @@ function renderHtml() {
     :root{--navy:#0f2a55;--ink:#102033;--muted:#687894;--line:#dce7f5;--soft:#f4f8fc;--white:#fff;--blue:#2563eb;--green:#059669;--amber:#d97706;--red:#dc2626;--shadow:0 18px 44px rgba(15,42,85,.10)}
     *{box-sizing:border-box}
     body{margin:0;background:#eaf1f9;color:var(--ink);font-family:Segoe UI,system-ui,sans-serif;font-size:14px}
-    button,input,select{font:inherit}
+    button,input,select,textarea{font:inherit}
     .shell{width:min(1280px,calc(100vw - 32px));margin:24px auto 40px;display:grid;gap:16px}
     .top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:20px 22px;border-radius:18px;background:linear-gradient(135deg,#102858,#2459d9);color:#fff;box-shadow:var(--shadow)}
     .top h1{margin:0;font-size:24px;line-height:1.15}
@@ -281,8 +321,13 @@ function renderHtml() {
     .panel-title{font-weight:950;color:var(--navy);font-size:15px}
     .controls{display:grid;grid-template-columns:minmax(260px,1.6fr) 140px 120px 120px 130px 130px;gap:10px;padding:16px 18px}
     label{display:grid;gap:6px;color:#5d6d87;font-size:11px;font-weight:900;text-transform:uppercase}
-    input,select{width:100%;height:42px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:0 12px;outline:none;font-weight:800}
-    input:focus,select:focus{border-color:#7aa7ff;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none;font-weight:800}
+    input,select{height:42px;padding:0 12px}
+    textarea{min-height:126px;padding:12px;resize:vertical;line-height:1.5}
+    input:focus,select:focus,textarea:focus{border-color:#7aa7ff;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+    .prompt-panel{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:12px;padding:0 18px 16px}
+    .prompt-help{align-self:stretch;border:1px dashed #c9d9ee;border-radius:14px;background:#f8fbff;color:#637590;font-weight:800;line-height:1.45;padding:12px}
+    .prompt-help strong{display:block;color:var(--navy);font-size:13px;margin-bottom:4px}
     .actions{display:flex;flex-wrap:wrap;gap:9px;padding:0 18px 18px}
     .btn{height:42px;border:1px solid transparent;border-radius:12px;padding:0 15px;background:#fff;color:var(--navy);font-weight:950;cursor:pointer;box-shadow:0 8px 18px rgba(15,42,85,.08)}
     .btn:hover{transform:translateY(-1px)}
@@ -292,6 +337,13 @@ function renderHtml() {
     .btn.warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
     .btn.danger{background:#fff1f2;color:#be123c;border-color:#fecdd3}
     .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .progress-panel{display:grid;gap:9px;margin:0 18px 18px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+    .progress-copy{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#5d6d87;font-weight:900}
+    .progress-copy strong{color:var(--navy)}
+    .progress-track{height:13px;overflow:hidden;border-radius:999px;background:#e6edf7;border:1px solid #d5e2f2}
+    .progress-fill{position:relative;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#22c55e);transition:width .45s ease}
+    .progress-fill.running::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0 30%,rgba(255,255,255,.35) 30% 45%,transparent 45% 70%);background-size:44px 100%;animation:progress-stripe .85s linear infinite}
+    @keyframes progress-stripe{from{background-position:0 0}to{background-position:44px 0}}
     .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:16px 18px;background:#f8fbff;border-bottom:1px solid var(--line)}
     .metric{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px}
     .metric span{display:block;color:#6b7d98;font-size:11px;font-weight:900;text-transform:uppercase}
@@ -313,8 +365,8 @@ function renderHtml() {
     .log{height:360px;overflow:auto;background:#0b1730;color:#dbeafe;padding:14px;border-radius:14px;font:12px/1.55 Consolas,ui-monospace,monospace;white-space:pre-wrap}
     .empty{padding:22px;text-align:center;color:#74839a;font-weight:850}
     .notice{padding:10px 12px;border-radius:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-weight:850;line-height:1.4}
-    @media (max-width:980px){.controls{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.top{display:grid}.badge{width:max-content}}
-    @media (max-width:620px){.shell{width:calc(100vw - 18px);margin:10px auto}.controls{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.actions .btn{flex:1 1 150px}.top h1{font-size:20px}}
+    @media (max-width:980px){.controls,.prompt-panel{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.top{display:grid}.badge{width:max-content}}
+    @media (max-width:620px){.shell{width:calc(100vw - 18px);margin:10px auto}.controls,.prompt-panel{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.actions .btn{flex:1 1 150px}.top h1{font-size:20px}.progress-copy{display:grid}}
   </style>
 </head>
 <body>
@@ -340,12 +392,26 @@ function renderHtml() {
         <label>Chế độ<select id="mode"><option value="dry-run">Dry-run</option><option value="draft">Lưu draft</option></select></label>
         <label>Nghỉ giữa đề<input id="delay" type="number" min="0" max="120" value="12"></label>
       </div>
+      <div class="prompt-panel">
+        <label>Prompt nguồn thủ công<textarea id="prompt-text" placeholder="Dán prompt nguồn vào đây. Nếu để trống, tool sẽ lấy prompt từ Supabase theo nguồn đề."></textarea></label>
+        <div class="prompt-help">
+          <strong>Prompt nguồn</strong>
+          Dùng khi muốn test nhanh prompt mới hoặc chạy riêng một nguồn. Prompt này chỉ áp dụng cho batch local hiện tại.
+        </div>
+      </div>
       <div class="actions">
         <button class="btn blue" id="scan-btn">Quét thư mục</button>
         <button class="btn primary" id="start-btn">Bắt đầu chạy</button>
         <button class="btn warn" id="pause-btn">Tạm dừng</button>
         <button class="btn green" id="resume-btn">Tiếp tục</button>
         <button class="btn danger" id="stop-btn">Dừng sau đề hiện tại</button>
+      </div>
+      <div class="progress-panel">
+        <div class="progress-copy">
+          <strong id="progress-label">Chưa chạy</strong>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-track" aria-hidden="true"><div id="progress-fill" class="progress-fill"></div></div>
       </div>
     </section>
 
@@ -391,7 +457,8 @@ function renderHtml() {
         level:$('level').value,
         limit:Number($('limit').value),
         mode:$('mode').value,
-        delayMs:Number($('delay').value || 0) * 1000
+        delayMs:Number($('delay').value || 0) * 1000,
+        promptText:$('prompt-text').value.trim()
       };
     }
     function setMetrics(summary = {}) {
@@ -401,6 +468,13 @@ function renderHtml() {
       $('m-local').textContent = summary.local_ready || 0;
       $('m-review').textContent = summary.needs_review || 0;
       $('m-error').textContent = summary.errors || 0;
+    }
+    function setProgress(progress = {}) {
+      const percent = Math.max(0, Math.min(100, Number(progress.percent || 0)));
+      $('progress-label').textContent = progress.label || 'Chưa chạy';
+      $('progress-percent').textContent = percent + '%';
+      $('progress-fill').style.width = percent + '%';
+      $('progress-fill').classList.toggle('running', Boolean(progress.running));
     }
     function runIdFromReport(report) {
       if (!report) return '';
@@ -436,6 +510,7 @@ function renderHtml() {
       if (!job) return;
       $('server-status').textContent = job.status + (job.paused ? ' · paused' : '');
       $('server-status').className = 'status ' + job.status;
+      setProgress(job.progress || {});
       if (job.report) {
         activeReport = job.report;
         setMetrics(job.report.summary);
@@ -461,6 +536,7 @@ function renderHtml() {
         const data = await api('/api/scan', {method:'POST', body:JSON.stringify({folder:$('folder').value.trim()})});
         lastScanRows = data.scan.pairs || [];
         activeReport = null;
+        setProgress();
         setMetrics({total:data.scan.readyPairs.length});
         renderRows(lastScanRows);
         $('log').textContent = 'Đã quét ' + (data.scan.totalFiles || data.scan.totalPdf || 0) + ' file hỗ trợ. Sẵn sàng: ' + data.scan.readyPairs.length + ' cặp.';
@@ -595,6 +671,7 @@ if (require.main === module) {
 
 module.exports = {
   createServer,
+  jobProgress,
   parsePort,
   sanitizeJobOptions
 };
