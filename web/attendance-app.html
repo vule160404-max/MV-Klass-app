@@ -27923,10 +27923,14 @@ async function generatePortalOnlineJsonAi(examId) {
       openPortalOnlineSourcePromptManager(id).catch(err => console.warn('open source prompt after AI missing', err));
     } else if (/OPENAI_API_KEY_NOT_CONFIGURED/i.test(msg)) {
       showAppToast('Chưa cấu hình OpenAI API key cho server.', 'error');
+    } else if (/ANSWER_PDF_NOT_FOUND/i.test(msg)) {
+      showAppToast('Đề này chưa có file đáp án để gửi cho AI.', 'warn');
     } else if (/EXAM_PDF_NOT_FOUND/i.test(msg)) {
       showAppToast('Đề này chưa có file PDF để gửi cho AI.', 'warn');
     } else if (/EXAM_PDF_TOO_LARGE/i.test(msg)) {
       showAppToast('File PDF quá lớn để gửi cho AI.', 'error');
+    } else if (/ANSWER_PDF_FETCH_FAILED|ANSWER_PDF_EMPTY|ANSWER_PDF_SIGNATURE_INVALID/i.test(msg)) {
+      showAppToast('Chưa đọc được file đáp án của đề này.', 'error');
     } else if (/EXAM_PDF_FETCH_FAILED|EXAM_PDF_EMPTY|EXAM_PDF_SIGNATURE_INVALID/i.test(msg)) {
       showAppToast('Chưa đọc được file PDF của đề này.', 'error');
     } else if (/OPENAI_REQUEST_FAILED|OPENAI_RESPONSE/i.test(msg)) {

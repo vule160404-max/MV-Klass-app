@@ -59,7 +59,7 @@ test('exam-online generate_json_ai is admin only and fails closed before publish
   assert.match(block, /findPromptTemplateForExam\(service, row\)/);
   assert.match(block, /renderPromptTemplate\(template, row\)/);
   assert.match(block, /OPENAI_API_KEY/);
-  assert.match(block, /fetchExamPdfForAi\(row\)/);
+  assert.match(block, /fetchExamPdfForAi\(service, row\)/);
   assert.match(block, /generateExamJsonWithOpenAi\(/);
   assert.match(block, /saveGeneratedExamJsonDraft\(service, actor, examFileId, examJson\)/);
   assert.match(source, /function saveGeneratedExamJsonDraft/);
@@ -81,8 +81,29 @@ test('exam-online generate_json_ai is admin only and fails closed before publish
 test('AI PDF reader uses server-side R2 object reads instead of signed fetch URLs', () => {
   const source = read(edgePath);
   const pdfReader = extractBetween(source, 'async function fetchExamPdfForAi', 'function responseOutputText');
+  const candidateReader = extractBetween(source, 'async function readAiPdfCandidate', 'async function fetchExamPdfForAi');
 
-  assert.match(pdfReader, /getR2ObjectBytes\(item\.key\)/);
+  assert.match(candidateReader, /getR2ObjectBytes\(item\.key\)/);
+  assert.match(candidateReader, /getSupabaseStorageBytes\(service, item\.path\)/);
   assert.doesNotMatch(pdfReader, /createR2SignedGetUrl/);
   assert.doesNotMatch(pdfReader, /fetch\(url/);
+});
+
+test('AI PDF reader requires both exam and answer PDFs with distinct errors', () => {
+  const source = read(edgePath);
+  const candidatesFn = extractBetween(source, 'function examPdfObjectCandidates', 'function aiPdfFileName');
+  const pdfReader = extractBetween(source, 'async function fetchExamPdfForAi', 'function responseOutputText');
+  const candidateReader = extractBetween(source, 'async function readAiPdfCandidate', 'async function fetchExamPdfForAi');
+  const block = extractActionBlock(source, 'generate_json_ai');
+
+  assert.match(candidatesFn, /kind:\s*"exam"/);
+  assert.match(candidatesFn, /kind:\s*"answer"/);
+  assert.match(candidatesFn, /source:\s*"r2"/);
+  assert.match(candidatesFn, /source:\s*"supabase"/);
+  assert.match(source, /pdfErrorCode\(kind: string, suffix: string\)/);
+  assert.match(source, /kind === "answer" \? "ANSWER" : "EXAM"/);
+  assert.match(pdfReader, /pdfErrorCode\(missingKinds\[0\], "NOT_FOUND"\)/);
+  assert.match(candidateReader, /pdfErrorCode\(item\.kind, "FETCH_FAILED"\)/);
+  assert.match(pdfReader, /pdfErrorCode\(kind, "SIGNATURE_INVALID"\)/);
+  assert.match(block, /fetchExamPdfForAi\(service, row\)/);
 });

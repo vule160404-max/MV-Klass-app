@@ -210,6 +210,24 @@ async function getR2ObjectBytes(objectKey: string) {
   }
 }
 
+function supabaseStorageLocation(pathValue: string) {
+  const raw = String(pathValue || "").trim().replace(/^\/+/, "");
+  const defaultBucket = (Deno.env.get("SUPABASE_EXAM_BUCKET") || "exam-files").trim();
+  const parts = raw.split("/").filter(Boolean);
+  if (parts.length > 1 && /^(exam-files|exam_files|mvklass-exam-files|documents|public)$/i.test(parts[0])) {
+    return { bucket: parts[0], path: parts.slice(1).join("/") };
+  }
+  return { bucket: defaultBucket, path: raw };
+}
+
+async function getSupabaseStorageBytes(service: any, pathValue: string) {
+  const { bucket, path } = supabaseStorageLocation(pathValue);
+  if (!bucket || !path) throw new Error("EXAM_PDF_NOT_FOUND");
+  const { data, error } = await service.storage.from(bucket).download(path);
+  if (error || !data) throw new Error("EXAM_PDF_FETCH_FAILED");
+  return new Uint8Array(await data.arrayBuffer());
+}
+
 function authToken(req: Request) {
   const auth = req.headers.get("authorization") || "";
   return auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
@@ -868,15 +886,24 @@ async function saveGeneratedExamJsonDraft(service: any, actor: any, examFileId: 
 
 function examPdfObjectCandidates(row: any) {
   const values = [
-    { key: row?.object_key || row?.storage_path, kind: "exam" },
-    { key: row?.answer_object_key || row?.answer_path, kind: "answer" },
+    { key: row?.object_key, path: "", kind: "exam", source: "r2" },
+    { key: "", path: row?.storage_path, kind: "exam", source: "supabase" },
+    { key: row?.answer_object_key, path: "", kind: "answer", source: "r2" },
+    { key: "", path: row?.answer_path, kind: "answer", source: "supabase" },
   ];
   const seen = new Set<string>();
   return values
-    .map((item) => ({ key: String(item.key || "").trim().replace(/^\/+/, ""), kind: item.kind }))
+    .map((item) => ({
+      key: String(item.key || "").trim().replace(/^\/+/, ""),
+      path: String(item.path || "").trim().replace(/^\/+/, ""),
+      kind: item.kind,
+      source: item.source,
+    }))
     .filter((item) => {
-      if (!item.key || seen.has(item.key)) return false;
-      seen.add(item.key);
+      const ref = item.key || item.path;
+      const identity = `${item.kind}:${item.source}:${ref}`;
+      if (!ref || seen.has(identity)) return false;
+      seen.add(identity);
       return true;
     });
 }
@@ -887,19 +914,44 @@ function aiPdfFileName(row: any, kind: string, index: number) {
   return `${title || "exam"}-${suffix}-${index + 1}.pdf`;
 }
 
-async function fetchExamPdfForAi(row: any) {
+function pdfErrorCode(kind: string, suffix: string) {
+  return `${kind === "answer" ? "ANSWER" : "EXAM"}_PDF_${suffix}`;
+}
+
+async function readAiPdfCandidate(service: any, item: any) {
+  try {
+    if (item.source === "supabase") return await getSupabaseStorageBytes(service, item.path);
+    return await getR2ObjectBytes(item.key);
+  } catch (_err) {
+    throw new Error(pdfErrorCode(item.kind, "FETCH_FAILED"));
+  }
+}
+
+async function fetchExamPdfForAi(service: any, row: any) {
   const candidates = examPdfObjectCandidates(row);
-  if (!candidates.length) throw new Error("EXAM_PDF_NOT_FOUND");
+  const missingKinds = ["exam", "answer"].filter((kind) => !candidates.some((item) => item.kind === kind));
+  if (missingKinds.length) throw new Error(pdfErrorCode(missingKinds[0], "NOT_FOUND"));
   const files: Array<{ filename: string; bytes: Uint8Array }> = [];
   let totalBytes = 0;
-  for (let i = 0; i < candidates.length; i += 1) {
-    const item = candidates[i];
-    const bytes = await getR2ObjectBytes(item.key);
-    if (!bytes.length) throw new Error("EXAM_PDF_EMPTY");
-    if (!looksLikePdf(bytes)) throw new Error("EXAM_PDF_SIGNATURE_INVALID");
+  for (const kind of ["exam", "answer"]) {
+    const kindCandidates = candidates.filter((item) => item.kind === kind);
+    let bytes: Uint8Array | null = null;
+    let lastError = pdfErrorCode(kind, "FETCH_FAILED");
+    for (const item of kindCandidates) {
+      try {
+        bytes = await readAiPdfCandidate(service, item);
+        if (!bytes.length) throw new Error(pdfErrorCode(kind, "EMPTY"));
+        if (!looksLikePdf(bytes)) throw new Error(pdfErrorCode(kind, "SIGNATURE_INVALID"));
+        break;
+      } catch (err) {
+        lastError = String(err && err.message || err || pdfErrorCode(kind, "FETCH_FAILED"));
+        bytes = null;
+      }
+    }
+    if (!bytes) throw new Error(lastError);
     totalBytes += bytes.length;
     if (totalBytes > MAX_AI_PDF_BYTES) throw new Error("EXAM_PDF_TOO_LARGE");
-    files.push({ filename: aiPdfFileName(row, item.kind, i), bytes });
+    files.push({ filename: aiPdfFileName(row, kind, files.length), bytes });
   }
   return files;
 }
@@ -1347,7 +1399,7 @@ Deno.serve(async (req) => {
       const prompt = renderPromptTemplate(template, row);
       const openAiKey = Deno.env.get("OPENAI_API_KEY") || "";
       if (!openAiKey) return json({ ok: false, error: "OPENAI_API_KEY_NOT_CONFIGURED" }, 500);
-      const pdfFiles = await fetchExamPdfForAi(row);
+      const pdfFiles = await fetchExamPdfForAi(service, row);
       const examJson = await generateExamJsonWithOpenAi(openAiKey, prompt, pdfFiles);
       return json({
         ok: true,
