@@ -27,7 +27,9 @@ test('portal online row actions use a compact toolbar and separated publish stat
 
   const rowTemplate = extractBetween(source, 'function renderPortalOnlineRow(row)', 'function portalOnlineRowById');
   assert.match(rowTemplate, /class="website-online-action-tools"/);
-  assert.match(rowTemplate, /is-ai/);
+  assert.doesNotMatch(rowTemplate, /is-ai/);
+  assert.doesNotMatch(rowTemplate, /Tạo AI/);
+  assert.doesNotMatch(rowTemplate, /generatePortalOnlineJsonAi/);
   assert.match(rowTemplate, /is-json/);
   assert.match(rowTemplate, />Prompt<\/button>/);
   assert.match(rowTemplate, />JSON<\/button>/);

@@ -4588,7 +4588,6 @@
     .website-online-actions .btn-sm{ min-height:34px; height:34px; padding:6px 10px; border-radius:10px; font-size:11px; line-height:1.1; white-space:nowrap; }
     .website-online-action-tools .btn-sm{ width:100%; border:1px solid rgba(99,138,218,.14); background:#fff; color:#40516b; box-shadow:0 4px 10px rgba(17,42,100,.04); font-weight:920; }
     .website-online-action-tools .btn-sm:hover:not(:disabled){ border-color:rgba(79,142,247,.28); background:#fafdff; color:#0f3f91; box-shadow:0 8px 16px rgba(17,42,100,.08); transform:translateY(-1px); }
-    .website-online-action-tools .btn-sm.is-ai{ border-color:rgba(79,142,247,.28); background:linear-gradient(180deg,#eef6ff,#e8f1ff); color:#0f3f91; }
     .website-online-action-tools .btn-sm.is-json{ border-color:rgba(22,163,74,.18); background:#f2fbf7; color:#166534; }
     .website-online-action-tools .btn-sm:disabled{ opacity:.55; background:#eef3f9; color:#8a97aa; box-shadow:none; cursor:not-allowed; transform:none; }
     .website-online-action-publish{ width:100%; min-height:38px; border:1px solid transparent; font-weight:950; letter-spacing:0; box-shadow:0 8px 18px rgba(17,42,100,.08); }
@@ -26150,7 +26149,6 @@ let portalOnlineAssetsExamId = '';
 let portalOnlineAssetSlotId = '';
 let portalOnlineAssetUploadPreview = null;
 let portalOnlinePublishingId = '';
-let portalOnlineGeneratingId = '';
 let portalOnlineUploadingSlotId = '';
 let portalOnlineRenderTimer = 0;
 let portalOnlineRenderIdle = 0;
@@ -27773,7 +27771,6 @@ function renderPortalOnlineRow(row) {
   const promptSourceLabel = portalOnlinePromptSourceLabel(row);
   const hasPromptSource = !!(row && row.source_prompt);
   const busy = portalOnlinePublishingId === id;
-  const generating = portalOnlineGeneratingId === id;
   const publishLabel = statusKey === 'published' ? 'Ẩn' : 'Xuất bản';
   const publishTone = statusKey === 'published' ? 'is-unpublish' : 'is-publish';
   const mark = statusKey === 'published' ? 'ON' : (statusKey === 'draft' ? 'JSON' : 'PDF');
@@ -27795,7 +27792,6 @@ function renderPortalOnlineRow(row) {
     <div class="website-online-actions" aria-label="Thao tác đề online">
       <div class="website-online-action-tools">
         <button type="button" class="btn-sm website-online-action-btn" title="Tạo prompt AI" aria-label="Tạo prompt AI" onclick="openPortalOnlinePrompt('${escapeHtml(id)}')">Prompt</button>
-        <button type="button" class="btn-sm website-online-action-btn is-ai" title="Tạo JSON bằng AI" aria-label="Tạo JSON bằng AI" onclick="generatePortalOnlineJsonAi('${escapeHtml(id)}')" ${generating ? 'disabled' : ''}>${generating ? 'Đang tạo...' : 'Tạo AI'}</button>
         <button type="button" class="btn-sm website-online-action-btn is-json" title="Dán hoặc upload JSON" aria-label="Dán hoặc upload JSON" onclick="openPortalOnlineJson('${escapeHtml(id)}')">JSON</button>
         <button type="button" class="btn-sm website-online-action-btn" title="Prompt nguồn" aria-label="Prompt nguồn" onclick="openPortalOnlineSourcePromptManager('${escapeHtml(id)}')">Nguồn</button>
       </div>
@@ -27897,59 +27893,6 @@ async function copyPortalOnlinePrompt() {
     ta.select();
     try { document.execCommand('copy'); showAppToast('Đã copy prompt.', 'success'); } catch (copyErr) {}
     ta.remove();
-  }
-}
-
-async function generatePortalOnlineJsonAi(examId) {
-  const id = String(examId || '').trim();
-  const row = portalOnlineRowById(id);
-  if (!id || !row) return;
-  const ok = await confirmApp(
-    `Tạo JSON bằng AI cho đề "${portalExamTitle(row)}"? Kết quả sẽ lưu bản nháp, chưa xuất bản.`,
-    { title: 'Tạo JSON bằng AI', okLabel: 'Tạo JSON', cancelLabel: 'Hủy' }
-  );
-  if (!ok) return;
-  portalOnlineGeneratingId = id;
-  renderPortalOnlineExams();
-  try {
-    const data = await callExamOnline('generate_json_ai', { exam_file_id: id });
-    portalOnlineMergeExam(id, data.online_exam);
-    showAppToast('Đã tạo JSON bản nháp. Hãy kiểm tra rồi xuất bản.', 'success');
-    await loadPortalOnlineExams(true);
-  } catch (e) {
-    console.warn('generatePortalOnlineJsonAi', e);
-    const msg = String(e && e.message || e);
-    if (/PROMPT_SOURCE_NOT_FOUND/i.test(msg)) {
-      showAppToast('Chưa có prompt nguồn cho tỉnh/năm này.', 'warn');
-      openPortalOnlineSourcePromptManager(id).catch(err => console.warn('open source prompt after AI missing', err));
-    } else if (/AI_API_KEY_NOT_CONFIGURED|OPENAI_API_KEY_NOT_CONFIGURED/i.test(msg)) {
-      showAppToast('Chưa cấu hình NVIDIA/OpenAI API key cho server.', 'error');
-    } else if (/ANSWER_PDF_NOT_FOUND/i.test(msg)) {
-      showAppToast('Đề này chưa có file đáp án để gửi cho AI.', 'warn');
-    } else if (/EXAM_PDF_NOT_FOUND/i.test(msg)) {
-      showAppToast('Đề này chưa có file PDF để gửi cho AI.', 'warn');
-    } else if (/EXAM_PDF_TOO_LARGE/i.test(msg)) {
-      showAppToast('File PDF quá lớn để gửi cho AI.', 'error');
-    } else if (/ANSWER_PDF_FETCH_FAILED|ANSWER_PDF_EMPTY|ANSWER_PDF_SIGNATURE_INVALID/i.test(msg)) {
-      showAppToast('Chưa đọc được file đáp án của đề này.', 'error');
-    } else if (/EXAM_PDF_FETCH_FAILED|EXAM_PDF_EMPTY|EXAM_PDF_SIGNATURE_INVALID/i.test(msg)) {
-      showAppToast('Chưa đọc được file PDF của đề này.', 'error');
-    } else if (/GENERATED_PLACEHOLDER|PLACEHOLDER/i.test(msg)) {
-      showAppToast('AI chỉ tạo dữ liệu mẫu, chưa đọc được nội dung đề thật. Hãy kiểm tra PDF/prompt nguồn rồi tạo lại.', 'error');
-    } else if (/NVIDIA_RESPONSE_INVALID_JSON/i.test(msg)) {
-      showAppToast('AI chưa trả về JSON đúng định dạng. Hãy thử tạo lại hoặc kiểm tra prompt nguồn.', 'error');
-    } else if (/NVIDIA_RESPONSE_SCHEMA_INVALID/i.test(msg)) {
-      showAppToast('AI chưa tạo được đủ danh sách câu hỏi. Hãy kiểm tra prompt nguồn hoặc file PDF/đáp án.', 'error');
-    } else if (/NVIDIA_REQUEST_FAILED|NVIDIA_RESPONSE/i.test(msg)) {
-      showAppToast('NVIDIA chưa tạo được JSON hợp lệ. Kiểm tra lại key/model hoặc nội dung PDF.', 'error');
-    } else if (/OPENAI_REQUEST_FAILED|OPENAI_RESPONSE/i.test(msg)) {
-      showAppToast('OpenAI chưa tạo được JSON hợp lệ. Kiểm tra lại PDF/prompt nguồn.', 'error');
-    } else {
-      showAppToast('Chưa tạo được JSON bằng AI: ' + msg.slice(0, 90), 'error');
-    }
-  } finally {
-    portalOnlineGeneratingId = '';
-    renderPortalOnlineExams();
   }
 }
 
