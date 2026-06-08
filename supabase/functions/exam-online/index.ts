@@ -1063,7 +1063,7 @@ function parseOpenAiExamJson(text: string) {
 }
 
 async function generateExamJsonWithNvidia(nvidiaKey: string, prompt: string, pdfFiles: Array<{ filename: string; bytes: Uint8Array }>) {
-  const model = (Deno.env.get("NVIDIA_EXAM_JSON_MODEL") || "nvidia/llama-3.1-nemotron-ultra-253b-v1").trim();
+  const model = (Deno.env.get("NVIDIA_EXAM_JSON_MODEL") || "nvidia/llama-3.3-nemotron-super-49b-v1.5").trim();
   const maxTokens = Number(Deno.env.get("NVIDIA_EXAM_JSON_MAX_TOKENS") || "8192");
   const pdfText = pdfFiles.map((file) => {
     const text = extractPdfTextForAi(file.bytes);
