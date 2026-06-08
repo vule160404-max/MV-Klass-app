@@ -772,6 +772,31 @@ async function disablePromptSource(service: any, actor: any, body: any) {
   };
 }
 
+async function saveGeneratedExamJsonDraft(service: any, actor: any, examFileId: string, examJson: any) {
+  const validated = validateExamJson(examJson);
+  validated.exam_id = examFileId;
+  const imageSlots = collectImageSlots(validated);
+  const payload = {
+    exam_file_id: examFileId,
+    status: "draft",
+    title: validated.title,
+    exam_json: validated,
+    image_slots: imageSlots,
+    question_count: validated.questions.length,
+    updated_by: actor.user.id,
+    created_by: actor.user.id,
+  };
+  const { data, error } = await service
+    .from("exam_online_exams")
+    .upsert(payload, { onConflict: "exam_file_id" })
+    .select("id,exam_file_id,status,title,question_count,image_slots,updated_at")
+    .single();
+  if (error) throw new Error(error.message || "ONLINE_AI_SAVE_FAILED");
+  const warnings: string[] = [];
+  if (imageSlots.length) warnings.push("IMAGE_SLOTS_NEED_REVIEW");
+  return { online_exam: data, warnings };
+}
+
 async function adminList(service: any) {
   const { data: exams, error: examErr } = await service
     .from("exam_files")
@@ -1128,6 +1153,31 @@ Deno.serve(async (req) => {
         prompt: renderPromptTemplate(template, row),
         prompt_source: promptSourcePublic(template),
       });
+    }
+
+    if (action === "generate_json_ai") {
+      assertAdmin(actor);
+      const examFileId = cleanUuid(body.exam_file_id || body.examFileId);
+      const { data: row, error } = await service
+        .from("exam_files")
+        .select("id,title,level,year,province,exam_code,object_key,storage_path,storage_provider")
+        .eq("id", examFileId)
+        .maybeSingle();
+      if (error) throw new Error(error.message || "EXAM_LOOKUP_FAILED");
+      if (!row) return json({ ok: false, error: "EXAM_NOT_FOUND" }, 404);
+      const template = await findPromptTemplateForExam(service, row);
+      if (!template) {
+        return json({
+          ok: false,
+          error: "PROMPT_SOURCE_NOT_FOUND",
+          prompt_source_candidate: promptSourceCandidate(row),
+        }, 404);
+      }
+      const prompt = renderPromptTemplate(template, row);
+      const openAiKey = Deno.env.get("OPENAI_API_KEY") || "";
+      if (!openAiKey) return json({ ok: false, error: "OPENAI_API_KEY_NOT_CONFIGURED" }, 500);
+      void prompt;
+      return json({ ok: false, error: "AI_GENERATION_NOT_READY" }, 501);
     }
 
     if (action === "save_json") {

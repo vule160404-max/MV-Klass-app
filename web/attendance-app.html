@@ -26148,6 +26148,7 @@ let portalOnlineAssetsExamId = '';
 let portalOnlineAssetSlotId = '';
 let portalOnlineAssetUploadPreview = null;
 let portalOnlinePublishingId = '';
+let portalOnlineGeneratingId = '';
 let portalOnlineUploadingSlotId = '';
 let portalOnlineRenderTimer = 0;
 let portalOnlineRenderIdle = 0;
@@ -27770,6 +27771,7 @@ function renderPortalOnlineRow(row) {
   const promptSourceLabel = portalOnlinePromptSourceLabel(row);
   const hasPromptSource = !!(row && row.source_prompt);
   const busy = portalOnlinePublishingId === id;
+  const generating = portalOnlineGeneratingId === id;
   const publishLabel = statusKey === 'published' ? 'Ẩn' : 'Xuất bản';
   const publishTone = statusKey === 'published' ? 'is-unpublish' : 'is-publish';
   const mark = statusKey === 'published' ? 'ON' : (statusKey === 'draft' ? 'JSON' : 'PDF');
@@ -27791,6 +27793,7 @@ function renderPortalOnlineRow(row) {
     <div class="website-online-actions" aria-label="Thao tác đề online">
       <div class="website-online-action-tools">
         <button type="button" class="btn-sm website-online-action-btn" title="Tạo prompt AI" aria-label="Tạo prompt AI" onclick="openPortalOnlinePrompt('${escapeHtml(id)}')">Prompt</button>
+        <button type="button" class="btn-sm website-online-action-btn" title="Tạo JSON bằng AI" aria-label="Tạo JSON bằng AI" onclick="generatePortalOnlineJsonAi('${escapeHtml(id)}')" ${generating ? 'disabled' : ''}>${generating ? 'Đang tạo...' : 'Tạo JSON AI'}</button>
         <button type="button" class="btn-sm website-online-action-btn" title="Dán hoặc upload JSON" aria-label="Dán hoặc upload JSON" onclick="openPortalOnlineJson('${escapeHtml(id)}')">JSON</button>
         <button type="button" class="btn-sm website-online-action-btn" title="Upload ảnh theo đề" aria-label="Upload ảnh theo đề" onclick="openPortalOnlineAssets('${escapeHtml(id)}')" ${online ? '' : 'disabled'}>Ảnh</button>
         <button type="button" class="btn-sm website-online-action-btn" title="Prompt nguồn" aria-label="Prompt nguồn" onclick="openPortalOnlineSourcePromptManager('${escapeHtml(id)}')">Nguồn</button>
@@ -27893,6 +27896,41 @@ async function copyPortalOnlinePrompt() {
     ta.select();
     try { document.execCommand('copy'); showAppToast('Đã copy prompt.', 'success'); } catch (copyErr) {}
     ta.remove();
+  }
+}
+
+async function generatePortalOnlineJsonAi(examId) {
+  const id = String(examId || '').trim();
+  const row = portalOnlineRowById(id);
+  if (!id || !row) return;
+  const ok = await confirmApp(
+    `Tạo JSON bằng AI cho đề "${portalExamTitle(row)}"? Kết quả sẽ lưu bản nháp, chưa xuất bản.`,
+    { title: 'Tạo JSON bằng AI', okLabel: 'Tạo JSON', cancelLabel: 'Hủy' }
+  );
+  if (!ok) return;
+  portalOnlineGeneratingId = id;
+  renderPortalOnlineExams();
+  try {
+    const data = await callExamOnline('generate_json_ai', { exam_file_id: id });
+    portalOnlineMergeExam(id, data.online_exam);
+    showAppToast('Đã tạo JSON bản nháp. Hãy kiểm tra rồi xuất bản.', 'success');
+    await loadPortalOnlineExams(true);
+  } catch (e) {
+    console.warn('generatePortalOnlineJsonAi', e);
+    const msg = String(e && e.message || e);
+    if (/PROMPT_SOURCE_NOT_FOUND/i.test(msg)) {
+      showAppToast('Chưa có prompt nguồn cho tỉnh/năm này.', 'warn');
+      openPortalOnlineSourcePromptManager(id).catch(err => console.warn('open source prompt after AI missing', err));
+    } else if (/OPENAI_API_KEY_NOT_CONFIGURED/i.test(msg)) {
+      showAppToast('Chưa cấu hình OpenAI API key cho server.', 'error');
+    } else if (/AI_GENERATION_NOT_READY/i.test(msg)) {
+      showAppToast('Tạo JSON bằng AI chưa sẵn sàng trên server.', 'warn');
+    } else {
+      showAppToast('Chưa tạo được JSON bằng AI: ' + msg.slice(0, 90), 'error');
+    }
+  } finally {
+    portalOnlineGeneratingId = '';
+    renderPortalOnlineExams();
   }
 }
 

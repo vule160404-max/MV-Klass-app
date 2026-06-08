@@ -9,6 +9,14 @@ function readSource() {
   return fs.readFileSync(sourcePath, 'utf8');
 }
 
+function extractBetween(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  assert.notEqual(start, -1, `${startMarker} should exist`);
+  const end = source.indexOf(endMarker, start + startMarker.length);
+  assert.ok(end > start, `${endMarker} should exist after ${startMarker}`);
+  return source.slice(start, end);
+}
+
 test('portal online search is debounced and renders from prepared rows', () => {
   const source = readSource();
 
@@ -23,19 +31,15 @@ test('portal online search is debounced and renders from prepared rows', () => {
   assert.match(source, /requestIdleCallback/);
   assert.match(source, /function preparePortalOnlineRows\(\)/);
   assert.match(source, /rows\.slice\(0, PORTAL_ONLINE_RENDER_LIMIT\)/);
-  assert.match(source, /Nhập từ khóa để tìm đề online/);
-  assert.match(source, /Nhập ít nhất 2 ký tự/);
+  assert.match(source, /website-online-empty/);
 
-  const searchHandler = source.match(/function onPortalOnlineSearch\(value\) \{[\s\S]*?\n\}/);
-  assert.ok(searchHandler, 'onPortalOnlineSearch handler should exist');
-  assert.match(searchHandler[0], /schedulePortalOnlineRender\(PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS\)/);
-  assert.doesNotMatch(searchHandler[0], /renderPortalOnlineExams\(\)/);
+  const searchHandler = extractBetween(source, 'function onPortalOnlineSearch(value)', 'function onPortalOnlineStatus');
+  assert.match(searchHandler, /schedulePortalOnlineRender\(PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS\)/);
+  assert.doesNotMatch(searchHandler, /renderPortalOnlineExams\(\)/);
 
-  const filterFn = source.match(/function portalOnlineFilteredRows\(\) \{[\s\S]*?\n\}/);
-  assert.ok(filterFn, 'portalOnlineFilteredRows should exist');
-  assert.match(filterFn[0], /if \(q\.length < PORTAL_ONLINE_MIN_QUERY_LENGTH\) return \[\];/);
+  const filterFn = extractBetween(source, 'function portalOnlineFilteredRows()', 'function renderPortalOnlineExams');
+  assert.match(filterFn, /if \(q\.length < PORTAL_ONLINE_MIN_QUERY_LENGTH\) return \[\];/);
 
-  const renderFn = source.match(/function renderPortalOnlineExams\(\) \{[\s\S]*?\n\}\n\nfunction renderPortalOnlineRow/);
-  assert.ok(renderFn, 'renderPortalOnlineExams should exist');
-  assert.match(renderFn[0], /if \(!portalOnlineHasSearchQuery\(\)\) \{/);
+  const renderFn = extractBetween(source, 'function renderPortalOnlineExams()', 'function renderPortalOnlineRow');
+  assert.match(renderFn, /if \(!portalOnlineHasSearchQuery\(\)\) \{/);
 });

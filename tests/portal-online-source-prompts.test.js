@@ -14,6 +14,14 @@ function readEdge() {
   return fs.readFileSync(edgePath, 'utf8');
 }
 
+function extractBetween(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  assert.notEqual(start, -1, `${startMarker} should exist`);
+  const end = source.indexOf(endMarker, start + startMarker.length);
+  assert.ok(end > start, `${endMarker} should exist after ${startMarker}`);
+  return source.slice(start, end);
+}
+
 test('portal online admin has a source prompt manager modal', () => {
   const source = readSource();
 
@@ -45,9 +53,8 @@ test('source prompt manager chooses a source from uploaded exam groups', () => {
   assert.match(source, /studentExamSourceLabel\(row\)/);
   assert.match(source, /studentExamOverviewSourceDisplayLabel/);
   assert.match(source, /portalExamGroupKey\(row\) === levelKey/);
-  const sourceOptions = source.match(/function portalOnlineSourceOptions\(extra = null\) \{[\s\S]*?\n\}\n\nfunction renderPortalOnlineSourcePromptOptions/);
-  assert.ok(sourceOptions, 'portalOnlineSourceOptions should exist');
-  assert.doesNotMatch(sourceOptions[0], /source_prompt_candidate/);
+  const sourceOptions = extractBetween(source, 'function portalOnlineSourceOptions(extra = null)', 'function renderPortalOnlineSourcePromptOptions');
+  assert.doesNotMatch(sourceOptions, /source_prompt_candidate/);
 });
 
 test('source prompt keys include exam level to avoid Vào 10 and THPT QG conflicts', () => {

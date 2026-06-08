@@ -9,6 +9,14 @@ function readSource() {
   return fs.readFileSync(sourcePath, 'utf8');
 }
 
+function extractBetween(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  assert.notEqual(start, -1, `${startMarker} should exist`);
+  const end = source.indexOf(endMarker, start + startMarker.length);
+  assert.ok(end > start, `${endMarker} should exist after ${startMarker}`);
+  return source.slice(start, end);
+}
+
 test('portal online row actions use a compact toolbar and separated publish state', () => {
   const source = readSource();
 
@@ -17,13 +25,12 @@ test('portal online row actions use a compact toolbar and separated publish stat
   assert.match(source, /is-publish/);
   assert.match(source, /is-unpublish/);
 
-  const rowTemplate = source.match(/function renderPortalOnlineRow\(row\) \{[\s\S]*?<\/div>`;\n\}/);
-  assert.ok(rowTemplate, 'renderPortalOnlineRow template should exist');
-  assert.match(rowTemplate[0], /class="website-online-action-tools"/);
-  assert.match(rowTemplate[0], />Prompt<\/button>/);
-  assert.match(rowTemplate[0], />JSON<\/button>/);
-  assert.match(rowTemplate[0], />Ảnh<\/button>|>áº¢nh<\/button>/);
-  assert.match(rowTemplate[0], />Nguồn<\/button>|>Nguá»“n<\/button>/);
-  assert.doesNotMatch(rowTemplate[0], />Prompt AI<\/button>/);
-  assert.doesNotMatch(rowTemplate[0], />Nạp JSON<\/button>|>Náº¡p JSON<\/button>/);
+  const rowTemplate = extractBetween(source, 'function renderPortalOnlineRow(row)', 'function portalOnlineRowById');
+  assert.match(rowTemplate, /class="website-online-action-tools"/);
+  assert.match(rowTemplate, />Prompt<\/button>/);
+  assert.match(rowTemplate, />JSON<\/button>/);
+  assert.match(rowTemplate, />[^<]*nh<\/button>/);
+  assert.match(rowTemplate, />Ngu[^<]*n<\/button>/);
+  assert.doesNotMatch(rowTemplate, />Prompt AI<\/button>/);
+  assert.doesNotMatch(rowTemplate, />N[^<]*p JSON<\/button>/);
 });

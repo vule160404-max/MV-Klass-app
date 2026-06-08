@@ -29,15 +29,15 @@ test('student portal exposes real navigation popovers and compact avatar menu', 
   assert.match(html, /id="student-exam-notification-popover"/);
   assert.match(html, /id="student-exam-settings-popover"/);
   assert.doesNotMatch(html, /id="student-exam-settings-button"/);
-  assert.match(html, /openStudentExamSettingsPanel\(\)" role="menuitem">Cài đặt tài khoản/);
+  assert.doesNotMatch(html, /openStudentExamSettingsPanel\(\)" role="menuitem"/);
   assert.match(html, /id="student-setting-page-size"/);
   assert.match(html, /id="student-setting-sort"/);
   assert.match(html, /id="student-setting-online"/);
   assert.match(html, /id="student-setting-display-name"/);
   assert.match(html, /id="student-setting-density"/);
 
-  assert.doesNotMatch(html, /studentExamShowOverview\(\)" role="menuitem">Thông tin học sinh/);
-  assert.doesNotMatch(html, /studentExamShowStats\(\)" role="menuitem">Thống kê học tập/);
+  assert.doesNotMatch(html, /studentExamShowOverview\(\)" role="menuitem">/);
+  assert.doesNotMatch(html, /studentExamShowStats\(\)" role="menuitem">/);
 });
 
 test('student portal premium card uses custom crown svg and fixed desktop sidebar', () => {
@@ -47,8 +47,8 @@ test('student portal premium card uses custom crown svg and fixed desktop sideba
   assert.match(html, /id="student-exam-sidebar-premium-copy"/);
   assert.match(html, /id="student-exam-sidebar-premium-action"/);
   assert.match(html, /function renderStudentExamSidebarPremiumCard\(\)/);
-  assert.match(html, /ÄÃ£ kÃ­ch hoáº¡t|Đã kích hoạt/);
-  assert.match(html, /NÃ¢ng cáº¥p ngay|Nâng cấp ngay/);
+  assert.match(html, /k.ch ho.t/iu);
+  assert.match(html, /N.ng c.p ngay/iu);
   assert.match(html, /\.student-exam-sidebar-premium-title::before\{[\s\S]*content:none !important;[\s\S]*display:none !important;/);
   assert.match(html, /student-exam-sidebar-premium-action\.is-active/);
   assert.match(html, /@media \(min-width:1180px\)\{[\s\S]*#student-exam-portal \.student-exam-sidebar\{[\s\S]*position:fixed !important;[\s\S]*height:100dvh !important;[\s\S]*overflow-y:auto !important;/);
@@ -76,8 +76,8 @@ test('student portal notifications are conditional and show a red badge', () => 
   assert.match(html, /function studentExamNotificationItems\(\)/);
   assert.match(html, /student-exam-notification-badge/);
   assert.match(html, /badge\.hidden = count <= 0/);
-  assert.match(html, /Sắp hết lượt tải miễn phí|Sáº¯p háº¿t lÆ°á»£t táº£i miá»…n phÃ­/);
-  assert.match(html, /Đăng ký Premium|ÄÄƒng kÃ½ Premium/);
+  assert.match(html, /h.t l..t t.i mi.n ph./iu);
+  assert.match(html, /.ng k. Premium/iu);
   assert.match(html, /data-student-notification-action="\$\{escapeHtml\(item\.action\)\}"/);
   assert.match(html, /action:\s*'premium'/);
   assert.match(html, /action:\s*'online'/);

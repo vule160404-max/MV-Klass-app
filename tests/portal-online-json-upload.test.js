@@ -9,6 +9,14 @@ function readSource() {
   return fs.readFileSync(sourcePath, 'utf8');
 }
 
+function extractBetween(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  assert.notEqual(start, -1, `${startMarker} should exist`);
+  const end = source.indexOf(endMarker, start + startMarker.length);
+  assert.ok(end > start, `${endMarker} should exist after ${startMarker}`);
+  return source.slice(start, end);
+}
+
 test('online JSON upload button saves pasted textarea JSON instead of opening a file picker', () => {
   const source = readSource();
 
@@ -28,17 +36,15 @@ test('online JSON upload button saves pasted textarea JSON instead of opening a 
   assert.doesNotMatch(source, />Lưu bản nháp<\/button>/);
   assert.doesNotMatch(source, /<button type="button"[^>]*onclick="choosePortalOnlineJsonFile\(\)"[^>]*>Upload \.json<\/button>/);
 
-  const saveFn = source.match(/async function savePortalOnlineJson\(\) \{[\s\S]*?\n\}\n\nfunction openPortalOnlineAssets/);
-  assert.ok(saveFn, 'savePortalOnlineJson should exist');
-  assert.match(saveFn[0], /renderPortalOnlineJsonAssets\(\)/);
-  assert.doesNotMatch(saveFn[0], /closePortalOnlineJsonModal\(\)/);
+  const saveFn = extractBetween(source, 'async function savePortalOnlineJson()', 'function openPortalOnlineAssets');
+  assert.match(saveFn, /renderPortalOnlineJsonAssets\(\)/);
+  assert.doesNotMatch(saveFn, /closePortalOnlineJsonModal\(\)/);
 
   const assetsFn = source.match(/function openPortalOnlineAssets\(examId\) \{[\s\S]*?\n\}/);
   assert.ok(assetsFn, 'openPortalOnlineAssets should exist');
   assert.match(assetsFn[0], /openPortalOnlineJson\(id, \{ focusAssets: true \}\)/);
 
-  const imageUploadFn = source.match(/function uploadPortalOnlineJsonImage\(\) \{[\s\S]*?\n\}\n\nfunction openPortalOnlineAssets/);
-  assert.ok(imageUploadFn, 'uploadPortalOnlineJsonImage should exist');
-  assert.match(imageUploadFn[0], /choosePortalOnlineAsset\(id, slotId\)/);
-  assert.doesNotMatch(imageUploadFn[0], /portal-online-json-input/);
+  const imageUploadFn = extractBetween(source, 'function uploadPortalOnlineJsonImage()', 'function openPortalOnlineAssets');
+  assert.match(imageUploadFn, /choosePortalOnlineAsset\(id, slotId\)/);
+  assert.doesNotMatch(imageUploadFn, /portal-online-json-input/);
 });
