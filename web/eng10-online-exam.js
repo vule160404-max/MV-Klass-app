@@ -360,6 +360,50 @@
     };
   }
 
+  function answerLetter(value) {
+    const match = String(value || '').trim().match(/^([A-D])(?:\b|[.)\s-])/i);
+    return match ? match[1].toUpperCase() : '';
+  }
+
+  function optionLetter(option) {
+    return answerLetter(option) || String(option || '').trim().charAt(0).toUpperCase();
+  }
+
+  function optionForLetter(q, letter) {
+    const wanted = String(letter || '').toUpperCase();
+    if (!wanted) return '';
+    return (q.options || []).find(option => optionLetter(option) === wanted) || '';
+  }
+
+  function answerDisplayForQuestion(q) {
+    const display = String(q?.answer_display || '').trim();
+    if (display) return display;
+    if (q?.type === 'multiple_choice') {
+      return optionForLetter(q, answerLetter(q.answer)) || String(q.answer || '').trim();
+    }
+    return String(q?.answer || '').trim();
+  }
+
+  function userAnswerDisplayForQuestion(q, answers) {
+    const raw = String(answerForQuestion(q, answers) || '').trim();
+    if (!raw) return 'Chưa trả lời';
+    if (q?.type === 'multiple_choice') {
+      return optionForLetter(q, answerLetter(raw)) || raw;
+    }
+    return raw;
+  }
+
+  function reviewQuestion(q, answers) {
+    const correct = isQuestionCorrect(q, answers || {});
+    return {
+      correct,
+      status_label: correct ? 'Đúng' : 'Sai',
+      user_answer: userAnswerDisplayForQuestion(q, answers || {}),
+      correct_answer: answerDisplayForQuestion(q),
+      explanation: String(q?.explanation || '').trim() || 'Chưa có giải thích cho câu này.'
+    };
+  }
+
   function questionTitle(q) {
     const label = String(q.display_id || q.id || '').trim();
     return /^câu\b/i.test(label) ? label : `Câu ${label}`;
@@ -508,22 +552,62 @@
     return exam.questions.filter(q => ids.has(questionKey(q.id)));
   }
 
+  function renderQuestionHeader(title, review) {
+    return `<div class="eng10-online-q-meta">
+      <div class="eng10-online-q-num">${title}</div>
+      ${review ? `<span class="eng10-online-review-badge ${review.correct ? 'ok' : 'bad'}">${safeRichText(review.status_label)}</span>` : ''}
+    </div>`;
+  }
+
+  function renderReviewPanel(review) {
+    if (!review) return '';
+    return `<div class="eng10-online-review-panel">
+      <div class="eng10-online-review-row">
+        <span>Đáp án của em</span>
+        <strong class="${review.correct ? 'ok' : 'bad'}">${safeExamRichText(review.user_answer)}</strong>
+      </div>
+      <div class="eng10-online-review-row">
+        <span>Đáp án đúng</span>
+        <strong>${safeExamRichText(review.correct_answer)}</strong>
+      </div>
+      <div class="eng10-online-review-explain">
+        <span>Giải thích</span>
+        <p>${safeExamRichText(review.explanation)}</p>
+      </div>
+    </div>`;
+  }
+
   function renderQuestion(q, answers, disabled, context) {
     const title = safeExamRichText(questionTitle(q));
     const body = safeRichText(displayQuestionText(q));
+    const review = context?.review ? reviewQuestion(q, answers) : null;
+    const header = renderQuestionHeader(title, review);
+    const reviewPanel = renderReviewPanel(review);
+    const cardClass = review ? ` review-${review.correct ? 'correct' : 'wrong'}` : '';
     if (q.type === 'multiple_choice') {
-      return `<article class="eng10-online-q-card" data-qid="${escapeAttr(q.id)}">
-        <div class="eng10-online-q-num">${title}</div>
+      const selectedLetter = answerLetter(answerForQuestion(q, answers));
+      const correctLetter = answerLetter(q.answer);
+      return `<article class="eng10-online-q-card${cardClass}" data-qid="${escapeAttr(q.id)}">
+        ${header}
         <div class="eng10-online-q-text">${body}</div>
         ${renderImages(q)}
         <div class="eng10-online-options">${q.options.map(opt => {
-          const letter = String(opt).trim().match(/^([A-D])/i)?.[1]?.toUpperCase() || String(opt).trim().charAt(0).toUpperCase();
-          const checked = String(answers[`mcq_${q.id}`] || '') === letter;
-          return `<label class="eng10-online-option ${checked ? 'selected' : ''}">
+          const letter = optionLetter(opt);
+          const checked = selectedLetter === letter;
+          const correctOption = review && correctLetter && letter === correctLetter;
+          const wrongOption = review && checked && !correctOption;
+          const optionClass = [
+            'eng10-online-option',
+            checked ? 'selected' : '',
+            correctOption ? 'correct' : '',
+            wrongOption ? 'wrong' : ''
+          ].filter(Boolean).join(' ');
+          return `<label class="${optionClass}">
             <input type="radio" name="mcq_${escapeAttr(q.id)}" value="${escapeAttr(letter)}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
             <span>${safeExamRichText(opt)}</span>
           </label>`;
         }).join('')}</div>
+        ${reviewPanel}
       </article>`;
     }
     if (q.type === 'fill_blank') {
@@ -531,30 +615,33 @@
       if (context?.dropFillIds?.has(questionKey(q.id))) {
         const value = String(answers[key] || '').trim();
         const number = blankNumberFromQuestion(q);
-        return `<article class="eng10-online-q-card eng10-online-fill-card" data-qid="${escapeAttr(q.id)}">
-          <div class="eng10-online-q-num">${title}</div>
+        return `<article class="eng10-online-q-card eng10-online-fill-card${cardClass}" data-qid="${escapeAttr(q.id)}">
+          ${header}
           <div class="eng10-online-fill-status${value ? ' filled' : ''}">
             <span>${number ? `___${escapeHtml(number)}___` : safeRichText(displayQuestionText(q))}</span>
             <strong>${value ? safeExamRichText(value) : '...'}</strong>
           </div>
           <input type="hidden" class="eng10-online-input" name="${escapeAttr(key)}" value="${escapeAttr(value)}">
+          ${reviewPanel}
         </article>`;
       }
-      return `<article class="eng10-online-q-card" data-qid="${escapeAttr(q.id)}">
-        <div class="eng10-online-q-num">${title}</div>
+      return `<article class="eng10-online-q-card${cardClass}" data-qid="${escapeAttr(q.id)}">
+        ${header}
         <div class="eng10-online-q-text">${body}</div>
         ${renderImages(q)}
         ${q.word_bank.length ? `<div class="eng10-online-word-bank">${q.word_bank.map(w => `<button type="button" data-fill-word="${escapeAttr(w)}" data-fill-target="${escapeAttr(key)}" ${disabled ? 'disabled' : ''}>${safeExamRichText(w)}</button>`).join('')}</div>` : ''}
         <input class="eng10-online-input" name="${escapeAttr(key)}" value="${escapeAttr(answers[key] || '')}" placeholder="Gõ đáp án..." ${disabled ? 'disabled' : ''}>
+        ${reviewPanel}
       </article>`;
     }
     const key = `rw_${q.id}`;
-    return `<article class="eng10-online-q-card" data-qid="${escapeAttr(q.id)}">
-      <div class="eng10-online-q-num">${title}</div>
+    return `<article class="eng10-online-q-card${cardClass}" data-qid="${escapeAttr(q.id)}">
+      ${header}
       <div class="eng10-online-q-text">${body}</div>
       ${renderImages(q)}
       ${shouldRenderRewritePrompt(q) ? `<div class="eng10-online-rewrite-prompt">${safeExamRichText(q.prompt)}</div>` : ''}
       <textarea class="eng10-online-input" name="${escapeAttr(key)}" rows="2" placeholder="Gõ câu hoàn chỉnh..." ${disabled ? 'disabled' : ''}>${escapeHtml(answers[key] || '')}</textarea>
+      ${reviewPanel}
     </article>`;
   }
 
@@ -587,6 +674,9 @@
     }
 
     function progressText() {
+      if (state.submitted && state.result) {
+        return `${state.result.score ?? 0}/${state.result.total ?? state.exam.questions.length} đúng`;
+      }
       const answered = state.exam.questions.filter(q => String(answerForQuestion(q, state.answers) || '').trim()).length;
       return `${answered}/${state.exam.questions.length} câu`;
     }
@@ -665,7 +755,7 @@
               <strong>${safeRichText(page.title || 'Phần bài làm')}</strong>
               <span>Trang ${state.pageIndex + 1}/${totalPages}</span>
             </div>
-            ${questions.map(q => renderQuestion(q, state.answers, disabled, { dropFillIds })).join('')}
+            ${questions.map(q => renderQuestion(q, state.answers, disabled, { dropFillIds, review: state.submitted })).join('')}
           </section>
         </div>
         <footer class="eng10-online-foot">
@@ -801,6 +891,7 @@
     hydrateExamAssetUrls,
     isQuestionCorrect,
     normalizeText,
+    reviewQuestion,
     safeRichText,
     scoreExam,
     shouldRenderRewritePrompt,

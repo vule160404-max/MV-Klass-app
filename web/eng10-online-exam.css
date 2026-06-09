@@ -339,12 +339,52 @@
   background: #fff;
 }
 
+.eng10-online-q-card.review-correct {
+  border-color: rgba(20, 131, 78, .24);
+  background: linear-gradient(180deg, #fff, #f6fdf9);
+}
+
+.eng10-online-q-card.review-wrong {
+  border-color: rgba(220, 38, 38, .24);
+  background: linear-gradient(180deg, #fff, #fff8f8);
+}
+
+.eng10-online-q-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .eng10-online-q-num {
   color: #7a8499;
   font-size: 11px;
   font-weight: 950;
   letter-spacing: .04em;
   text-transform: uppercase;
+}
+
+.eng10-online-review-badge {
+  flex: 0 0 auto;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.eng10-online-review-badge.ok {
+  border: 1px solid rgba(20, 131, 78, .24);
+  background: #eafaf2;
+  color: #047857;
+}
+
+.eng10-online-review-badge.bad {
+  border: 1px solid rgba(220, 38, 38, .24);
+  background: #fff1f2;
+  color: #be123c;
 }
 
 .eng10-online-q-text {
@@ -381,9 +421,79 @@
   color: #1d4ed8;
 }
 
+.eng10-online-option.correct {
+  border-color: rgba(20, 131, 78, .36);
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.eng10-online-option.wrong {
+  border-color: rgba(220, 38, 38, .32);
+  background: #fff1f2;
+  color: #991b1b;
+}
+
 .eng10-online-option input {
   margin-top: 2px;
   flex: 0 0 auto;
+}
+
+.eng10-online-review-panel {
+  display: grid;
+  gap: 8px;
+  grid-column: 1 / -1;
+  margin-top: 3px;
+  padding: 11px;
+  border-radius: 14px;
+  border: 1px solid rgba(18, 33, 61, .08);
+  background: #fbfdff;
+}
+
+.eng10-online-review-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  font-size: 12px;
+}
+
+.eng10-online-review-row span,
+.eng10-online-review-explain span {
+  color: #718096;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.eng10-online-review-row strong {
+  color: #12213d;
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.eng10-online-review-row strong.ok {
+  color: #047857;
+}
+
+.eng10-online-review-row strong.bad {
+  color: #be123c;
+}
+
+.eng10-online-review-explain {
+  display: grid;
+  gap: 5px;
+  padding-top: 7px;
+  border-top: 1px dashed rgba(18, 33, 61, .12);
+}
+
+.eng10-online-review-explain p {
+  margin: 0;
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 760;
+  line-height: 1.55;
 }
 
 .eng10-online-input {

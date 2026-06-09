@@ -8,6 +8,7 @@ const {
   displayQuestionText,
   formatExamDisplayText,
   hydrateExamAssetUrls,
+  reviewQuestion,
   safeRichText,
   scoreExam,
   shouldRenderRewritePrompt,
@@ -87,6 +88,46 @@ test('scoreExam scores MCQ, fill blank, and rewrite answers without storing deta
   });
 });
 
+test('reviewQuestion returns correctness, selected answer, correct answer, and explanation', () => {
+  const exam = validateExamJson({
+    exam_id: 'demo',
+    title: 'Demo exam',
+    questions: [
+      {
+        id: 1,
+        type: 'multiple_choice',
+        question: 'Pick one',
+        options: ['A. one', 'B. two', 'C. three', 'D. four'],
+        answer: 'B',
+        explanation: 'B is correct because it matches the text.'
+      },
+      {
+        id: 2,
+        type: 'fill_blank',
+        blank_id: 'blank_2',
+        question: 'Fill',
+        word_bank: [],
+        answer: 'resources',
+        explanation: 'Use the plural noun resources.'
+      }
+    ]
+  });
+
+  const wrong = reviewQuestion(exam.questions[0], { mcq_1: 'A' });
+  const correct = reviewQuestion(exam.questions[1], { fill_blank_2: ' Resources ' });
+
+  assert.equal(wrong.correct, false);
+  assert.equal(wrong.status_label, 'Sai');
+  assert.equal(wrong.user_answer, 'A. one');
+  assert.equal(wrong.correct_answer, 'B. two');
+  assert.equal(wrong.explanation, 'B is correct because it matches the text.');
+  assert.equal(correct.correct, true);
+  assert.equal(correct.status_label, 'Đúng');
+  assert.equal(correct.user_answer, 'Resources');
+  assert.equal(correct.correct_answer, 'resources');
+  assert.equal(correct.explanation, 'Use the plural noun resources.');
+});
+
 test('safeRichText escapes arbitrary HTML while preserving strong and underline tags', () => {
   assert.equal(
     safeRichText('<img src=x onerror=alert(1)><strong>bold</strong><u>u</u>'),
@@ -130,6 +171,19 @@ test('footer submit button becomes exit after a completed submission', () => {
 
   assert.match(source, /state\.submitted\s*\?\s*'close'\s*:\s*'submit'/);
   assert.match(source, /state\.submitted\s*\?\s*'Thoát'\s*:\s*\(state\.submitting\s*\?\s*'Đang chấm\.\.\.'\s*:\s*'Nộp bài'\)/);
+});
+
+test('review mode renders correctness badges and explanations after result dialog closes', () => {
+  const source = fs.readFileSync(runnerSourcePath, 'utf8');
+  const css = fs.readFileSync(runnerCssPath, 'utf8');
+
+  assert.match(source, /review:\s*state\.submitted/);
+  assert.match(source, /eng10-online-review-badge/);
+  assert.match(source, /eng10-online-review-panel/);
+  assert.match(source, /Giải thích/);
+  assert.match(css, /\.eng10-online-q-card\.review-correct/);
+  assert.match(css, /\.eng10-online-option\.correct/);
+  assert.match(css, /\.eng10-online-review-panel/);
 });
 
 test('formatExamDisplayText renders cloze placeholders as numbered blanks', () => {
