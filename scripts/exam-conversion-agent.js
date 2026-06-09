@@ -17,6 +17,10 @@ const DEFAULT_NVIDIA_MODEL = 'mistralai/mistral-medium-3.5-128b';
 const DEFAULT_NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1';
 const DEFAULT_NVIDIA_MAX_ATTEMPTS = 6;
 const DEFAULT_NVIDIA_RETRY_DELAY_MS = 5000;
+const DEFAULT_OPENAI_MODEL = 'gpt-4.1-mini';
+const DEFAULT_OPENAI_BASE_URL = 'https://api.openai.com/v1';
+const DEFAULT_OPENAI_MAX_ATTEMPTS = 4;
+const DEFAULT_OPENAI_RETRY_DELAY_MS = 2000;
 const DEFAULT_RUN_DIR = '_exam_agent_runs';
 const DEFAULT_EXPECTED_QUESTION_COUNT = 50;
 const MAX_GEMINI_TEXT_CHARS = 180000;
@@ -68,6 +72,7 @@ function envValue(env, names) {
 
 function normalizeAiProvider(value) {
   const provider = String(value || '').trim().toLowerCase();
+  if (['openai', 'open-ai', 'chatgpt'].includes(provider)) return 'openai';
   if (['nvidia', 'nim'].includes(provider)) return 'nvidia';
   if (['gemini', 'google'].includes(provider)) return 'gemini';
   return '';
@@ -76,12 +81,16 @@ function normalizeAiProvider(value) {
 function detectAiProvider(env = process.env) {
   const configured = normalizeAiProvider(envValue(env, 'EXAM_AGENT_PROVIDER'));
   if (configured) return configured;
+  if (envValue(env, 'OPENAI_API_KEY')) return 'openai';
   if (envValue(env, 'NVIDIA_API_KEY')) return 'nvidia';
   return 'gemini';
 }
 
 function defaultModelForProvider(provider) {
-  return normalizeAiProvider(provider) === 'nvidia' ? DEFAULT_NVIDIA_MODEL : DEFAULT_GEMINI_MODEL;
+  const normalized = normalizeAiProvider(provider);
+  if (normalized === 'openai') return DEFAULT_OPENAI_MODEL;
+  if (normalized === 'nvidia') return DEFAULT_NVIDIA_MODEL;
+  return DEFAULT_GEMINI_MODEL;
 }
 
 function resolveAiProvider(options = {}, env = process.env) {
@@ -628,6 +637,121 @@ async function callNvidia({
   throw new Error(`NVIDIA_REQUEST_FAILED: ${lastMessage || 'UNKNOWN'}`);
 }
 
+function buildOpenAiRequestBody({ prompt, model, responseFormat = true, maxTokens = true }) {
+  const body = {
+    model: String(model || DEFAULT_OPENAI_MODEL).trim(),
+    messages: [
+      {
+        role: 'system',
+        content: 'Return exactly one valid JSON object that matches the requested exam schema. Do not include markdown, comments, or extra text.'
+      },
+      {
+        role: 'user',
+        content: String(prompt || '')
+      }
+    ],
+    temperature: 0.1
+  };
+  if (maxTokens) body.max_tokens = 24000;
+  if (responseFormat) body.response_format = { type: 'json_object' };
+  return body;
+}
+
+function responseTextFromOpenAi(data) {
+  const parts = [];
+  for (const choice of Array.isArray(data && data.choices) ? data.choices : []) {
+    if (choice && choice.message && typeof choice.message.content === 'string') parts.push(choice.message.content);
+    else if (typeof (choice && choice.text) === 'string') parts.push(choice.text);
+  }
+  return parts.join('\n').trim();
+}
+
+function isRetryableOpenAiError(status, message) {
+  const text = String(message || '').toLowerCase();
+  return [408, 409, 429, 500, 502, 503, 504].includes(status)
+    || text.includes('overload')
+    || text.includes('temporar')
+    || text.includes('timeout')
+    || text.includes('rate limit');
+}
+
+async function callOpenAi({
+  apiKey,
+  model,
+  prompt,
+  baseUrl = DEFAULT_OPENAI_BASE_URL,
+  fetchImpl = fetch,
+  sleep = sleepMs,
+  maxAttempts = DEFAULT_OPENAI_MAX_ATTEMPTS,
+  retryDelayMs = DEFAULT_OPENAI_RETRY_DELAY_MS
+}) {
+  if (!apiKey) throw new Error('OPENAI_API_KEY_REQUIRED');
+  const cleanModel = String(model || DEFAULT_OPENAI_MODEL).trim();
+  const root = String(baseUrl || DEFAULT_OPENAI_BASE_URL).replace(/\/+$/, '');
+  const url = `${root}/chat/completions`;
+  const attempts = Math.max(1, Number(maxAttempts) || 1);
+  const delayMs = Math.max(0, Number(retryDelayMs) || 0);
+  let lastMessage = '';
+  let useResponseFormat = true;
+  let useMaxTokens = true;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    let response;
+    try {
+      response = await fetchImpl(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(buildOpenAiRequestBody({
+          prompt,
+          model: cleanModel,
+          responseFormat: useResponseFormat,
+          maxTokens: useMaxTokens
+        }))
+      });
+    } catch (err) {
+      lastMessage = String(err && err.message || err || 'fetch failed').slice(0, 240);
+      if (attempt < attempts) {
+        await sleep(delayMs * attempt);
+        continue;
+      }
+      throw new Error(`OPENAI_REQUEST_FAILED: ${lastMessage}`);
+    }
+
+    const data = await response.json().catch(() => null);
+    if (response.ok) {
+      const text = responseTextFromOpenAi(data);
+      if (!text && attempt < attempts) {
+        lastMessage = 'OPENAI_EMPTY_JSON';
+        await sleep(delayMs * attempt);
+        continue;
+      }
+      return parseJsonText(text, 'OPENAI');
+    }
+
+    lastMessage = String(
+      (data && data.error && (data.error.message || data.error)) ||
+      (data && data.message) ||
+      `OPENAI_HTTP_${response.status}`
+    ).slice(0, 240);
+    if (response.status === 400 && useResponseFormat && /response_format|json_object|unsupported/i.test(lastMessage)) {
+      useResponseFormat = false;
+      if (attempt < attempts) continue;
+    }
+    if (response.status === 400 && useMaxTokens && /max_tokens|max_completion_tokens|unsupported/i.test(lastMessage)) {
+      useMaxTokens = false;
+      if (attempt < attempts) continue;
+    }
+    if (attempt < attempts && isRetryableOpenAiError(response.status, lastMessage)) {
+      await sleep(delayMs * attempt);
+      continue;
+    }
+    throw new Error(`OPENAI_REQUEST_FAILED: ${lastMessage}`);
+  }
+  throw new Error(`OPENAI_REQUEST_FAILED: ${lastMessage || 'UNKNOWN'}`);
+}
+
 function renderAgentPrompt(templateText, row, pair) {
   const id = String(row && row.id || '').trim();
   const title = displayTitle(row) || 'De online';
@@ -953,6 +1077,16 @@ async function convertWithAiDefault(payload, options = {}, deps = {}) {
   const env = deps.env || process.env;
   const provider = resolveAiProvider(options, env);
   const model = resolveAiModel(provider, options, env);
+  if (provider === 'openai') {
+    return await (deps.callOpenAiImpl || callOpenAi)({
+      apiKey: envValue(env, 'OPENAI_API_KEY'),
+      model,
+      prompt: payload.prompt,
+      baseUrl: envValue(env, 'OPENAI_BASE_URL') || DEFAULT_OPENAI_BASE_URL,
+      fetchImpl: deps.fetchImpl || fetch,
+      sleep: deps.sleep || sleepMs
+    });
+  }
   if (provider === 'nvidia') {
     return await (deps.callNvidiaImpl || callNvidia)({
       apiKey: envValue(env, 'NVIDIA_API_KEY'),
@@ -1162,6 +1296,7 @@ module.exports = {
   buildGeminiRequestBody,
   callGemini,
   callNvidia,
+  callOpenAi,
   convertWithAiDefault,
   evaluateQualityGate,
   examFileRefs,

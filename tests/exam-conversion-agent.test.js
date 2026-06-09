@@ -5,6 +5,7 @@ const {
   buildGeminiRequestBody,
   callGemini,
   callNvidia,
+  callOpenAi,
   convertWithAiDefault,
   evaluateQualityGate,
   examFileRefs,
@@ -385,6 +386,62 @@ test('NVIDIA caller retries transient HTTP 504 with configurable backoff', async
   assert.equal(calls, 3);
   assert.deepEqual(sleeps, [10, 20]);
   assert.equal(result.exam_id, 'exam-nvidia-retry');
+});
+
+test('OpenAI caller uses chat completions and parses JSON', async () => {
+  let request;
+  const result = await callOpenAi({
+    apiKey: 'openai-test-key',
+    model: 'gpt-4.1-mini',
+    prompt: 'Convert this exam.',
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: JSON.stringify({ exam_id: 'exam-openai-001', title: 'Draft', pages: [], questions: [] })
+            }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.equal(request.url, 'https://api.openai.com/v1/chat/completions');
+  assert.equal(request.options.headers.Authorization, 'Bearer openai-test-key');
+  const body = JSON.parse(request.options.body);
+  assert.equal(body.model, 'gpt-4.1-mini');
+  assert.equal(body.response_format.type, 'json_object');
+  assert.equal(result.exam_id, 'exam-openai-001');
+});
+
+test('default AI converter chooses OpenAI when OPENAI_API_KEY is configured', async () => {
+  let openAiCalls = 0;
+  const result = await convertWithAiDefault({ prompt: 'Convert this exam.' }, {}, {
+    env: {
+      OPENAI_API_KEY: 'openai-test-key',
+      NVIDIA_API_KEY: 'nvidia-test-key',
+      GEMINI_API_KEY: 'gemini-test-key'
+    },
+    callOpenAiImpl: async ({ apiKey, model }) => {
+      openAiCalls += 1;
+      assert.equal(apiKey, 'openai-test-key');
+      assert.equal(model, 'gpt-4.1-mini');
+      return { exam_id: 'exam-provider-openai', title: 'Draft', pages: [], questions: [] };
+    },
+    callNvidiaImpl: async () => {
+      throw new Error('NVIDIA should not be called when OpenAI key is configured');
+    },
+    callGeminiImpl: async () => {
+      throw new Error('Gemini should not be called when OpenAI key is configured');
+    }
+  });
+
+  assert.equal(openAiCalls, 1);
+  assert.equal(result.exam_id, 'exam-provider-openai');
 });
 
 test('default AI converter chooses NVIDIA when NVIDIA_API_KEY is configured', async () => {
