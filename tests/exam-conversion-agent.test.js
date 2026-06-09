@@ -13,6 +13,7 @@ const {
   filterConversionCandidates,
   inferThanhHoaExamNumber,
   parseArgs,
+  renderAgentPrompt,
   runBatch,
   sourceMatchesThanhHoa
 } = require('../scripts/exam-conversion-agent.js');
@@ -206,6 +207,44 @@ test('quality gate blocks placeholder, missing counts, weak MCQ, and image slots
   assert.equal(imageSlots.ok, true);
   assert.equal(imageSlots.canPublish, false);
   assert.match(imageSlots.errors.join(' '), /IMAGE_SLOTS_NEED_UPLOAD/);
+});
+
+test('quality gate repairs generated rewrite questions missing prompt', () => {
+  const exam = validExam({
+    questions: validExam().questions.map(q => (
+      q.id === 4 ? { ...q, prompt: '' } : q
+    ))
+  });
+
+  const result = evaluateQualityGate(exam, {
+    mode: 'draft',
+    expectedQuestionCount: 4,
+    answerKeys: new Map([[1, 'A'], [2, 'B'], [3, 'goes'], [4, 'although it rained, we went out']])
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.exam.questions[3].prompt, 'Rewrite the sentence.');
+  assert.match(result.warnings.join(' '), /AUTO_FILLED_PROMPT:4/);
+});
+
+test('renderAgentPrompt includes exam and local file metadata before extracted text', () => {
+  const prompt = renderAgentPrompt('Prompt __EXAM_ID__ __EXAM_TITLE__', {
+    id: 'exam-file-002',
+    title: 'Đề 002 Vào 10 Thanh Hóa 2025'
+  }, {
+    examCode: '002',
+    examFileName: 'MÃ ĐỀ 002.doc',
+    answerFileName: 'MÃ ĐỀ 002.doc',
+    examText: 'Nội dung đề',
+    answerText: 'Đáp án'
+  });
+
+  assert.match(prompt, /exam_file_id: exam-file-002/);
+  assert.match(prompt, /exam_title: Đề 002 Vào 10 Thanh Hóa 2025/);
+  assert.match(prompt, /local_exam_code: 002/);
+  assert.match(prompt, /exam_file_name: MÃ ĐỀ 002\.doc/);
+  assert.match(prompt, /answer_file_name: MÃ ĐỀ 002\.doc/);
+  assert.match(prompt, /NOI DUNG DE THI DA TRICH XUAT:/);
 });
 
 test('Gemini request body uses Gemini 2.5 Flash structured JSON output', () => {

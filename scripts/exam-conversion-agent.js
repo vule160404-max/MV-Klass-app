@@ -289,6 +289,55 @@ function answerComparable(value) {
   return normalizeSourceText(String(value || '').replace(/^[A-D][.)\s-]+/i, ''));
 }
 
+function cloneGeneratedJson(input) {
+  if (typeof input === 'string') return JSON.parse(input);
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return input;
+  return JSON.parse(JSON.stringify(input));
+}
+
+function normalizeGeneratedOptions(options) {
+  if (Array.isArray(options)) return options;
+  if (!options || typeof options !== 'object') return options;
+  const keys = Object.keys(options).sort((a, b) => String(a).localeCompare(String(b)));
+  return keys
+    .map(key => {
+      const label = String(key || '').trim().toUpperCase();
+      const value = String(options[key] ?? '').trim();
+      return label && value ? `${label}. ${value.replace(/^[A-D][.)\s-]+/i, '')}` : value;
+    })
+    .filter(Boolean);
+}
+
+function normalizeGeneratedExamJson(input) {
+  const warnings = [];
+  const exam = cloneGeneratedJson(input);
+  if (!exam || typeof exam !== 'object' || Array.isArray(exam)) return { exam: input, warnings };
+  if (!Array.isArray(exam.questions)) return { exam, warnings };
+
+  exam.questions = exam.questions.map((raw, index) => {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+    const q = { ...raw };
+    const id = q.id === undefined || q.id === null || String(q.id).trim() === '' ? index + 1 : q.id;
+    const type = String(q.type || '').trim();
+    q.id = id;
+    if (q.options && !Array.isArray(q.options)) {
+      q.options = normalizeGeneratedOptions(q.options);
+      warnings.push(`AUTO_NORMALIZED_OPTIONS:${id}`);
+    }
+    if (type === 'fill_blank' && !String(q.blank_id || '').trim()) {
+      q.blank_id = `blank_${id}`;
+      warnings.push(`AUTO_FILLED_BLANK_ID:${id}`);
+    }
+    if (type === 'sentence_rewrite' && !String(q.prompt || '').trim()) {
+      q.prompt = String(q.question || q.answer || `Rewrite question ${id}`).trim();
+      warnings.push(`AUTO_FILLED_PROMPT:${id}`);
+    }
+    return q;
+  });
+
+  return { exam, warnings };
+}
+
 function evaluateQualityGate(input, options = {}) {
   const mode = options.mode || 'draft';
   const expectedQuestionCount = Number(options.expectedQuestionCount || 0);
@@ -297,12 +346,14 @@ function evaluateQualityGate(input, options = {}) {
   const publishBlockers = [];
   const warnings = [];
   let exam = null;
+  const normalized = normalizeGeneratedExamJson(input);
+  warnings.push(...normalized.warnings);
 
   try {
-    exam = validateExamJson(input);
+    exam = validateExamJson(normalized.exam);
   } catch (err) {
     hardErrors.push(`SCHEMA_INVALID: ${err && err.message || err}`);
-    return { ok: false, canPublish: false, errors: hardErrors, warnings, exam: null, imageSlots: [] };
+    return { ok: false, canPublish: false, errors: hardErrors, warnings, exam: normalized.exam || null, imageSlots: [] };
   }
 
   const strings = jsonStringValues(exam);
@@ -755,6 +806,7 @@ async function callOpenAi({
 function renderAgentPrompt(templateText, row, pair) {
   const id = String(row && row.id || '').trim();
   const title = displayTitle(row) || 'De online';
+  const localPair = row && row.localPair || {};
   const base = String(templateText || '')
     .replaceAll('__EXAM_ID__', id)
     .replaceAll('__EXAM_TITLE__', title)
@@ -764,8 +816,18 @@ function renderAgentPrompt(templateText, row, pair) {
     .replace(/\{\{\s*title\s*\}\}/g, title);
   const examText = String(pair && pair.examText || '').slice(0, MAX_GEMINI_TEXT_CHARS);
   const answerText = String(pair && pair.answerText || '').slice(0, MAX_GEMINI_TEXT_CHARS);
+  const metadata = [
+    'THONG TIN FILE:',
+    `exam_file_id: ${id}`,
+    `exam_title: ${title}`,
+    `local_exam_code: ${String((pair && pair.examCode) || localPair.examCode || row && row.exam_code || '').trim()}`,
+    `exam_file_name: ${String((pair && pair.examFileName) || localPair.examFileName || '').trim()}`,
+    `answer_file_name: ${String((pair && pair.answerFileName) || localPair.answerFileName || '').trim()}`
+  ];
   return [
     base,
+    '',
+    ...metadata,
     '',
     'NOI DUNG DE THI DA TRICH XUAT:',
     examText,

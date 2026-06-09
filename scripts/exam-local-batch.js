@@ -581,7 +581,7 @@ async function runLocalBatch(options = {}, deps = {}) {
       item.answer_text_chars = pairText.answerText.length;
       item.answer_key_count = pairText.answerKeys ? pairText.answerKeys.size : 0;
       const template = await (deps.loadPromptTemplate || defaultLoadPromptTemplate)(row, opts);
-      const prompt = renderAgentPrompt(template, row, pairText);
+      const prompt = renderAgentPrompt(template, row, { ...pair, ...pairText });
       const generated = await (deps.convertWithGemini || defaultConvertWithGemini)({ prompt, row, pair, pairText }, opts);
       const gate = evaluateQualityGate(generated, {
         mode: 'draft',
