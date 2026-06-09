@@ -305,30 +305,48 @@ function renderHtml() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MV Klass - Local Exam Agent</title>
+  <title>MV Klass - Exam Conversion App</title>
   <style>
-    :root{--navy:#0f2a55;--ink:#102033;--muted:#687894;--line:#dce7f5;--soft:#f4f8fc;--white:#fff;--blue:#2563eb;--green:#059669;--amber:#d97706;--red:#dc2626;--shadow:0 18px 44px rgba(15,42,85,.10)}
+    :root{--navy:#102858;--navy-2:#183b75;--ink:#102033;--muted:#6a7890;--line:#dbe6f5;--soft:#edf4fb;--panel:#fff;--blue:#2563eb;--cyan:#0891b2;--green:#059669;--amber:#d97706;--red:#dc2626;--shadow:0 18px 42px rgba(16,40,88,.11);--radius:18px}
     *{box-sizing:border-box}
-    body{margin:0;background:#eaf1f9;color:var(--ink);font-family:Segoe UI,system-ui,sans-serif;font-size:14px}
+    body{margin:0;background:linear-gradient(180deg,#e8f0fa 0,#f5f8fc 42%,#eaf1f9 100%);color:var(--ink);font-family:Segoe UI,system-ui,sans-serif;font-size:14px}
     button,input,select,textarea{font:inherit}
-    .shell{width:min(1280px,calc(100vw - 32px));margin:24px auto 40px;display:grid;gap:16px}
-    .top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:20px 22px;border-radius:18px;background:linear-gradient(135deg,#102858,#2459d9);color:#fff;box-shadow:var(--shadow)}
-    .top h1{margin:0;font-size:24px;line-height:1.15}
-    .top p{margin:7px 0 0;color:#dbeafe;font-weight:700;line-height:1.45}
-    .badge{display:inline-flex;align-items:center;min-height:32px;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);font-weight:900;white-space:nowrap}
-    .panel{border:1px solid var(--line);border-radius:18px;background:var(--white);box-shadow:var(--shadow);overflow:hidden}
-    .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);background:#fbfdff}
-    .panel-title{font-weight:950;color:var(--navy);font-size:15px}
-    .controls{display:grid;grid-template-columns:minmax(260px,1.6fr) 140px 120px 120px 130px 130px;gap:10px;padding:16px 18px}
-    label{display:grid;gap:6px;color:#5d6d87;font-size:11px;font-weight:900;text-transform:uppercase}
+    .app-shell{min-height:100vh;display:grid;grid-template-columns:248px minmax(620px,1fr) 360px;gap:16px;padding:16px}
+    .app-sidebar,.app-workspace,.app-detail{min-width:0}
+    .app-sidebar{position:sticky;top:16px;height:calc(100vh - 32px);border:1px solid rgba(255,255,255,.3);border-radius:24px;background:linear-gradient(180deg,#102858,#173c78);color:#fff;box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-mark{width:42px;height:42px;border-radius:14px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:1000;box-shadow:0 12px 26px rgba(0,0,0,.18)}
+    .brand-title{font-size:18px;font-weight:1000;line-height:1.1}
+    .brand-sub{margin-top:3px;color:#cfe0fb;font-size:12px;font-weight:800}
+    .side-section{display:grid;gap:8px}
+    .side-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#a9c6f7;font-weight:950}
+    .side-step{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:10px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10)}
+    .side-step b{width:28px;height:28px;border-radius:10px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+    .side-step strong{display:block;font-size:13px}.side-step span{display:block;margin-top:2px;color:#cfe0fb;font-size:12px;font-weight:750;line-height:1.35}
+    .side-note{margin-top:auto;border:1px solid rgba(255,255,255,.16);border-radius:16px;background:rgba(255,255,255,.09);padding:12px;color:#dbeafe;font-weight:800;line-height:1.45}
+    .app-workspace{display:grid;gap:14px}
+    .app-topbar{border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.82);box-shadow:var(--shadow);padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+    .app-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);font-weight:1000}
+    h1{margin:4px 0 0;color:var(--navy);font-size:26px;line-height:1.12}
+    .top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .badge{display:inline-flex;align-items:center;min-height:34px;padding:8px 12px;border-radius:999px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-weight:950;white-space:nowrap}
+    .status-dot{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:8px 12px;border-radius:999px;background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;font-weight:950;white-space:nowrap}
+    .status-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+    .status-dot.running{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}.status-dot.error{background:#fff1f2;border-color:#fecdd3;color:#be123c}.status-dot.completed{background:#ecfdf5;border-color:#a7f3d0;color:#047857}
+    .panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 16px;border-bottom:1px solid var(--line);background:#fbfdff}
+    .panel-title{font-weight:1000;color:var(--navy);font-size:15px}
+    .panel-sub{color:var(--muted);font-weight:800;font-size:12px}
+    .controls{display:grid;grid-template-columns:minmax(280px,1.7fr) 130px 116px 116px 130px 130px;gap:10px;padding:16px}
+    label{display:grid;gap:6px;color:#5d6d87;font-size:11px;font-weight:950;text-transform:uppercase}
     input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none;font-weight:800}
     input,select{height:42px;padding:0 12px}
-    textarea{min-height:126px;padding:12px;resize:vertical;line-height:1.5}
+    textarea{min-height:116px;padding:12px;resize:vertical;line-height:1.5}
     input:focus,select:focus,textarea:focus{border-color:#7aa7ff;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-    .prompt-panel{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:12px;padding:0 18px 16px}
+    .prompt-panel{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:12px;padding:0 16px 16px}
     .prompt-help{align-self:stretch;border:1px dashed #c9d9ee;border-radius:14px;background:#f8fbff;color:#637590;font-weight:800;line-height:1.45;padding:12px}
     .prompt-help strong{display:block;color:var(--navy);font-size:13px;margin-bottom:4px}
-    .actions{display:flex;flex-wrap:wrap;gap:9px;padding:0 18px 18px}
+    .actions{display:flex;flex-wrap:wrap;gap:9px;padding:0 16px 16px}
     .btn{height:42px;border:1px solid transparent;border-radius:12px;padding:0 15px;background:#fff;color:var(--navy);font-weight:950;cursor:pointer;box-shadow:0 8px 18px rgba(15,42,85,.08)}
     .btn:hover{transform:translateY(-1px)}
     .btn.primary{background:#102858;color:#fff}
@@ -337,19 +355,19 @@ function renderHtml() {
     .btn.warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
     .btn.danger{background:#fff1f2;color:#be123c;border-color:#fecdd3}
     .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-    .progress-panel{display:grid;gap:9px;margin:0 18px 18px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+    .progress-panel{display:grid;gap:9px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#f8fbff}
     .progress-copy{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#5d6d87;font-weight:900}
     .progress-copy strong{color:var(--navy)}
     .progress-track{height:13px;overflow:hidden;border-radius:999px;background:#e6edf7;border:1px solid #d5e2f2}
     .progress-fill{position:relative;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#22c55e);transition:width .45s ease}
     .progress-fill.running::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0 30%,rgba(255,255,255,.35) 30% 45%,transparent 45% 70%);background-size:44px 100%;animation:progress-stripe .85s linear infinite}
     @keyframes progress-stripe{from{background-position:0 0}to{background-position:44px 0}}
-    .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:16px 18px;background:#f8fbff;border-bottom:1px solid var(--line)}
+    .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
     .metric{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px}
     .metric span{display:block;color:#6b7d98;font-size:11px;font-weight:900;text-transform:uppercase}
     .metric strong{display:block;margin-top:4px;color:var(--navy);font-size:24px;line-height:1}
-    .grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr);gap:16px}
-    .table-wrap{overflow:auto;max-height:520px}
+    .activity-panel{display:grid;gap:12px}
+    .table-wrap{overflow:auto;max-height:calc(100vh - 342px);min-height:360px}
     table{width:100%;border-collapse:separate;border-spacing:0}
     th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #edf2f8;vertical-align:top}
     th{position:sticky;top:0;background:#f8fbff;color:#5d6d87;font-size:11px;text-transform:uppercase;z-index:1}
@@ -362,80 +380,115 @@ function renderHtml() {
     .mini-link{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;border:1px solid #b9d8ff;border-radius:10px;background:#eaf3ff;color:#155eaa;text-decoration:none;font-weight:950;white-space:nowrap}
     .mini-link:hover{background:#dbeafe}
     .muted-mini{color:#94a3b8;font-weight:900}
-    .log{height:360px;overflow:auto;background:#0b1730;color:#dbeafe;padding:14px;border-radius:14px;font:12px/1.55 Consolas,ui-monospace,monospace;white-space:pre-wrap}
+    .app-detail{position:sticky;top:16px;height:calc(100vh - 32px);display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:14px}
+    .detail-card{border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:var(--shadow);padding:16px;min-width:0}
+    .detail-card.dark{background:#0b1730;color:#dbeafe;border-color:#17294d}
+    .detail-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;color:var(--navy);font-weight:1000}
+    .detail-card.dark .detail-title{color:#eaf2ff}
+    .log{height:100%;min-height:260px;overflow:auto;background:transparent;color:#dbeafe;padding:0;border-radius:14px;font:12px/1.55 Consolas,ui-monospace,monospace;white-space:pre-wrap}
     .empty{padding:22px;text-align:center;color:#74839a;font-weight:850}
     .notice{padding:10px 12px;border-radius:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-weight:850;line-height:1.4}
-    @media (max-width:980px){.controls,.prompt-panel{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.top{display:grid}.badge{width:max-content}}
-    @media (max-width:620px){.shell{width:calc(100vw - 18px);margin:10px auto}.controls,.prompt-panel{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.actions .btn{flex:1 1 150px}.top h1{font-size:20px}.progress-copy{display:grid}}
+    .quick-list{display:grid;gap:8px;color:#52627a;font-weight:820;line-height:1.45}.quick-list span{display:flex;gap:8px}.quick-list b{color:var(--navy)}
+    @media (max-width:1180px){.app-shell{grid-template-columns:220px minmax(0,1fr)}.app-detail{position:static;height:auto;grid-column:1/-1;grid-template-columns:1fr 1fr;grid-template-rows:auto}.detail-card.dark{min-height:280px}.controls{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:840px){.app-shell{display:block;padding:10px}.app-sidebar{position:static;height:auto;margin-bottom:12px}.app-workspace{display:grid}.app-topbar{display:grid}.controls,.prompt-panel{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.app-detail{display:grid;grid-template-columns:1fr;margin-top:12px}.table-wrap{max-height:none}.top-actions{justify-content:flex-start}}
+    @media (max-width:560px){h1{font-size:21px}.metrics{grid-template-columns:1fr 1fr}.actions .btn{flex:1 1 145px}.progress-copy{display:grid}.side-section{display:none}}
   </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="top">
-      <div>
-        <h1>MV Klass Local Exam Agent</h1>
-        <p>Tạo JSON nháp từ thư mục đề/đáp án trên máy. Tool này chỉ chạy localhost cho admin.</p>
+  <main class="app-shell">
+    <aside class="app-sidebar">
+      <div class="brand">
+        <div class="brand-mark">MV</div>
+        <div><div class="brand-title">Exam Agent</div><div class="brand-sub">Local conversion app</div></div>
       </div>
-      <div class="badge">Không publish hàng loạt</div>
-    </section>
+      <div class="side-section">
+        <div class="side-label">Quy trình</div>
+        <div class="side-step"><b>1</b><div><strong>Quét thư mục</strong><span>Nhận diện file đề và đáp án theo mã đề.</span></div></div>
+        <div class="side-step"><b>2</b><div><strong>Tạo JSON</strong><span>Gửi đề, đáp án và prompt nguồn tới OpenAI.</span></div></div>
+        <div class="side-step"><b>3</b><div><strong>Review</strong><span>Mở preview trước khi lưu nháp lên kho.</span></div></div>
+      </div>
+      <div class="side-note">Chạy trên máy local. Tool không publish hàng loạt và chỉ lưu draft khi thầy/cô chọn chế độ lưu.</div>
+    </aside>
 
-    <section class="panel">
-      <div class="panel-head">
-        <div class="panel-title">Cấu hình batch</div>
-        <div id="server-status" class="status">Localhost</div>
-      </div>
-      <div class="controls">
-        <label>Thư mục đề/đáp án<input id="folder" placeholder="C:\\DeThi\\ThanhHoa"></label>
-        <label>Nguồn<select id="source"><option value="Thanh Hoa">Thanh Hóa</option></select></label>
-        <label>Cấp<select id="level"><option value="vao10">Vào 10</option></select></label>
-        <label>Số đề<select id="limit"><option value="1">1</option><option value="5">5</option><option value="20" selected>20</option><option value="50">50</option><option value="9999">Tất cả</option></select></label>
-        <label>Chế độ<select id="mode"><option value="dry-run">Dry-run</option><option value="draft">Lưu draft</option></select></label>
-        <label>Nghỉ giữa đề<input id="delay" type="number" min="0" max="120" value="12"></label>
-      </div>
-      <div class="prompt-panel">
-        <label>Prompt nguồn thủ công<textarea id="prompt-text" placeholder="Dán prompt nguồn vào đây. Nếu để trống, tool sẽ lấy prompt từ Supabase theo nguồn đề."></textarea></label>
-        <div class="prompt-help">
-          <strong>Prompt nguồn</strong>
-          Dùng khi muốn test nhanh prompt mới hoặc chạy riêng một nguồn. Prompt này chỉ áp dụng cho batch local hiện tại.
+    <section class="app-workspace">
+      <header class="app-topbar">
+        <div>
+          <div class="app-kicker">MV Klass internal tool</div>
+          <h1>Chuyển đề Word/PDF thành JSON online</h1>
         </div>
-      </div>
-      <div class="actions">
-        <button class="btn blue" id="scan-btn">Quét thư mục</button>
-        <button class="btn primary" id="start-btn">Bắt đầu chạy</button>
-        <button class="btn warn" id="pause-btn">Tạm dừng</button>
-        <button class="btn green" id="resume-btn">Tiếp tục</button>
-        <button class="btn danger" id="stop-btn">Dừng sau đề hiện tại</button>
-      </div>
-      <div class="progress-panel">
-        <div class="progress-copy">
-          <strong id="progress-label">Chưa chạy</strong>
-          <span id="progress-percent">0%</span>
+        <div class="top-actions">
+          <span id="server-status" class="status-dot">Localhost</span>
+          <span class="badge">Không publish hàng loạt</span>
         </div>
-        <div class="progress-track" aria-hidden="true"><div id="progress-fill" class="progress-fill"></div></div>
-      </div>
-    </section>
+      </header>
 
-    <section class="panel">
-      <div class="metrics">
+      <section class="metrics">
         <div class="metric"><span>Tổng</span><strong id="m-total">0</strong></div>
         <div class="metric"><span>Dry-run ready</span><strong id="m-ready">0</strong></div>
         <div class="metric"><span>Đã lưu draft</span><strong id="m-draft">0</strong></div>
         <div class="metric"><span>Local only</span><strong id="m-local">0</strong></div>
         <div class="metric"><span>Cần review</span><strong id="m-review">0</strong></div>
         <div class="metric"><span>Lỗi</span><strong id="m-error">0</strong></div>
-      </div>
-      <div class="grid" style="padding:16px 18px">
-        <div>
-          <div class="panel-title" style="margin-bottom:10px">Danh sách đề</div>
-          <div id="table" class="table-wrap"><div class="empty">Chưa quét thư mục.</div></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Batch workspace</div><div class="panel-sub">Chọn thư mục, prompt và chế độ chạy</div></div>
         </div>
-        <div>
-          <div class="panel-title" style="margin-bottom:10px">Log chạy</div>
-          <div class="notice" style="margin-bottom:10px">Chế độ lưu draft chỉ ghi nháp khi file local khớp được đề trong kho tài liệu.</div>
-          <div id="log" class="log">Sẵn sàng.</div>
+        <div class="controls">
+          <label>Thư mục đề/đáp án<input id="folder" placeholder="C:\\DeThi\\ThanhHoa"></label>
+          <label>Nguồn<select id="source"><option value="Thanh Hoa">Thanh Hóa</option></select></label>
+          <label>Cấp<select id="level"><option value="vao10">Vào 10</option></select></label>
+          <label>Số đề<select id="limit"><option value="1">1</option><option value="5">5</option><option value="20" selected>20</option><option value="50">50</option><option value="9999">Tất cả</option></select></label>
+          <label>Chế độ<select id="mode"><option value="dry-run">Dry-run</option><option value="draft">Lưu draft</option></select></label>
+          <label>Nghỉ giữa đề<input id="delay" type="number" min="0" max="120" value="12"></label>
         </div>
-      </div>
+        <div class="prompt-panel">
+          <label>Prompt nguồn thủ công<textarea id="prompt-text" placeholder="Dán prompt nguồn vào đây. Nếu để trống, tool sẽ lấy prompt từ Supabase theo nguồn đề."></textarea></label>
+          <div class="prompt-help">
+            <strong>Prompt nguồn</strong>
+            Dùng khi muốn test nhanh prompt mới hoặc chạy riêng một nguồn. Prompt này chỉ áp dụng cho batch local hiện tại.
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn blue" id="scan-btn">Quét thư mục</button>
+          <button class="btn primary" id="start-btn">Bắt đầu chạy</button>
+          <button class="btn warn" id="pause-btn">Tạm dừng</button>
+          <button class="btn green" id="resume-btn">Tiếp tục</button>
+          <button class="btn danger" id="stop-btn">Dừng sau đề hiện tại</button>
+        </div>
+      </section>
+
+      <section id="activity-panel" class="panel activity-panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Danh sách đề</div><div class="panel-sub">Mở Test để review JSON local sau khi chạy</div></div>
+        </div>
+        <div id="table" class="table-wrap"><div class="empty">Chưa quét thư mục.</div></div>
+      </section>
     </section>
+
+    <aside id="detail-panel" class="app-detail">
+      <section class="detail-card">
+        <div class="detail-title"><span>Tiến độ batch</span><span id="progress-percent">0%</span></div>
+        <div class="progress-panel">
+          <div class="progress-copy"><strong id="progress-label">Chưa chạy</strong></div>
+          <div class="progress-track" aria-hidden="true"><div id="progress-fill" class="progress-fill"></div></div>
+        </div>
+      </section>
+      <section class="detail-card">
+        <div class="detail-title">Ghi chú vận hành</div>
+        <div class="notice">Chế độ lưu draft chỉ ghi nháp khi file local khớp được đề trong kho tài liệu.</div>
+        <div class="quick-list" style="margin-top:12px">
+          <span><b>Dry-run:</b> chỉ tạo JSON local để kiểm tra.</span>
+          <span><b>Lưu draft:</b> ghi nháp lên Supabase, chưa publish.</span>
+          <span><b>Test:</b> mở preview theo artifact mới nhất.</span>
+        </div>
+      </section>
+      <section class="detail-card dark">
+        <div class="detail-title">Log chạy</div>
+        <div id="log" class="log">Sẵn sàng.</div>
+      </section>
+    </aside>
   </main>
   <script>
     const $ = id => document.getElementById(id);
@@ -509,7 +562,7 @@ function renderHtml() {
     function renderJob(job) {
       if (!job) return;
       $('server-status').textContent = job.status + (job.paused ? ' · paused' : '');
-      $('server-status').className = 'status ' + job.status;
+      $('server-status').className = 'status-dot ' + job.status;
       setProgress(job.progress || {});
       if (job.report) {
         activeReport = job.report;
@@ -673,5 +726,6 @@ module.exports = {
   createServer,
   jobProgress,
   parsePort,
+  renderHtml,
   sanitizeJobOptions
 };

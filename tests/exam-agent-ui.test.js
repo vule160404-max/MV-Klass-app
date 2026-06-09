@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 
-const { createServer, jobProgress, sanitizeJobOptions } = require('../scripts/exam-agent-ui.js');
+const { createServer, jobProgress, renderHtml, sanitizeJobOptions } = require('../scripts/exam-agent-ui.js');
 
 function request(server, method, route, body) {
   return new Promise((resolve, reject) => {
@@ -70,6 +70,16 @@ test('local exam agent UI health endpoint is localhost admin tooling', async () 
     assert.equal(res.body.tool, 'exam-agent-ui');
     assert.equal(res.body.public, false);
   });
+});
+
+test('local exam agent UI renders as an app shell', () => {
+  const html = renderHtml();
+
+  assert.match(html, /class="app-shell"/);
+  assert.match(html, /class="app-sidebar"/);
+  assert.match(html, /class="app-workspace"/);
+  assert.match(html, /id="activity-panel"/);
+  assert.match(html, /id="detail-panel"/);
 });
 
 test('local exam agent UI reports scan errors as JSON', async () => {
