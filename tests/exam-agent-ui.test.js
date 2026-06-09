@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 
-const { createServer, jobProgress, renderHtml, sanitizeJobOptions } = require('../scripts/exam-agent-ui.js');
+const { createServer, jobProgress, renderHtml, renderPreviewHtml, sanitizeJobOptions } = require('../scripts/exam-agent-ui.js');
 
 function request(server, method, route, body) {
   return new Promise((resolve, reject) => {
@@ -80,6 +80,13 @@ test('local exam agent UI renders as an app shell', () => {
   assert.match(html, /class="app-workspace"/);
   assert.match(html, /id="activity-panel"/);
   assert.match(html, /id="detail-panel"/);
+});
+
+test('local preview CSS makes rich text markers visually distinct', () => {
+  const html = renderPreviewHtml();
+
+  assert.match(html, /\.eng10-online-source strong/);
+  assert.match(html, /\.eng10-online-option u/);
 });
 
 test('local exam agent UI reports scan errors as JSON', async () => {

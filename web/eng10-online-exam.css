@@ -283,6 +283,25 @@
   line-height: 1.75;
 }
 
+.eng10-online-source-block strong,
+.eng10-online-q-text strong,
+.eng10-online-option strong,
+.eng10-online-rewrite-prompt strong {
+  color: #0f2a55;
+  font-weight: 950;
+}
+
+.eng10-online-source-block u,
+.eng10-online-q-text u,
+.eng10-online-option u,
+.eng10-online-rewrite-prompt u {
+  color: #0f2a55;
+  font-weight: 900;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .eng10-online-source-block.muted {
   color: #64748b;
   font-size: 13px;

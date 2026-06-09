@@ -14,6 +14,7 @@ const {
   inferThanhHoaExamNumber,
   parseArgs,
   renderAgentPrompt,
+  restoreRichTextMarkersFromSource,
   runBatch,
   sourceMatchesThanhHoa
 } = require('../scripts/exam-conversion-agent.js');
@@ -244,6 +245,48 @@ test('quality gate replaces duplicated rewrite prompt with parenthesized keyword
   assert.equal(result.ok, true);
   assert.equal(result.exam.questions[3].prompt, 'WON');
   assert.match(result.warnings.join(' '), /AUTO_FILLED_PROMPT:4/);
+});
+
+test('restoreRichTextMarkersFromSource keeps source bold and underline markup in generated exam', () => {
+  const sourceText = [
+    'Music is useful. <strong>Once</strong> the effects are understood, students can learn faster.',
+    '1. A. <u>d</u>ifferent B. worl<u>d</u> C. practice<u>d</u> D. <u>d</u>isaster'
+  ].join('\n');
+  const exam = validExam({
+    passage: 'Music is useful. Once the effects are understood, students can learn faster.',
+    questions: validExam().questions.map(q => (
+      q.id === 1
+        ? {
+            ...q,
+            options: ['A. different', 'B. world', 'C. practiced', 'D. disaster']
+          }
+        : q
+    ))
+  });
+
+  const restored = restoreRichTextMarkersFromSource(exam, sourceText);
+
+  assert.match(restored.passage, /<strong>Once<\/strong>/);
+  assert.deepEqual(restored.questions[0].options, [
+    'A. <u>d</u>ifferent',
+    'B. worl<u>d</u>',
+    'C. practice<u>d</u>',
+    'D. <u>d</u>isaster'
+  ]);
+});
+
+test('restoreRichTextMarkersFromSource uses source context for short repeated bold words', () => {
+  const sourceText = 'It starts softly. We listen to <strong>it</strong>, our body changes. It ends.';
+  const exam = validExam({
+    passage: 'It starts softly. We listen to it, our body changes. It ends.'
+  });
+
+  const restored = restoreRichTextMarkersFromSource(exam, sourceText);
+
+  assert.equal(
+    restored.passage,
+    'It starts softly. We listen to <strong>it</strong>, our body changes. It ends.'
+  );
 });
 
 test('renderAgentPrompt includes exam and local file metadata before extracted text', () => {

@@ -325,6 +325,160 @@ function rewritePromptNeedsRepair(prompt, question) {
   return normalizeSourceText(cleanPrompt) === normalizeSourceText(stripSimpleHtml(question));
 }
 
+function decodeBasicHtmlEntities(text) {
+  return String(text || '')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#39;/gi, "'")
+    .replace(/&amp;/gi, '&');
+}
+
+function plainRichText(value) {
+  return decodeBasicHtmlEntities(stripSimpleHtml(value)).replace(/\s+/g, ' ').trim();
+}
+
+function normalizeRichComparable(value) {
+  return normalizeSourceText(plainRichText(value));
+}
+
+function richOptionKey(value) {
+  return normalizeRichComparable(String(value || '').replace(/^\s*[A-D]\s*[.)-]?\s*/i, ''));
+}
+
+function hasAllowedRichMarkup(value) {
+  return /<(?:strong|u)\b/i.test(String(value || ''));
+}
+
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function richSegmentsFromSource(sourceText, tagName) {
+  const source = String(sourceText || '');
+  const re = new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, 'gi');
+  const seen = new Set();
+  const segments = [];
+  let match;
+  while ((match = re.exec(source))) {
+    const body = String(match[1] || '').trim();
+    const plain = plainRichText(body);
+    const key = normalizeSourceText(plain);
+    if (!key || seen.has(`${tagName}:${key}`)) continue;
+    if (plain.length < 2 || plain.length > 80) continue;
+    seen.add(`${tagName}:${key}`);
+    segments.push({
+      plain,
+      rich: `<${tagName}>${body}</${tagName}>`,
+      before: plainRichText(source.slice(Math.max(0, match.index - 160), match.index)),
+      after: plainRichText(source.slice(match.index + match[0].length, match.index + match[0].length + 160))
+    });
+  }
+  return segments;
+}
+
+function textTail(value, length = 44) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return text.length > length ? text.slice(-length).replace(/^\S*\s*/, '') : text;
+}
+
+function textHead(value, length = 44) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return text.length > length ? text.slice(0, length).replace(/\s+\S*$/, '') : text;
+}
+
+function flexibleTextPattern(value) {
+  return escapeRegExp(String(value || '').trim()).replace(/\s+/g, '\\s+');
+}
+
+function restoreSegmentWithContext(text, segment) {
+  const source = String(text || '');
+  const plainPattern = flexibleTextPattern(segment.plain);
+  const before = textTail(segment.before);
+  const after = textHead(segment.after);
+  const candidates = [];
+  if (before && after) candidates.push(new RegExp(`(${flexibleTextPattern(before)}\\s*)(${plainPattern})(?=\\s*${flexibleTextPattern(after)})`, 'i'));
+  if (before) candidates.push(new RegExp(`(${flexibleTextPattern(before)}\\s*)(${plainPattern})(?=$|[^<\\w])`, 'i'));
+  if (after) candidates.push(new RegExp(`(^|[^>\\w])(${plainPattern})(?=\\s*${flexibleTextPattern(after)})`, 'i'));
+  for (const re of candidates) {
+    if (re.test(source)) return source.replace(re, (_full, prefix) => `${prefix}${segment.rich}`);
+  }
+  return source;
+}
+
+function restoreSegment(text, segment) {
+  const source = String(text || '');
+  if (!source || !segment || !segment.plain || !segment.rich) return source;
+  if (normalizeRichComparable(source).indexOf(normalizeSourceText(segment.plain)) < 0) return source;
+  if (source.includes(segment.rich)) return source;
+  const contextual = restoreSegmentWithContext(source, segment);
+  if (contextual !== source) return contextual;
+  if (segment.plain.length <= 3) return source;
+  const re = new RegExp(`(^|[^>\\w])(${escapeRegExp(segment.plain)})(?=$|[^<\\w])`, 'i');
+  if (!re.test(source)) return source;
+  return source.replace(re, (_full, prefix) => `${prefix}${segment.rich}`);
+}
+
+function sourceOptionMap(sourceText) {
+  const byLetterAndText = new Map();
+  const byText = new Map();
+  for (const line of String(sourceText || '').split(/\r?\n/)) {
+    if (!hasAllowedRichMarkup(line)) continue;
+    const matches = [...line.matchAll(/(?:^|[\s\t])([A-D])\.\s*([\s\S]*?)(?=(?:\s+[A-D]\.\s)|$)/gi)];
+    for (const match of matches) {
+      const letter = String(match[1] || '').toUpperCase();
+      const body = String(match[2] || '').trim();
+      if (!letter || !body || !hasAllowedRichMarkup(body)) continue;
+      const rich = `${letter}. ${body}`;
+      const key = richOptionKey(rich);
+      if (!key) continue;
+      byLetterAndText.set(`${letter}:${key}`, rich);
+      if (!byText.has(key)) byText.set(key, rich);
+    }
+  }
+  return { byLetterAndText, byText };
+}
+
+function restoreOptionMarkup(option, optionMaps) {
+  const value = String(option || '');
+  if (!value || hasAllowedRichMarkup(value)) return value;
+  const letter = (value.match(/^\s*([A-D])\s*[.)-]?/i) || [])[1]?.toUpperCase() || '';
+  const key = richOptionKey(value);
+  if (!key) return value;
+  return (letter && optionMaps.byLetterAndText.get(`${letter}:${key}`)) || optionMaps.byText.get(key) || value;
+}
+
+function restoreRichTextMarkersFromSource(input, sourceText) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return input;
+  const exam = cloneGeneratedJson(input);
+  const strongSegments = richSegmentsFromSource(sourceText, 'strong');
+  const optionMaps = sourceOptionMap(sourceText);
+  const sourceKeys = Object.keys(exam).filter(key => (
+    key === 'passage' ||
+    key === 'fill_passage' ||
+    /^fill_passage_\d+$/i.test(key)
+  ));
+  for (const key of sourceKeys) {
+    if (typeof exam[key] !== 'string') continue;
+    for (const segment of strongSegments) {
+      exam[key] = restoreSegment(exam[key], segment);
+    }
+  }
+  if (Array.isArray(exam.questions)) {
+    exam.questions = exam.questions.map(raw => {
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+      const q = { ...raw };
+      if (Array.isArray(q.options)) q.options = q.options.map(option => restoreOptionMarkup(option, optionMaps));
+      return q;
+    });
+  }
+  return exam;
+}
+
 function normalizeGeneratedExamJson(input) {
   const warnings = [];
   const exam = cloneGeneratedJson(input);
@@ -841,8 +995,16 @@ function renderAgentPrompt(templateText, row, pair) {
     `exam_file_name: ${String((pair && pair.examFileName) || localPair.examFileName || '').trim()}`,
     `answer_file_name: ${String((pair && pair.answerFileName) || localPair.answerFileName || '').trim()}`
   ];
+  const formattingRules = [
+    'QUY TAC BAO TOAN DINH DANG TU TOOL:',
+    '- Van ban trich xuat co the chua <strong>...</strong> cho tu/cum tu in dam va <u>...</u> cho phan gach chan.',
+    '- Khi dua cac doan/cau/lua chon vao JSON, phai giu nguyen cac tag <strong> va <u> nay.',
+    '- Khong chuyen <strong>/<u> thanh markdown **text** hoac bo mat dinh dang.'
+  ];
   return [
     base,
+    '',
+    ...formattingRules,
     '',
     ...metadata,
     '',
@@ -1312,7 +1474,8 @@ async function runBatch(options = {}, deps = {}) {
       const template = await loadPromptTemplate(row, opts);
       const pair = await readExamPairText(row, opts);
       const prompt = renderAgentPrompt(template, row, pair);
-      const generated = await convertWithAi({ prompt, row, pair }, opts);
+      const generatedRaw = await convertWithAi({ prompt, row, pair }, opts);
+      const generated = restoreRichTextMarkersFromSource(generatedRaw, pair.examText);
       const gate = evaluateQualityGate(generated, {
         mode: opts.mode === 'publish' ? 'publish' : 'draft',
         expectedQuestionCount: opts.expectedQuestionCount,
@@ -1390,6 +1553,7 @@ module.exports = {
   loadPromptTemplateFromSupabase,
   parseArgs,
   renderAgentPrompt,
+  restoreRichTextMarkersFromSource,
   runBatch,
   saveDraftToSupabase,
   sourceMatchesThanhHoa

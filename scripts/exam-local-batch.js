@@ -14,6 +14,7 @@ const {
   loadDefaultEnv,
   loadPromptTemplateFromSupabase,
   renderAgentPrompt,
+  restoreRichTextMarkersFromSource,
   saveDraftToSupabase
 } = require('./exam-conversion-agent.js');
 
@@ -718,7 +719,8 @@ async function runLocalBatch(options = {}, deps = {}) {
       item.answer_key_count = pairText.answerKeys ? pairText.answerKeys.size : 0;
       const template = await (deps.loadPromptTemplate || defaultLoadPromptTemplate)(row, opts);
       const prompt = renderAgentPrompt(template, row, { ...pair, ...pairText });
-      const generated = await (deps.convertWithGemini || defaultConvertWithGemini)({ prompt, row, pair, pairText }, opts);
+      const generatedRaw = await (deps.convertWithGemini || defaultConvertWithGemini)({ prompt, row, pair, pairText }, opts);
+      const generated = restoreRichTextMarkersFromSource(generatedRaw, pairText.examText);
       const gate = evaluateQualityGate(generated, {
         mode: 'draft',
         expectedQuestionCount: opts.expectedQuestionCount,

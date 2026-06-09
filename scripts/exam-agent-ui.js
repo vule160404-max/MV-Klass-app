@@ -645,13 +645,15 @@ function renderPreviewHtml() {
     .eng10-online-progress{margin-left:auto;min-width:76px;text-align:center;border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;border-radius:999px;padding:8px 10px;font-weight:950}
     .eng10-online-main{flex:1;display:grid;grid-template-columns:minmax(280px,.75fr) minmax(420px,1fr);gap:14px;padding:14px;background:#eaf1f9}
     .eng10-online-source,.eng10-online-paper{border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:var(--shadow);overflow:auto}
-    .eng10-online-source{padding:16px;color:#53657f;font-weight:800;line-height:1.6}
+    .eng10-online-source{padding:16px;color:#53657f;font-weight:650;line-height:1.6}
+    .eng10-online-source strong,.eng10-online-q-text strong,.eng10-online-option strong,.eng10-online-rewrite-prompt strong{color:var(--navy);font-weight:950}
+    .eng10-online-source u,.eng10-online-q-text u,.eng10-online-option u,.eng10-online-rewrite-prompt u{color:var(--navy);font-weight:900;text-decoration-line:underline;text-decoration-thickness:2px;text-underline-offset:3px}
     .eng10-online-page-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:#f8fbff;color:var(--navy)}
     .eng10-online-q-card{margin:12px 14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
     .eng10-online-q-num{color:#6b7d98;font-size:12px;font-weight:950;text-transform:uppercase;margin-bottom:8px}
-    .eng10-online-q-text{color:var(--navy);font-weight:900;line-height:1.5;margin-bottom:10px}
+    .eng10-online-q-text{color:var(--navy);font-weight:780;line-height:1.5;margin-bottom:10px}
     .eng10-online-options{display:grid;gap:8px}
-    .eng10-online-option{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;background:#f8fbff;padding:10px;cursor:pointer;font-weight:850}
+    .eng10-online-option{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;background:#f8fbff;padding:10px;cursor:pointer;font-weight:760}
     .eng10-online-input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:800;outline:none}
     .eng10-online-rewrite-prompt{margin:10px 0;padding:10px 12px;border-radius:12px;background:#f8fbff;border:1px solid var(--line);color:#52627a;font-weight:850}
     .eng10-online-word-bank{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
@@ -727,5 +729,6 @@ module.exports = {
   jobProgress,
   parsePort,
   renderHtml,
+  renderPreviewHtml,
   sanitizeJobOptions
 };
