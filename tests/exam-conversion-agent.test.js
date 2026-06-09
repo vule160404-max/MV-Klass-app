@@ -349,6 +349,44 @@ test('NVIDIA caller uses OpenAI-compatible chat completions and parses JSON', as
   assert.equal(result.exam_id, 'exam-nvidia-001');
 });
 
+test('NVIDIA caller retries transient HTTP 504 with configurable backoff', async () => {
+  let calls = 0;
+  const sleeps = [];
+  const result = await callNvidia({
+    apiKey: 'nvidia-test-key',
+    model: 'mistralai/mistral-medium-3.5-128b',
+    prompt: 'Convert this exam.',
+    maxAttempts: 4,
+    retryDelayMs: 10,
+    sleep: async (ms) => sleeps.push(ms),
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls < 3) {
+        return {
+          ok: false,
+          status: 504,
+          json: async () => ({})
+        };
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: JSON.stringify({ exam_id: 'exam-nvidia-retry', title: 'Draft', pages: [], questions: [] })
+            }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.equal(calls, 3);
+  assert.deepEqual(sleeps, [10, 20]);
+  assert.equal(result.exam_id, 'exam-nvidia-retry');
+});
+
 test('default AI converter chooses NVIDIA when NVIDIA_API_KEY is configured', async () => {
   let nvidiaCalls = 0;
   const result = await convertWithAiDefault({ prompt: 'Convert this exam.' }, {}, {
@@ -369,6 +407,23 @@ test('default AI converter chooses NVIDIA when NVIDIA_API_KEY is configured', as
 
   assert.equal(nvidiaCalls, 1);
   assert.equal(result.exam_id, 'exam-provider-001');
+});
+
+test('default AI converter passes NVIDIA retry settings from environment', async () => {
+  const result = await convertWithAiDefault({ prompt: 'Convert this exam.' }, {}, {
+    env: {
+      NVIDIA_API_KEY: 'nvidia-test-key',
+      NVIDIA_MAX_ATTEMPTS: '7',
+      NVIDIA_RETRY_DELAY_MS: '2500'
+    },
+    callNvidiaImpl: async ({ maxAttempts, retryDelayMs }) => {
+      assert.equal(maxAttempts, 7);
+      assert.equal(retryDelayMs, 2500);
+      return { exam_id: 'exam-retry-config', title: 'Draft', pages: [], questions: [] };
+    }
+  });
+
+  assert.equal(result.exam_id, 'exam-retry-config');
 });
 
 test('CLI provider flag defaults to the NVIDIA model when no model is configured', () => {

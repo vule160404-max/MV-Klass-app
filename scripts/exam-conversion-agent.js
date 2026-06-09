@@ -15,6 +15,8 @@ const DEFAULT_MODEL = 'gemini-2.5-flash';
 const DEFAULT_GEMINI_MODEL = DEFAULT_MODEL;
 const DEFAULT_NVIDIA_MODEL = 'mistralai/mistral-medium-3.5-128b';
 const DEFAULT_NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1';
+const DEFAULT_NVIDIA_MAX_ATTEMPTS = 6;
+const DEFAULT_NVIDIA_RETRY_DELAY_MS = 5000;
 const DEFAULT_RUN_DIR = '_exam_agent_runs';
 const DEFAULT_EXPECTED_QUESTION_COUNT = 50;
 const MAX_GEMINI_TEXT_CHARS = 180000;
@@ -94,6 +96,20 @@ function resolveAiModel(provider, options = {}, env = process.env) {
     return optionModel;
   }
   return defaultModelForProvider(provider);
+}
+
+function positiveInt(value, fallback, min = 1, max = 999999) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.min(max, Math.max(min, Math.floor(number)));
+}
+
+function resolveNvidiaMaxAttempts(options = {}, env = process.env) {
+  return positiveInt(options.nvidiaMaxAttempts || envValue(env, 'NVIDIA_MAX_ATTEMPTS'), DEFAULT_NVIDIA_MAX_ATTEMPTS, 1, 20);
+}
+
+function resolveNvidiaRetryDelayMs(options = {}, env = process.env) {
+  return positiveInt(options.nvidiaRetryDelayMs || envValue(env, 'NVIDIA_RETRY_DELAY_MS'), DEFAULT_NVIDIA_RETRY_DELAY_MS, 0, 120000);
 }
 
 function parseArgs(argv = process.argv.slice(2)) {
@@ -548,13 +564,15 @@ async function callNvidia({
   baseUrl = DEFAULT_NVIDIA_BASE_URL,
   fetchImpl = fetch,
   sleep = sleepMs,
-  maxAttempts = 3
+  maxAttempts = DEFAULT_NVIDIA_MAX_ATTEMPTS,
+  retryDelayMs = DEFAULT_NVIDIA_RETRY_DELAY_MS
 }) {
   if (!apiKey) throw new Error('NVIDIA_API_KEY_REQUIRED');
   const cleanModel = String(model || DEFAULT_NVIDIA_MODEL).trim();
   const root = String(baseUrl || DEFAULT_NVIDIA_BASE_URL).replace(/\/+$/, '');
   const url = `${root}/chat/completions`;
   const attempts = Math.max(1, Number(maxAttempts) || 1);
+  const delayMs = Math.max(0, Number(retryDelayMs) || 0);
   let lastMessage = '';
   let useResponseFormat = true;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -575,7 +593,7 @@ async function callNvidia({
     } catch (err) {
       lastMessage = String(err && err.message || err || 'fetch failed').slice(0, 240);
       if (attempt < attempts) {
-        await sleep(1200 * attempt);
+        await sleep(delayMs * attempt);
         continue;
       }
       throw new Error(`NVIDIA_REQUEST_FAILED: ${lastMessage}`);
@@ -586,7 +604,7 @@ async function callNvidia({
       const text = responseTextFromNvidia(data);
       if (!text && attempt < attempts) {
         lastMessage = 'NVIDIA_EMPTY_JSON';
-        await sleep(1200 * attempt);
+        await sleep(delayMs * attempt);
         continue;
       }
       return parseJsonText(text, 'NVIDIA');
@@ -602,7 +620,7 @@ async function callNvidia({
       if (attempt < attempts) continue;
     }
     if (attempt < attempts && isRetryableNvidiaError(response.status, lastMessage)) {
-      await sleep(1200 * attempt);
+      await sleep(delayMs * attempt);
       continue;
     }
     throw new Error(`NVIDIA_REQUEST_FAILED: ${lastMessage}`);
@@ -941,6 +959,8 @@ async function convertWithAiDefault(payload, options = {}, deps = {}) {
       model,
       prompt: payload.prompt,
       baseUrl: envValue(env, 'NVIDIA_BASE_URL') || DEFAULT_NVIDIA_BASE_URL,
+      maxAttempts: resolveNvidiaMaxAttempts(options, env),
+      retryDelayMs: resolveNvidiaRetryDelayMs(options, env),
       fetchImpl: deps.fetchImpl || fetch,
       sleep: deps.sleep || sleepMs
     });
