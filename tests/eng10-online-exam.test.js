@@ -187,6 +187,17 @@ test('keyword-only rewrite prompts are hidden while sentence starters remain vis
   );
 });
 
+test('lowercase keyword-only rewrite prompts are hidden', () => {
+  assert.equal(
+    shouldRenderRewritePrompt({
+      type: 'sentence_rewrite',
+      question: 'My friend was the winner of the competition. (<strong>WON</strong>)',
+      prompt: 'won'
+    }),
+    false
+  );
+});
+
 test('sourceTextForPage supports dynamic source_key fields such as fill_passage_2', () => {
   const exam = validateExamJson({
     exam_id: 'demo',

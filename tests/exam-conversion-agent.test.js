@@ -212,7 +212,7 @@ test('quality gate blocks placeholder, missing counts, weak MCQ, and image slots
 test('quality gate repairs generated rewrite questions missing prompt', () => {
   const exam = validExam({
     questions: validExam().questions.map(q => (
-      q.id === 4 ? { ...q, prompt: '' } : q
+      q.id === 4 ? { ...q, question: 'My friend was the winner of the competition. (WON)', prompt: '' } : q
     ))
   });
 
@@ -223,7 +223,26 @@ test('quality gate repairs generated rewrite questions missing prompt', () => {
   });
 
   assert.equal(result.ok, true);
-  assert.equal(result.exam.questions[3].prompt, 'Rewrite the sentence.');
+  assert.equal(result.exam.questions[3].prompt, 'WON');
+  assert.match(result.warnings.join(' '), /AUTO_FILLED_PROMPT:4/);
+});
+
+test('quality gate replaces duplicated rewrite prompt with parenthesized keyword', () => {
+  const question = 'My friend was the winner of the competition. (<strong>WON</strong>)';
+  const exam = validExam({
+    questions: validExam().questions.map(q => (
+      q.id === 4 ? { ...q, question, prompt: question } : q
+    ))
+  });
+
+  const result = evaluateQualityGate(exam, {
+    mode: 'draft',
+    expectedQuestionCount: 4,
+    answerKeys: new Map([[1, 'A'], [2, 'B'], [3, 'goes'], [4, 'although it rained, we went out']])
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.exam.questions[3].prompt, 'WON');
   assert.match(result.warnings.join(' '), /AUTO_FILLED_PROMPT:4/);
 });
 

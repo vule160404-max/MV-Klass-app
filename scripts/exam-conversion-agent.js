@@ -308,6 +308,23 @@ function normalizeGeneratedOptions(options) {
     .filter(Boolean);
 }
 
+function stripSimpleHtml(value) {
+  return String(value || '').replace(/<[^>]*>/g, '');
+}
+
+function inferRewritePrompt(question, id) {
+  const text = stripSimpleHtml(question).trim();
+  const keyword = text.match(/\(([A-Z][A-Z0-9\s/-]{1,30})\)\s*$/);
+  if (keyword && keyword[1]) return keyword[1].trim().replace(/\s+/g, ' ');
+  return `REWRITE_${id}`;
+}
+
+function rewritePromptNeedsRepair(prompt, question) {
+  const cleanPrompt = stripSimpleHtml(prompt).trim();
+  if (!cleanPrompt) return true;
+  return normalizeSourceText(cleanPrompt) === normalizeSourceText(stripSimpleHtml(question));
+}
+
 function normalizeGeneratedExamJson(input) {
   const warnings = [];
   const exam = cloneGeneratedJson(input);
@@ -328,8 +345,8 @@ function normalizeGeneratedExamJson(input) {
       q.blank_id = `blank_${id}`;
       warnings.push(`AUTO_FILLED_BLANK_ID:${id}`);
     }
-    if (type === 'sentence_rewrite' && !String(q.prompt || '').trim()) {
-      q.prompt = String(q.question || q.answer || `Rewrite question ${id}`).trim();
+    if (type === 'sentence_rewrite' && rewritePromptNeedsRepair(q.prompt, q.question || q.answer)) {
+      q.prompt = inferRewritePrompt(q.question || q.answer, id);
       warnings.push(`AUTO_FILLED_PROMPT:${id}`);
     }
     return q;

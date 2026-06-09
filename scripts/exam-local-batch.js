@@ -106,17 +106,152 @@ function decodeXmlEntities(text) {
     .replace(/&amp;/g, '&');
 }
 
+function escapeRichText(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[ch]);
+}
+
+function wrapRichText(value, { bold = false, underline = false } = {}) {
+  let text = escapeRichText(decodeXmlEntities(value));
+  if (!text) return '';
+  if (underline) text = `<u>${text}</u>`;
+  if (bold) text = `<strong>${text}</strong>`;
+  return text;
+}
+
+function boolWordPropEnabled(xml, tagName) {
+  const tag = String(xml || '').match(new RegExp(`<w:${tagName}\\b[^>]*>`, 'i'));
+  if (!tag) return false;
+  const value = tag[0].match(/\bw:val=["']?([^"'\s>]+)/i);
+  return !value || !/^(0|false|off|none)$/i.test(value[1]);
+}
+
+function docxRunText(runXml) {
+  let out = '';
+  const tokenRe = /<w:(t|tab|br)\b([^>]*)\/>|<w:t\b[^>]*>([\s\S]*?)<\/w:t>/gi;
+  let match;
+  while ((match = tokenRe.exec(runXml))) {
+    if (match[1] === 'tab') out += '\t';
+    else if (match[1] === 'br') out += '\n';
+    else out += match[3] || '';
+  }
+  return out;
+}
+
+function docxParagraphToRichText(paragraphXml) {
+  let out = '';
+  const runRe = /<w:r\b[\s\S]*?<\/w:r>/gi;
+  let match;
+  while ((match = runRe.exec(paragraphXml))) {
+    const runXml = match[0];
+    const text = docxRunText(runXml);
+    if (!text) continue;
+    out += wrapRichText(text, {
+      bold: boolWordPropEnabled(runXml, 'b'),
+      underline: boolWordPropEnabled(runXml, 'u')
+    });
+  }
+  return out;
+}
+
 function extractDocxText(bytes) {
   const xml = readZipEntry(Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes), 'word/document.xml').toString('utf8');
-  const textXml = xml
+  const paragraphs = [];
+  const paragraphRe = /<w:p\b[\s\S]*?<\/w:p>/gi;
+  let match;
+  while ((match = paragraphRe.exec(xml))) {
+    paragraphs.push(docxParagraphToRichText(match[0]));
+  }
+  const textXml = paragraphs.length ? paragraphs.join('\n') : xml
     .replace(/<w:tab\b[^>]*\/>/g, '\t')
     .replace(/<w:br\b[^>]*\/>/g, '\n')
     .replace(/<\/w:tc>/g, '\t')
     .replace(/<\/w:tr>/g, '\n')
     .replace(/<\/w:p>/g, '\n')
     .replace(/<[^>]+>/g, '');
-  return decodeXmlEntities(textXml)
+  return textXml
     .replace(/\u00a0/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function decodeHtmlEntities(text) {
+  return String(text || '')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#39;/gi, "'")
+    .replace(/&amp;/gi, '&');
+}
+
+function tagNameFromHtmlTag(tag) {
+  const match = String(tag || '').match(/^<\/?\s*([a-z0-9]+)/i);
+  return match ? match[1].toLowerCase() : '';
+}
+
+function htmlTagStyleFlags(tag) {
+  const name = tagNameFromHtmlTag(tag);
+  const styleMatch = String(tag || '').match(/\bstyle\s*=\s*(["'])([\s\S]*?)\1/i);
+  const style = styleMatch ? styleMatch[2].toLowerCase() : '';
+  return {
+    bold: name === 'b' || name === 'strong' || /font-weight\s*:\s*(bold|[6-9]00)\b/.test(style),
+    underline: name === 'u' || /text-decoration[^;]*underline|mso-underline\s*:\s*(single|words|thick|dash)/.test(style)
+  };
+}
+
+function htmlToRichText(html) {
+  const source = String(html || '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, '')
+    .replace(/<head\b[\s\S]*?<\/head>/gi, '');
+  const stack = [];
+  let boldDepth = 0;
+  let underlineDepth = 0;
+  let out = '';
+  const tokenRe = /<[^>]+>|[^<]+/g;
+  let token;
+  while ((token = tokenRe.exec(source))) {
+    const value = token[0];
+    if (!value.startsWith('<')) {
+      out += wrapRichText(decodeHtmlEntities(value), { bold: boldDepth > 0, underline: underlineDepth > 0 });
+      continue;
+    }
+    const name = tagNameFromHtmlTag(value);
+    if (!name) continue;
+    if (/^<\s*\//.test(value)) {
+      if (/^(p|div|tr|li)$/i.test(name)) out += '\n';
+      for (let i = stack.length - 1; i >= 0; i -= 1) {
+        const entry = stack.splice(i, 1)[0];
+        if (entry.bold) boldDepth = Math.max(0, boldDepth - 1);
+        if (entry.underline) underlineDepth = Math.max(0, underlineDepth - 1);
+        if (entry.name === name) break;
+      }
+      continue;
+    }
+    if (/^(br)$/i.test(name)) {
+      out += '\n';
+      continue;
+    }
+    if (/^(p|div|tr|li)$/i.test(name) && out && !out.endsWith('\n')) out += '\n';
+    if (/^(td|th)$/i.test(name) && out && !/[\n\t ]$/.test(out)) out += '\t';
+    const flags = htmlTagStyleFlags(value);
+    if (flags.bold) boldDepth += 1;
+    if (flags.underline) underlineDepth += 1;
+    stack.push({ name, ...flags });
+  }
+  return out
+    .replace(/\r\n/g, '\n')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
@@ -134,7 +269,7 @@ function extractLegacyDocText(filePath, options = {}) {
   }
   const inputPath = path.resolve(filePath);
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'mvklass-doc-'));
-  const outputPath = path.join(tempRoot, `${path.basename(filePath, path.extname(filePath))}.txt`);
+  const outputPath = path.join(tempRoot, `${path.basename(filePath, path.extname(filePath))}.html`);
   const inputB64 = Buffer.from(inputPath, 'utf8').toString('base64');
   const outputB64 = Buffer.from(outputPath, 'utf8').toString('base64');
   const script = `
@@ -148,7 +283,8 @@ try {
   $word.Visible = $false
   $word.DisplayAlerts = 0
   $doc = $word.Documents.Open($inputPath, $false, $true)
-  $doc.SaveAs2([ref]$outputPath, [ref]7)
+  $doc.WebOptions.Encoding = 65001
+  $doc.SaveAs2([ref]$outputPath, [ref]10)
 } finally {
   if ($doc -ne $null) { $doc.Close([ref]$false) | Out-Null }
   if ($word -ne $null) { $word.Quit() | Out-Null }
@@ -161,7 +297,7 @@ try {
       stdio: ['ignore', 'pipe', 'pipe']
     });
     if (!fs.existsSync(outputPath)) throw new Error('DOC_TEXT_OUTPUT_NOT_CREATED');
-    return decodeTextBuffer(fs.readFileSync(outputPath))
+    return htmlToRichText(decodeTextBuffer(fs.readFileSync(outputPath)))
       .replace(/\u00a0/g, ' ')
       .replace(/\r\n/g, '\n')
       .replace(/\n{3,}/g, '\n\n')
@@ -639,6 +775,7 @@ module.exports = {
   createLocalJobReport,
   extractDocxText,
   extractLegacyDocText,
+  htmlToRichText,
   inferLocalExamNumber,
   isAnswerFile,
   matchLocalPairToExamFile,

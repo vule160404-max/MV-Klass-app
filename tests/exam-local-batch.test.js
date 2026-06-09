@@ -6,6 +6,8 @@ const path = require('node:path');
 
 const {
   createLocalJobReport,
+  extractDocxText,
+  htmlToRichText,
   readLocalPairText,
   scanLocalExamFolder,
   matchLocalPairToExamFile,
@@ -59,6 +61,10 @@ function makeDocxXml(text) {
 }
 
 function writeSimpleDocx(filePath, text) {
+  writeDocxXml(filePath, makeDocxXml(text));
+}
+
+function writeDocxXml(filePath, documentXml) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   const entries = [
     {
@@ -71,7 +77,7 @@ function writeSimpleDocx(filePath, text) {
     },
     {
       name: 'word/document.xml',
-      data: Buffer.from(makeDocxXml(text), 'utf8')
+      data: Buffer.from(documentXml, 'utf8')
     }
   ];
   const localParts = [];
@@ -191,6 +197,36 @@ test('scanLocalExamFolder pairs local DOCX exam and answer files', () => {
   assert.equal(scan.readyPairs[0].examCode, '004');
   assert.match(scan.readyPairs[0].examPath, /\.docx$/);
   assert.match(scan.readyPairs[0].answerPath, /\.docx$/);
+});
+
+test('extractDocxText preserves underline and bold markers for OpenAI prompts', () => {
+  const root = makeTempDir();
+  const filePath = path.join(root, 'De 001 Vao 10 Thanh Hoa 2025.docx');
+  writeDocxXml(filePath, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>
+      <w:p>
+        <w:r><w:t>A. </w:t></w:r>
+        <w:r><w:rPr><w:u w:val="single"/></w:rPr><w:t>thank</w:t></w:r>
+        <w:r><w:t> B. </w:t></w:r>
+        <w:r><w:rPr><w:b/></w:rPr><w:t>English</w:t></w:r>
+      </w:p>
+    </w:body></w:document>`);
+
+  const text = extractDocxText(fs.readFileSync(filePath));
+
+  assert.match(text, /A\. <u>thank<\/u> B\. <strong>English<\/strong>/);
+});
+
+test('htmlToRichText preserves Word HTML underline and bold markers', () => {
+  const text = htmlToRichText(`
+    <html><body>
+      <p>A. <span style="text-decoration: underline">thank</span></p>
+      <p><span style="font-weight: bold">English</span></p>
+    </body></html>
+  `);
+
+  assert.match(text, /A\. <u>thank<\/u>/);
+  assert.match(text, /<strong>English<\/strong>/);
 });
 
 test('scanLocalExamFolder treats legacy DOC files as combined exam-answer candidates', () => {

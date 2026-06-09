@@ -373,8 +373,8 @@
     const lettersOnly = plainPrompt.replace(/[^A-Za-z]/g, '');
     const isKeywordOnly = lettersOnly.length > 0
       && lettersOnly.length <= 24
-      && /^[A-Z]+$/.test(lettersOnly)
-      && normalizeText(q?.question || '').includes(normalizeText(plainPrompt));
+      && /^[A-Z]+$/i.test(lettersOnly)
+      && normalizeText(String(q?.question || '').replace(/<[^>]*>/g, '')).includes(normalizeText(plainPrompt));
     return !isKeywordOnly;
   }
 
