@@ -4617,6 +4617,10 @@
     .website-online-bulk-actions .unpublish{ color:#9a3412; background:#fff7ed; border-color:rgba(249,115,22,.24); }
     .website-online-bulk-actions .clear{ color:#52627c; background:#fff; }
     .website-online-bulk-actions .btn-sm:disabled{ opacity:.48; cursor:not-allowed; box-shadow:none; }
+    .website-online-pager{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border:1px solid rgba(99,138,218,.12); border-radius:12px; background:#fff; box-shadow:0 8px 18px rgba(17,42,100,.04); color:#64748b; font-size:11.5px; font-weight:850; }
+    .website-online-pager strong{ color:#102858; font-variant-numeric:tabular-nums; }
+    .website-online-pager-actions{ display:flex; align-items:center; gap:6px; }
+    .website-online-pager-actions .btn-sm{ min-height:31px; height:31px; border-radius:9px; font-size:11px; }
     .website-online-empty{ padding:18px; border:1px dashed rgba(99,138,218,.24); border-radius:10px; color:#72809b; background:#fff; font-size:12px; font-weight:780; text-align:center; }
     .website-online-loading{ min-height:180px; display:grid; place-items:center; gap:10px; color:#64748b; font-size:12px; font-weight:850; }
     .website-online-loading::before{ content:""; width:28px; height:28px; border-radius:999px; border:3px solid rgba(29,78,216,.16); border-top-color:#2563eb; animation:portalR2Spin .78s linear infinite; }
@@ -4665,6 +4669,8 @@
       .website-online-bulk-note{ white-space:normal; }
       .website-online-bulk-actions{ display:grid; grid-template-columns:1fr 1fr; width:100%; }
       .website-online-bulk-actions .clear{ grid-column:1/-1; }
+      .website-online-pager{ align-items:stretch; flex-direction:column; }
+      .website-online-pager-actions{ display:grid; grid-template-columns:1fr auto 1fr; width:100%; }
       .website-admin-subtabs{ grid-template-columns:1fr; }
       .website-online-asset-row{ grid-template-columns:1fr; }
     }
@@ -26246,6 +26252,7 @@ let portalOnlineError = '';
 let portalOnlineQuery = '';
 let portalOnlineStatus = 'all';
 let portalOnlineLevel = 'all';
+let portalOnlinePage = 1;
 let portalOnlineJsonExamId = '';
 let portalOnlinePromptText = '';
 let portalOnlineSourcePromptRows = [];
@@ -27803,16 +27810,19 @@ async function loadPortalOnlineExams(force = false) {
 
 function onPortalOnlineSearch(value) {
   portalOnlineQuery = String(value || '');
+  portalOnlinePage = 1;
   schedulePortalOnlineRender(PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS);
 }
 
 function onPortalOnlineStatus(value) {
   portalOnlineStatus = ['all', 'published', 'draft', 'missing'].includes(String(value || '')) ? String(value) : 'all';
+  portalOnlinePage = 1;
   renderPortalOnlineExams();
 }
 
 function onPortalOnlineLevel(value) {
   portalOnlineLevel = ['all', 'entrance_10', 'university', 'ielts'].includes(String(value || '')) ? String(value) : 'all';
+  portalOnlinePage = 1;
   renderPortalOnlineExams();
 }
 
@@ -27853,26 +27863,58 @@ function portalOnlineBulkEligibleRows(publish) {
   });
 }
 
-function renderPortalOnlineBulkBar(rows, visibleRows) {
-  const visibleSelectable = (Array.isArray(visibleRows) ? visibleRows : [])
+function portalOnlinePageCount(totalRows) {
+  return Math.max(1, Math.ceil(Math.max(0, Number(totalRows) || 0) / PORTAL_ONLINE_RENDER_LIMIT));
+}
+
+function portalOnlineClampPage(totalRows) {
+  const pageCount = portalOnlinePageCount(totalRows);
+  const nextPage = Math.min(pageCount, Math.max(1, parseInt(String(portalOnlinePage || 1), 10) || 1));
+  portalOnlinePage = nextPage;
+  return nextPage;
+}
+
+function setPortalOnlinePage(page) {
+  portalOnlinePage = Math.max(1, parseInt(String(page || 1), 10) || 1);
+  renderPortalOnlineExams();
+}
+
+function renderPortalOnlinePager(totalRows, startIndex, endIndex) {
+  const pageCount = portalOnlinePageCount(totalRows);
+  const page = portalOnlineClampPage(totalRows);
+  const from = totalRows ? Math.max(1, startIndex + 1) : 0;
+  const to = Math.max(from, endIndex);
+  return `<div class="website-online-pager">
+    <span>Hiển thị <strong>${escapeHtml(String(from))}-${escapeHtml(String(to))}</strong>/<strong>${escapeHtml(String(totalRows))}</strong> đề khớp · tối đa ${PORTAL_ONLINE_RENDER_LIMIT} đề/trang</span>
+    <div class="website-online-pager-actions">
+      <button type="button" class="btn-sm" onclick="setPortalOnlinePage(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Trước</button>
+      <span>Trang <strong>${escapeHtml(String(page))}/${escapeHtml(String(pageCount))}</strong></span>
+      <button type="button" class="btn-sm" onclick="setPortalOnlinePage(${page + 1})" ${page >= pageCount ? 'disabled' : ''}>Sau</button>
+    </div>
+  </div>`;
+}
+
+function renderPortalOnlineBulkBar(rows, pageRows) {
+  const foundSelectable = (Array.isArray(rows) ? rows : [])
     .filter(row => row && row.online_exam);
   const selectedRows = portalOnlineBulkSelectedRows();
   const selectedCount = selectedRows.length;
+  const selectedFoundCount = foundSelectable.filter(row => portalOnlineBulkSelectedIds.has(String(row.id || ''))).length;
   const publishableCount = portalOnlineBulkEligibleRows(true).length;
   const unpublishableCount = portalOnlineBulkEligibleRows(false).length;
-  const allVisibleSelected = visibleSelectable.length > 0 && visibleSelectable.every(row => portalOnlineBulkSelectedIds.has(String(row.id || '')));
+  const allFoundSelected = foundSelectable.length > 0 && foundSelectable.every(row => portalOnlineBulkSelectedIds.has(String(row.id || '')));
   const busy = !!portalOnlineBulkBusy;
   const note = selectedCount
-    ? `${selectedCount} đề đã chọn · ${publishableCount} có thể xuất bản · ${unpublishableCount} có thể ẩn`
-    : `Chọn đề đang hiển thị để thao tác hàng loạt. ${visibleSelectable.length}/${(Array.isArray(visibleRows) ? visibleRows : []).length} đề có JSON có thể chọn.`;
+    ? `${selectedCount} đề đã chọn · ${selectedFoundCount}/${foundSelectable.length} trong kết quả tìm kiếm · ${publishableCount} có thể xuất bản · ${unpublishableCount} có thể ẩn`
+    : `Chọn toàn bộ kết quả tìm kiếm để thao tác hàng loạt. ${foundSelectable.length}/${(Array.isArray(rows) ? rows : []).length} đề có JSON có thể chọn.`;
   const publishLabel = busy && portalOnlineBulkAction === 'publish' ? 'Đang xuất bản...' : 'Xuất bản đã chọn';
   const unpublishLabel = busy && portalOnlineBulkAction === 'unpublish' ? 'Đang ẩn...' : 'Ẩn đã chọn';
   return `<div class="website-online-bulk-bar">
     <div class="website-online-bulk-main">
       <label class="website-online-bulk-check">
-        <input type="checkbox" onchange="togglePortalOnlineSelectVisible(this.checked)" ${allVisibleSelected ? 'checked' : ''} ${busy || !visibleSelectable.length ? 'disabled' : ''}/>
+        <input type="checkbox" onchange="togglePortalOnlineSelectVisible(this.checked)" ${allFoundSelected ? 'checked' : ''} ${busy || !foundSelectable.length ? 'disabled' : ''}/>
         <span class="website-online-bulk-box" aria-hidden="true"></span>
-        <span>Chọn đề đang hiển thị</span>
+        <span>Chọn tất cả kết quả tìm thấy</span>
       </label>
       <span class="website-online-bulk-note">${escapeHtml(note)}</span>
     </div>
@@ -27895,8 +27937,8 @@ function togglePortalOnlineBulkSelect(examId, checked) {
 
 function togglePortalOnlineSelectVisible(checked) {
   if (portalOnlineBulkBusy) return;
-  const visibleRows = portalOnlineFilteredRows().slice(0, PORTAL_ONLINE_RENDER_LIMIT);
-  visibleRows.forEach(row => {
+  const foundRows = portalOnlineFilteredRows();
+  foundRows.forEach(row => {
     const id = String(row && row.id || '').trim();
     if (!id || !row.online_exam) return;
     if (checked) portalOnlineBulkSelectedIds.add(id);
@@ -27941,14 +27983,15 @@ function renderPortalOnlineExams() {
     list.innerHTML = '<div class="website-online-empty">Không có đề khớp bộ lọc hiện tại.</div>';
     return;
   }
-  const visibleRows = rows.slice(0, PORTAL_ONLINE_RENDER_LIMIT);
-  const hiddenCount = Math.max(0, rows.length - visibleRows.length);
-  const countText = hiddenCount
-    ? `Hiển thị ${visibleRows.length}/${rows.length} đề khớp · tổng ${portalOnlineRows.length} đề · gõ thêm để thu hẹp`
-    : `Hiển thị ${rows.length}/${portalOnlineRows.length} đề`;
-  const html = visibleRows.map(renderPortalOnlineRow).join('');
-  const bulkBar = renderPortalOnlineBulkBar(rows, visibleRows);
-  list.innerHTML = (syncedAt ? `<div class="website-online-empty" style="padding:10px 12px;text-align:left">${escapeHtml(countText)} · cập nhật ${escapeHtml(syncedAt)}.</div>` : '') + bulkBar + html;
+  const page = portalOnlineClampPage(rows.length);
+  const startIndex = (page - 1) * PORTAL_ONLINE_RENDER_LIMIT;
+  const pageRows = rows.slice(startIndex, startIndex + PORTAL_ONLINE_RENDER_LIMIT);
+  const endIndex = Math.min(rows.length, startIndex + pageRows.length);
+  const countText = `Tìm thấy ${rows.length}/${portalOnlineRows.length} đề · trang ${page}/${portalOnlinePageCount(rows.length)} · gõ thêm để thu hẹp`;
+  const html = pageRows.map(renderPortalOnlineRow).join('');
+  const bulkBar = renderPortalOnlineBulkBar(rows, pageRows);
+  const pager = renderPortalOnlinePager(rows.length, startIndex, endIndex);
+  list.innerHTML = (syncedAt ? `<div class="website-online-empty" style="padding:10px 12px;text-align:left">${escapeHtml(countText)} · cập nhật ${escapeHtml(syncedAt)}.</div>` : '') + bulkBar + html + pager;
 }
 
 function renderPortalOnlineRow(row) {

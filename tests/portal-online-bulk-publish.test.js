@@ -26,15 +26,17 @@ test('portal online admin supports selecting and publishing multiple exams', () 
   assert.match(source, /\.website-online-select/);
 
   const renderList = functionBlock(source, 'renderPortalOnlineExams', 'renderPortalOnlineRow');
-  assert.match(renderList, /renderPortalOnlineBulkBar\(rows,\s*visibleRows\)/);
+  assert.match(renderList, /renderPortalOnlineBulkBar\(rows,\s*pageRows\)/);
+  assert.match(renderList, /renderPortalOnlinePager\(rows\.length,\s*startIndex,\s*endIndex\)/);
 
   const rowBlock = functionBlock(source, 'renderPortalOnlineRow', 'portalOnlineRowById');
   assert.match(rowBlock, /website-online-select/);
   assert.match(rowBlock, /portalOnlineBulkSelectedIds\.has\(id\)/);
   assert.match(rowBlock, /togglePortalOnlineBulkSelect/);
 
-  assert.match(source, /function renderPortalOnlineBulkBar\(rows,\s*visibleRows\)/);
+  assert.match(source, /function renderPortalOnlineBulkBar\(rows,\s*pageRows\)/);
   assert.match(source, /function togglePortalOnlineSelectVisible\(checked\)/);
+  assert.match(source, /function renderPortalOnlinePager\(totalRows,\s*startIndex,\s*endIndex\)/);
   assert.match(source, /function publishSelectedPortalOnlineExams\(\)/);
   assert.match(source, /function unpublishSelectedPortalOnlineExams\(\)/);
   assert.match(source, /function applyPortalOnlineBulkPublish\(publish\)/);
@@ -46,4 +48,8 @@ test('portal online admin supports selecting and publishing multiple exams', () 
   assert.match(bulkBlock, /portalOnlineSetPublished\(row,\s*!!publish\)/);
   assert.match(bulkBlock, /confirmApp/);
   assert.match(bulkBlock, /portalOnlineBulkSelectedIds\.clear\(\)/);
+
+  const selectAllBlock = functionBlock(source, 'togglePortalOnlineSelectVisible', 'clearPortalOnlineBulkSelection');
+  assert.match(selectAllBlock, /const foundRows = portalOnlineFilteredRows\(\);/);
+  assert.doesNotMatch(selectAllBlock, /slice\(0,\s*PORTAL_ONLINE_RENDER_LIMIT\)/);
 });

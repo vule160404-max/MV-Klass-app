@@ -30,12 +30,18 @@ test('portal online search is debounced and renders from prepared rows', () => {
   assert.match(source, /function schedulePortalOnlineRender\(delayMs = 0\)/);
   assert.match(source, /requestIdleCallback/);
   assert.match(source, /function preparePortalOnlineRows\(\)/);
-  assert.match(source, /rows\.slice\(0, PORTAL_ONLINE_RENDER_LIMIT\)/);
+  assert.match(source, /let portalOnlinePage = 1;/);
+  assert.match(source, /function renderPortalOnlinePager\(totalRows, startIndex, endIndex\)/);
+  assert.match(source, /rows\.slice\(startIndex, startIndex \+ PORTAL_ONLINE_RENDER_LIMIT\)/);
   assert.match(source, /website-online-empty/);
 
   const searchHandler = extractBetween(source, 'function onPortalOnlineSearch(value)', 'function onPortalOnlineStatus');
+  assert.match(searchHandler, /portalOnlinePage = 1;/);
   assert.match(searchHandler, /schedulePortalOnlineRender\(PORTAL_ONLINE_SEARCH_RENDER_DELAY_MS\)/);
   assert.doesNotMatch(searchHandler, /renderPortalOnlineExams\(\)/);
+
+  const statusHandler = extractBetween(source, 'function onPortalOnlineStatus(value)', 'function onPortalOnlineLevel');
+  assert.match(statusHandler, /portalOnlinePage = 1;/);
 
   const filterFn = extractBetween(source, 'function portalOnlineFilteredRows()', 'function renderPortalOnlineExams');
   assert.match(filterFn, /if \(q\.length < PORTAL_ONLINE_MIN_QUERY_LENGTH\) return \[\];/);
