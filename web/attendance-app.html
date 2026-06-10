@@ -28478,10 +28478,10 @@ async function applyPortalOnlineBulkPublish(publish) {
     : 0;
   const ok = await confirmApp(
     publish
-      ? `Xuất bản ${rows.length} đề online đã chọn?${missingImageCount ? ` ${missingImageCount} đề còn thiếu ảnh theo slot JSON.` : ''}`
-      : `Ẩn ${rows.length} đề online đã chọn? Nút Làm bài online sẽ biến mất khỏi card học sinh.`,
+      ? `Bạn muốn xuất bản ${rows.length} đề online đã chọn không?${missingImageCount ? ` Có ${missingImageCount} đề còn thiếu ảnh theo slot JSON.` : ''}`
+      : `Bạn muốn ẩn ${rows.length} đề online đã chọn không? Nút Làm bài online sẽ biến mất khỏi card học sinh.`,
     {
-      title: publish ? 'Xuất bản nhiều đề online' : 'Ẩn nhiều đề online',
+      title: publish ? 'Xác nhận xuất bản đề online' : 'Xác nhận ẩn đề online',
       okLabel: publish ? 'Xuất bản' : 'Ẩn',
       cancelLabel: 'Hủy'
     }

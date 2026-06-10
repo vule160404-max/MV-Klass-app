@@ -47,6 +47,8 @@ test('portal online admin supports selecting and publishing multiple exams', () 
   const bulkBlock = functionBlock(source, 'applyPortalOnlineBulkPublish', 'publishSelectedPortalOnlineExams');
   assert.match(bulkBlock, /portalOnlineSetPublished\(row,\s*!!publish\)/);
   assert.match(bulkBlock, /confirmApp/);
+  assert.match(bulkBlock, /Bạn muốn xuất bản \$\{rows\.length\} đề online đã chọn không\?/);
+  assert.match(bulkBlock, /Xác nhận xuất bản đề online/);
   assert.match(bulkBlock, /portalOnlineBulkSelectedIds\.clear\(\)/);
 
   const selectAllBlock = functionBlock(source, 'togglePortalOnlineSelectVisible', 'clearPortalOnlineBulkSelection');
