@@ -13790,6 +13790,9 @@ a:focus-visible,
 .student-exam-settings-modal.open{
   display:grid;
 }
+.student-exam-password-modal{
+  z-index:4360;
+}
 .student-exam-settings-dialog{
   width:min(620px,calc(100vw - 28px));
   max-height:min(88vh,760px);
@@ -13848,6 +13851,54 @@ a:focus-visible,
   color:#082454;
   font-size:13px;
   font-weight:950;
+}
+.student-exam-password-panel{
+  display:grid;
+  gap:12px;
+}
+.student-exam-password-panel label{
+  display:grid;
+  gap:6px;
+}
+.student-exam-password-panel label span{
+  color:#64748b;
+  font-size:11px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.035em;
+}
+.student-exam-password-panel input{
+  width:100%;
+  min-height:44px;
+  border:1px solid #d6e3f3;
+  border-radius:12px;
+  background:#fff;
+  color:#10213f;
+  font-size:14px;
+  font-weight:760;
+  padding:0 12px;
+  outline:none;
+  box-shadow:0 8px 18px rgba(8,29,66,.04);
+}
+.student-exam-password-panel input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.student-exam-password-note{
+  margin:0;
+  color:#64748b;
+  font-size:12px;
+  font-weight:760;
+  line-height:1.5;
+}
+.student-exam-password-error{
+  min-height:18px;
+  color:#b42318;
+  font-size:12px;
+  font-weight:850;
+}
+.student-exam-password-modal .student-exam-settings-dialog{
+  width:min(500px,calc(100vw - 28px));
 }
 .student-exam-overview-panel{
   display:none;
@@ -16614,6 +16665,7 @@ button[data-bank-inspect-confirm-not]:hover,
             <button type="button" class="student-exam-menu-item student-exam-admin-link" id="student-exam-admin-switch" role="menuitem" hidden disabled>
               Đi tới trang quản trị
             </button>
+            <button type="button" class="student-exam-menu-item" onclick="openStudentExamPasswordModal()" role="menuitem">Đổi mật khẩu</button>
             <button type="button" class="student-exam-menu-item is-danger" onclick="closeStudentExamUserMenu();signOutUser()" role="menuitem">Đăng xuất</button>
           </div>
         </div>
@@ -16677,6 +16729,42 @@ button[data-bank-inspect-confirm-not]:hover,
             <button type="button" class="student-exam-settings-apply" onclick="studentExamApplySettingsFromPanel()">Áp dụng</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="student-exam-settings-modal student-exam-password-modal" id="student-exam-password-modal" aria-hidden="true" onclick="if(event.target===this) closeStudentExamPasswordModal()">
+      <div class="student-exam-settings-dialog" role="dialog" aria-modal="true" aria-labelledby="student-exam-password-title">
+        <div class="student-exam-settings-head">
+          <div>
+            <div class="student-exam-overview-kicker">Bảo mật</div>
+            <h2 id="student-exam-password-title">Đổi mật khẩu</h2>
+          </div>
+          <button type="button" class="student-exam-settings-close" onclick="closeStudentExamPasswordModal()" aria-label="Đóng đổi mật khẩu">×</button>
+        </div>
+        <form class="student-exam-settings-form student-exam-password-panel" onsubmit="event.preventDefault();submitStudentExamPasswordChange()">
+          <p class="student-exam-password-note">Nhập mật khẩu hiện tại 2 lần để xác minh, sau đó đặt mật khẩu mới cho tài khoản.</p>
+          <label>
+            <span>Mật khẩu hiện tại</span>
+            <input id="student-password-current-1" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu hiện tại"/>
+          </label>
+          <label>
+            <span>Nhập lại mật khẩu hiện tại</span>
+            <input id="student-password-current-2" type="password" autocomplete="current-password" placeholder="Nhập lại mật khẩu hiện tại"/>
+          </label>
+          <label>
+            <span>Mật khẩu mới</span>
+            <input id="student-password-new-1" type="password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"/>
+          </label>
+          <label>
+            <span>Nhập lại mật khẩu mới</span>
+            <input id="student-password-new-2" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu mới"/>
+          </label>
+          <div class="student-exam-password-error" id="student-password-error" role="alert"></div>
+          <div class="student-exam-settings-actions">
+            <button type="button" class="student-exam-settings-reset" onclick="closeStudentExamPasswordModal()">Hủy</button>
+            <button type="submit" class="student-exam-settings-apply" id="student-password-submit">Lưu mật khẩu mới</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -17278,7 +17366,7 @@ async function unlockPaymentConfigCard() {
   showAppToast('Đã mở khóa thông tin chuyển khoản.');
 }
 
-function lockPaymentConfigCard() {
+function lockPaymentConfigCard(options = {}) {
   paymentConfigUnlocked = false;
   const status = document.getElementById('payment-config-status');
   const unlockStatus = document.getElementById('payment-config-unlock-status');
@@ -17290,7 +17378,7 @@ function lockPaymentConfigCard() {
   }
   if (input) input.value = '';
   renderPaymentConfigLockState();
-  showAppToast('Đã khóa thông tin chuyển khoản.');
+  if (!options || !options.silent) showAppToast('Đã khóa thông tin chuyển khoản.');
 }
 
 function renderPaymentQrPreview(src) {
@@ -22959,6 +23047,124 @@ function openStudentExamSettingsPanel(event) {
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
   setTimeout(() => document.getElementById('student-setting-display-name')?.focus({ preventScroll: true }), 20);
+}
+
+function resetStudentExamPasswordModal() {
+  ['student-password-current-1', 'student-password-current-2', 'student-password-new-1', 'student-password-new-2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const err = document.getElementById('student-password-error');
+  if (err) err.textContent = '';
+  const btn = document.getElementById('student-password-submit');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Lưu mật khẩu mới';
+  }
+}
+
+function openStudentExamPasswordModal() {
+  closeStudentExamUserMenu();
+  closeStudentExamHeaderPanels();
+  resetStudentExamPasswordModal();
+  const modal = document.getElementById('student-exam-password-modal');
+  if (!modal) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('student-password-current-1')?.focus({ preventScroll: true }), 20);
+}
+
+function closeStudentExamPasswordModal() {
+  const modal = document.getElementById('student-exam-password-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  resetStudentExamPasswordModal();
+  if (studentExamView !== 'premium') document.body.style.overflow = '';
+}
+
+function setStudentExamPasswordBusy(isBusy) {
+  const btn = document.getElementById('student-password-submit');
+  if (!btn) return;
+  btn.disabled = !!isBusy;
+  btn.textContent = isBusy ? 'Đang lưu...' : 'Lưu mật khẩu mới';
+}
+
+function setStudentExamPasswordError(message) {
+  const err = document.getElementById('student-password-error');
+  if (err) err.textContent = String(message || '');
+}
+
+async function submitStudentExamPasswordChange() {
+  const current1 = String(document.getElementById('student-password-current-1')?.value || '');
+  const current2 = String(document.getElementById('student-password-current-2')?.value || '');
+  const next1 = String(document.getElementById('student-password-new-1')?.value || '');
+  const next2 = String(document.getElementById('student-password-new-2')?.value || '');
+  setStudentExamPasswordError('');
+  if (!current1 || !current2 || !next1 || !next2) {
+    setStudentExamPasswordError('Vui lòng nhập đủ các ô mật khẩu.');
+    return;
+  }
+  if (current1 !== current2) {
+    setStudentExamPasswordError('Hai lần nhập mật khẩu hiện tại chưa khớp.');
+    return;
+  }
+  if (next1.length < 6) {
+    setStudentExamPasswordError('Mật khẩu mới cần tối thiểu 6 ký tự.');
+    return;
+  }
+  if (next1 !== next2) {
+    setStudentExamPasswordError('Hai lần nhập mật khẩu mới chưa khớp.');
+    return;
+  }
+  if (next1 === current1) {
+    setStudentExamPasswordError('Mật khẩu mới cần khác mật khẩu hiện tại.');
+    return;
+  }
+  setStudentExamPasswordBusy(true);
+  try {
+    const check = await verifyCurrentPassword(current1);
+    if (!check || !check.ok) {
+      setStudentExamPasswordError('Mật khẩu hiện tại không đúng.');
+      return;
+    }
+    const fresh = await ensureSessionFresh();
+    if (!fresh || !currentSession?.access_token) {
+      setStudentExamPasswordError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      return;
+    }
+    const r = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: {
+        apikey: KEY,
+        Authorization: 'Bearer ' + currentSession.access_token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password: next1 }),
+      cache: 'no-store'
+    });
+    const text = await r.text().catch(() => '');
+    let data = null;
+    if (text && String(text).trim()) {
+      try { data = JSON.parse(text); } catch (e) { data = null; }
+    }
+    if (!r.ok) {
+      const msg = String((data && (data.msg || data.message || data.error_description || data.error)) || text || '');
+      throw new Error(/weak|short|length/i.test(msg) ? 'Mật khẩu mới chưa đủ mạnh.' : 'Chưa đổi được mật khẩu. Vui lòng thử lại.');
+    }
+    if (data && data.id && currentSession) {
+      currentSession.user = data;
+      saveAuthSession(currentSession, authRememberMe);
+    }
+    lockPaymentConfigCard({ silent: true });
+    closeStudentExamPasswordModal();
+    showAppToast('Đã đổi mật khẩu.', 'success');
+  } catch (e) {
+    setStudentExamPasswordError(e?.message || 'Chưa đổi được mật khẩu. Vui lòng thử lại.');
+  } finally {
+    setStudentExamPasswordBusy(false);
+  }
 }
 
 function studentExamQuotaInfo() {
