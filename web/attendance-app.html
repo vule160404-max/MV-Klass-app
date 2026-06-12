@@ -33369,6 +33369,40 @@ async function ensureTuitionLedgerRowsForAttendance(records) {
   return apiOk(r);
 }
 
+async function ensureTuitionLedgerRowsForAssignedClasses() {
+  const payload = [];
+  const seen = new Set();
+  (Array.isArray(students) ? students : []).forEach(st => {
+    const sid = String(st && st.id != null ? st.id : '').trim();
+    if (!sid) return;
+    getStudentClasses(st).forEach(rawClass => {
+      const className = resolveCanonicalClassName(String(rawClass || '').trim());
+      if (!className || className === 'No class') return;
+      if (!(resolveFeeForClassName(className) > 0)) return;
+      const key = sid + '||' + normalizeClassKeyForFeeLookup(className);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      payload.push({
+        student_id: sid,
+        class_name: className,
+        charged_sessions: 0,
+        prepaid_balance_vnd: 0,
+        updated_at: new Date().toISOString()
+      });
+    });
+  });
+  if (!payload.length) return true;
+  const r = await fetch(
+    SUPABASE_URL + '/rest/v1/student_tuition_by_class?on_conflict=student_id,class_name',
+    {
+      method: 'POST',
+      headers: getHeaders('resolution=ignore-duplicates,return=minimal'),
+      body: JSON.stringify(payload)
+    }
+  );
+  return apiOk(r);
+}
+
 async function insertPaymentHistory(studentId, sessionsPaid, amountVnd, paidAtIso, paymentChannel, classNameOptional) {
   const sessions_paid = Math.max(1, parseInt(sessionsPaid, 10) || 1);
   const amount_vnd = Math.max(0, parseInt(amountVnd, 10) || 0);
@@ -36745,6 +36779,13 @@ async function loadRevenue() {
   const el = document.getElementById('revenue-list');
   if (!el) return;
   const gen = ++loadRevenueGeneration;
+  try {
+    const assignedLedgerOk = await ensureTuitionLedgerRowsForAssignedClasses();
+    if (!assignedLedgerOk) console.warn('ensureTuitionLedgerRowsForAssignedClasses failed');
+  } catch (e) {
+    console.warn('ensureTuitionLedgerRowsForAssignedClasses', e);
+  }
+  if (gen !== loadRevenueGeneration) return;
   await loadChargedSessions();
   if (gen !== loadRevenueGeneration) return;
   const d = await api('GET','attendance?select=id,student_id,status,class_name,date,students(name,class_name)&status=eq.present&limit=10000&order=date.desc');
