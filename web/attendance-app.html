@@ -33336,6 +33336,39 @@ async function setChargedSessions(studentId, newCharged) {
   return apiOk(r);
 }
 
+async function ensureTuitionLedgerRowsForAttendance(records) {
+  const presentRows = (Array.isArray(records) ? records : [])
+    .filter(rec => rec && rec.status === 'present')
+    .map(rec => ({
+      student_id: String(rec.student_id || '').trim(),
+      class_name: String(rec.class_name || '').trim(),
+      charged_sessions: 0,
+      prepaid_balance_vnd: 0,
+      updated_at: new Date().toISOString()
+    }))
+    .filter(rec => rec.student_id && rec.class_name && rec.class_name !== 'No class');
+  if (!presentRows.length) return true;
+
+  const seen = new Set();
+  const payload = presentRows.filter(rec => {
+    const key = rec.student_id + '||' + normalizeClassKeyForFeeLookup(rec.class_name);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  if (!payload.length) return true;
+
+  const r = await fetch(
+    SUPABASE_URL + '/rest/v1/student_tuition_by_class?on_conflict=student_id,class_name',
+    {
+      method: 'POST',
+      headers: getHeaders('resolution=ignore-duplicates,return=minimal'),
+      body: JSON.stringify(payload)
+    }
+  );
+  return apiOk(r);
+}
+
 async function insertPaymentHistory(studentId, sessionsPaid, amountVnd, paidAtIso, paymentChannel, classNameOptional) {
   const sessions_paid = Math.max(1, parseInt(sessionsPaid, 10) || 1);
   const amount_vnd = Math.max(0, parseInt(amountVnd, 10) || 0);
@@ -35487,6 +35520,12 @@ async function saveAttendance() {
   if (btn) btn.disabled = false;
   showMsg(r.ok||r.status===201 ? 'saved-msg' : 'err-msg');
   if (r.ok || r.status===201 || r.status===204) {
+    try {
+      const ledgerOk = await ensureTuitionLedgerRowsForAttendance(records);
+      if (!ledgerOk) console.warn('ensureTuitionLedgerRowsForAttendance failed');
+    } catch (e) {
+      console.warn('ensureTuitionLedgerRowsForAttendance', e);
+    }
     invalidateAnalyticsCache();
     await refreshAbsentStreakWarnings();
     attendance = {};
