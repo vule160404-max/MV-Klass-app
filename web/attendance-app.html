@@ -6998,13 +6998,13 @@
     .student-exam-activity-tab{min-height:32px;border:0;border-radius:999px;background:transparent;color:#51617a;padding:0 13px;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap}
     .student-exam-activity-tab.active{background:#fff;color:#0f1f3d;box-shadow:0 8px 18px rgba(18,33,61,.08)}
     .student-exam-activity-pane{display:none}.student-exam-activity-pane.active{display:block}
-    .student-exam-activity-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .student-exam-activity-card{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:start;min-height:112px;padding:12px;border-radius:16px;background:#fff;border:1px solid rgba(18,33,61,.08);box-shadow:0 8px 18px rgba(18,33,61,.045)}
-    .student-exam-activity-icon{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:#eef6ff;color:#1d4ed8}.student-exam-activity-icon.download{background:#eef6ff;color:#1d4ed8}.student-exam-activity-icon.open{background:#fff7e6;color:#b26006}.student-exam-activity-icon.online{background:#eaf7ef;color:#17663c}.student-exam-activity-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .student-exam-activity-body{min-width:0;display:grid;gap:7px}.student-exam-activity-label{color:#66748d;font-size:10.5px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-activity-name{color:#0b234d;font-size:13px;font-weight:950;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.student-exam-activity-meta{color:#66748d;font-size:11px;font-weight:800;line-height:1.35}
-    .student-exam-activity-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}.student-exam-activity-btn{min-height:32px;border-radius:11px;border:1px solid rgba(18,33,61,.10);background:#fff;color:#102858;padding:0 10px;font-size:11px;font-weight:950;cursor:pointer}.student-exam-activity-btn.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-activity-btn.online{background:#eafaf0;border-color:rgba(22,163,74,.18);color:#17663c}.student-exam-activity-btn:disabled{opacity:.45;cursor:not-allowed}
-    @media (max-width:1180px){.student-exam-activity-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media (max-width:699px){.student-exam-saved-recent-panel{margin-top:12px;padding:11px;border-radius:18px}.student-exam-activity-head{display:grid;gap:10px}.student-exam-activity-tabs{width:100%;display:grid;grid-template-columns:1fr 1fr}.student-exam-activity-list{grid-template-columns:1fr}.student-exam-activity-card{min-height:auto}.student-exam-activity-actions{justify-content:stretch}.student-exam-activity-btn{flex:1 1 auto}}
+    .student-exam-activity-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .student-exam-activity-card{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:76px;padding:11px;border-radius:15px;background:#fff;border:1px solid rgba(18,33,61,.08);box-shadow:0 8px 18px rgba(18,33,61,.04)}
+    .student-exam-activity-icon{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:#eef6ff;color:#1d4ed8}.student-exam-activity-icon.download{background:#eef6ff;color:#1d4ed8}.student-exam-activity-icon.open{background:#fff7e6;color:#b26006}.student-exam-activity-icon.online{background:#eaf7ef;color:#17663c}.student-exam-activity-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .student-exam-activity-body{min-width:0;display:grid;gap:4px}.student-exam-activity-label{color:#66748d;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.student-exam-activity-name{color:#0b234d;font-size:13px;font-weight:950;line-height:1.28;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.student-exam-activity-meta{color:#66748d;font-size:11px;font-weight:800;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .student-exam-activity-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}.student-exam-activity-btn{min-height:32px;border-radius:11px;border:1px solid rgba(18,33,61,.10);background:#fff;color:#102858;padding:0 10px;font-size:11px;font-weight:950;cursor:pointer;white-space:nowrap}.student-exam-activity-btn.primary{background:#0f1f3d;border-color:#0f1f3d;color:#fff}.student-exam-activity-btn.online{background:#eafaf0;border-color:rgba(22,163,74,.18);color:#17663c}.student-exam-activity-btn:disabled{display:none}
+    @media (max-width:1180px){.student-exam-activity-list{grid-template-columns:1fr}}
+    @media (max-width:699px){.student-exam-saved-recent-panel{margin-top:12px;padding:11px;border-radius:18px}.student-exam-activity-head{display:grid;gap:10px}.student-exam-activity-tabs{width:100%;display:grid;grid-template-columns:1fr 1fr}.student-exam-activity-card{grid-template-columns:30px minmax(0,1fr);min-height:auto}.student-exam-activity-icon{width:30px;height:30px;border-radius:10px}.student-exam-activity-actions{grid-column:1/-1;justify-content:stretch}.student-exam-activity-btn{flex:1 1 auto}}
     .student-exam-preview-modal{position:fixed;inset:0;z-index:4000;display:none;padding:14px;background:rgba(8,18,38,.62);backdrop-filter:blur(10px)}.student-exam-preview-modal.open{display:grid;place-items:center}.student-exam-preview-dialog{width:min(1180px,96vw);max-height:min(92vh,900px);display:grid;grid-template-rows:auto minmax(260px,1fr) auto;overflow:hidden;border-radius:22px;background:#fff;box-shadow:0 28px 80px rgba(0,0,0,.32)}.student-exam-preview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(18,33,61,.08)}.student-exam-preview-head strong{display:block;color:#12213d;font-size:15px;line-height:1.3}.student-exam-preview-head span{display:block;margin-top:3px;color:#748096;font-size:12px;font-weight:700}.student-exam-preview-close{width:36px;height:36px;border:0;border-radius:12px;background:#eef3f9;color:#12213d;font-size:20px;cursor:pointer}.student-exam-preview-body{min-height:320px;background:#edf2f8;overflow:auto}.student-exam-preview-frame{width:100%;height:100%;min-height:68vh;border:0;display:block;background:#fff}.student-exam-pdf-pages{display:grid;gap:14px;justify-items:center;padding:16px;background:#edf2f8}.student-exam-pdf-page{width:min(100%,1040px);height:auto;background:#fff;border-radius:10px;box-shadow:0 10px 24px rgba(18,33,61,.14)}.student-exam-preview-fallback{min-height:300px;display:grid;place-items:center;padding:24px;color:#52627c;text-align:center;font-weight:800;line-height:1.5}.student-exam-preview-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(18,33,61,.08)}
     @media (min-width:700px){.student-exam-shell{padding:18px 22px 54px}.student-exam-header{margin-left:-22px;margin-right:-22px;padding-left:22px;padding-right:22px}.student-exam-hello{display:block}.student-premium-entry{margin-bottom:18px}.student-premium-entry-btn{min-width:220px}.student-exam-history-btn{min-width:260px}.student-exam-hero{padding:34px 30px}.student-premium-head{padding:32px 82px 30px 32px}.student-premium-body{padding:24px}.student-premium-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.student-exam-data-columns{grid-template-columns:repeat(3,minmax(0,1fr))}.student-exam-filter-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.student-exam-list{grid-template-columns:repeat(2,minmax(0,1fr))}.student-exam-feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media (min-width:1040px){.student-exam-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -14202,7 +14202,7 @@ a:focus-visible,
 .student-exam-stats-kpi-grid{
   grid-column:1 / -1;
   display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:10px;
 }
 .student-exam-stats-kpi{
@@ -14236,7 +14236,7 @@ a:focus-visible,
 .student-exam-stats-layout{
   grid-column:1 / -1;
   display:grid;
-  grid-template-columns:1.1fr .9fr;
+  grid-template-columns:minmax(320px,.78fr) minmax(0,1.22fr);
   gap:12px;
 }
 .student-exam-stats-card-wide{
@@ -14307,6 +14307,15 @@ a:focus-visible,
 .student-exam-stats-list.compact{
   margin-top:10px;
 }
+.student-exam-quiet-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(99,138,218,.12);
+}
 .student-stats-panel-head{
   grid-column:1 / -1;
   padding-bottom:2px;
@@ -14365,9 +14374,7 @@ a:focus-visible,
     grid-column:auto;
     grid-row:auto;
   }
-  .student-exam-stats-kpi-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
+  .student-exam-stats-kpi-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   .student-exam-overview-activity-list{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
@@ -16544,11 +16551,11 @@ button[data-bank-inspect-confirm-not]:hover,
           </button>
           <button type="button" class="student-exam-side-item" data-student-nav="saved" onclick="studentExamShowSaved()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v18l-6-3-6 3z"></path><path d="M9 8h6"></path><path d="M9 12h4"></path></svg>
-            <span>Đã lưu</span>
+            <span>Của tôi</span>
           </button>
           <button type="button" class="student-exam-side-item" data-student-nav="stats" onclick="studentExamShowStats()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9"></path><path d="M12 19V5"></path><path d="M19 19v-7"></path><path d="M4 19h17"></path></svg>
-            <span>Thống kê</span>
+            <span>Tiến độ</span>
           </button>
         </div>
         <div class="student-exam-sidebar-premium">
@@ -16689,82 +16696,38 @@ button[data-bank-inspect-confirm-not]:hover,
       </div>
     </section>
 
-    <section class="student-exam-stats-panel" id="student-exam-stats-panel" aria-label="Thống kê học tập" aria-hidden="true">
+    <section class="student-exam-stats-panel" id="student-exam-stats-panel" aria-label="Tiến độ học tập" aria-hidden="true">
       <div class="student-stats-panel-head">
         <div>
-          <div class="student-exam-overview-kicker">Thống kê</div>
-          <h2>Hiệu suất làm đề</h2>
+          <div class="student-exam-overview-kicker">Tiến độ</div>
+          <h2>Kết quả học tập</h2>
         </div>
-        <button type="button" class="student-exam-overview-action" data-online-history-open>Xem lịch sử online</button>
+        <button type="button" class="student-exam-overview-action" data-online-history-open>Lịch sử làm bài</button>
       </div>
       <div class="student-exam-stats-kpi-grid" id="student-exam-stats-kpi-grid"></div>
       <div class="student-exam-stats-layout">
-        <section class="student-exam-stats-card student-exam-stats-card-wide">
-          <div class="student-exam-stats-card-head">
-            <div>
-              <span>Hoạt động gần đây</span>
-              <strong>Tải, mở và làm đề online</strong>
-            </div>
-          </div>
-          <div class="student-exam-stats-list" id="student-exam-stats-activity-list"></div>
-        </section>
         <section class="student-exam-stats-card">
           <div class="student-exam-stats-card-head">
             <div>
-              <span>Gợi ý cải thiện</span>
+              <span>Gợi ý</span>
               <strong>Việc nên làm tiếp theo</strong>
             </div>
           </div>
           <div class="student-exam-stats-insights" id="student-exam-stats-insights"></div>
         </section>
-        <section class="student-exam-stats-card">
-          <div class="student-exam-stats-card-head">
-            <div>
-              <span>Đề đã tải</span>
-              <strong>Lịch sử tải đề</strong>
-            </div>
-            <button type="button" class="student-exam-stats-link" onclick="openStudentExamDownloadHistory()">Xem tất cả</button>
-          </div>
-          <div class="student-exam-download-history-bar">
-            <button type="button" class="student-exam-history-btn" onclick="openStudentExamDownloadHistory()" aria-haspopup="dialog" aria-controls="student-exam-download-history-modal">
-              <span class="student-exam-history-btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
-              </span>
-              <span>
-                <strong>Lịch sử tải đề</strong>
-                <small>10 đề gần nhất</small>
-              </span>
-              <span class="student-exam-history-btn-count" id="student-exam-download-history-count">0 đề</span>
-            </button>
-          </div>
-          <div class="student-exam-stats-list compact" id="student-exam-stats-download-list"></div>
-        </section>
         <section class="student-exam-stats-card student-exam-stats-card-wide">
           <div class="student-exam-stats-card-head">
             <div>
-              <span>Làm đề online</span>
-              <strong>Điểm số và lần nộp</strong>
+              <span>Kết quả</span>
+              <strong>Bài online gần đây</strong>
             </div>
             <button type="button" class="student-exam-stats-link" data-online-history-open>Xem lịch sử</button>
           </div>
-          <div class="student-online-history-card">
-            <button type="button" class="student-exam-history-btn student-online-history-btn" data-online-history-open aria-haspopup="dialog" aria-controls="student-online-history-modal">
-              <span class="student-exam-history-btn-icon student-online-history-btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M8 17V9"></path><path d="M12 17V7"></path><path d="M16 17v-5"></path><path d="M20 19H4"></path></svg>
-              </span>
-              <span>
-                <strong>Lịch sử làm đề online</strong>
-                <small id="student-online-history-meta">Chưa có bài đã nộp.</small>
-              </span>
-              <span class="student-exam-history-btn-count" id="student-online-history-count">0 đề</span>
-            </button>
-            <div class="student-online-history-panel" id="student-online-history-card">
-              <div><span>Điểm TB</span><strong id="student-online-history-average">0%</strong></div>
-              <div><span>Đã làm</span><strong id="student-online-history-completed">0</strong></div>
-              <div><span>Lần nộp</span><strong id="student-online-history-attempts">0</strong></div>
-            </div>
-          </div>
           <div class="student-exam-stats-list" id="student-exam-stats-online-list"></div>
+          <div class="student-exam-quiet-actions">
+            <button type="button" class="student-exam-stats-link" onclick="openStudentExamDownloadHistory()">Lịch sử tải đề</button>
+            <button type="button" class="student-exam-stats-link" data-online-history-open>Lịch sử làm bài</button>
+          </div>
         </section>
       </div>
       <a class="student-exam-zalo-btn" href="https://zalo.me/0916045202" target="_blank" rel="noopener noreferrer" aria-label="Nhắn Zalo hỗ trợ" title="Nhắn Zalo hỗ trợ">
@@ -16812,19 +16775,19 @@ button[data-bank-inspect-confirm-not]:hover,
       </section>
     </div>
 
-    <section class="student-exam-saved-recent-panel" id="student-exam-saved-recent-panel" aria-label="Đã lưu và gần đây">
+    <section class="student-exam-saved-recent-panel" id="student-exam-saved-recent-panel" aria-label="Tài liệu của tôi">
       <div class="student-exam-activity-head">
         <div class="student-exam-activity-title">
-          <strong>Đã lưu / Gần đây</strong>
-          <span>Truy cập nhanh các đề đã tải, đã mở và đã làm online.</span>
+          <strong>Của tôi</strong>
+          <span>Tài liệu đã tải và hoạt động học gần đây.</span>
         </div>
-        <div class="student-exam-activity-tabs" role="tablist" aria-label="Đề cá nhân">
-          <button type="button" class="student-exam-activity-tab active" role="tab" aria-selected="true" data-student-activity-tab="saved" onclick="studentExamSetActivityTab('saved')">Đã lưu</button>
-          <button type="button" class="student-exam-activity-tab" role="tab" aria-selected="false" data-student-activity-tab="recent" onclick="studentExamSetActivityTab('recent')">Gần đây</button>
+        <div class="student-exam-activity-tabs" role="tablist" aria-label="Tài liệu cá nhân">
+          <button type="button" class="student-exam-activity-tab active" role="tab" aria-selected="true" data-student-activity-tab="saved" onclick="studentExamSetActivityTab('saved')">Tài liệu</button>
+          <button type="button" class="student-exam-activity-tab" role="tab" aria-selected="false" data-student-activity-tab="recent" onclick="studentExamSetActivityTab('recent')">Hoạt động</button>
         </div>
       </div>
-      <div class="student-exam-activity-pane active" id="student-exam-saved-list" role="tabpanel" aria-label="Đề đã lưu"></div>
-      <div class="student-exam-activity-pane" id="student-exam-recent-list" role="tabpanel" aria-label="Đề gần đây"></div>
+      <div class="student-exam-activity-pane active" id="student-exam-saved-list" role="tabpanel" aria-label="Tài liệu đã tải"></div>
+      <div class="student-exam-activity-pane" id="student-exam-recent-list" role="tabpanel" aria-label="Hoạt động gần đây"></div>
     </section>
 
     <div id="student-exam-download-history-modal" class="student-exam-history-modal" aria-hidden="true" onclick="if(event.target===this) closeStudentExamDownloadHistory()">
@@ -22322,7 +22285,7 @@ function studentExamOverviewFocusItems() {
   focus.push({
     icon: '2',
     title: latest ? 'Xem lại lần nộp gần nhất' : 'Tạo lịch sử điểm đầu tiên',
-    detail: latest ? `${studentOnlineHistoryTitle(latest)} · ${studentOnlinePercent(latest.percent)}` : 'Chỉ các bài đã bấm Nộp bài mới được tính vào thống kê.'
+    detail: latest ? `${studentOnlineHistoryTitle(latest)} · ${studentOnlinePercent(latest.percent)}` : 'Chỉ các bài đã bấm Nộp bài mới được tính vào tiến độ.'
   });
   focus.push({
     icon: '3',
@@ -22353,7 +22316,7 @@ function studentExamActivitySummaryCard(item) {
   const id = escapeHtml(String(item?.exam_file_id || row?.id || ''));
   const title = escapeHtml(String(item?.title || (row ? studentExamDisplayTitle(row) : 'Đề online')).trim());
   const kind = String(item?.kind || 'download');
-  const label = kind === 'online' ? 'Làm online' : (kind === 'open' ? 'Đã mở' : 'Đã tải');
+  const label = kind === 'online' ? 'Đã làm' : (kind === 'open' ? 'Đã xem' : 'Đã tải');
   const time = studentExamRecentTimeLabel(item?.at) || 'Chưa rõ thời gian';
   const canAccess = row && studentExamCanAccess(row);
   const hasFile = row && studentExamHasFile(row, 'file');
@@ -22410,7 +22373,7 @@ function renderStudentExamOverviewPanel() {
       <p>${escapeHtml(detail)}</p>
       <div class="student-exam-overview-hero-actions">
         <button type="button" class="student-exam-overview-hero-btn primary" onclick="studentExamShowLibrary()">Vào kho tài liệu</button>
-        <button type="button" class="student-exam-overview-hero-btn" onclick="studentExamShowStats()">Xem thống kê</button>
+        <button type="button" class="student-exam-overview-hero-btn" onclick="studentExamShowStats()">Xem tiến độ</button>
       </div>`;
   }
   if (focus) {
@@ -22437,17 +22400,13 @@ function renderStudentExamOverviewPanel() {
 function studentExamStatsKpiItems() {
   const summary = studentOnlineSummary();
   const downloaded = studentExamDownloadedRows();
-  const opened = studentExamOpenedRows();
   const best = studentExamBestOnlineAttempt();
   const completed = Math.max(0, Number(summary.completed_exam_count || 0) || 0);
-  const attempts = Math.max(0, Number(summary.attempt_count || summary.latest_attempt_count || studentOnlineExamHistory.length || 0) || 0);
   return [
-    { label: 'Đã tải', value: formatStudentExamStat(downloaded.length), detail: 'Tài liệu đã lưu về máy' },
-    { label: 'Đã mở', value: formatStudentExamStat(opened.length), detail: 'Đề đã xem trước trong portal' },
-    { label: 'Đã làm', value: formatStudentExamStat(completed), detail: 'Tính theo đề online mới nhất' },
-    { label: 'Lần nộp', value: formatStudentExamStat(attempts), detail: 'Tất cả lần nộp online' },
+    { label: 'Đã làm', value: formatStudentExamStat(completed), detail: completed ? 'Đề online đã nộp' : 'Chưa có bài nộp' },
     { label: 'Điểm TB', value: studentOnlinePercent(summary.average_percent), detail: completed ? 'Theo lần mới nhất mỗi đề' : 'Chưa có điểm' },
-    { label: 'Cao nhất', value: best ? studentOnlinePercent(best.percent) : '0%', detail: best ? studentOnlineHistoryTitle(best) : 'Chưa có bài nộp' }
+    { label: 'Cao nhất', value: best ? studentOnlinePercent(best.percent) : '0%', detail: best ? studentOnlineHistoryTitle(best) : 'Chưa có bài nộp' },
+    { label: 'Đã tải', value: formatStudentExamStat(downloaded.length), detail: 'Tài liệu đã tải về máy' }
   ];
 }
 
@@ -22467,7 +22426,7 @@ function studentExamStatsInsightItems() {
     items.push({ icon: '1', title: 'Duy trì nhịp luyện đề', detail: `Điểm TB ${studentOnlinePercent(avg)}. Có thể làm thêm đề mới để tăng độ ổn định.` });
   }
   if (onlineCount > completed) {
-    items.push({ icon: '2', title: 'Còn đề online chưa hoàn thành', detail: `${formatStudentExamStat(onlineCount - completed)} đề online đang mở chưa được tính vào lịch sử.` });
+    items.push({ icon: '2', title: 'Có đề online để luyện thêm', detail: `${formatStudentExamStat(onlineCount - completed)} đề online đang sẵn sàng trong kho.` });
   }
   if (downloaded > opened) {
     items.push({ icon: '3', title: 'Mở lại đề đã tải', detail: `${formatStudentExamStat(downloaded)} đề đã tải, ${formatStudentExamStat(opened)} đề đã mở trong portal.` });
@@ -22493,8 +22452,6 @@ function studentExamOnlineAttemptRow(row) {
 
 function renderStudentExamStatsPanel() {
   const kpi = document.getElementById('student-exam-stats-kpi-grid');
-  const activity = document.getElementById('student-exam-stats-activity-list');
-  const downloads = document.getElementById('student-exam-stats-download-list');
   const online = document.getElementById('student-exam-stats-online-list');
   const insights = document.getElementById('student-exam-stats-insights');
   if (kpi) {
@@ -22504,24 +22461,6 @@ function renderStudentExamStatsPanel() {
         <strong>${escapeHtml(item.value)}</strong>
         <small>${escapeHtml(item.detail)}</small>
       </article>`).join('');
-  }
-  if (activity) {
-    const items = studentExamRecentActivityItems().slice(0, 8);
-    activity.innerHTML = items.length
-      ? items.map(studentExamActivitySummaryCard).join('')
-      : studentExamState('Chưa có hoạt động gần đây.');
-  }
-  if (downloads) {
-    const rows = studentExamDownloadedRows(5).map(row => ({
-      kind: 'download',
-      at: studentExamActivityFor(row)?.last_downloaded_at,
-      row,
-      exam_file_id: row.id,
-      meta: (Math.max(1, Number(studentExamActivityFor(row)?.download_count || 0) || 1)) + ' lần tải'
-    }));
-    downloads.innerHTML = rows.length
-      ? rows.map(studentExamActivitySummaryCard).join('')
-      : studentExamState('Các đề đã tải sẽ hiện ở đây.');
   }
   if (online) {
     const rows = (studentOnlineExamHistory || []).slice(0, 6);
@@ -23084,7 +23023,7 @@ function studentExamNotificationItemsLegacy() {
   if (isFreeLike && onlineCount >= 1 && completed === 0) {
     items.push({ tone: 'info', title: 'Có đề online đang chờ luyện', detail: `${formatStudentExamStat(onlineCount)} đề online đã kích hoạt. Làm thử một đề để bắt đầu ghi lịch sử điểm.`, action: 'online', actionLabel: 'Lọc đề online' });
   } else if (onlineCount > completed && onlineCount >= 1) {
-    items.push({ tone: 'info', title: 'Còn đề online chưa hoàn thành', detail: `Đã làm ${formatStudentExamStat(completed)}/${formatStudentExamStat(onlineCount)} đề online đang mở.`, action: 'online', actionLabel: 'Xem đề online' });
+    items.push({ tone: 'info', title: 'Có đề online để luyện thêm', detail: `Đã làm ${formatStudentExamStat(completed)}/${formatStudentExamStat(onlineCount)} đề online đang mở.`, action: 'online', actionLabel: 'Xem đề online' });
   }
   if (attempts >= 1 && avg > 0 && avg < 50) {
     items.push({ tone: 'score', title: 'Điểm TB đang dưới 50%', detail: `Điểm trung bình hiện tại là ${studentOnlinePercent(avg)}. Nên luyện lại đề gần nhất và xem đáp án sau khi nộp.` });
@@ -24769,12 +24708,21 @@ function studentExamActivityCard(item) {
   const id = escapeHtml(String(item?.exam_file_id || row?.id || ''));
   const title = escapeHtml(String(item?.title || (row ? studentExamDisplayTitle(row) : 'Đề online')).trim());
   const kind = String(item?.kind || 'download');
-  const label = kind === 'online' ? 'Đã làm online' : (kind === 'open' ? 'Đã mở gần đây' : 'Đã tải/lưu');
+  const label = kind === 'online' ? 'Đã làm' : (kind === 'open' ? 'Đã xem' : 'Đã tải');
   const time = studentExamRecentTimeLabel(item?.at);
   const meta = escapeHtml([time, item?.meta || '', row ? studentExamAccessTier(row) === 'premium' ? 'Premium' : 'Free' : ''].filter(Boolean).join(' · '));
   const canAccess = row && studentExamCanAccess(row);
   const hasFile = row && studentExamHasFile(row, 'file');
   const hasOnline = row && studentExamHasPublishedOnline(row);
+  const actions = [];
+  if (hasOnline && canAccess) {
+    actions.push(`<button type="button" class="student-exam-activity-btn online" data-exam-online="${id}">${kind === 'online' ? 'Làm lại' : 'Làm bài'}</button>`);
+  } else if (hasFile && canAccess) {
+    actions.push(`<button type="button" class="student-exam-activity-btn" data-exam-preview="${id}" data-exam-kind="file">Xem đề</button>`);
+  }
+  if (hasFile && canAccess && kind !== 'open') {
+    actions.push(`<button type="button" class="student-exam-activity-btn primary" data-exam-download="${id}" data-exam-kind="file">Tải</button>`);
+  }
   return `<article class="student-exam-activity-card" data-exam-id="${id}">
     <span class="student-exam-activity-icon ${escapeHtml(kind)}" aria-hidden="true">${studentExamActivityIcon(kind)}</span>
     <span class="student-exam-activity-body">
@@ -24782,11 +24730,7 @@ function studentExamActivityCard(item) {
       <strong class="student-exam-activity-name">${title}</strong>
       <span class="student-exam-activity-meta">${meta || 'Chưa rõ thời gian'}</span>
     </span>
-    <span class="student-exam-activity-actions">
-      <button type="button" class="student-exam-activity-btn" data-exam-preview="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Xem đề</button>
-      <button type="button" class="student-exam-activity-btn online" data-exam-online="${id}" ${hasOnline && canAccess ? '' : 'disabled'}>Làm online</button>
-      <button type="button" class="student-exam-activity-btn primary" data-exam-download="${id}" data-exam-kind="file" ${hasFile && canAccess ? '' : 'disabled'}>Tải lại</button>
-    </span>
+    ${actions.length ? `<span class="student-exam-activity-actions">${actions.join('')}</span>` : ''}
   </article>`;
 }
 

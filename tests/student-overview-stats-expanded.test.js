@@ -31,19 +31,22 @@ test('overview page renders a full dashboard instead of only KPI cards', () => {
   assert.match(renderBlock, /student-exam-overview-activity/);
 });
 
-test('stats page renders KPI, history, and recommendation sections', () => {
+test('progress page renders compact KPI, recommendation, and result sections', () => {
   const source = readSource();
   const showStatsBlock = functionBlock(source, 'studentExamShowStats', 'document.addEventListener');
   const statsBlock = functionBlock(source, 'renderStudentExamStatsPanel', 'document.addEventListener');
 
+  assert.match(source, />Tiến độ</);
+  assert.match(source, /Kết quả học tập/);
   assert.match(source, /id="student-exam-stats-kpi-grid"/);
   assert.match(source, /id="student-exam-stats-online-list"/);
-  assert.match(source, /id="student-exam-stats-activity-list"/);
   assert.match(source, /id="student-exam-stats-insights"/);
+  assert.match(source, /student-exam-quiet-actions/);
   assert.match(source, /function studentExamStatsKpiItems\(\)/);
   assert.match(source, /function studentExamStatsInsightItems\(\)/);
   assert.match(source, /function studentExamOpenedRows\(limit\)/);
   assert.match(source, /function studentExamBestOnlineAttempt\(\)/);
+  assert.doesNotMatch(source, /id="student-exam-stats-activity-list"/);
   assert.match(showStatsBlock, /renderStudentExamStatsPanel\(\)/);
   assert.match(statsBlock, /student-exam-stats-kpi-grid/);
   assert.match(statsBlock, /student-exam-stats-online-list/);
