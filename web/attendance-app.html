@@ -13860,6 +13860,9 @@ a:focus-visible,
   display:grid;
   gap:6px;
 }
+.student-exam-password-field{
+  position:relative;
+}
 .student-exam-password-panel label span{
   color:#64748b;
   font-size:11px;
@@ -13879,10 +13882,96 @@ a:focus-visible,
   padding:0 12px;
   outline:none;
   box-shadow:0 8px 18px rgba(8,29,66,.04);
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.student-exam-password-field.has-state input{
+  padding-right:44px;
 }
 .student-exam-password-panel input:focus{
   border-color:#2563eb;
   box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.student-exam-password-field.is-valid input{
+  border-color:#16a34a;
+  background:linear-gradient(180deg,#fff,#f7fff9);
+  box-shadow:0 0 0 3px rgba(22,163,74,.12),0 10px 22px rgba(22,163,74,.08);
+}
+.student-exam-password-field.is-invalid input{
+  border-color:#ef4444;
+  background:linear-gradient(180deg,#fff,#fff8f8);
+  box-shadow:0 0 0 3px rgba(239,68,68,.10);
+}
+.student-exam-password-state{
+  position:absolute;
+  right:12px;
+  bottom:10px;
+  display:none;
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  place-items:center;
+  color:#fff;
+  pointer-events:none;
+}
+.student-exam-password-field.is-valid .student-exam-password-state,
+.student-exam-password-field.is-checking .student-exam-password-state,
+.student-exam-password-field.is-invalid .student-exam-password-state{
+  display:grid;
+}
+.student-exam-password-field.is-valid .student-exam-password-state{
+  background:#16a34a;
+  animation:passwordStatePop .32s cubic-bezier(.2,.9,.2,1) both;
+}
+.student-exam-password-field.is-invalid .student-exam-password-state{
+  background:#ef4444;
+  animation:passwordStateShake .28s ease both;
+}
+.student-exam-password-field.is-checking .student-exam-password-state{
+  border:2px solid rgba(37,99,235,.18);
+  border-top-color:#2563eb;
+  background:#fff;
+  animation:passwordStateSpin .75s linear infinite;
+}
+.student-exam-password-field.is-valid .student-exam-password-state::before{
+  content:"";
+  width:10px;
+  height:6px;
+  border-left:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform:rotate(-45deg) translate(1px,-1px);
+}
+.student-exam-password-field.is-invalid .student-exam-password-state::before,
+.student-exam-password-field.is-invalid .student-exam-password-state::after{
+  content:"";
+  position:absolute;
+  width:10px;
+  height:2px;
+  border-radius:999px;
+  background:currentColor;
+}
+.student-exam-password-field.is-invalid .student-exam-password-state::before{ transform:rotate(45deg); }
+.student-exam-password-field.is-invalid .student-exam-password-state::after{ transform:rotate(-45deg); }
+.student-exam-password-match-hint{
+  min-height:17px;
+  color:#64748b;
+  font-size:11.5px;
+  font-weight:820;
+  transition:color .18s ease;
+}
+.student-exam-password-match-hint.is-valid{ color:#15803d; }
+.student-exam-password-match-hint.is-invalid{ color:#b42318; }
+@keyframes passwordStatePop{
+  0%{ transform:scale(.68); opacity:0; }
+  65%{ transform:scale(1.12); opacity:1; }
+  100%{ transform:scale(1); opacity:1; }
+}
+@keyframes passwordStateShake{
+  0%,100%{ transform:translateX(0); }
+  35%{ transform:translateX(-2px); }
+  70%{ transform:translateX(2px); }
+}
+@keyframes passwordStateSpin{
+  to{ transform:rotate(360deg); }
 }
 .student-exam-password-note{
   margin:0;
@@ -16743,22 +16832,28 @@ button[data-bank-inspect-confirm-not]:hover,
         </div>
         <form class="student-exam-settings-form student-exam-password-panel" onsubmit="event.preventDefault();submitStudentExamPasswordChange()">
           <p class="student-exam-password-note">Nhập mật khẩu hiện tại 2 lần để xác minh, sau đó đặt mật khẩu mới cho tài khoản.</p>
-          <label>
+          <label class="student-exam-password-field has-state" data-password-field="current">
             <span>Mật khẩu hiện tại</span>
-            <input id="student-password-current-1" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu hiện tại"/>
+            <input id="student-password-current-1" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu hiện tại" oninput="onStudentExamPasswordInput()"/>
+            <i class="student-exam-password-state" aria-hidden="true"></i>
           </label>
-          <label>
+          <label class="student-exam-password-field has-state" data-password-field="current">
             <span>Nhập lại mật khẩu hiện tại</span>
-            <input id="student-password-current-2" type="password" autocomplete="current-password" placeholder="Nhập lại mật khẩu hiện tại"/>
+            <input id="student-password-current-2" type="password" autocomplete="current-password" placeholder="Nhập lại mật khẩu hiện tại" oninput="onStudentExamPasswordInput()"/>
+            <i class="student-exam-password-state" aria-hidden="true"></i>
           </label>
-          <label>
+          <div class="student-exam-password-match-hint" id="student-password-current-hint" aria-live="polite"></div>
+          <label class="student-exam-password-field has-state" data-password-field="new">
             <span>Mật khẩu mới</span>
-            <input id="student-password-new-1" type="password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"/>
+            <input id="student-password-new-1" type="password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự" oninput="onStudentExamPasswordInput()"/>
+            <i class="student-exam-password-state" aria-hidden="true"></i>
           </label>
-          <label>
+          <label class="student-exam-password-field has-state" data-password-field="new">
             <span>Nhập lại mật khẩu mới</span>
-            <input id="student-password-new-2" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu mới"/>
+            <input id="student-password-new-2" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu mới" oninput="onStudentExamPasswordInput()"/>
+            <i class="student-exam-password-state" aria-hidden="true"></i>
           </label>
+          <div class="student-exam-password-match-hint" id="student-password-new-hint" aria-live="polite"></div>
           <div class="student-exam-password-error" id="student-password-error" role="alert"></div>
           <div class="student-exam-settings-actions">
             <button type="button" class="student-exam-settings-reset" onclick="closeStudentExamPasswordModal()">Hủy</button>
@@ -23054,6 +23149,7 @@ function resetStudentExamPasswordModal() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  clearStudentExamPasswordValidationUi();
   const err = document.getElementById('student-password-error');
   if (err) err.textContent = '';
   const btn = document.getElementById('student-password-submit');
@@ -23061,6 +23157,117 @@ function resetStudentExamPasswordModal() {
     btn.disabled = false;
     btn.textContent = 'Lưu mật khẩu mới';
   }
+}
+
+let studentPasswordCheckTimer = null;
+let studentPasswordCheckSeq = 0;
+let studentPasswordVerifiedValue = '';
+
+function clearStudentExamPasswordValidationUi() {
+  if (studentPasswordCheckTimer) {
+    clearTimeout(studentPasswordCheckTimer);
+    studentPasswordCheckTimer = null;
+  }
+  studentPasswordCheckSeq++;
+  studentPasswordVerifiedValue = '';
+  document.querySelectorAll('.student-exam-password-field').forEach(el => {
+    el.classList.remove('is-valid', 'is-invalid', 'is-checking');
+  });
+  ['student-password-current-hint', 'student-password-new-hint'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = '';
+    el.classList.remove('is-valid', 'is-invalid');
+  });
+}
+
+function setStudentExamPasswordGroupState(group, state, hintText) {
+  document.querySelectorAll(`.student-exam-password-field[data-password-field="${group}"]`).forEach(el => {
+    el.classList.remove('is-valid', 'is-invalid', 'is-checking');
+    if (state) el.classList.add('is-' + state);
+  });
+  const hint = document.getElementById(group === 'current' ? 'student-password-current-hint' : 'student-password-new-hint');
+  if (hint) {
+    hint.textContent = hintText || '';
+    hint.classList.remove('is-valid', 'is-invalid');
+    if (state === 'valid' || state === 'invalid') hint.classList.add('is-' + state);
+  }
+}
+
+function onStudentExamPasswordInput() {
+  setStudentExamPasswordError('');
+  validateStudentExamNewPasswordMatch();
+  scheduleStudentExamCurrentPasswordCheck();
+}
+
+function validateStudentExamNewPasswordMatch() {
+  const current1 = String(document.getElementById('student-password-current-1')?.value || '');
+  const next1 = String(document.getElementById('student-password-new-1')?.value || '');
+  const next2 = String(document.getElementById('student-password-new-2')?.value || '');
+  if (!next1 && !next2) {
+    setStudentExamPasswordGroupState('new', '', '');
+    return false;
+  }
+  if (next1.length > 0 && next1.length < 6) {
+    setStudentExamPasswordGroupState('new', 'invalid', 'Mật khẩu mới cần tối thiểu 6 ký tự.');
+    return false;
+  }
+  if (next1 && next2 && next1 !== next2) {
+    setStudentExamPasswordGroupState('new', 'invalid', 'Hai ô mật khẩu mới chưa trùng khớp.');
+    return false;
+  }
+  if (next1 && next2 && next1 === current1) {
+    setStudentExamPasswordGroupState('new', 'invalid', 'Mật khẩu mới cần khác mật khẩu hiện tại.');
+    return false;
+  }
+  if (next1 && next2 && next1 === next2) {
+    setStudentExamPasswordGroupState('new', 'valid', 'Mật khẩu mới đã trùng khớp.');
+    return true;
+  }
+  setStudentExamPasswordGroupState('new', '', '');
+  return false;
+}
+
+function scheduleStudentExamCurrentPasswordCheck() {
+  const current1 = String(document.getElementById('student-password-current-1')?.value || '');
+  const current2 = String(document.getElementById('student-password-current-2')?.value || '');
+  if (studentPasswordCheckTimer) {
+    clearTimeout(studentPasswordCheckTimer);
+    studentPasswordCheckTimer = null;
+  }
+  studentPasswordVerifiedValue = '';
+  studentPasswordCheckSeq++;
+  if (!current1 && !current2) {
+    setStudentExamPasswordGroupState('current', '', '');
+    return;
+  }
+  if (!current1 || !current2) {
+    setStudentExamPasswordGroupState('current', '', '');
+    return;
+  }
+  if (current1 !== current2) {
+    setStudentExamPasswordGroupState('current', 'invalid', 'Hai ô mật khẩu hiện tại chưa trùng khớp.');
+    return;
+  }
+  const seq = studentPasswordCheckSeq;
+  setStudentExamPasswordGroupState('current', 'checking', 'Đang xác minh mật khẩu hiện tại...');
+  studentPasswordCheckTimer = setTimeout(async () => {
+    try {
+      const verdict = await verifyCurrentPassword(current1);
+      if (seq !== studentPasswordCheckSeq) return;
+      if (verdict && verdict.ok) {
+        studentPasswordVerifiedValue = current1;
+        setStudentExamPasswordGroupState('current', 'valid', 'Mật khẩu hiện tại đã đúng.');
+      } else {
+        studentPasswordVerifiedValue = '';
+        setStudentExamPasswordGroupState('current', 'invalid', 'Mật khẩu hiện tại không đúng.');
+      }
+    } catch (e) {
+      if (seq !== studentPasswordCheckSeq) return;
+      studentPasswordVerifiedValue = '';
+      setStudentExamPasswordGroupState('current', 'invalid', 'Chưa xác minh được mật khẩu hiện tại.');
+    }
+  }, 650);
 }
 
 function openStudentExamPasswordModal() {
@@ -23108,27 +23315,44 @@ async function submitStudentExamPasswordChange() {
   }
   if (current1 !== current2) {
     setStudentExamPasswordError('Hai lần nhập mật khẩu hiện tại chưa khớp.');
+    setStudentExamPasswordGroupState('current', 'invalid', 'Hai ô mật khẩu hiện tại chưa trùng khớp.');
     return;
   }
   if (next1.length < 6) {
     setStudentExamPasswordError('Mật khẩu mới cần tối thiểu 6 ký tự.');
+    setStudentExamPasswordGroupState('new', 'invalid', 'Mật khẩu mới cần tối thiểu 6 ký tự.');
     return;
   }
   if (next1 !== next2) {
     setStudentExamPasswordError('Hai lần nhập mật khẩu mới chưa khớp.');
+    setStudentExamPasswordGroupState('new', 'invalid', 'Hai ô mật khẩu mới chưa trùng khớp.');
     return;
   }
   if (next1 === current1) {
     setStudentExamPasswordError('Mật khẩu mới cần khác mật khẩu hiện tại.');
+    setStudentExamPasswordGroupState('new', 'invalid', 'Mật khẩu mới cần khác mật khẩu hiện tại.');
     return;
   }
   setStudentExamPasswordBusy(true);
   try {
-    const check = await verifyCurrentPassword(current1);
+    if (studentPasswordCheckTimer) {
+      clearTimeout(studentPasswordCheckTimer);
+      studentPasswordCheckTimer = null;
+    }
+    let check = { ok: studentPasswordVerifiedValue === current1 };
+    if (!check.ok) {
+      setStudentExamPasswordGroupState('current', 'checking', 'Đang xác minh mật khẩu hiện tại...');
+      check = await verifyCurrentPassword(current1);
+    }
     if (!check || !check.ok) {
       setStudentExamPasswordError('Mật khẩu hiện tại không đúng.');
+      studentPasswordVerifiedValue = '';
+      setStudentExamPasswordGroupState('current', 'invalid', 'Mật khẩu hiện tại không đúng.');
       return;
     }
+    studentPasswordVerifiedValue = current1;
+    setStudentExamPasswordGroupState('current', 'valid', 'Mật khẩu hiện tại đã đúng.');
+    setStudentExamPasswordGroupState('new', 'valid', 'Mật khẩu mới đã trùng khớp.');
     const fresh = await ensureSessionFresh();
     if (!fresh || !currentSession?.access_token) {
       setStudentExamPasswordError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
