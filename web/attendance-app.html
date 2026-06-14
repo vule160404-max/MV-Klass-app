@@ -4567,6 +4567,7 @@
     }
     .portal-analytics-shell{ display:grid; gap:14px; }
     .website-admin-subtabs{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:5px; border-radius:16px; background:#eef4ff; border:1px solid rgba(99,138,218,.16); box-shadow:0 10px 24px rgba(17,42,100,.06); }
+    .website-admin-subtabs.is-online-only{ grid-template-columns:1fr; }
     .website-admin-subtab{ min-height:42px; border:0; border-radius:12px; background:transparent; color:#4a5b74; font-size:13px; font-weight:950; cursor:pointer; transition:background .18s ease,color .18s ease,box-shadow .18s ease; }
     .website-admin-subtab.active{ background:#fff; color:#102858; box-shadow:0 8px 18px rgba(17,42,100,.10); }
     .website-admin-panel{ display:none; gap:14px; }
@@ -7383,7 +7384,7 @@ button, input, select, textarea { font-family: var(--f) !important; }
 
 /* Page animations */
 #tab-dashboard, #tab-attendance, #tab-work, #tab-classes,
-#tab-students, #tab-tuition, #tab-analytics, #tab-portal-admin, #tab-bank,
+#tab-students, #tab-tuition, #tab-analytics, #tab-portal-admin, #tab-portal-library-admin, #tab-portal-users-admin, #tab-bank,
 #tab-schedule, #tab-consult {
   animation: pageIn 220ms cubic-bezier(0.4,0,0.2,1) both !important;
 }
@@ -15019,6 +15020,14 @@ button[data-bank-inspect-confirm-not]:hover,
       <span class="tab-icon" aria-hidden="true">PT</span>
       Quản lí website
     </button>
+    <button class="tab" id="tab-btn-portal-library-admin" onclick="showTab('portal-library-admin')">
+      <span class="tab-icon" aria-hidden="true">KT</span>
+      Kho tài liệu
+    </button>
+    <button class="tab" id="tab-btn-portal-users-admin" onclick="showTab('portal-users-admin')">
+      <span class="tab-icon" aria-hidden="true">TK</span>
+      Tài khoản portal
+    </button>
     <button class="tab" id="tab-btn-leaderboard" onclick="showTab('leaderboard')">
       <span class="tab-icon" aria-hidden="true">LB</span>
       Leaderboard
@@ -15263,12 +15272,44 @@ button[data-bank-inspect-confirm-not]:hover,
 
   </div>
 
+  <div id="tab-portal-library-admin" style="display:none">
+      <div class="portal-analytics-shell" id="portal-library-admin-root">
+        <div class="portal-analytics-hero">
+          <div>
+            <h3>Quản lí kho tài liệu</h3>
+            <p>Upload tài liệu, quản lý file đã đưa lên Supabase/R2, cấu hình đề miễn phí và gói Premium cho học sinh.</p>
+          </div>
+          <div class="portal-analytics-status">
+            <strong id="portal-library-kpi-last-sync">—</strong>
+            <span>Cập nhật dữ liệu</span>
+          </div>
+        </div>
+        <div id="portal-library-admin-mount"></div>
+      </div>
+  </div>
+
+  <div id="tab-portal-users-admin" style="display:none">
+      <div class="portal-analytics-shell" id="portal-users-admin-root">
+        <div class="portal-analytics-hero">
+          <div>
+            <h3>Tài khoản portal</h3>
+            <p>Quản lý tài khoản học sinh, trạng thái xác minh email, gói Free/Premium, khóa/mở và hoạt động gần nhất.</p>
+          </div>
+          <div class="portal-analytics-status">
+            <strong id="portal-users-kpi-last-sync">—</strong>
+            <span>Cập nhật dữ liệu</span>
+          </div>
+        </div>
+        <div id="portal-users-admin-mount"></div>
+      </div>
+  </div>
+
   <div id="tab-portal-admin" style="display:none">
       <div class="portal-analytics-shell" id="portal-analytics-root">
         <div class="portal-analytics-hero">
           <div>
-            <h3>Quản lí website</h3>
-            <p>Quản trị kho tài liệu, gói Free/Premium và đề online trong cùng một khu vực. Tab đề online dùng để tạo prompt AI, nạp JSON, upload ảnh và xuất bản nút làm bài cho học sinh.</p>
+            <h3>Quản lí đề online</h3>
+            <p>Tạo prompt AI, nạp JSON, upload ảnh và xuất bản nút làm bài online cho học sinh.</p>
           </div>
           <div class="portal-analytics-status">
             <strong id="portal-kpi-last-sync">—</strong>
@@ -15280,12 +15321,12 @@ button[data-bank-inspect-confirm-not]:hover,
           <div class="portal-kpi-card"><div class="label">Lượt mở đề</div><div class="value" id="portal-kpi-opens">0</div><div class="hint">Theo từng tài khoản</div></div>
           <div class="portal-kpi-card"><div class="label">Lượt tải</div><div class="value" id="portal-kpi-downloads">0</div><div class="hint">Tải file trong portal</div></div>
         </div>
-        <div class="website-admin-subtabs" role="tablist" aria-label="Quản lí website">
-          <button type="button" class="website-admin-subtab active" id="website-admin-subtab-library" role="tab" aria-selected="true" onclick="setWebsiteAdminSubtab('library')">Quản lí kho tài liệu</button>
-          <button type="button" class="website-admin-subtab" id="website-admin-subtab-online" role="tab" aria-selected="false" onclick="setWebsiteAdminSubtab('online')">Quản lí đề online</button>
+        <div class="website-admin-subtabs is-online-only" role="tablist" aria-label="Quản lí website">
+          <button type="button" class="website-admin-subtab" id="website-admin-subtab-library" role="tab" aria-selected="false" onclick="setWebsiteAdminSubtab('library')" hidden>Quản lí kho tài liệu</button>
+          <button type="button" class="website-admin-subtab active" id="website-admin-subtab-online" role="tab" aria-selected="true" onclick="setWebsiteAdminSubtab('online')">Quản lí đề online</button>
         </div>
-        <div class="website-admin-panel active" id="website-admin-panel-library" role="tabpanel" aria-labelledby="website-admin-subtab-library">
-        <div class="portal-panel">
+        <div class="website-admin-panel" id="website-admin-panel-library" role="tabpanel" aria-labelledby="website-admin-subtab-library">
+        <div class="portal-panel" id="portal-student-users-panel">
           <div class="portal-panel-head">
             <div>
               <div class="portal-panel-title">Học sinh portal</div>
@@ -15416,7 +15457,7 @@ button[data-bank-inspect-confirm-not]:hover,
           </div>
         </div>
         </div>
-        <div class="website-admin-panel" id="website-admin-panel-online" role="tabpanel" aria-labelledby="website-admin-subtab-online">
+        <div class="website-admin-panel active" id="website-admin-panel-online" role="tabpanel" aria-labelledby="website-admin-subtab-online">
           <div class="portal-panel">
             <div class="portal-panel-head">
               <div>
@@ -20988,7 +21029,7 @@ const AUTH_APP_BASE_URL = String((APP.auth && APP.auth.appBaseUrl) || 'https://m
 const AUTH_CALLBACK_PATH = String((APP.auth && APP.auth.callbackPath) || '/app').trim() || '/app';
 const TAB_STORAGE_KEY = (APP.storage && APP.storage.tabKey) || 'mvk-last-tab';
 const WORKSPACE_MODULE_STORAGE_KEY = 'mvk-last-workspace-module';
-const TAB_IDS = ['dashboard', 'attendance', 'work', 'classes', 'students', 'tuition', 'bank', 'schedule', 'analytics', 'portal-admin', 'leaderboard', 'consult'];
+const TAB_IDS = ['dashboard', 'attendance', 'work', 'classes', 'students', 'tuition', 'bank', 'schedule', 'analytics', 'portal-admin', 'portal-library-admin', 'portal-users-admin', 'leaderboard', 'consult'];
 const WORKSPACE_MODULE_IDS = ['admin', 'portal'];
 let authRememberMe = false;
 
@@ -21125,7 +21166,7 @@ function getRememberedTab() {
 
 function normalizeTabForRole(tab) {
   let t = TAB_IDS.includes(tab) ? tab : 'dashboard';
-  if (isTeacher() && (t === 'students' || t === 'classes' || t === 'tuition' || t === 'bank' || t === 'analytics' || t === 'portal-admin' || t === 'leaderboard' || t === 'consult')) {
+  if (isTeacher() && (t === 'students' || t === 'classes' || t === 'tuition' || t === 'bank' || t === 'analytics' || t === 'portal-admin' || t === 'portal-library-admin' || t === 'portal-users-admin' || t === 'leaderboard' || t === 'consult')) {
     t = 'attendance';
   }
   return t;
@@ -21948,6 +21989,8 @@ function applyRoleUI() {
     'tab-btn-bank',
     'tab-btn-analytics',
     'tab-btn-portal-admin',
+    'tab-btn-portal-library-admin',
+    'tab-btn-portal-users-admin',
     'tab-btn-leaderboard',
     'tab-btn-consult'
   ];
@@ -21977,6 +22020,8 @@ function applyRoleUI() {
   setVisible('tab-btn-schedule', 'tab-schedule', isAdmin() || isTeacher());
   setVisible('tab-btn-analytics', 'tab-analytics', isAdmin());
   setVisible('tab-btn-portal-admin', 'tab-portal-admin', isAdmin());
+  setVisible('tab-btn-portal-library-admin', 'tab-portal-library-admin', isAdmin());
+  setVisible('tab-btn-portal-users-admin', 'tab-portal-users-admin', isAdmin());
   setVisible('tab-btn-leaderboard', 'tab-leaderboard', isAdmin());
   setVisible('tab-btn-consult', 'tab-consult', isAdmin());
   const aiPanelEl = document.getElementById('ai-chat-panel');
@@ -22025,6 +22070,8 @@ function applyRoleUI() {
   setSectionVisible('sidebar-section-report', [
     'tab-btn-analytics',
     'tab-btn-portal-admin',
+    'tab-btn-portal-library-admin',
+    'tab-btn-portal-users-admin',
     'tab-btn-leaderboard',
     'tab-btn-consult'
   ]);
@@ -27681,8 +27728,32 @@ function invalidatePortalAnalyticsCache() {
   _portalAnalyticsLoadedAt = 0;
 }
 
+function mountPortalLibraryAdminPanel() {
+  const panel = document.getElementById('website-admin-panel-library');
+  const mount = document.getElementById('portal-library-admin-mount');
+  if (!panel || !mount) return;
+  websiteAdminSubtab = 'library';
+  mountPortalUsersAdminPanel();
+  if (panel.parentElement !== mount) mount.appendChild(panel);
+  panel.classList.add('active');
+  panel.setAttribute('aria-labelledby', 'tab-btn-portal-library-admin');
+  const targetSync = document.getElementById('portal-library-kpi-last-sync');
+  const sourceSync = document.getElementById('portal-kpi-last-sync');
+  if (targetSync && sourceSync) targetSync.textContent = sourceSync.textContent || '—';
+}
+
+function mountPortalUsersAdminPanel() {
+  const panel = document.getElementById('portal-student-users-panel');
+  const mount = document.getElementById('portal-users-admin-mount');
+  if (!panel || !mount) return;
+  if (panel.parentElement !== mount) mount.appendChild(panel);
+  const targetSync = document.getElementById('portal-users-kpi-last-sync');
+  const sourceSync = document.getElementById('portal-kpi-last-sync');
+  if (targetSync && sourceSync) targetSync.textContent = sourceSync.textContent || '—';
+}
+
 function setWebsiteAdminSubtab(tab) {
-  const active = tab === 'online' ? 'online' : 'library';
+  const active = tab === 'library' ? 'library' : 'online';
   websiteAdminSubtab = active;
   const tabs = {
     library: document.getElementById('website-admin-subtab-library'),
@@ -27698,6 +27769,10 @@ function setWebsiteAdminSubtab(tab) {
     tabs[key]?.setAttribute('aria-selected', isActive ? 'true' : 'false');
     panels[key]?.classList.toggle('active', isActive);
   });
+  if (active === 'library') {
+    mountPortalLibraryAdminPanel();
+    return;
+  }
   if (active === 'online') {
     loadPortalOnlineExams(false).catch(e => console.warn('loadPortalOnlineExams', e));
   }
@@ -41565,7 +41640,7 @@ function setBankAdminSubtab(tab) {
 function showTab(t, options = {}) {
   t = setTabDomState(t);
   updateTabDeepLink(t);
-  if (t === 'portal-admin') startPortalPresenceRefresh();
+  if (t === 'portal-admin' || t === 'portal-library-admin' || t === 'portal-users-admin') startPortalPresenceRefresh();
   else stopPortalPresenceRefresh();
   // Keep sidebar open on desktop so admin can switch tabs continuously.
   // Auto-close only on smaller screens/touch-like layouts.
@@ -41614,8 +41689,16 @@ function showTab(t, options = {}) {
     loadAnalyticsIfNeeded().catch(e => console.warn('showTab analytics', e));
   }
   if (t === 'portal-admin') {
-    setWebsiteAdminSubtab(websiteAdminSubtab);
+    setWebsiteAdminSubtab('online');
     loadPortalAnalyticsIfNeeded(false).catch(e => console.warn('showTab portal-admin', e));
+  }
+  if (t === 'portal-library-admin') {
+    mountPortalLibraryAdminPanel();
+    loadPortalAnalyticsIfNeeded(false).catch(e => console.warn('showTab portal-library-admin', e));
+  }
+  if (t === 'portal-users-admin') {
+    mountPortalUsersAdminPanel();
+    loadPortalAnalyticsIfNeeded(false).catch(e => console.warn('showTab portal-users-admin', e));
   }
   if (t === 'leaderboard') {
     void Promise.all([refreshLeaderboardManualScores(), refreshLeaderboardPerformanceHistory()])
@@ -42537,6 +42620,8 @@ function enhanceAppIcons(root = document.body) {
     'tab-btn-bank': 'bank',
     'tab-btn-analytics': 'analytics',
     'tab-btn-portal-admin': 'portal',
+    'tab-btn-portal-library-admin': 'portal',
+    'tab-btn-portal-users-admin': 'students',
     'tab-btn-leaderboard': 'leaderboard',
     'tab-btn-consult': 'consult',
     'tab-btn-logout': 'logout'
