@@ -6896,6 +6896,13 @@
     .student-premium-transfer{display:grid;gap:11px}.student-premium-line{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 12px;border-radius:14px;background:#f8fbff;border:1px solid rgba(18,33,61,.08);color:#64748b;font-size:12px;font-weight:900}.student-premium-line strong{color:#10213f;font-size:16px}.student-premium-copy-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:stretch}.student-premium-copy-box{min-width:0;padding:12px 13px;border-radius:14px;background:#f8fafc;border:1px solid rgba(18,33,61,.08);color:#10213f;font-size:13px;font-weight:950;overflow-wrap:anywhere;display:grid;gap:4px}.student-premium-copy-box small{color:#64748b;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}.student-premium-copy{min-height:44px;border-radius:13px;border:1px solid rgba(18,33,61,.12);background:#fff;color:#162743;padding:0 12px;font-size:12px;font-weight:950;cursor:pointer}.student-premium-copy:hover{border-color:rgba(47,111,178,.28);background:#f8fbff}@keyframes studentPremiumCardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
     .student-premium-success-panel{position:relative;overflow:hidden;display:grid;grid-template-columns:78px minmax(0,1fr);gap:18px;align-items:center;min-height:190px;padding:22px;border-radius:18px;background:linear-gradient(135deg,#ecfdf5 0%,#fff 58%,#fff8e8 100%);border:1px solid rgba(22,163,74,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}.student-premium-success-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 0%,rgba(22,163,74,.12) 42%,rgba(244,167,29,.10) 54%,transparent 72%);transform:translateX(-110%);animation:studentPremiumSuccessSweep 1.15s ease .08s both}.student-premium-success-mark{position:relative;z-index:1;width:78px;height:78px;border-radius:999px;background:linear-gradient(180deg,#22c55e,#0f766e);color:#fff;display:grid;place-items:center;box-shadow:0 18px 34px rgba(22,163,74,.24),inset 0 1px 0 rgba(255,255,255,.28);animation:studentPremiumSuccessPop .62s cubic-bezier(.16,1,.3,1) both}.student-premium-success-mark span{font-size:38px;font-weight:950;line-height:1;transform:translateY(-1px);animation:studentPremiumSuccessTick .46s ease .22s both}.student-premium-success-copy{position:relative;z-index:1;min-width:0;display:grid;gap:7px}.student-premium-success-eyebrow{color:#0f766e;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.08em}.student-premium-success-copy h3{margin:0;color:#10213f;font-size:25px;line-height:1.12;font-weight:950;letter-spacing:0}.student-premium-success-copy p{margin:0;max-width:620px;color:#52627c;font-size:13px;line-height:1.55;font-weight:750}.student-premium-success-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}.student-premium-success-meta span{display:inline-flex;align-items:center;min-height:30px;border-radius:999px;padding:6px 10px;background:#fff;border:1px solid rgba(18,33,61,.08);color:#12213d;font-size:11px;font-weight:950}.student-premium-success-meta span:last-child{color:#17663c;background:#eaf7ef;border-color:rgba(22,163,74,.18)}.student-premium-success-progress{height:7px;margin-top:7px;border-radius:999px;background:rgba(15,118,110,.10);overflow:hidden}.student-premium-success-progress i{display:block;height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#0f766e,#22c55e,#f4a71d);transform-origin:left center;animation:studentPremiumReloadBar 2.8s linear both}.student-premium-success-sparks span{position:absolute;z-index:0;width:16px;height:4px;border-radius:999px;background:#f4a71d;opacity:0;animation:studentPremiumSpark .9s ease both}.student-premium-success-sparks span:nth-child(1){top:26px;left:28%;animation-delay:.12s}.student-premium-success-sparks span:nth-child(2){top:42px;right:12%;background:#22c55e;animation-delay:.2s}.student-premium-success-sparks span:nth-child(3){bottom:34px;left:18%;background:#2f6fb2;animation-delay:.26s}.student-premium-success-sparks span:nth-child(4){bottom:42px;right:26%;animation-delay:.34s}@keyframes studentPremiumSuccessSweep{to{transform:translateX(110%)}}@keyframes studentPremiumSuccessPop{0%{opacity:0;transform:scale(.72)}72%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}@keyframes studentPremiumSuccessTick{from{opacity:0;transform:translateY(4px) scale(.7)}to{opacity:1;transform:translateY(-1px) scale(1)}}@keyframes studentPremiumReloadBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes studentPremiumSpark{0%{opacity:0;transform:translateY(8px) scaleX(.5)}28%{opacity:1}100%{opacity:0;transform:translateY(-12px) scaleX(1)}}@media (prefers-reduced-motion:reduce){.student-premium-success-panel::before,.student-premium-success-mark,.student-premium-success-mark span,.student-premium-success-progress i,.student-premium-success-sparks span{animation:none}}
     .portal-premium-summary{ margin-bottom:10px; }
+    .portal-premium-mode-card{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; margin-bottom:10px; padding:12px; border-radius:15px; border:1px solid rgba(99,138,218,.16); background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 8px 20px rgba(17,42,100,.055); }
+    .portal-premium-mode-card.is-disabled{ border-color:rgba(22,163,74,.28); background:linear-gradient(180deg,#fbfffd,#ecfdf4); }
+    .portal-premium-mode-title{ color:#102858; font-size:13px; font-weight:950; line-height:1.25; }
+    .portal-premium-mode-sub{ margin-top:3px; color:#66748d; font-size:11.5px; font-weight:780; line-height:1.45; }
+    .portal-premium-mode-action{ min-height:36px; justify-content:center; white-space:nowrap; }
+    .portal-premium-mode-action.is-off{ background:#fff7ed !important; border-color:rgba(245,158,11,.32) !important; color:#9a630d !important; }
+    .portal-premium-mode-action.is-on{ background:#ecfdf4 !important; border-color:#b9ebcd !important; color:#13834e !important; }
     .portal-premium-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
     .portal-premium-product{ display:grid; gap:10px; padding:12px; border-radius:14px; background:#f8fbff; border:1px solid rgba(99,138,218,.14); }
     .portal-premium-product-head{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
@@ -7013,6 +7020,8 @@
     @media (max-width:420px){.student-exam-user{grid-template-columns:auto minmax(0,1fr) auto}.student-exam-admin-link{grid-column:1/3}.student-exam-logout:not(.student-exam-admin-link){grid-column:3}.student-exam-hero h1{font-size:28px}.student-exam-download-credit{font-size:10.5px}}
     @media (max-width:699px){
       #portal-premium-products-admin.portal-panel-body{ max-height:min(70dvh,640px); overflow:auto; padding:10px; scrollbar-gutter:stable; }
+      .portal-premium-mode-card{ grid-template-columns:1fr; gap:9px; padding:10px; }
+      .portal-premium-mode-action{ width:100%; }
       .portal-premium-summary{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin-bottom:10px; }
       .portal-premium-summary .portal-user-chip{ border-radius:12px; min-height:34px; }
       .portal-premium-summary .portal-user-chip:last-child{ grid-column:1/-1; }
@@ -11983,21 +11992,48 @@ a:focus-visible,
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
-.student-document-menu{
+.student-document-progress{
+  position:relative;
   display:grid;
   place-items:center;
-  width:30px;
-  height:30px;
-  border:0;
-  border-radius:9px;
-  background:transparent;
-  color:#0f2f61;
-  font-size:22px;
-  line-height:1;
-  cursor:pointer;
+  width:32px;
+  height:32px;
+  border:1px solid #dbe7f5;
+  border-radius:10px;
+  background:#f6f9fd;
+  color:#7a8ca5;
+  box-shadow:0 8px 18px rgba(8,29,66,.045);
 }
-.student-document-menu:hover{
-  background:#eef5ff;
+.student-document-progress svg{
+  width:17px;
+  height:17px;
+  stroke-width:2;
+}
+.student-document-progress.is-done{
+  border-color:#b9ebcd;
+  background:linear-gradient(180deg,#ecfdf4,#dcfce8);
+  color:#13834e;
+  box-shadow:0 10px 22px rgba(22,163,74,.10);
+}
+.student-document-progress.is-done::after{
+  content:"";
+  position:absolute;
+  right:-3px;
+  bottom:-3px;
+  width:11px;
+  height:11px;
+  border:2px solid #fff;
+  border-radius:999px;
+  background:#16a34a;
+  box-shadow:0 0 0 2px rgba(22,163,74,.12);
+}
+.student-document-progress.is-done svg{
+  animation:studentProgressPop .34s cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes studentProgressPop{
+  0%{ transform:scale(.78); opacity:.4; }
+  70%{ transform:scale(1.12); opacity:1; }
+  100%{ transform:scale(1); opacity:1; }
 }
 .student-exam-card .student-exam-badges{
   display:flex !important;
@@ -24713,6 +24749,9 @@ async function loadStudentOnlineExamHistory(options = {}) {
   } finally {
     studentOnlineExamHistoryLoading = false;
     renderStudentOnlineExamHistory();
+    if (!studentExamLoading && Array.isArray(studentExamRows) && studentExamRows.length) {
+      applyStudentExamFilters({ keepVisible: true });
+    }
     renderStudentExamNotifications();
   }
 }
@@ -24823,6 +24862,28 @@ function requestStudentExamUpgrade(id) {
   }).catch(() => {});
 }
 
+function studentExamOnlineAttemptFor(rowOrId) {
+  const id = String(typeof rowOrId === 'object' ? rowOrId?.id : rowOrId || '').trim();
+  if (!id) return null;
+  return (studentOnlineExamHistory || [])
+    .filter(attempt => String(attempt?.exam_file_id || '').trim() === id)
+    .sort((a, b) => Date.parse(String(b?.submitted_at || '')) - Date.parse(String(a?.submitted_at || '')))[0] || null;
+}
+
+function studentExamProgressIcon(row) {
+  const attempt = studentExamOnlineAttemptFor(row);
+  const done = !!attempt;
+  const label = done
+    ? 'Đã làm online' + (Number.isFinite(Number(attempt.percent)) ? ' · ' + studentOnlinePercent(attempt.percent) : '')
+    : 'Chưa làm online';
+  const icon = done
+    ? '<path d="M5 12.5 9.2 16.5 19 7"></path>'
+    : '<path d="M7 4h10v16l-5-3-5 3z"></path>';
+  return `<span class="student-document-progress ${done ? 'is-done' : 'is-pending'}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+    <svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>
+  </span>`;
+}
+
 async function trackStudentExamPortalEvent(examId, eventName) {
   const id = String(examId || '').trim();
   const event = String(eventName || 'open').trim() || 'open';
@@ -24891,7 +24952,7 @@ function studentExamCard(row, compact) {
             ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
           </div>
         </div>
-        <button type="button" class="student-document-menu" aria-label="Tác vụ tài liệu"><span aria-hidden="true">&vellip;</span></button>
+        ${studentExamProgressIcon(row)}
       </div>
       <div class="student-document-meta">
         <div class="student-document-meta-line">
@@ -26206,6 +26267,24 @@ async function finishStudentSignupToLogin(message, accessToken) {
   }
 }
 
+async function isPortalPremiumSignupBypassActive() {
+  try {
+    const r = await fetch(SUPABASE_URL + '/functions/v1/portal-premium-checkout', {
+      method: 'POST',
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'products' }),
+      cache: 'no-store'
+    });
+    const data = await r.json().catch(() => ({}));
+    const products = Array.isArray(data.products) ? data.products : [];
+    if (!r.ok || data.ok === false || !products.length) return false;
+    return products.every(p => p && p.is_active === false);
+  } catch (e) {
+    console.warn('portal premium signup mode unavailable', e);
+    return false;
+  }
+}
+
 async function signUpStudentAccount() {
   const name = String(document.getElementById('register-name')?.value || '').trim();
   const classChoice = String(document.getElementById('register-class-group')?.value || '').trim();
@@ -26238,6 +26317,7 @@ async function signUpStudentAccount() {
     ielts: { portal_free_group: 'ielts', student_class_group: 'ielts', student_class_label: 'IELTS' }
   };
   const classMeta = classMetaMap[classChoice] || classMetaMap.entrance_10;
+  const premiumBypass = await isPortalPremiumSignupBypassActive();
   try {
     const check = await fetch(SUPABASE_URL + '/rest/v1/rpc/student_signup_email_status', {
       method: 'POST',
@@ -26271,7 +26351,17 @@ async function signUpStudentAccount() {
       body: JSON.stringify({
         email,
         password,
-        data: { display_name: name, full_name: name, ...classMeta }
+        data: {
+          display_name: name,
+          full_name: name,
+          ...classMeta,
+          ...(premiumBypass ? {
+            portal_plan: 'premium',
+            portal_status: 'active',
+            portal_premium_auto: true,
+            portal_premium_source: 'signup_packages_disabled'
+          } : {})
+        }
       })
     });
   } catch (networkError) {
@@ -26290,11 +26380,15 @@ async function signUpStudentAccount() {
     return;
   }
   if (!data.access_token) {
-    await finishStudentSignupToLogin('Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để tải đề miễn phí.');
+    await finishStudentSignupToLogin(premiumBypass
+      ? 'Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để dùng quyền Premium trong thời gian trung tâm tắt đăng ký gói.'
+      : 'Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để tải đề miễn phí.');
     return;
   }
   await finishStudentSignupToLogin(
-    'Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để tải đề miễn phí.',
+    premiumBypass
+      ? 'Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để dùng quyền Premium trong thời gian trung tâm tắt đăng ký gói.'
+      : 'Đã tạo tài khoản. Em kiểm tra email để xác nhận, sau đó quay lại đăng nhập để tải đề miễn phí.',
     data.access_token
   );
 }
@@ -30575,10 +30669,22 @@ function renderPortalPremiumAdmin() {
   const paidOrders = orders.filter(o => String(o.status || '') === 'paid');
   const pendingOrders = orders.filter(o => String(o.status || '') === 'pending');
   const revenue = paidOrders.reduce((sum, o) => sum + Math.max(0, Number(o.amount_vnd || 0) || 0), 0);
+  const signupPackagesDisabled = products.length > 0 && products.every(p => p && p.is_active === false);
   el.innerHTML = `<div class="portal-user-summary portal-premium-summary">
     <span class="portal-user-chip">Đã thanh toán <strong>${paidOrders.length}</strong></span>
     <span class="portal-user-chip">Đang chờ <strong>${pendingOrders.length}</strong></span>
     <span class="portal-user-chip">Doanh thu Premium <strong>${escapeHtml(formatVnd(revenue))}</strong></span>
+  </div>
+  <div class="portal-premium-mode-card ${signupPackagesDisabled ? 'is-disabled' : ''}">
+    <div>
+      <div class="portal-premium-mode-title">${signupPackagesDisabled ? 'Đang tắt đăng ký gói Premium' : 'Đang mở đăng ký gói Premium'}</div>
+      <div class="portal-premium-mode-sub">${signupPackagesDisabled
+        ? 'Học sinh tạo tài khoản trong thời điểm này sẽ được coi là Premium và có thể truy cập toàn bộ tài liệu.'
+        : 'Học sinh mới vẫn đăng ký theo gói Free/Premium bình thường. Có thể tắt toàn bộ đăng ký gói khi cần mở Premium tạm thời.'}</div>
+    </div>
+    <button type="button" class="btn-sm portal-premium-mode-action ${signupPackagesDisabled ? 'is-on' : 'is-off'}" onclick="togglePortalPremiumSignupMode(${signupPackagesDisabled ? 'false' : 'true'})">
+      ${signupPackagesDisabled ? 'Bật lại đăng ký gói' : 'Tắt đăng ký gói'}
+    </button>
   </div>
   <div class="portal-premium-grid">
     ${products.map(p => {
@@ -30603,6 +30709,49 @@ function renderPortalPremiumAdmin() {
       </article>`;
     }).join('')}
   </div>`;
+}
+
+async function togglePortalPremiumSignupMode(disablePackages) {
+  if (!isAdmin()) {
+    showAppToast('Chỉ admin được cấu hình gói Premium.', 'warn');
+    return;
+  }
+  const products = Array.isArray(_portalPremiumProducts) ? _portalPremiumProducts : [];
+  const keys = products.map(p => String(p.product_key || '').trim()).filter(Boolean);
+  if (!keys.length) {
+    showAppToast('Chưa có gói Premium để cập nhật.', 'warn');
+    return;
+  }
+  const nextDisabled = !!disablePackages;
+  const ok = await confirmApp(
+    nextDisabled
+      ? 'Tắt toàn bộ đăng ký gói Premium? Học sinh đăng ký mới trong thời gian này sẽ được coi là Premium và có thể truy cập toàn bộ tài liệu.'
+      : 'Bật lại đăng ký gói Premium? Học sinh đăng ký mới sau đó sẽ quay về luồng Free/Premium bình thường.',
+    {
+      title: nextDisabled ? 'Tắt đăng ký gói Premium' : 'Bật lại đăng ký gói Premium',
+      okLabel: nextDisabled ? 'Tắt đăng ký gói' : 'Bật lại',
+      cancelLabel: 'Hủy',
+      intent: nextDisabled ? 'danger' : 'default'
+    }
+  );
+  if (!ok) return;
+  try {
+    const keyFilter = keys.map(k => encodeURIComponent(k)).join(',');
+    const r = await fetch(SUPABASE_URL + '/rest/v1/portal_premium_products?product_key=in.(' + keyFilter + ')', {
+      method: 'PATCH',
+      headers: getHeaders('return=representation'),
+      body: JSON.stringify({ is_active: !nextDisabled }),
+      cache: 'no-store'
+    });
+    if (!r.ok) throw new Error('portal_premium_signup_mode_' + r.status);
+    invalidatePortalAnalyticsCache();
+    portalPremiumProducts = [];
+    await loadPortalAnalyticsIfNeeded(true);
+    showAppToast(nextDisabled ? 'Đã tắt đăng ký gói Premium.' : 'Đã bật lại đăng ký gói Premium.', 'success');
+  } catch (e) {
+    console.warn('togglePortalPremiumSignupMode', e);
+    showAppToast('Chưa cập nhật được chế độ đăng ký Premium.', 'warn');
+  }
 }
 
 function openPortalPremiumConfigModal(productKey) {

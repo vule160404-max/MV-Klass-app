@@ -82,3 +82,34 @@ test('student portal notifications are conditional and show a red badge', () => 
   assert.match(html, /action:\s*'premium'/);
   assert.match(html, /action:\s*'online'/);
 });
+
+test('student exam cards show done status instead of a three-dot menu', () => {
+  const html = readPortal();
+  const cardBlock = functionBlock(html, 'studentExamCard', 'renderStudentExamSelectOptions');
+
+  assert.match(html, /function studentExamOnlineAttemptFor\(/);
+  assert.match(html, /function studentExamProgressIcon\(/);
+  assert.match(html, /\.student-document-progress\.is-done/);
+  assert.match(cardBlock, /studentExamProgressIcon\(row\)/);
+  assert.doesNotMatch(cardBlock, /student-document-menu/);
+  assert.doesNotMatch(cardBlock, /&vellip;/);
+});
+
+test('premium signup mode can disable package sales and grant new signups premium metadata', () => {
+  const html = readPortal();
+  const adminBlock = functionBlock(html, 'renderPortalPremiumAdmin', 'openPortalPremiumConfigModal');
+  const signupModeBlock = functionBlock(html, 'isPortalPremiumSignupBypassActive', 'signUpStudentAccount');
+  const signupBlock = functionBlock(html, 'signUpStudentAccount', 'signOutUser');
+
+  assert.match(html, /function togglePortalPremiumSignupMode\(/);
+  assert.match(adminBlock, /Tắt đăng ký gói/);
+  assert.match(adminBlock, /Bật lại đăng ký gói/);
+  assert.match(adminBlock, /products\.every\(p => p && p\.is_active === false\)/);
+  assert.match(adminBlock, /portal_premium_products\?product_key=in\./);
+  assert.match(signupModeBlock, /portal-premium-checkout/);
+  assert.match(signupModeBlock, /action:\s*'products'/);
+  assert.match(signupModeBlock, /products\.every\(p => p && p\.is_active === false\)/);
+  assert.match(signupBlock, /const premiumBypass = await isPortalPremiumSignupBypassActive\(\)/);
+  assert.match(signupBlock, /portal_plan:\s*'premium'/);
+  assert.match(signupBlock, /portal_premium_source:\s*'signup_packages_disabled'/);
+});
