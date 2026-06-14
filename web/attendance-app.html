@@ -24918,6 +24918,7 @@ function studentExamOnlineAttemptFor(rowOrId) {
 }
 
 function studentExamProgressIcon(row) {
+  if (!studentExamHasPublishedOnline(row)) return '';
   const attempt = studentExamOnlineAttemptFor(row);
   const done = !!attempt;
   const label = done
