@@ -104,6 +104,8 @@ test('premium signup mode can disable package sales and grant new signups premiu
   assert.match(html, /function togglePortalPremiumSignupMode\(/);
   assert.match(adminBlock, /Tắt đăng ký gói/);
   assert.match(adminBlock, /Bật lại đăng ký gói/);
+  assert.match(adminBlock, /Khi tắt, học sinh đăng ký mới/);
+  assert.doesNotMatch(adminBlock, /Premium\? Học sinh/);
   assert.match(adminBlock, /products\.every\(p => p && p\.is_active === false\)/);
   assert.match(adminBlock, /portal_premium_products\?product_key=in\./);
   assert.match(signupModeBlock, /portal-premium-checkout/);

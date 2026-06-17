@@ -30801,8 +30801,8 @@ async function togglePortalPremiumSignupMode(disablePackages) {
   const nextDisabled = !!disablePackages;
   const ok = await confirmApp(
     nextDisabled
-      ? 'Tắt toàn bộ đăng ký gói Premium? Học sinh đăng ký mới trong thời gian này sẽ được coi là Premium và có thể truy cập toàn bộ tài liệu.'
-      : 'Bật lại đăng ký gói Premium? Học sinh đăng ký mới sau đó sẽ quay về luồng Free/Premium bình thường.',
+      ? 'Khi tắt, học sinh đăng ký mới trong thời gian này sẽ được tự động xem là Premium và có thể truy cập toàn bộ tài liệu.'
+      : 'Khi bật lại, học sinh đăng ký mới sau đó sẽ quay về luồng Free/Premium bình thường.',
     {
       title: nextDisabled ? 'Tắt đăng ký gói Premium' : 'Bật lại đăng ký gói Premium',
       okLabel: nextDisabled ? 'Tắt đăng ký gói' : 'Bật lại',
