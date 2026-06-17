@@ -35,6 +35,10 @@ test('student portal exposes real navigation popovers and compact avatar menu', 
   assert.match(html, /id="student-setting-online"/);
   assert.match(html, /id="student-setting-display-name"/);
   assert.match(html, /id="student-setting-density"/);
+  assert.match(html, /class="student-exam-zalo-btn"/);
+  assert.match(html, /https:\/\/zalo\.me\/0916045202/);
+  assert.match(html, /\.student-exam-zalo-btn\{[\s\S]*z-index:3900 !important;/);
+  assert.doesNotMatch(html, /\.student-exam-zalo-btn\{[\s\S]{0,120}z-index:8 !important;/);
 
   assert.doesNotMatch(html, /studentExamShowOverview\(\)" role="menuitem">/);
   assert.doesNotMatch(html, /studentExamShowStats\(\)" role="menuitem">/);
