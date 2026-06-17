@@ -39,6 +39,11 @@ test('student portal exposes real navigation popovers and compact avatar menu', 
   assert.match(html, /https:\/\/zalo\.me\/0916045202/);
   assert.match(html, /\.student-exam-zalo-btn\{[\s\S]*z-index:3900 !important;/);
   assert.doesNotMatch(html, /\.student-exam-zalo-btn\{[\s\S]{0,120}z-index:8 !important;/);
+  const statsStart = html.indexOf('id="student-exam-stats-panel"');
+  const premiumStart = html.indexOf('id="student-exam-premium-view"');
+  const statsClose = html.lastIndexOf('</section>', premiumStart);
+  const zaloIndex = html.indexOf('class="student-exam-zalo-btn"');
+  assert.ok(zaloIndex > statsClose, 'Zalo widget is outside hidden stats panel');
 
   assert.doesNotMatch(html, /studentExamShowOverview\(\)" role="menuitem">/);
   assert.doesNotMatch(html, /studentExamShowStats\(\)" role="menuitem">/);
