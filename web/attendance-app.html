@@ -19,43 +19,26 @@
   <script>
     (function () {
       const LOGIN_ONLY_KEY = 'mvk-login-only';
-      const TWO_YEARS = 60 * 60 * 24 * 730;
-
-      function hasLoginOnlyMarker() {
-        try {
-          if (localStorage.getItem(LOGIN_ONLY_KEY) === '1') return true;
-        } catch (e) {}
-
-        try {
-          return document.cookie
-            .split(';')
-            .some(function (part) { return part.trim() === LOGIN_ONLY_KEY + '=1'; });
-        } catch (e) {
-          return false;
-        }
-      }
 
       function isPortalEntryPath() {
         return /^\/portal\/?$/i.test(window.location.pathname || '');
       }
 
-      function setLoginOnlyMarker() {
+      function clearLoginOnlyMarker() {
         try {
-          localStorage.setItem(LOGIN_ONLY_KEY, '1');
+          localStorage.removeItem(LOGIN_ONLY_KEY);
         } catch (e) {}
 
         try {
           const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-          document.cookie = LOGIN_ONLY_KEY + '=1; Path=/; Max-Age=' + TWO_YEARS + '; SameSite=Lax' + secure;
+          document.cookie = LOGIN_ONLY_KEY + '=; Path=/; Max-Age=0; SameSite=Lax' + secure;
         } catch (e) {}
       }
 
       if (isPortalEntryPath()) {
-        setLoginOnlyMarker();
-      }
-
-      if (hasLoginOnlyMarker()) {
         document.documentElement.classList.add('login-only-entry');
+      } else {
+        clearLoginOnlyMarker();
       }
     })();
   </script>
@@ -12001,11 +11984,20 @@ a:focus-visible,
   place-items:center;
   width:32px;
   height:32px;
+  padding:0;
   border:1px solid #dbe7f5;
   border-radius:10px;
   background:#f6f9fd;
   color:#7a8ca5;
   box-shadow:0 8px 18px rgba(8,29,66,.045);
+  cursor:pointer;
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease;
+}
+.student-document-progress:hover{
+  transform:translateY(-1px);
+  border-color:#a9c8ee;
+  background:#eef6ff;
+  color:#1d4ed8;
 }
 .student-document-progress svg{
   width:17px;
@@ -25099,19 +25091,41 @@ function studentExamOnlineAttemptFor(rowOrId) {
     .sort((a, b) => Date.parse(String(b?.submitted_at || '')) - Date.parse(String(a?.submitted_at || '')))[0] || null;
 }
 
-function studentExamProgressIcon(row) {
-  if (!studentExamHasPublishedOnline(row)) return '';
-  const attempt = studentExamOnlineAttemptFor(row);
-  const done = !!attempt;
-  const label = done
-    ? 'Đã làm online' + (Number.isFinite(Number(attempt.percent)) ? ' · ' + studentOnlinePercent(attempt.percent) : '')
-    : 'Chưa làm online';
-  const icon = done
+function studentExamIsManuallySaved(rowOrId) {
+  const activity = studentExamActivityFor(rowOrId);
+  return !!(activity && (activity.last_opened_at || activity.last_downloaded_at));
+}
+
+function studentExamSaveButton(row) {
+  const id = escapeHtml(String(row?.id || ''));
+  const saved = studentExamIsManuallySaved(row);
+  const label = saved ? 'Đã lưu trong Của tôi' : 'Lưu đề vào Của tôi';
+  const icon = saved
     ? '<path d="M5 12.5 9.2 16.5 19 7"></path>'
     : '<path d="M7 4h10v16l-5-3-5 3z"></path>';
-  return `<span class="student-document-progress ${done ? 'is-done' : 'is-pending'}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+  return `<button type="button" class="student-document-progress ${saved ? 'is-done' : 'is-pending'}" data-exam-save="${id}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
     <svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>
-  </span>`;
+  </button>`;
+}
+
+async function saveStudentExamForLater(examId) {
+  if (!requireStudentPortalAuth('save')) return;
+  const row = studentExamFind(examId);
+  if (!row) {
+    showAppToast('Không tìm thấy đề này.', 'warn');
+    return;
+  }
+  if (!studentExamCanAccess(row)) {
+    showAppToast('Đề này cần tài khoản Premium để lưu.', 'warn');
+    return;
+  }
+  if (studentExamIsManuallySaved(row)) {
+    showAppToast('Đề này đã có trong Của tôi.', 'info');
+    return;
+  }
+  await trackStudentExamPortalEvent(row.id, 'open');
+  showAppToast('Đã lưu đề vào Của tôi.', 'ok');
+  applyStudentExamFilters({ keepVisible: true });
 }
 
 async function trackStudentExamPortalEvent(examId, eventName) {
@@ -25183,7 +25197,7 @@ function studentExamCard(row, compact) {
             ${locked ? '<span class="student-exam-badge locked">Đang khóa</span>' : ''}
           </div>
         </div>
-        ${studentExamProgressIcon(row)}
+        ${studentExamSaveButton(row)}
       </div>
       <div class="student-document-meta">
         <div class="student-document-meta-line">
@@ -25414,8 +25428,12 @@ function setStudentExamRecentDownloadList(id, rows, emptyText) {
 
 function studentExamDownloadedRows(limit) {
   const rows = studentExamSortRows(studentExamRows || [])
-    .filter(row => !!studentExamActivityFor(row)?.last_downloaded_at)
-    .sort((a, b) => new Date(studentExamActivityFor(b)?.last_downloaded_at || 0) - new Date(studentExamActivityFor(a)?.last_downloaded_at || 0));
+    .filter(row => !!studentExamActivityFor(row)?.last_downloaded_at || !!studentExamActivityFor(row)?.last_opened_at)
+    .sort((a, b) => {
+      const ba = studentExamActivityFor(b) || {};
+      const aa = studentExamActivityFor(a) || {};
+      return new Date(ba.last_downloaded_at || ba.last_opened_at || 0) - new Date(aa.last_downloaded_at || aa.last_opened_at || 0);
+    });
   return Number.isFinite(Number(limit)) ? rows.slice(0, Number(limit)) : rows;
 }
 
@@ -25508,8 +25526,18 @@ function renderStudentExamSavedRecentPanel() {
   const savedRows = studentExamDownloadedRows(8);
   if (savedPane) {
     savedPane.innerHTML = savedRows.length
-      ? '<div class="student-exam-activity-list">' + savedRows.map(row => studentExamActivityCard({ kind: 'download', at: studentExamActivityFor(row)?.last_downloaded_at, row, exam_file_id: row.id, meta: (Math.max(1, Number(studentExamActivityFor(row)?.download_count || 0) || 1)) + ' lần tải' })).join('') + '</div>'
-      : studentExamState(studentExamActivityError || 'Các đề đã tải/lưu về máy sẽ hiện ở đây để mở lại nhanh.');
+      ? '<div class="student-exam-activity-list">' + savedRows.map(row => {
+          const activity = studentExamActivityFor(row) || {};
+          const downloaded = !!activity.last_downloaded_at;
+          return studentExamActivityCard({
+            kind: downloaded ? 'download' : 'open',
+            at: activity.last_downloaded_at || activity.last_opened_at,
+            row,
+            exam_file_id: row.id,
+            meta: downloaded ? (Math.max(1, Number(activity.download_count || 0) || 1)) + ' lần tải' : 'Đã lưu'
+          });
+        }).join('') + '</div>'
+      : studentExamState(studentExamActivityError || 'Các đề đã lưu hoặc đã tải sẽ hiện ở đây để mở lại nhanh.');
   }
   const recentItems = studentExamRecentActivityItems();
   if (recentPane) {
@@ -25885,6 +25913,11 @@ function bindStudentExamPortalEvents() {
       const dl = e.target.closest('[data-exam-download]');
       if (dl) {
         downloadStudentExamFile(dl.getAttribute('data-exam-download'), dl.getAttribute('data-exam-kind'));
+        return;
+      }
+      const save = e.target.closest('[data-exam-save]');
+      if (save) {
+        saveStudentExamForLater(save.getAttribute('data-exam-save'));
       }
     });
   }
@@ -26032,7 +26065,6 @@ async function openStudentExamPreview(id, kind) {
   if (kind !== 'answer') {
     actions.innerHTML += `<button type="button" class="student-exam-action primary" onclick="downloadStudentExamFile('${escapeHtml(String(row.id || ''))}','${escapeHtml(kind || 'file')}')">${kind === 'audio' ? 'Tải audio' : 'Tải đề'}</button>`;
   }
-  void trackStudentExamPortalEvent(row.id, 'open');
 }
 
 function closeStudentExamPreview() {

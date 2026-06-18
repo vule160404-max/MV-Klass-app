@@ -92,14 +92,18 @@ test('student portal notifications are conditional and show a red badge', () => 
   assert.match(html, /action:\s*'online'/);
 });
 
-test('student exam cards show done status instead of a three-dot menu', () => {
+test('student exam cards show manual save button instead of a three-dot menu', () => {
   const html = readPortal();
   const cardBlock = functionBlock(html, 'studentExamCard', 'renderStudentExamSelectOptions');
+  const previewBlock = functionBlock(html, 'openStudentExamPreview', 'closeStudentExamPreview');
 
-  assert.match(html, /function studentExamOnlineAttemptFor\(/);
-  assert.match(html, /function studentExamProgressIcon\(/);
+  assert.match(html, /function studentExamIsManuallySaved\(/);
+  assert.match(html, /function studentExamSaveButton\(/);
+  assert.match(html, /async function saveStudentExamForLater\(/);
+  assert.match(html, /data-exam-save/);
   assert.match(html, /\.student-document-progress\.is-done/);
-  assert.match(cardBlock, /studentExamProgressIcon\(row\)/);
+  assert.match(cardBlock, /studentExamSaveButton\(row\)/);
+  assert.doesNotMatch(previewBlock, /trackStudentExamPortalEvent\(row\.id, 'open'\)/);
   assert.doesNotMatch(cardBlock, /student-document-menu/);
   assert.doesNotMatch(cardBlock, /&vellip;/);
 });

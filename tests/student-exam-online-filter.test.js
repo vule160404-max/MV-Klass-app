@@ -44,7 +44,8 @@ test('student portal online-only filter uses published online exam state', () =>
   const html = readPortal();
 
   assert.match(html, /function studentExamHasPublishedOnline\(row\)/);
-  assert.match(html, /function studentExamProgressIcon\(row\) \{\s*if \(!studentExamHasPublishedOnline\(row\)\) return '';/);
+  assert.match(html, /function studentExamSaveButton\(row\)/);
+  assert.doesNotMatch(html, /function studentExamProgressIcon\(row\)/);
   assert.match(html, /onlineOnly:\s*Boolean\(document\.getElementById\('student-exam-online-filter'\)\?\.checked\)/);
   assert.match(html, /if \(f\.onlineOnly && !studentExamHasPublishedOnline\(row\)\) return false;/);
   assert.match(html, /'student-exam-online-filter':\s*false/);

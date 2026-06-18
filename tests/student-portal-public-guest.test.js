@@ -36,6 +36,25 @@ test('slash portal can boot the public library without a login session', () => {
   assert.match(publicBoot, /await loadStudentExamFiles\(\)/);
 });
 
+test('portal login-only mode is scoped to the current portal path', () => {
+  const html = readPortal();
+  const marker = "const LOGIN_ONLY_KEY = 'mvk-login-only'";
+  const markerIndex = html.indexOf(marker);
+  assert.notEqual(markerIndex, -1, 'login-only marker script exists');
+  const headScriptStart = html.lastIndexOf('<script>', markerIndex);
+  const headScriptEnd = html.indexOf('</script>', headScriptStart);
+  assert.notEqual(headScriptStart, -1, 'head script exists');
+  const headScript = html.slice(headScriptStart, headScriptEnd);
+
+  assert.match(headScript, /function isPortalEntryPath\(\)/);
+  assert.match(headScript, /document\.documentElement\.classList\.add\('login-only-entry'\)/);
+  assert.match(headScript, /function clearLoginOnlyMarker\(\)/);
+  assert.match(headScript, /localStorage\.removeItem\(LOGIN_ONLY_KEY\)/);
+  assert.match(headScript, /Max-Age=0/);
+  assert.doesNotMatch(headScript, /hasLoginOnlyMarker/);
+  assert.doesNotMatch(headScript, /localStorage\.setItem\(LOGIN_ONLY_KEY/);
+});
+
 test('guest library actions open auth modal instead of accessing files', () => {
   const html = readPortal();
   const preview = functionBlock(html, 'openStudentExamPreview', 'closeStudentExamPreview');
