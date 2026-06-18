@@ -27,11 +27,12 @@ test('slash portal can boot the public library without a login session', () => {
   assert.match(initAuth, /isPortalPublicEntryPath\(\)/);
   assert.match(initAuth, /bootStudentExamPublicPortal\(\)/);
   assert.match(html, /function studentExamPublicPreviewRows\(\)/);
+  assert.match(html, /STUDENT_EXAM_PUBLIC_PREVIEW_TOTALS/);
   assert.doesNotMatch(loadFiles, /if \(!currentSession\?\.access_token\) return;/);
   assert.match(loadFiles, /const isGuest = isStudentExamGuestMode\(\);/);
+  assert.match(loadFiles, /studentExamPublicPreviewRows\(\)/);
   const publicBoot = functionBlock(html, 'bootStudentExamPublicPortal', 'showModuleChoiceUI');
-  assert.match(publicBoot, /studentExamRows = studentExamPublicPreviewRows\(\);/);
-  assert.doesNotMatch(publicBoot, /loadStudentExamFiles/);
+  assert.match(publicBoot, /await loadStudentExamFiles\(\)/);
 });
 
 test('guest library actions open auth modal instead of accessing files', () => {
@@ -48,6 +49,8 @@ test('guest library actions open auth modal instead of accessing files', () => {
   assert.match(online, /requireStudentPortalAuth\('online'\)/);
   assert.match(download, /requireStudentPortalAuth\('download'\)/);
   assert.match(premium, /requireStudentPortalAuth\('premium'\)/);
+  const card = functionBlock(html, 'studentExamCard', 'renderStudentExamSelectOptions');
+  assert.match(card, /locked && !isStudentExamGuestMode\(\)/);
 });
 
 test('guest portal hides account-only navigation and header controls', () => {
