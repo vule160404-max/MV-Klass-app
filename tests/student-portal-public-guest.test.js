@@ -28,6 +28,7 @@ test('slash portal can boot the public library without a login session', () => {
   assert.match(initAuth, /bootStudentExamPublicPortal\(\)/);
   assert.match(html, /function studentExamPublicPreviewRows\(\)/);
   assert.match(html, /STUDENT_EXAM_PUBLIC_PREVIEW_TOTALS/);
+  assert.match(html, /\\u00d4n T\\u1eadp/);
   assert.doesNotMatch(loadFiles, /if \(!currentSession\?\.access_token\) return;/);
   assert.match(loadFiles, /const isGuest = isStudentExamGuestMode\(\);/);
   assert.match(loadFiles, /studentExamPublicPreviewRows\(\)/);
@@ -43,6 +44,7 @@ test('guest library actions open auth modal instead of accessing files', () => {
   const premium = functionBlock(html, 'studentExamSetView', 'studentExamSetSidebarActive');
 
   assert.match(html, /id="student-guest-auth-modal"/);
+  assert.match(html, /class="student-guest-auth-mark"[^]*assets\/brand\/Center-logo\.png/);
   assert.match(html, /function openStudentGuestAuthModal\(/);
   assert.match(html, /function requireStudentPortalAuth\(/);
   assert.match(preview, /requireStudentPortalAuth\('preview'\)/);
