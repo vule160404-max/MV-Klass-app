@@ -17,48 +17,37 @@ function functionBlock(source, name, nextName) {
   return source.slice(start, end);
 }
 
-test('portal library admin is separated into an admin-only sidebar tab', () => {
+test('portal admin is consolidated into one sidebar tab with internal subtabs', () => {
   const source = readSource();
 
-  assert.match(source, /id="tab-btn-portal-library-admin" onclick="showTab\('portal-library-admin'\)"/);
-  assert.match(source, /id="tab-portal-library-admin"/);
-  assert.match(source, /id="portal-library-admin-mount"/);
-  assert.match(source, /id="tab-btn-portal-users-admin" onclick="showTab\('portal-users-admin'\)"/);
-  assert.match(source, /id="tab-portal-users-admin"/);
-  assert.match(source, /id="portal-users-admin-mount"/);
-  assert.match(source, /id="portal-student-users-panel"/);
-  assert.match(source, /'portal-library-admin'/);
-  assert.match(source, /'portal-users-admin'/);
-  assert.match(source, /setVisible\('tab-btn-portal-library-admin', 'tab-portal-library-admin', isAdmin\(\)\)/);
-  assert.match(source, /setVisible\('tab-btn-portal-users-admin', 'tab-portal-users-admin', isAdmin\(\)\)/);
-  assert.match(source, /teacherHiddenTabBtnIds[\s\S]*'tab-btn-portal-library-admin'/);
-  assert.match(source, /teacherHiddenTabBtnIds[\s\S]*'tab-btn-portal-users-admin'/);
-  assert.match(source, /t === 'portal-library-admin'/);
-  assert.match(source, /t === 'portal-users-admin'/);
+  assert.match(source, /id="tab-btn-portal-admin" onclick="showTab\('portal-admin'\)"[\s\S]*Quản trị portal/);
+  assert.match(source, /id="tab-btn-portal-library-admin" onclick="showTab\('portal-library-admin'\)" hidden/);
+  assert.match(source, /id="tab-btn-portal-users-admin" onclick="showTab\('portal-users-admin'\)" hidden/);
+  assert.match(source, /setVisible\('tab-btn-portal-library-admin', 'tab-portal-library-admin', false\)/);
+  assert.match(source, /setVisible\('tab-btn-portal-users-admin', 'tab-portal-users-admin', false\)/);
+
+  assert.match(source, /class="website-admin-subtabs" role="tablist" aria-label="Quản trị portal"/);
+  assert.match(source, /id="website-admin-subtab-online"[\s\S]*>Đề online<\/button>/);
+  assert.match(source, /id="website-admin-subtab-library"[\s\S]*>Kho tài liệu<\/button>/);
+  assert.match(source, /id="website-admin-subtab-users"[\s\S]*>Tài khoản<\/button>/);
+  assert.match(source, /id="website-admin-panel-online"/);
+  assert.match(source, /id="website-admin-panel-library"/);
+  assert.match(source, /id="website-admin-panel-users"/);
 });
 
-test('website admin stays focused on online exams while library panel is mounted elsewhere', () => {
+test('legacy portal admin tabs route into the consolidated portal admin subtabs', () => {
   const source = readSource();
-
-  assert.match(source, /class="website-admin-subtabs is-online-only"/);
-  assert.match(source, /id="website-admin-subtab-library"[\s\S]*hidden>Quản lí kho tài liệu/);
-  assert.match(source, /id="website-admin-panel-library"/);
-  assert.match(source, /class="website-admin-panel active" id="website-admin-panel-online"/);
-
-  const mountBlock = functionBlock(source, 'mountPortalLibraryAdminPanel', 'setWebsiteAdminSubtab');
-  assert.match(mountBlock, /mount\.appendChild\(panel\)/);
-  assert.match(mountBlock, /websiteAdminSubtab = 'library'/);
-  assert.match(mountBlock, /mountPortalUsersAdminPanel\(\)/);
-  assert.match(mountBlock, /portal-library-kpi-last-sync/);
-
-  const usersMountBlock = functionBlock(source, 'mountPortalUsersAdminPanel', 'setWebsiteAdminSubtab');
-  assert.match(usersMountBlock, /portal-student-users-panel/);
-  assert.match(usersMountBlock, /portal-users-admin-mount/);
-  assert.match(usersMountBlock, /mount\.appendChild\(panel\)/);
-  assert.match(usersMountBlock, /portal-users-kpi-last-sync/);
-
+  const setSubtabBlock = functionBlock(source, 'setWebsiteAdminSubtab', 'callExamOnline');
   const showTabBlock = functionBlock(source, 'showTab');
-  assert.match(showTabBlock, /setWebsiteAdminSubtab\('online'\)/);
-  assert.match(showTabBlock, /mountPortalLibraryAdminPanel\(\)/);
-  assert.match(showTabBlock, /mountPortalUsersAdminPanel\(\)/);
+
+  assert.match(setSubtabBlock, /tab === 'library' \? 'library' : \(tab === 'users' \? 'users' : 'online'\)/);
+  assert.match(setSubtabBlock, /users: document\.getElementById\('website-admin-subtab-users'\)/);
+  assert.match(setSubtabBlock, /users: document\.getElementById\('website-admin-panel-users'\)/);
+  assert.match(setSubtabBlock, /setWebsiteAdminSubtab users/);
+
+  assert.match(showTabBlock, /if \(t === 'portal-library-admin'\)[\s\S]*portalAdminSubtab = 'library'/);
+  assert.match(showTabBlock, /else if \(t === 'portal-users-admin'\)[\s\S]*portalAdminSubtab = 'users'/);
+  assert.match(showTabBlock, /setWebsiteAdminSubtab\(portalAdminSubtab \|\| websiteAdminSubtab \|\| 'online'\)/);
+  assert.doesNotMatch(showTabBlock, /mountPortalLibraryAdminPanel\(\)/);
+  assert.doesNotMatch(showTabBlock, /mountPortalUsersAdminPanel\(\)/);
 });
