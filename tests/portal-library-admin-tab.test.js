@@ -23,6 +23,7 @@ test('portal admin is consolidated into one sidebar tab with internal subtabs', 
   assert.match(source, /id="tab-btn-portal-admin" onclick="showTab\('portal-admin'\)"[\s\S]*Quản trị portal/);
   assert.match(source, /id="tab-btn-portal-library-admin" onclick="showTab\('portal-library-admin'\)" hidden/);
   assert.match(source, /id="tab-btn-portal-users-admin" onclick="showTab\('portal-users-admin'\)" hidden/);
+  assert.match(source, /#tab-btn-portal-library-admin,\s*#tab-btn-portal-users-admin\s*\{\s*display: none !important;/);
   assert.match(source, /setVisible\('tab-btn-portal-library-admin', 'tab-portal-library-admin', false\)/);
   assert.match(source, /setVisible\('tab-btn-portal-users-admin', 'tab-portal-users-admin', false\)/);
 
