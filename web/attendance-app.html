@@ -26600,15 +26600,14 @@ async function finishStudentSignupToLogin(message, accessToken) {
 
 async function isPortalPremiumSignupBypassActive() {
   try {
-    const r = await fetch(SUPABASE_URL + '/functions/v1/portal-premium-checkout', {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/list_portal_premium_products', {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'products' }),
+      body: '{}',
       cache: 'no-store'
     });
-    const data = await r.json().catch(() => ({}));
-    const products = Array.isArray(data.products) ? data.products : [];
-    if (!r.ok || data.ok === false || !products.length) return false;
+    const products = r.ok ? await r.json().catch(() => []) : [];
+    if (!Array.isArray(products) || !products.length) return false;
     return products.every(p => p && p.is_active === false);
   } catch (e) {
     console.warn('portal premium signup mode unavailable', e);
@@ -26628,6 +26627,11 @@ async function signUpStudentAccount() {
   if (okEl) {
     okEl.textContent = '';
     okEl.classList.remove('show');
+  }
+  const configOk = await loadSupabaseConfig();
+  if (!configOk) {
+    if (errEl) errEl.textContent = 'Chưa kết nối được hệ thống. Em thử lại sau.';
+    return;
   }
   if (!name || !classChoice || !email || !password || !confirm) {
     if (errEl) errEl.textContent = 'Nhập đầy đủ họ tên, chương trình học, email và mật khẩu.';

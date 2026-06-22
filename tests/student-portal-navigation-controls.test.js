@@ -121,9 +121,10 @@ test('premium signup mode can disable package sales and grant new signups premiu
   assert.doesNotMatch(adminBlock, /Premium\? Học sinh/);
   assert.match(adminBlock, /products\.every\(p => p && p\.is_active === false\)/);
   assert.match(adminBlock, /portal_premium_products\?product_key=in\./);
-  assert.match(signupModeBlock, /portal-premium-checkout/);
-  assert.match(signupModeBlock, /action:\s*'products'/);
+  assert.match(signupModeBlock, /rpc\/list_portal_premium_products/);
+  assert.doesNotMatch(signupModeBlock, /portal-premium-checkout/);
   assert.match(signupModeBlock, /products\.every\(p => p && p\.is_active === false\)/);
+  assert.match(signupBlock, /const configOk = await loadSupabaseConfig\(\)/);
   assert.match(signupBlock, /const premiumBypass = await isPortalPremiumSignupBypassActive\(\)/);
   assert.match(signupBlock, /portal_plan:\s*'premium'/);
   assert.match(signupBlock, /portal_premium_source:\s*'signup_packages_disabled'/);
