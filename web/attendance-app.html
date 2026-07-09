@@ -14725,6 +14725,253 @@ button[data-bank-inspect-confirm-not]:hover,
 }
 </style>
 
+<style id="mvklass-minimal-redesign">
+/* ----------------------------------------------------------------
+   MINIMAL REDESIGN LAYER — sidebar + Học viên/Lớp học/Giáo viên/
+   Quản trị portal. Loaded after the v4 layer so it wins the cascade.
+   Visual-only: no ids/classes used by JS are renamed or removed.
+------------------------------------------------------------------- */
+:root{
+  --mk-bg:#F6F7FB; --mk-surface:#FFFFFF; --mk-surface-2:#FAFBFD;
+  --mk-border:#E7E9F1; --mk-border-strong:#D7DBE8;
+  --mk-text:#14181F; --mk-text-2:#3F4759; --mk-muted:#828BA0; --mk-muted-2:#A2A9BB;
+  --mk-accent:#3D7EF8; --mk-accent-dark:#2560D0; --mk-accent-soft:#EEF4FF;
+  --mk-good:#16A34A; --mk-good-bg:#EEFBF3;
+  --mk-warn:#D97706; --mk-warn-bg:#FFF8EA;
+  --mk-bad:#DC2626; --mk-bad-bg:#FDEEEE;
+  --mk-r-sm:10px; --mk-r:12px; --mk-r-lg:16px;
+  --mk-shadow-xs:0 1px 2px rgba(16,24,40,.05);
+  --mk-shadow-sm:0 2px 8px rgba(16,24,40,.06);
+  --mk-shadow:0 6px 18px rgba(16,24,40,.07);
+  --mk-ease:150ms cubic-bezier(.4,0,.2,1);
+}
+
+/* -- Global calm: less bounce, lighter lift on hover ---------------- */
+.btn-sm, .btn-save, .btn-del, .btn-edit, .btn-detail, .btn-pay, .btn-history, .btn-cash, .btn-zalo{
+  transition: background var(--mk-ease), border-color var(--mk-ease), box-shadow var(--mk-ease), color var(--mk-ease) !important;
+}
+.btn-sm:hover{ transform:none !important; box-shadow: var(--mk-shadow-sm) !important; }
+.btn-sm:active{ transform: scale(0.98) !important; }
+
+/* ================================================================
+   SIDEBAR — #main-menu (.tabs)
+   ================================================================ */
+.tabs{
+  background: var(--mk-surface) !important;
+  border-right: 1px solid var(--mk-border) !important;
+  box-shadow: 1px 0 0 var(--mk-border) !important;
+}
+.tabs::before{ display:none !important; }
+.sidebar-header{
+  padding: 18px 12px 16px !important;
+  border-bottom: 1px solid var(--mk-border) !important;
+  margin-bottom: 8px !important;
+}
+.sidebar-logo-box{ box-shadow:none !important; border:1px solid var(--mk-border) !important; }
+.sidebar-brand-name{ color: var(--mk-text) !important; font-weight:750 !important; }
+.sidebar-brand-sub{ color: var(--mk-muted) !important; }
+.sidebar-section-label{
+  color: var(--mk-muted-2) !important;
+  font-weight:700 !important;
+  letter-spacing:.08em !important;
+  padding: 16px 12px 6px !important;
+}
+.tab{
+  color: var(--mk-text-2) !important;
+  font-weight:600 !important;
+  border-radius: var(--mk-r-sm) !important;
+  transition: background var(--mk-ease), color var(--mk-ease) !important;
+}
+.tab:hover{
+  transform:none !important;
+  background: var(--mk-surface-2) !important;
+  color: var(--mk-text) !important;
+}
+.tab:active{ transform:none !important; }
+.tab.active{
+  background: var(--mk-accent-soft) !important;
+  color: var(--mk-accent-dark) !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+.tab.active::before{
+  background: var(--mk-accent) !important;
+  border-radius: 3px !important;
+}
+.tab-icon{
+  background: var(--mk-surface-2) !important;
+  color: var(--mk-muted) !important;
+  border-radius: 8px !important;
+}
+.tab.active .tab-icon{
+  background: var(--mk-accent) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+.tab:hover:not(.active) .tab-icon{ background: var(--mk-accent-soft) !important; color: var(--mk-accent) !important; }
+
+/* ================================================================
+   HỌC VIÊN — #tab-students
+   ================================================================ */
+#tab-students .students-admin-hero{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+  border-radius: var(--mk-r-lg) !important;
+}
+#tab-students .students-eyebrow{ color: var(--mk-accent-dark) !important; font-weight:700 !important; }
+#tab-students .student-add-open-btn{
+  background: var(--mk-accent) !important;
+  border-color: var(--mk-accent) !important;
+  box-shadow:none !important;
+}
+#tab-students #mgr-list{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  border-radius: var(--mk-r-lg) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+}
+#tab-students #mgr-list .c-row{ border-color: var(--mk-border) !important; }
+#tab-students #mgr-list .c-row:hover{ background: var(--mk-surface-2) !important; }
+#tab-students .c-row-name{ color: var(--mk-text) !important; }
+#tab-students .c-row-sub{ color: var(--mk-muted) !important; }
+#tab-students details.section-details{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  border-radius: var(--mk-r-lg) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+}
+
+/* ================================================================
+   LỚP HỌC — #tab-classes
+   ================================================================ */
+#tab-classes .rev-toolbar .btn-sm{
+  background: var(--mk-accent) !important;
+  border-color: var(--mk-accent) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+.class-mgr-kpi{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  border-radius: var(--mk-r) !important;
+}
+.class-mgr-row{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  border-radius: var(--mk-r-lg) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+}
+.class-mgr-row:hover{
+  border-color: var(--mk-border-strong) !important;
+  box-shadow: var(--mk-shadow-sm) !important;
+}
+.class-mgr-name{ color: var(--mk-text) !important; }
+.class-mgr-sub{ color: var(--mk-muted) !important; }
+.class-mgr-metric{
+  background: var(--mk-surface-2) !important;
+  border-color: var(--mk-border) !important;
+  border-radius: var(--mk-r-sm) !important;
+}
+.class-mgr-chip{
+  background: var(--mk-accent-soft) !important;
+  border-color: rgba(61,126,248,0.24) !important;
+  color: var(--mk-accent-dark) !important;
+}
+.class-mgr-chip.muted{
+  background: var(--mk-surface-2) !important;
+  border-color: var(--mk-border) !important;
+  color: var(--mk-muted) !important;
+}
+.class-mgr-status{
+  background: var(--mk-good-bg) !important;
+  color: var(--mk-good) !important;
+  border-color: rgba(22,163,74,0.28) !important;
+}
+.class-mgr-status.paused{
+  background: var(--mk-warn-bg) !important;
+  color: var(--mk-warn) !important;
+  border-color: rgba(217,119,6,0.28) !important;
+}
+/* Compact card action row: Điểm danh (full) + [Học viên | ⋯] */
+.class-mgr-actionbar .class-mgr-action-row{ grid-template-columns: 1fr 1fr !important; }
+.class-mgr-actionbar .class-mgr-action-mini{
+  box-shadow:none !important;
+  font-weight:700 !important;
+  border-radius: var(--mk-r-sm) !important;
+}
+.class-mgr-actions .class-mgr-action-mini.action-attendance{
+  background: var(--mk-accent) !important;
+  border:1px solid var(--mk-accent) !important;
+  color:#fff !important;
+}
+.class-mgr-actions .class-mgr-action-mini.action-info{
+  background: var(--mk-surface) !important;
+  border:1px solid var(--mk-border-strong) !important;
+  color: var(--mk-text-2) !important;
+}
+.class-mgr-actions .class-mgr-action-mini.class-mgr-more{
+  background: var(--mk-surface) !important;
+  border:1px solid var(--mk-border-strong) !important;
+  color: var(--mk-muted) !important;
+}
+.class-mgr-actions .class-mgr-action-mini.class-mgr-more:hover{ color: var(--mk-accent-dark) !important; border-color: var(--mk-accent) !important; }
+/* Consolidated action modal buttons */
+#class-action-modal .class-action-grid .btn-sm,
+#class-action-modal .class-action-grid .btn-edit,
+#class-action-modal .class-action-grid .btn-del{
+  box-shadow:none !important;
+  border-radius: var(--mk-r-sm) !important;
+  font-weight:700 !important;
+}
+#class-action-modal .class-action-grid .action-attendance{
+  background: var(--mk-accent) !important; border-color: var(--mk-accent) !important; color:#fff !important;
+}
+
+/* ================================================================
+   QUẢN TRỊ PORTAL — #tab-portal-admin (+ Kho tài liệu / Tài khoản)
+   ================================================================ */
+.portal-analytics-hero{
+  background: var(--mk-accent) !important;
+  box-shadow: var(--mk-shadow-sm) !important;
+}
+.portal-kpi-card{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  border-radius: var(--mk-r-lg) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+}
+.portal-kpi-card .value{ color: var(--mk-text) !important; }
+.website-admin-subtabs{
+  background: var(--mk-surface-2) !important;
+  border-color: var(--mk-border) !important;
+  box-shadow:none !important;
+}
+.website-admin-subtab{ color: var(--mk-muted) !important; }
+.website-admin-subtab.active{
+  background: var(--mk-surface) !important;
+  color: var(--mk-accent-dark) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+}
+.portal-panel{
+  background: var(--mk-surface) !important;
+  border: 1px solid var(--mk-border) !important;
+  border-radius: var(--mk-r-lg) !important;
+  box-shadow: var(--mk-shadow-xs) !important;
+}
+.portal-panel-title{ color: var(--mk-text) !important; }
+.portal-panel-sub{ color: var(--mk-muted) !important; }
+.portal-panel-head{ border-color: var(--mk-border) !important; }
+
+/* ================================================================
+   GIÁO VIÊN — bảng công/lương trong #tab-work + gán GV trong Lớp học
+   ================================================================ */
+#tab-work .admin-chk-table{ border-color: var(--mk-border) !important; }
+#tab-work .admin-chk-table th{ color: var(--mk-muted) !important; background: var(--mk-surface-2) !important; }
+#tab-work .admin-chk-table tbody tr:hover td{ background: var(--mk-surface-2) !important; }
+.class-mgr-teacher-list .class-mgr-chip{ background: var(--mk-accent-soft) !important; }
+</style>
+
 <!-- Sidebar sync: copy branding from app-header into sidebar (pure DOM, no data) -->
 <script>
 (function(){
@@ -35872,20 +36119,21 @@ function openClassActionModal(encodedClassName) {
   if (sub) sub.textContent = `${className} · ${paused ? 'Tạm dừng' : 'Hoạt động'}`;
   const attendanceBtn = paused
     ? ''
-    : `<button type="button" class="btn-sm action-attendance" onclick="runClassAction('attendance','${escapeHtml(enc)}')">Điểm danh</button>`;
+    : `<button type="button" class="btn-sm action-attendance wide" onclick="runClassAction('attendance','${escapeHtml(enc)}')">Điểm danh</button>`;
   const pauseBtn = isAdmin()
     ? paused
-      ? `<button type="button" class="btn-sm class-mgr-btn-resume" onclick="runClassAction('pause','${escapeHtml(enc)}')">Bật lại</button>`
-      : `<button type="button" class="btn-sm class-mgr-btn-pause" onclick="runClassAction('pause','${escapeHtml(enc)}')">Tạm dừng</button>`
+      ? `<button type="button" class="btn-sm class-mgr-btn-resume wide" onclick="runClassAction('pause','${escapeHtml(enc)}')">Bật lại lớp</button>`
+      : `<button type="button" class="btn-sm class-mgr-btn-pause wide" onclick="runClassAction('pause','${escapeHtml(enc)}')">Tạm dừng lớp</button>`
     : '';
-  const editBtn = def ? `<button type="button" class="btn-edit" onclick="runClassAction('edit','${escapeHtml(enc)}')">Sửa</button>` : '';
+  const editBtn = def ? `<button type="button" class="btn-edit" onclick="runClassAction('edit','${escapeHtml(enc)}')">Sửa lớp</button>` : '';
   grid.innerHTML = `
     ${attendanceBtn}
     <button type="button" class="btn-sm action-info" onclick="runClassAction('students','${escapeHtml(enc)}')">Học viên</button>
+    <button type="button" class="btn-sm action-info" onclick="runClassAction('assign','${escapeHtml(enc)}')">Chuyển HS</button>
     <button type="button" class="btn-sm action-money" onclick="runClassAction('tuition','${escapeHtml(enc)}')">Học phí</button>
-    ${pauseBtn}
     ${editBtn}
-    <button type="button" class="btn-del ${editBtn ? '' : 'wide'}" onclick="runClassAction('delete','${escapeHtml(enc)}')">Xóa</button>
+    ${pauseBtn}
+    <button type="button" class="btn-del wide" onclick="runClassAction('delete','${escapeHtml(enc)}')">Xóa lớp</button>
   `;
   modal.classList.add('show');
 }
@@ -35896,23 +36144,17 @@ function renderClassManagerActionBar(className, def, paused) {
   const statusLabel = paused ? 'Tạm dừng' : 'Đang mở';
   const switchTitle = paused ? 'Bật lại lớp' : 'Tạm dừng lớp';
   const attendanceBtn = paused
-    ? `<button type="button" class="btn-sm action-attendance class-mgr-action-mini" disabled title="Bật lại lớp để điểm danh">Điểm danh</button>`
-    : `<button type="button" class="btn-sm action-attendance class-mgr-action-mini" onclick="runClassAction('attendance','${encEsc}')">Điểm danh</button>`;
+    ? `<button type="button" class="btn-sm action-attendance class-mgr-action-mini wide" disabled title="Bật lại lớp để điểm danh">Điểm danh</button>`
+    : `<button type="button" class="btn-sm action-attendance class-mgr-action-mini wide" onclick="runClassAction('attendance','${encEsc}')">Điểm danh</button>`;
   const switchBtn = isAdmin()
     ? `<button type="button" class="class-mgr-switch${paused ? ' paused' : ''}" role="switch" aria-checked="${paused ? 'false' : 'true'}" title="${escapeHtml(switchTitle)}" onclick="runClassAction('pause','${encEsc}')">${escapeHtml(statusLabel)}</button>`
     : `<span class="class-mgr-switch${paused ? ' paused' : ''}" role="status">${escapeHtml(statusLabel)}</span>`;
-  const editBtn = def
-    ? `<button type="button" class="btn-edit class-mgr-action-mini" onclick="runClassAction('edit','${encEsc}')">Sửa</button>`
-    : '';
   return `<div class="class-mgr-actionbar">
     ${switchBtn}
     <div class="class-mgr-action-row">
       ${attendanceBtn}
       <button type="button" class="btn-sm action-info class-mgr-action-mini" onclick="runClassAction('students','${encEsc}')">Học viên</button>
-      <button type="button" class="btn-sm action-info class-mgr-action-mini" onclick="runClassAction('assign','${encEsc}')">Chuyển HS</button>
-      <button type="button" class="btn-sm action-money class-mgr-action-mini" onclick="runClassAction('tuition','${encEsc}')">Học phí</button>
-      ${editBtn || `<button type="button" class="btn-edit class-mgr-action-mini" disabled title="Lớp chưa có cấu hình">Sửa</button>`}
-      <button type="button" class="btn-del class-mgr-action-mini" onclick="runClassAction('delete','${encEsc}')">Xóa</button>
+      <button type="button" class="btn-sm class-mgr-action-mini class-mgr-more" title="Học phí, chuyển HS, sửa, xóa…" aria-label="Thao tác khác" onclick="openClassActionModal('${encEsc}')">Thao tác ⋯</button>
     </div>
   </div>`;
 }
@@ -37298,8 +37540,8 @@ function renderMgr() {
     ? ''
     : `<div class="c-row-actions">
       <button type="button" class="btn-zalo mgr-zalo" data-student-id="__SID__" __ZALO_DISABLED__>Nhắn Zalo PH</button>
-      <button type="button" class="btn-edit mgr-edit" data-student-id="__SID__">S?a thông tin</button>
-      <button type="button" class="btn-del mgr-remove" data-student-id="__SID__" title="Xóa h?c viên">Xóa</button>
+      <button type="button" class="btn-edit mgr-edit" data-student-id="__SID__">Sửa thông tin</button>
+      <button type="button" class="btn-del mgr-remove" data-student-id="__SID__" title="Xóa học viên">Xóa</button>
     </div>`;
   const emptyFiltered =
     total === 0
